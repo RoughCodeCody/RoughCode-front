@@ -14,8 +14,8 @@ import javax.persistence.*;
 public class ProjectTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
-    private Long tagId;
+    @Column(name = "tags_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    private Long tagsId;
 
     @Column(name = "name", length = 255, nullable = false)
     private String name;

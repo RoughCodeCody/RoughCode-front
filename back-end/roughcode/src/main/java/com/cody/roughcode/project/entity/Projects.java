@@ -1,5 +1,6 @@
 package com.cody.roughcode.project.entity;
 
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
@@ -21,11 +22,11 @@ public class Projects extends BaseTimeEntity {
     @Column(name = "title", length = 20, nullable = false)
     private String title;
 
-    @Column(name = "like", nullable = true)
-    private int like = 0;
+    @Column(name = "likes", nullable = true)
+    private int likes = 0;
 
-    @Column(name = "favorite", nullable = true)
-    private int favorite = 0;
+    @Column(name = "favorites", nullable = true)
+    private int favorites = 0;
 
     @Column(name = "review_cnt", nullable = true)
     private int reviewCnt = 0;
@@ -51,6 +52,9 @@ public class Projects extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name="users_id")
     private Users users;
+
+    @OneToOne(mappedBy = "projects")
+    private Codes codes;
 
     @OneToMany(mappedBy = "projects")
     private List<Feedbacks> feedbacks;

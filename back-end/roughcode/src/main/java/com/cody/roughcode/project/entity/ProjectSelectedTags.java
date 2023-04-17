@@ -18,13 +18,13 @@ public class ProjectSelectedTags {
     private Long selectedTagsId;
 
     @ManyToOne
-    @JoinColumn(name="tag_id")
-    private ProjectTags tag;
+    @JoinColumn(name="tags_id")
+    private ProjectTags tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "projects_id", referencedColumnName = "projects_id", insertable = false, updatable = false),
             @JoinColumn(name = "version", referencedColumnName = "version", insertable = false, updatable = false)
     })
-    private Projects project;
+    private Projects projects;
 }
