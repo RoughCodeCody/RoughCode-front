@@ -19,16 +19,13 @@ public class ProjectFavorites {
     private Long favoritesId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "projects_id", referencedColumnName = "projects_id", insertable = false, updatable = false),
-            @JoinColumn(name = "version", referencedColumnName = "version", insertable = false, updatable = false)
-    })
-    private Projects project;
-
-    @ManyToOne
-    @JoinColumn(name="users_id")
+    @JoinColumn(name = "users_id", nullable = false)
     private Users users;
 
-    @Column(name = "content", length = 255, nullable = true)
+    @Column(name = "content", nullable = true, columnDefinition = "text")
     private String content = "";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "projects_id", nullable = false)
+    private Projects projects;
 }

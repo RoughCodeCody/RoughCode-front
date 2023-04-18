@@ -19,17 +19,15 @@ public class CodeFavorites {
     @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long favoritesId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "codes_id", referencedColumnName = "codes_id", insertable = false, updatable = false),
-            @JoinColumn(name = "version", referencedColumnName = "version", insertable = false, updatable = false)
-    })
-    private Codes code;
 
-    @ManyToOne
-    @JoinColumn(name="users_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "codes_id", nullable = false)
+    private Codes codes;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
     private Users users;
 
-    @Column(name = "content", length = 255, nullable = true)
+    @Column(name = "content", nullable = true, columnDefinition = "text")
     private String content = "";
 }
