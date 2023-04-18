@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class Feedbacks extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedbacks_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "feedbacks_id", nullable = false, columnDefinition = "BIGINT ")
     private Long feedbacksId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,15 +26,19 @@ public class Feedbacks extends BaseTimeEntity {
     })
     private Projects projects;
 
+    @Builder.Default
     @Column(name = "content", length = 255, nullable = true)
     private String content = "";
 
+    @Builder.Default
     @Column(name = "likes", nullable = true)
     private int likes = 0;
 
+    @Builder.Default
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
 
+    @Builder.Default
     @Column(name = "selected", nullable = true)
     private boolean selected = false;
 

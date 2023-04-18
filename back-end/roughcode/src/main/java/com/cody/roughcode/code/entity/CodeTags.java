@@ -14,12 +14,13 @@ import javax.persistence.*;
 public class CodeTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tags_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "tags_id", nullable = false, columnDefinition = "BIGINT ")
     private Long tagsId;
 
     @Column(name = "name", length = 255, nullable = false)
     private String name;
 
+    @Builder.Default
     @Column(name = "cnt", nullable = true)
     private int cnt = 0;
 

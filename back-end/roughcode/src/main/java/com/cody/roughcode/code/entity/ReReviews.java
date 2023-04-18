@@ -16,15 +16,18 @@ import javax.persistence.*;
 public class ReReviews extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT ")
     private Long reReviewsId;
 
+    @Builder.Default
     @Column(name = "content", length = 255, nullable = true)
     private String content = "";
 
+    @Builder.Default
     @Column(name = "likes", nullable = true)
     private int likes = 0;
 
+    @Builder.Default
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
 

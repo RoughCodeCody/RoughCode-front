@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class ProjectFavorites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT ")
     private Long favoritesId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,6 +29,7 @@ public class ProjectFavorites {
     @JoinColumn(name="users_id")
     private Users users;
 
+    @Builder.Default
     @Column(name = "content", length = 255, nullable = true)
     private String content = "";
 }

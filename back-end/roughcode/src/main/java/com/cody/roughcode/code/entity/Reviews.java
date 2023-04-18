@@ -17,7 +17,7 @@ import java.util.List;
 public class Reviews extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reviews_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "reviews_id", nullable = false, columnDefinition = "BIGINT ")
     private Long reviewsId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,21 +27,25 @@ public class Reviews extends BaseTimeEntity {
     })
     private Codes codes;
 
+    @Builder.Default
     @Column(name = "content", length = 255, nullable = true)
     private String content = "";
 
+    @Builder.Default
     @Column(name = "likes", nullable = true)
     private int likes = 0;
 
+    @Builder.Default
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
 
-    @Column(name = "start", nullable = false)
-    private int start;
+    @Column(name = "start_line", nullable = false)
+    private String startLine;
 
-    @Column(name = "end", nullable = false)
-    private int end;
+    @Column(name = "end_line", nullable = false)
+    private String endLine;
 
+    @Builder.Default
     @Column(name = "selected", nullable = true)
     private boolean selected = false;
 
