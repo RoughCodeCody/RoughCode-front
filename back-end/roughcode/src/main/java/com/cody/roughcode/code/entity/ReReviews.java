@@ -19,8 +19,12 @@ public class ReReviews extends BaseTimeEntity {
     @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long reReviewsId;
 
-    @Column(name = "content", length = 255, nullable = true)
-    private String content = "";
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
+    private Users users = null;
+
+    @Column(name = "content", nullable = false, columnDefinition = "text")
+    private String content;
 
     @Column(name = "likes", nullable = true)
     private int likes = 0;
@@ -28,11 +32,7 @@ public class ReReviews extends BaseTimeEntity {
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
 
-    @ManyToOne
-    @JoinColumn(name="users_id")
-    private Users users;
-
-    @ManyToOne
-    @JoinColumn(name="reviews_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviews_id", nullable = false)
     private Reviews reviews;
 }

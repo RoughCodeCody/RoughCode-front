@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.entity;
 
+import com.cody.roughcode.project.entity.ProjectTags;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,14 +18,11 @@ public class CodeSelectedTags {
     @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long selectedTagsId;
 
-    @ManyToOne
-    @JoinColumn(name="tags_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tags_id", nullable = false)
     private CodeTags tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "codes_id", referencedColumnName = "codes_id", insertable = false, updatable = false),
-            @JoinColumn(name = "version", referencedColumnName = "version", insertable = false, updatable = false)
-    })
+    @JoinColumn(name = "codes_id", nullable = false)
     private Codes codes;
 }
