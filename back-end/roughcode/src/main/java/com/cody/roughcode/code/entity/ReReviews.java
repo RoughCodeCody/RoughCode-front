@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class ReReviews extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT ")
+    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long reReviewsId;
 
     @Builder.Default

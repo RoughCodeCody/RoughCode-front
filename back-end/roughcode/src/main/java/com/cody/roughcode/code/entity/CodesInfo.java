@@ -16,7 +16,7 @@ import java.util.List;
 public class CodesInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, columnDefinition = "BIGINT ")
+    @Column(nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long id;
 
     @Builder.Default

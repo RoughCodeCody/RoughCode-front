@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class ProjectFavorites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT ")
+    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long favoritesId;
 
     @ManyToOne(fetch = FetchType.LAZY)
