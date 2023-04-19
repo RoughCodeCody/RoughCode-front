@@ -19,7 +19,7 @@ import java.util.List;
 public class Projects extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT ")
     private Long projectsId;
 
     @Column(name = "num", nullable = false)
@@ -41,11 +41,6 @@ public class Projects extends BaseTimeEntity {
 
     @Column(name = "img", length = 255, nullable = false)
     private String img;
-
-    @Builder.Default
-    @Column(name = "content", length = 255, nullable = true)
-    private String content = "";
-
 
     @Builder.Default
     @Column(name = "closed", nullable = true)

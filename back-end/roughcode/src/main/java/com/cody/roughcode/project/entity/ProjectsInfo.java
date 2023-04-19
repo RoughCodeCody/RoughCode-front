@@ -16,15 +16,14 @@ import java.util.List;
 public class ProjectsInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(nullable = false, columnDefinition = "BIGINT ")
     private Long id;
 
     @Column(columnDefinition = "text")
     private String content;
 
-    @Builder.Default
-    @Column(name = "url", length = 255, nullable = true)
-    private String url = "";
+    @Column(name = "url", length = 255, nullable = false)
+    private String url;
 
     @Builder.Default
     @Column(name = "complaint", nullable = true)
@@ -44,4 +43,8 @@ public class ProjectsInfo {
 
     @OneToMany(mappedBy = "projects")
     private List<Feedbacks> projectsFeedbacks;
+
+    public void setProjects(Projects projects) {
+        this.projects = projects;
+    }
 }

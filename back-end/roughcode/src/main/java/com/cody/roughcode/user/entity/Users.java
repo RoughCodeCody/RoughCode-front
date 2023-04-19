@@ -34,11 +34,11 @@ public class Users extends BaseTimeEntity{
     private String name;
 
     @Builder.Default
-    @Column(name = "codes_cnt", nullable = true, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "codes_cnt", nullable = true, columnDefinition = "BIGINT ")
     private Long codesCnt = 0L;
 
     @Builder.Default
-    @Column(name = "projects_cnt", nullable = true, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "projects_cnt", nullable = true, columnDefinition = "BIGINT ")
     private Long projectsCnt = 0L;
 
     @Column(name = "roles")
