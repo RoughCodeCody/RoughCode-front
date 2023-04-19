@@ -26,8 +26,8 @@ public class ReReviews extends BaseTimeEntity {
     @Column(name = "content", nullable = false, columnDefinition = "text")
     private String content;
 
-    @Column(name = "likes", nullable = true)
-    private int likes = 0;
+    @Column(name = "like_cnt", nullable = true)
+    private int likeCnt = 0;
 
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;

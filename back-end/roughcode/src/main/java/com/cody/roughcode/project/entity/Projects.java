@@ -32,8 +32,8 @@ public class Projects extends BaseTimeEntity {
     private String title;
 
     @Builder.Default
-    @Column(name = "likes", nullable = true)
-    private int likes = 0;
+    @Column(name = "like_cnt", nullable = true)
+    private int likeCnt = 0;
 
     @Builder.Default
     @Column(name = "review_cnt", nullable = true)

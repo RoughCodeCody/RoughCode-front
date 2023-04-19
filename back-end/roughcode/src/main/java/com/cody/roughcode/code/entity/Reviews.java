@@ -25,8 +25,8 @@ public class Reviews extends BaseTimeEntity {
     private String content = "";
 
     @Builder.Default
-    @Column(name = "likes", nullable = true)
-    private int likes = 0;
+    @Column(name = "like_cnt", nullable = true)
+    private int likeCnt = 0;
 
     @Builder.Default
     @Column(name = "complaint", nullable = true)
