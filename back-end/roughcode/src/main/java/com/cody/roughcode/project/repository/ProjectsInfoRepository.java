@@ -4,6 +4,6 @@ import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProjectInfoRepository extends JpaRepository<ProjectsInfo, Long> {
+public interface ProjectsInfoRepository extends JpaRepository<ProjectsInfo, Long> {
     ProjectsInfo findByProjects(Projects project);
 }

@@ -1,6 +1,5 @@
 package com.cody.roughcode.project.repository;
 
-import com.cody.roughcode.project.entity.ProjectId;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.user.entity.Users;
@@ -26,9 +25,9 @@ public class ProjectRepositoryTest {
             .build();
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private ProjectsRepository projectRepository;
     @Autowired
-    private ProjectInfoRepository projectInfoRepository;
+    private ProjectsInfoRepository projectInfoRepository;
     @Autowired
     private UsersRepository usersRepository;
 

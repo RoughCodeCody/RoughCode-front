@@ -29,7 +29,6 @@ public class ProjectsInfo {
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
 
-
     @Column(name = "notice", nullable = false, columnDefinition = "text")
     private String notice;
 
