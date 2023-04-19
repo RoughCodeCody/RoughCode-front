@@ -24,4 +24,7 @@ public class ProjectTags {
     @Column(name = "cnt", nullable = true)
     private int cnt = 0;
 
+    public void cntUp() {
+        this.cnt += 1;
+    }
 }

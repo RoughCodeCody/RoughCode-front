@@ -5,6 +5,7 @@ import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
+import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.project.repository.ProjectSelectedTagsRepository;
@@ -38,7 +39,8 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public int insertProject(ProjectReq req, Users user) {
+    public int insertProject(ProjectReq req, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다.");
         ProjectsInfo info = ProjectsInfo.builder()
                 .url(req.getUrl())
@@ -49,18 +51,20 @@ public class ProjectsServiceImpl implements ProjectsService{
         // 전의 프로젝트를 업데이트하는거면 projectNum은 전의 projectNum과 동일
         Long projectNum;
         int projectVersion;
+        int likeCnt = 0;
         if(req.getProjectId() == -1){ // 새 프로젝트 생성
             user.projectsCntUp();
             usersRepository.save(user);
 
             projectNum = user.getProjectsCnt();
             projectVersion = 1;
-        } else {
-            Projects original = projectsRepository.findByProjectsId(req.getProjectId());
+        } else { // 기존 프로젝트 버전 업
+            Projects original = projectsRepository.findProjectWithMaxVersionByProjectsId(req.getProjectId());
             if(original == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다.");
 
             projectNum = original.getNum();
             projectVersion = original.getVersion() + 1;
+            likeCnt = original.getLikeCnt();
         }
 
         List<Codes> codesList = (codesRepostiory.findByCodesId(req.getCodesId()) == null)? new ArrayList<>() : List.of(codesRepostiory.findByCodesId(req.getCodesId()));
@@ -73,18 +77,24 @@ public class ProjectsServiceImpl implements ProjectsService{
                 .title(req.getTitle())
                 .projectWriter(user)
                 .projectsCodes(codesList)
+                .likeCnt(likeCnt)
                 .build();
-
-        // tag 등록
-        for(Long id : req.getSelectedTagsId()){
-            projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
-                            .tags(projectTagsRepository.findByTagsId(id))
-                            .projects(project)
-                            .build());
-        }
 
         try {
             Projects savedProject = projectsRepository.save(project);
+
+            // tag 등록
+            for(Long id : req.getSelectedTagsId()){
+                ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
+                projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
+                                .tags(projectTag)
+                                .projects(project)
+                                .build());
+
+                projectTag.cntUp();
+                projectTagsRepository.save(projectTag);
+            }
+
             info.setProjects(savedProject);
             projectsInfoRepository.save(info);
         } catch(Exception e){

@@ -91,19 +91,21 @@ public class ProjectServiceTest {
                 .notice(req.getNotice())
                 .build();
 
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
         doReturn(null).when(codesRepostiory).findByCodesId((long)-1);
-            doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
-            doReturn(ProjectSelectedTags.builder()
-                        .tags(tagsList.get(0))
-                        .projects(project)
-                        .build())
-                    .when(projectSelectedTagsRepository)
-                    .save(any(ProjectSelectedTags.class));
+        doReturn(tagsList.get(0)).when(projectTagsRepository).save(any(ProjectTags.class));
+        doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
+        doReturn(ProjectSelectedTags.builder()
+                    .tags(tagsList.get(0))
+                    .projects(project)
+                    .build())
+                .when(projectSelectedTagsRepository)
+                .save(any(ProjectSelectedTags.class));
 
         // when
-        int success = projectsService.insertProject(req, users);
+        int success = projectsService.insertProject(req, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -155,6 +157,7 @@ public class ProjectServiceTest {
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
         doReturn(null).when(codesRepostiory).findByCodesId((long)-1);
+        doReturn(tagsList.get(0)).when(projectTagsRepository).save(any(ProjectTags.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
         doReturn(ProjectSelectedTags.builder()
                 .tags(tagsList.get(0))
@@ -164,7 +167,8 @@ public class ProjectServiceTest {
                 .save(any(ProjectSelectedTags.class));
 
         // when
-        int success = projectsService.insertProject(req, users);
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        int success = projectsService.insertProject(req, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -187,8 +191,9 @@ public class ProjectServiceTest {
                 .build();
 
         // when & then
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, null)
+                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
         );
 
         assertEquals("일치하는 유저가 존재하지 않습니다.", exception.getMessage());
@@ -236,11 +241,12 @@ public class ProjectServiceTest {
                 .projectsCodes(new ArrayList<>())
                 .build();
 
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, users)
+                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
         );
 
         assertEquals("일치하는 프로젝트가 존재하지 않습니다.", exception.getMessage());
