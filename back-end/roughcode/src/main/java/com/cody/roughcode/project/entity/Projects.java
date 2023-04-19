@@ -19,7 +19,7 @@ import java.util.List;
 public class Projects extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT ")
+    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long projectsId;
 
     @Column(name = "num", nullable = false)
@@ -39,14 +39,6 @@ public class Projects extends BaseTimeEntity {
     @Column(name = "review_cnt", nullable = true)
     private int reviewCnt = 0;
 
-    @Builder.Default
-    @Column(name = "favorite_cnt", nullable = true)
-    private int favoriteCnt = 0;
-
-    @Builder.Default
-    @Column(name = "url", length = 255, nullable = true)
-    private String url = "";
-
     @Column(name = "img", length = 255, nullable = false)
     private String img;
 
@@ -54,25 +46,13 @@ public class Projects extends BaseTimeEntity {
     @Column(name = "content", length = 255, nullable = true)
     private String content = "";
 
-    @Builder.Default
-    @Column(name = "complaint", nullable = true)
-    private int complaint = 0;
 
     @Builder.Default
     @Column(name = "closed", nullable = true)
     private boolean closed = false;
 
-    @Column(name = "notice", nullable = false, columnDefinition = "text")
-    private String notice;
-
     @Column(name = "introduction", nullable = false)
     private String introduction;
-
-    @OneToMany(mappedBy = "projects")
-    private List<Codes> projectsCodes;
-
-    @OneToMany(mappedBy = "projects")
-    private List<Feedbacks> projectsFeedbacks;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_writer_id", nullable = false)
@@ -80,4 +60,7 @@ public class Projects extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "projects")
     private List<ProjectSelectedTags> selectedTags;
+
+    @OneToMany(mappedBy = "projects")
+    private List<Codes> projectsCodes;
 }
