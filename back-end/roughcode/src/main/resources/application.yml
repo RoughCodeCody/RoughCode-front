@@ -26,3 +26,12 @@ cloud:
     credentials:
       access-key: AKIAQAA6BDQM7LN4ITOS
       secret-key: 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
+
+
+jwt:
+  secret: wjdtjdenchlrhwhwjdtjdenchlrhwhwjdtjdenchlrhwhwjdtjdenchlrhwh
+
+---
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration

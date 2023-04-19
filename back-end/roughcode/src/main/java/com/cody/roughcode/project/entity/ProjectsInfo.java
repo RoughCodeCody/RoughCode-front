@@ -22,14 +22,12 @@ public class ProjectsInfo {
     @Column(columnDefinition = "text")
     private String content;
 
-    @Builder.Default
-    @Column(name = "url", length = 255, nullable = true)
-    private String url = "";
+    @Column(name = "url", length = 255, nullable = false)
+    private String url;
 
     @Builder.Default
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
-
 
     @Column(name = "notice", nullable = false, columnDefinition = "text")
     private String notice;
@@ -44,4 +42,8 @@ public class ProjectsInfo {
 
     @OneToMany(mappedBy = "projects")
     private List<Feedbacks> projectsFeedbacks;
+
+    public void setProjects(Projects projects) {
+        this.projects = projects;
+    }
 }

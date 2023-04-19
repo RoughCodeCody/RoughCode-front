@@ -41,7 +41,7 @@ public class Reviews extends BaseTimeEntity {
 
     @Column(name = "review_code", columnDefinition = "longtext")
     private String reviewCode;
-    
+
     @Builder.Default
     @Column(name = "selected", nullable = true)
     private boolean selected = false;

@@ -20,6 +20,7 @@ public class CodeTags {
     @Column(name = "name", length = 255, nullable = false)
     private String name;
 
+    @Builder.Default
     @Column(name = "cnt", nullable = true)
     private int cnt = 0;
 

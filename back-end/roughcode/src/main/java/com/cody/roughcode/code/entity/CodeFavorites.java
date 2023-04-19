@@ -28,6 +28,7 @@ public class CodeFavorites {
     @JoinColumn(name = "users_id")
     private Users users;
 
+    @Builder.Default
     @Column(name = "content", nullable = true, columnDefinition = "text")
     private String content = "";
 }

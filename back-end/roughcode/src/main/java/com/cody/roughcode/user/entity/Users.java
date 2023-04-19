@@ -45,4 +45,10 @@ public class Users extends BaseTimeEntity{
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
+    public void projectsCntUp(){
+        if(this.projectsCnt == null)
+            this.projectsCnt = 0L;
+        this.projectsCnt += 1;
+    }
 }

@@ -43,11 +43,6 @@ public class Projects extends BaseTimeEntity {
     private String img;
 
     @Builder.Default
-    @Column(name = "content", length = 255, nullable = true)
-    private String content = "";
-
-
-    @Builder.Default
     @Column(name = "closed", nullable = true)
     private boolean closed = false;
 
