@@ -19,23 +19,21 @@ public class ReReviews extends BaseTimeEntity {
     @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT ")
     private Long reReviewsId;
 
-    @Builder.Default
-    @Column(name = "content", length = 255, nullable = true)
-    private String content = "";
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
+    private Users users = null;
 
-    @Builder.Default
-    @Column(name = "likes", nullable = true)
-    private int likes = 0;
+    @Column(name = "content", nullable = false, columnDefinition = "text")
+    private String content;
+
+    @Column(name = "like_cnt", nullable = true)
+    private int likeCnt = 0;
 
     @Builder.Default
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
 
-    @ManyToOne
-    @JoinColumn(name="users_id")
-    private Users users;
-
-    @ManyToOne
-    @JoinColumn(name="reviews_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviews_id", nullable = false)
     private Reviews reviews;
 }
