@@ -33,6 +33,14 @@ public class Users extends BaseTimeEntity{
     @Column(name = "name", length = 30, nullable = false)
     private String name;
 
+    @Builder.Default
+    @Column(name = "codes_cnt", nullable = true, columnDefinition = "BIGINT UNSIGNED")
+    private Long codesCnt = 0L;
+
+    @Builder.Default
+    @Column(name = "projects_cnt", nullable = true, columnDefinition = "BIGINT UNSIGNED")
+    private Long projectsCnt = 0L;
+
     @Column(name = "roles")
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

@@ -18,7 +18,7 @@ import java.util.List;
 public class Codes extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "codes_id", nullable = false, columnDefinition = "BIGINT ")
+    @Column(name = "codes_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long codesId;
 
     @Column(name = "num", nullable = false)
@@ -34,31 +34,16 @@ public class Codes extends BaseTimeEntity {
     @Column(name = "like_cnt", nullable = true)
     private int likeCnt = 0;
 
-    @Builder.Default
-    @Column(name = "content", nullable = true, columnDefinition = "text")
-    private String content = "";
-
     @ManyToOne
-    @JoinColumn(name="users_id")
-    private Users users;
+    @JoinColumn(name = "code_writer_id", nullable = false)
+    private Users codeWriter;
 
     @Builder.Default
     @Column(name = "review_cnt", nullable = true)
     private int reviewCnt = 0;
 
-    @Builder.Default
-    @Column(name = "favorite_cnt", nullable = true)
-    private int favoriteCnt = 0;
-
-    @OneToMany(mappedBy = "codes")
-    private List<Reviews> reviews;
-
     @OneToMany(mappedBy = "codes")
     private List<CodeSelectedTags> tags;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "code_writer_id", nullable = false)
-    private Users codeWriter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = false)
