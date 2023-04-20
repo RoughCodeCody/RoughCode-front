@@ -1,11 +1,7 @@
-import { NoticeAlarmItem } from "@/components/notice-alarm-item/";
+import { Notice } from "@/features/portfolios/components/notice";
 
-const ProjectDetailPage = () => {
-  return (
-    <NoticeAlarmItem>
-      <div>정훈 안녕 준하도 안녕</div>
-    </NoticeAlarmItem>
-  );
+const PortfolioDetailPage = () => {
+  return <Notice />;
 };
 
 // // This function gets called at build time
@@ -24,4 +20,4 @@ const ProjectDetailPage = () => {
 //   return { paths, fallback: false }
 // }
 
-export default ProjectDetailPage;
+export default PortfolioDetailPage;
