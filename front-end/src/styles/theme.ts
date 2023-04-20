@@ -16,32 +16,32 @@ export const theme: DefaultTheme = {
     main: "0 0 20px 0 #319795",
     orange: "0 0 20px 0 #F95A00",
   },
+  MIXINS: {
+    // flex
+    flexBox: (direction = "row", justify = "center", align = "center") => `
+    display: flex;
+    flex-direction: ${direction};
+    justify-content: ${justify};
+    align-items: ${align};
+  `,
+
+    //   // positions
+    //   positionCenter: (type = "absolute") => {
+    //     if (type === "absolute" || type === "fixed")
+    //       return `
+    //       position: ${type};
+    //       left: 50%;
+    //       top: 50%;
+    //       transform: translate(-50%, -50%);
+    //     `;
+    //     return;
+    //   },
+    // },
+  },
 };
 
 const customMediaQuery = (maxWidth: number): string =>
   `@media (max-width: ${maxWidth}px)`;
-
-export const MIXINS = {
-  // flex
-  flexBox: (direction = "row", align = "center", justify = "center") => `
-    display: flex;
-    flex-direction: ${direction};
-    align-items: ${align};
-    justify-content: ${justify};
-  `,
-
-  // positions
-  positionCenter: (type = "absolute") => {
-    if (type === "absolute" || type === "fixed")
-      return `
-        position: ${type};
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-      `;
-    return;
-  },
-};
 
 export const media = {
   custom: customMediaQuery,

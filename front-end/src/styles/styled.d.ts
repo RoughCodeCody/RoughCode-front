@@ -17,5 +17,9 @@ declare module "styled-components" {
       main: string;
       orange: string;
     };
+    MIXINS: {
+      flexBox: (direction?: string, justify?: string, align?: string) => string;
+      // positionCenter: (type?: "absolute" | "fixed") => string | undefined;
+    };
   }
 }
