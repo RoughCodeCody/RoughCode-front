@@ -46,6 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo;
         if (userRequest.getClientRegistration().getRegistrationId().equals("github")) {
+            System.out.println(oAuth2User.getAttributes());
             //깃허브 로그인 요청
             oAuth2UserInfo = new GithubUserInfo(oAuth2User.getAttributes());
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
@@ -61,6 +62,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         //ex)kakao_1238471249
 //        String username = oAuth2UserInfo.getProvider() + '_' + oAuth2UserInfo.getProviderId();
         String name = oAuth2UserInfo.getName();
+        String email = oAuth2UserInfo.getEmail();
 
 //        초반 닉네임 랜덤 설정
 //        String nickname = "roughcode" + '_' + oAuth2UserInfo.getProviderId();
@@ -88,6 +90,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 usersRepository.save(
                         Users.builder()
                                 .name(name)
+                                .email(email)
                                 .roles(roles)
                                 .build()
                 ));
