@@ -1,7 +1,7 @@
-import { Notice } from "@/features/portfolios/components/notice";
+import { PortfolioDetail } from "@/features/portfolios";
 
 const PortfolioDetailPage = () => {
-  return <Notice />;
+  return <PortfolioDetail />;
 };
 
 // // This function gets called at build time

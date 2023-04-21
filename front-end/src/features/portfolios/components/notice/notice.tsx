@@ -1,7 +1,9 @@
-import * as RadixNavMenu from "@radix-ui/react-navigation-menu";
-import { Text } from "@/components/elements/text";
-import { NoticeAlarmItem } from "@/components/notice-alarm-item";
 import Link from "next/link";
+import Image from "next/image";
+import * as RadixNavMenu from "@radix-ui/react-navigation-menu";
+import { Text } from "@/components/elements";
+import { NoticeAlarmItem } from "@/components/notice-alarm-item";
+import chevronDown from "@/assets/icons/chevron-down.svg";
 import {
   RadixNavMenuRoot,
   RadixNavMenuItem,
@@ -11,7 +13,6 @@ import {
   NoticeContent,
   NoticeTime,
 } from "./style";
-import Image from "next/image";
 
 export const Notice = () => {
   //더미데이터
@@ -32,6 +33,7 @@ export const Notice = () => {
               <Text color="main" size="1.5rem">
                 {currentVersion}
               </Text>
+              <Image src={chevronDown.src} alt="more" width={24} height={24} />
               {/* <img src="@/assets/icons/chevron-down.svg" alt="more" /> */}
             </RadixNavMenuTrigger>
             <RadixNavMenuContent>

@@ -12,6 +12,8 @@ const RadixNavMenuItem = styled(RadixNavMenu.Item)`
 
 const RadixNavMenuTrigger = styled(RadixNavMenu.Trigger)`
   all: unset;
+  width: 100%;
+  ${({ theme }) => theme.MIXINS.flexBox("row", "space-around")}
 `;
 
 const RadixNavMenuContent = styled(RadixNavMenu.Content)`
