@@ -18,16 +18,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -70,31 +75,18 @@ public class ProjectServiceTest {
             .build();
 
 
-    public static MockMultipartFile convert(String imageUrl, String imageName) throws Exception { // string to MultiPartFile
-
-        URL url = new URL(imageUrl);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-
-        InputStream inputStream = connection.getInputStream();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-
-        byte[] imageBytes = outputStream.toByteArray();
-
-        ByteArrayResource resource = new ByteArrayResource(imageBytes);
-        return new MockMultipartFile("file", imageName, null, resource.getByteArray());
-    }
-
     @DisplayName("프로젝트 등록 성공 - 새 프로젝트")
     @Test
     void insertProjectSucceed() throws Exception {
         // given
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
                 .codesId((long) -1)
@@ -102,12 +94,11 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
+                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
-
-        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         List<String> fileNames = List.of("1", "1");
 
@@ -143,7 +134,7 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
-        int success = projectsService.insertProject(req, thumbnail, 1L);
+        int success = projectsService.insertProject(req, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -153,6 +144,14 @@ public class ProjectServiceTest {
     @Test
     void insertProjectSucceedVersionUp() throws Exception {
         // given
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
                 .codesId((long) -1)
@@ -160,12 +159,11 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
+                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
-
-        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         List<String> fileNames = List.of("1", "2");
 
@@ -211,7 +209,7 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
-        int success = projectsService.insertProject(req, thumbnail, 1L);
+        int success = projectsService.insertProject(req, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -221,22 +219,30 @@ public class ProjectServiceTest {
     @Test
     void insertProjectFailNoUser() throws Exception {
         // given
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
         ProjectReq req = ProjectReq.builder()
                 .codesId((long) -1)
                 .projectId(1L)
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
+                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
-        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         // when & then
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, thumbnail, 1L)
+                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
         );
 
         assertEquals("일치하는 유저가 존재하지 않습니다.", exception.getMessage());
@@ -246,42 +252,35 @@ public class ProjectServiceTest {
     @Test
     void insertProjectFailNoProject() throws Exception {
         // given
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
         ProjectReq req = ProjectReq.builder()
                 .codesId((long) -1)
                 .projectId(1L)
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
+                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
-        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(null).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, thumbnail, 1L)
+                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
         );
 
         assertEquals("일치하는 프로젝트가 존재하지 않습니다.", exception.getMessage());
-    }
-
-    private List<Codes> codesInit() {
-        List<Codes> codesList = new ArrayList<>();
-        for (long i = 1L; i <= 3L; i++) {
-            codesList.add(Codes.builder()
-                    .codesId(i)
-                    .title("title")
-                    .num(i)
-                    .version((int) i)
-                    .codeWriter(users)
-                    .build());
-        }
-
-        return codesList;
     }
 
     private List<ProjectTags> tagsInit() {
