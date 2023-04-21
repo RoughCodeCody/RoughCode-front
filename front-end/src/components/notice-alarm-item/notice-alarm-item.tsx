@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { NoticeAlarmWrapper, NoticeAlarmDiv, NoticeAlarmRibbon } from "./style";
+import { DeleteIconCircle } from "../icon/delete-icon-circle";
 
 interface Props {
   children: ReactNode;
@@ -30,6 +31,7 @@ export const NoticeAlarmItem = ({
       >
         {children}
       </NoticeAlarmDiv>
+      <DeleteIconCircle />
     </NoticeAlarmWrapper>
   );
 };

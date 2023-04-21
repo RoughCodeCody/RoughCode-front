@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import footPrintPic from "@/assets/foot-print.png";
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -7,6 +8,8 @@ const HomeContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-image: url(${footPrintPic.src});
+  background-repeat: repeat;
 `;
 
 const HomeContentsContainer = styled.div`
@@ -19,25 +22,6 @@ const HomeContentsContainer = styled.div`
   gap: 3rem;
 `;
 
-const TitleContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-left: 3%;
-`;
-
-const Title = styled.p`
-  font-weight: bold;
-  font-size: 4rem;
-`;
-
-const Description = styled.p`
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--main-color);
-`;
-
 const NoticeContainer = styled.div`
   width: 100%;
   display: flex;
@@ -45,11 +29,4 @@ const NoticeContainer = styled.div`
   gap: 1.3rem;
 `;
 
-export {
-  HomeContainer,
-  HomeContentsContainer,
-  TitleContainer,
-  Title,
-  Description,
-  NoticeContainer,
-};
+export { HomeContainer, HomeContentsContainer, NoticeContainer };

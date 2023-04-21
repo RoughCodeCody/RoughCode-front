@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 
-import { Notifications } from "@/features/notifications/components";
-import { UnauthenticatedLanding } from "@/features/misc/pages";
+import { Notifications } from "@/features/notifications";
+import { UnauthenticatedLanding } from "@/features/misc";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +16,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* <Notifications></Notifications> */}
-      <UnauthenticatedLanding></UnauthenticatedLanding>
+      <UnauthenticatedLanding />
     </>
   );
 }

@@ -2,11 +2,9 @@ import { NoticeAlarmItem } from "@/components/notice-alarm-item";
 import {
   HomeContainer,
   HomeContentsContainer,
-  TitleContainer,
-  Title,
-  Description,
   NoticeContainer,
 } from "./notifications-style";
+import { Title } from "@/components/elements/title/title";
 
 export const Notifications = () => {
   const notice: object[] = [
@@ -46,12 +44,10 @@ export const Notifications = () => {
     <>
       <HomeContainer>
         <HomeContentsContainer>
-          <TitleContainer>
-            <Title>새로운피드</Title>
-            <Description>
-              나의 피드백을 반영한 코드와 프로젝트를 확인해 보세요
-            </Description>
-          </TitleContainer>
+          <Title
+            title="새로운 피드"
+            description="나의 피드백을 반영한 코드와 프로젝트를 확인해 보세요"
+          />
           <NoticeContainer>
             {notice.map((names: object) => (
               <NoticeAlarmItem
