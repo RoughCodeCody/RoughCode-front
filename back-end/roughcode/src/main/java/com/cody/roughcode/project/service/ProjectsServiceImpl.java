@@ -2,7 +2,9 @@ package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepostiory;
+import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.ProjectTags;
@@ -70,10 +72,10 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
 
-        List<String> fileNames = List.of(String.valueOf(projectNum), String.valueOf(projectVersion));
+        String fileName = projectNum + "_" + projectVersion;
 
         try {
-            String imgUrl = s3FileService.upload(thumbnail, "project", fileNames);
+            String imgUrl = s3FileService.upload(thumbnail, "project", fileName);
 
             List<Codes> codesList = (codesRepository.findByCodesId(req.getCodesId()) == null)? new ArrayList<>() : List.of(codesRepository.findByCodesId(req.getCodesId()));
 
@@ -106,6 +108,65 @@ public class ProjectsServiceImpl implements ProjectsService{
         } catch(Exception e){
             log.error(e.getMessage());
             throw new SaveFailedException("저장에 실패하였습니다.");
+        }
+
+        return 1;
+    }
+
+    @Override
+    public int updateProject(ProjectReq req, MultipartFile thumbnail, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다.");
+
+        // 기존의 프로젝트 가져오기
+        Projects original = projectsRepository.findByProjectsId(req.getProjectId());
+        if(original == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다.");
+        else if (!original.equals(projectsRepository.findProjectWithMaxVersionByProjectsId(req.getProjectId()))) {
+            throw new NotNewestVersionException("최신 버전이 아닙니다.");
+        }
+        ProjectsInfo originalInfo = projectsInfoRepository.findByProjects(original);
+        if(originalInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다.");
+
+        String imgUrl;
+        String fileName = original.getNum() + "_" + original.getVersion();
+
+        try {
+            if(thumbnail == null){ // 썸네일 바뀌지 않는 경우
+                imgUrl = original.getImg();
+            } else{ // 썸네일 바뀌는 경우
+                // S3에서 해당하는 파일 찾아서 삭제하기
+                s3FileService.delete(original.getImg());
+
+                // 새로 등록하기
+                imgUrl = s3FileService.upload(thumbnail, "project", fileName);
+            }
+
+            // tag 삭제
+            List<ProjectSelectedTags> selectedTagsList = original.getSelectedTags();
+            for (ProjectSelectedTags tag : selectedTagsList) {
+                projectSelectedTagsRepository.delete(tag);
+
+                ProjectTags projectTag = tag.getTags();
+                projectTag.cntDown();
+            }
+
+            // tag 등록
+            for(Long id : req.getSelectedTagsId()){
+                ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
+                projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
+                        .tags(projectTag)
+                        .projects(original)
+                        .build());
+
+                projectTag.cntUp();
+                projectTagsRepository.save(projectTag);
+            }
+
+            original.updateProject(req, imgUrl);
+            originalInfo.updateProject(req);
+        } catch(Exception e){
+            log.error(e.getMessage());
+            throw new UpdateFailedException(e.getMessage());
         }
 
         return 1;

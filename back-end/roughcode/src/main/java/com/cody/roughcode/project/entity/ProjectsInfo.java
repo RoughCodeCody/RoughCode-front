@@ -1,6 +1,7 @@
 package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.project.dto.req.ProjectReq;
 import lombok.*;
 
 import javax.persistence.*;
@@ -45,5 +46,11 @@ public class ProjectsInfo {
 
     public void setProjects(Projects projects) {
         this.projects = projects;
+    }
+
+    public void updateProject(ProjectReq req) {
+        this.content = req.getContent();
+        this.url = req.getUrl();
+        this.notice = req.getNotice();
     }
 }

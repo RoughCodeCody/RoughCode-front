@@ -1,6 +1,7 @@
 package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
@@ -58,4 +59,10 @@ public class Projects extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "projects")
     private List<Codes> projectsCodes;
+
+    public void updateProject(ProjectReq req, String img) {
+        this.img = img;
+        this.title = req.getTitle();
+        this.introduction = req.getIntroduction();
+    }
 }
