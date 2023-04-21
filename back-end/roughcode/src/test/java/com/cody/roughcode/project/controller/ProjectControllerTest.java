@@ -1,9 +1,9 @@
 package com.cody.roughcode.project.controller;
 
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.service.ProjectsService;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.user.entity.Users;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,19 +14,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.Charset;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.nio.file.Files;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -38,6 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class) // @WebMVCTest를 이용할 수도 있지만 속도가 느리다
 public class ProjectControllerTest {
+    static {
+        System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+    }
 
     @InjectMocks
     private ProjectsController target;
@@ -67,6 +75,14 @@ public class ProjectControllerTest {
     @Test
     public void insertProjectSucceed() throws Exception {
         // given
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
         final String url = "/api/v1/project";
 
         ProjectReq req = ProjectReq.builder()
@@ -75,7 +91,6 @@ public class ProjectControllerTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .img("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png")
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
@@ -83,15 +98,22 @@ public class ProjectControllerTest {
 
         // ProjectService insertProject 대한 stub필요
         doReturn(1).when(projectsService)
-                .insertProject(any(ProjectReq.class), any(Long.class));
+                .insertProject(any(ProjectReq.class), any(MultipartFile.class), any(Long.class));
 
         // when
-        final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(req))
-        );
+        ObjectMapper objectMapper = new ObjectMapper();
+        MockMultipartFile thumbnailFile = new MockMultipartFile(
+                "thumbnail", "thumbnail.png", "image/png", thumbnail.getBytes());
 
+        MockMultipartFile reqFile = new MockMultipartFile(
+                "req", "req.json", "application/json", objectMapper.writeValueAsString(req).getBytes());
+
+        System.out.println(objectMapper.writeValueAsString(req));
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.multipart("/api/v1/project")
+                        .file(thumbnailFile)
+                        .file(reqFile)
+        );
 
         // then
         // HTTP Status가 OK인지 확인
@@ -106,6 +128,14 @@ public class ProjectControllerTest {
     @Test
     public void insertProjectFail() throws Exception {
         // given
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
         final String url = "/api/v1/project";
 
         ProjectReq req = ProjectReq.builder()
@@ -114,7 +144,6 @@ public class ProjectControllerTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .img("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png")
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
@@ -122,13 +151,21 @@ public class ProjectControllerTest {
 
         // ProjectService insertProject 대한 stub필요
         doReturn(0).when(projectsService)
-                .insertProject(any(ProjectReq.class), any(Long.class));
+                .insertProject(any(ProjectReq.class), any(MultipartFile.class), any(Long.class));
 
         // when
+        ObjectMapper objectMapper = new ObjectMapper();
+        MockMultipartFile thumbnailFile = new MockMultipartFile(
+                "thumbnail", "thumbnail.png", "image/png", thumbnail.getBytes());
+
+        MockMultipartFile reqFile = new MockMultipartFile(
+                "req", "req.json", "application/json", objectMapper.writeValueAsString(req).getBytes());
+
+        System.out.println(objectMapper.writeValueAsString(req));
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(req))
+                MockMvcRequestBuilders.multipart("/api/v1/project")
+                        .file(thumbnailFile)
+                        .file(reqFile)
         );
 
 

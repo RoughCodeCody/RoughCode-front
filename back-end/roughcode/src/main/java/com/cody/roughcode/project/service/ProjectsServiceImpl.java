@@ -16,10 +16,9 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.dao.DataAccessException;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
@@ -30,16 +29,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectsServiceImpl implements ProjectsService{
 
+    private final S3FileServiceImpl s3FileService;
+
     private final UsersRepository usersRepository;
     private final ProjectsRepository projectsRepository;
     private final ProjectsInfoRepository projectsInfoRepository;
     private final ProjectSelectedTagsRepository projectSelectedTagsRepository;
     private final ProjectTagsRepository projectTagsRepository;
-    private final CodesRepostiory codesRepostiory;
+    private final CodesRepostiory codesRepository;
 
     @Override
     @Transactional
-    public int insertProject(ProjectReq req, Long usersId) {
+    public int insertProject(ProjectReq req, MultipartFile thumbnail, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다.");
         ProjectsInfo info = ProjectsInfo.builder()
@@ -67,29 +68,34 @@ public class ProjectsServiceImpl implements ProjectsService{
             likeCnt = original.getLikeCnt();
         }
 
-        List<Codes> codesList = (codesRepostiory.findByCodesId(req.getCodesId()) == null)? new ArrayList<>() : List.of(codesRepostiory.findByCodesId(req.getCodesId()));
+        if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
 
-        Projects project = Projects.builder()
-                .num(projectNum)
-                .version(projectVersion)
-                .img(req.getImg())
-                .introduction(req.getIntroduction())
-                .title(req.getTitle())
-                .projectWriter(user)
-                .projectsCodes(codesList)
-                .likeCnt(likeCnt)
-                .build();
+        List<String> fileNames = List.of(String.valueOf(projectNum), String.valueOf(projectVersion));
 
         try {
+            String imgUrl = s3FileService.upload(thumbnail, "project", fileNames);
+
+            List<Codes> codesList = (codesRepository.findByCodesId(req.getCodesId()) == null)? new ArrayList<>() : List.of(codesRepository.findByCodesId(req.getCodesId()));
+
+            Projects project = Projects.builder()
+                    .num(projectNum)
+                    .version(projectVersion)
+                    .img(imgUrl)
+                    .introduction(req.getIntroduction())
+                    .title(req.getTitle())
+                    .projectWriter(user)
+                    .projectsCodes(codesList)
+                    .likeCnt(likeCnt)
+                    .build();
             Projects savedProject = projectsRepository.save(project);
 
             // tag 등록
             for(Long id : req.getSelectedTagsId()){
                 ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
                 projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
-                                .tags(projectTag)
-                                .projects(project)
-                                .build());
+                        .tags(projectTag)
+                        .projects(project)
+                        .build());
 
                 projectTag.cntUp();
                 projectTagsRepository.save(projectTag);
@@ -105,3 +111,5 @@ public class ProjectsServiceImpl implements ProjectsService{
         return 1;
     }
 }
+
+
