@@ -19,29 +19,31 @@ public class Feedbacks extends BaseTimeEntity {
     @Column(name = "feedbacks_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long feedbacksId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "projects_id", referencedColumnName = "projects_id"),
-            @JoinColumn(name = "version", referencedColumnName = "version")
-    })
-    private Projects projects;
-
-    @Column(name = "content", length = 255, nullable = true)
+    @Builder.Default
+    @Column(name = "content", nullable = true, columnDefinition = "text")
     private String content = "";
 
-    @Column(name = "likes", nullable = true)
-    private int likes = 0;
+    @Builder.Default
+    @Column(name = "like_cnt", nullable = true)
+    private int likeCnt = 0;
 
+    @Builder.Default
     @Column(name = "complaint", nullable = true)
     private int complaint = 0;
 
+    @Builder.Default
     @Column(name = "selected", nullable = true)
     private boolean selected = false;
 
-    @Column(name = "comment", length = 255, nullable = false)
+    @Column(name = "comment", nullable = false, columnDefinition = "text")
     private String comment;
 
-    @ManyToOne
-    @JoinColumn(name="users_id")
-    private Users users;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "projects_id", nullable = false)
+    private Projects projects;
+
+    @Builder.Default
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
+    private Users users = null;
 }

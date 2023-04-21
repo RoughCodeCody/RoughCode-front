@@ -1,5 +1,10 @@
 package com.cody.roughcode.project.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.GeneratedValue;
@@ -7,6 +12,10 @@ import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Getter
 @Embeddable
 public class ProjectId implements Serializable {
 

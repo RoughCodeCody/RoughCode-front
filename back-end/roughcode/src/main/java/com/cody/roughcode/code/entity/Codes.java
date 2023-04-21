@@ -16,38 +16,36 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "codes")
 public class Codes extends BaseTimeEntity {
-    @EmbeddedId
-    private CodeId codesId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "codes_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    private Long codesId;
 
-    @Column(name = "title", length = 20, nullable = false)
+    @Column(name = "num", nullable = false)
+    private Long num;
+
+    @Column(name = "version", nullable = false)
+    private int version;
+
+    @Column(name = "title", nullable = false, length = 63)
     private String title;
 
-    @Column(name = "likes", nullable = true)
-    private int likes = 0;
-
-    @Column(name = "favorites", nullable = true)
-    private int favorites = 0;
-
-    @Column(name = "review_cnt", nullable = true)
-    private int reviewCnt = 0;
-
-    @Column(name = "content", length = 255, nullable = true)
-    private String content = "";
+    @Builder.Default
+    @Column(name = "like_cnt", nullable = true)
+    private int likeCnt = 0;
 
     @ManyToOne
-    @JoinColumn(name="users_id")
-    private Users users;
+    @JoinColumn(name = "code_writer_id", nullable = false)
+    private Users codeWriter;
 
-    @OneToMany(mappedBy = "codes")
-    private List<Reviews> reviews;
+    @Builder.Default
+    @Column(name = "review_cnt", nullable = true)
+    private int reviewCnt = 0;
 
     @OneToMany(mappedBy = "codes")
     private List<CodeSelectedTags> tags;
 
-    @OneToOne
-    @JoinColumns({
-            @JoinColumn(name = "projects_id", referencedColumnName = "projects_id", insertable = false, updatable = false),
-            @JoinColumn(name = "projects_version", referencedColumnName = "version", insertable = false, updatable = false)
-    })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "projects_id", nullable = false)
     private Projects projects;
 }

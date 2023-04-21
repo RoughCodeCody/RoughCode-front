@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,49 +17,45 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "projects")
 public class Projects extends BaseTimeEntity {
-    @EmbeddedId
-    private ProjectId projectsId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    private Long projectsId;
+
+    @Column(name = "num", nullable = false)
+    private Long num;
+
+    @Column(name = "version", nullable = false)
+    private int version;
 
     @Column(name = "title", length = 20, nullable = false)
     private String title;
 
-    @Column(name = "likes", nullable = true)
-    private int likes = 0;
+    @Builder.Default
+    @Column(name = "like_cnt", nullable = true)
+    private int likeCnt = 0;
 
-    @Column(name = "favorites", nullable = true)
-    private int favorites = 0;
-
+    @Builder.Default
     @Column(name = "review_cnt", nullable = true)
     private int reviewCnt = 0;
-
-    @Column(name = "url", length = 255, nullable = true)
-    private String url = "";
 
     @Column(name = "img", length = 255, nullable = false)
     private String img;
 
-    @Column(name = "content", length = 255, nullable = true)
-    private String content = "";
-
-    @Column(name = "complaint", nullable = true)
-    private int complaint = 0;
-
+    @Builder.Default
     @Column(name = "closed", nullable = true)
     private boolean closed = false;
 
-    @Column(name = "notice", length = 255, nullable = false)
-    private String notice;
+    @Column(name = "introduction", nullable = false)
+    private String introduction;
 
-    @ManyToOne
-    @JoinColumn(name="users_id")
-    private Users users;
-
-    @OneToOne(mappedBy = "projects")
-    private Codes codes;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_writer_id", nullable = false)
+    private Users projectWriter;
 
     @OneToMany(mappedBy = "projects")
-    private List<Feedbacks> feedbacks;
+    private List<ProjectSelectedTags> selectedTags;
 
     @OneToMany(mappedBy = "projects")
-    private List<ProjectSelectedTags> tags;
+    private List<Codes> projectsCodes;
 }
