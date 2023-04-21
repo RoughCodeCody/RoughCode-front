@@ -40,7 +40,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public int insertProject(ProjectReq req, Long usersId) {
+    public int insertProject(ProjectReq req, MultipartFile thumbnail, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다.");
         ProjectsInfo info = ProjectsInfo.builder()
@@ -68,7 +68,6 @@ public class ProjectsServiceImpl implements ProjectsService{
             likeCnt = original.getLikeCnt();
         }
 
-        MultipartFile thumbnail = req.getThumbnail();
         if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
 
         List<String> fileNames = List.of(String.valueOf(projectNum), String.valueOf(projectVersion));

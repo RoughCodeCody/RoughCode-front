@@ -35,10 +35,6 @@ public class ProjectReq {
     @Schema(description = "프로젝트 id(버전 업데이트가 아니면 -1)", example = "-1")
     private Long projectId;
 
-    @Schema(description = "프로젝트 썸네일")//, example = "https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png")
-//    private String img;
-    private MultipartFile thumbnail;
-
     @Schema(description = "선택한 tag의 id", example = "[1, 2, 3]")
     private List<Long> selectedTagsId;
 

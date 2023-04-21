@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -29,7 +28,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -104,18 +102,16 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
 
-        MultipartFile thumbnail = req.getThumbnail();
-        if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
+        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         List<String> fileNames = List.of("1", "1");
 
-        String imgUrl = s3FileService.upload(req.getThumbnail(), "project", fileNames);
+        String imgUrl = s3FileService.upload(thumbnail, "project", fileNames);
 
         Projects project = Projects.builder()
                 .num(1L)
@@ -147,7 +143,7 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
-        int success = projectsService.insertProject(req, 1L);
+        int success = projectsService.insertProject(req, thumbnail, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -164,19 +160,16 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
 
-
-        MultipartFile thumbnail = req.getThumbnail();
-        if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
+        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         List<String> fileNames = List.of("1", "2");
 
-        String imgUrl = s3FileService.upload(req.getThumbnail(), "project", fileNames);
+        String imgUrl = s3FileService.upload(thumbnail, "project", fileNames);
 
         Projects project = Projects.builder()
                 .num(1L)
@@ -218,7 +211,7 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
-        int success = projectsService.insertProject(req, 1L);
+        int success = projectsService.insertProject(req, thumbnail, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -234,16 +227,16 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
+        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         // when & then
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
+                NullPointerException.class, () -> projectsService.insertProject(req, thumbnail, 1L)
         );
 
         assertEquals("일치하는 유저가 존재하지 않습니다.", exception.getMessage());
@@ -259,18 +252,18 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
                 .build();
+        MultipartFile thumbnail = convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo");
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(null).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
+                NullPointerException.class, () -> projectsService.insertProject(req, thumbnail, 1L)
         );
 
         assertEquals("일치하는 프로젝트가 존재하지 않습니다.", exception.getMessage());

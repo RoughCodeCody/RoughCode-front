@@ -6,6 +6,7 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import com.cody.roughcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,14 +35,16 @@ public class ProjectsController {
 
     @Operation(summary = "프로젝트 등록 API")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<?> insertPhrases(HttpServletRequest request, @RequestBody ProjectReq req) {
+    ResponseEntity<?> insertProject(HttpServletRequest request,
+                                     @Parameter(description = "변경할 프로필 사진", required = true) @RequestBody MultipartFile thumbnail,
+                                     @Parameter(description = "프로젝트 정보 값", required = true) @RequestBody ProjectReq req) {
 //        Long userId = jwtUtil.getUserId(request.getHeader(TOKEN_HEADER));
 //        Long userId = jwtUtil.getUserId("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLqs6DsiJgiLCJ1c2VySWQiOjEsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE2ODA0OTYwMTd9.UyqF0ScQIgOs-npVcjaPGzAAfsWLmUmhXsDaLuprCvA");
         Long userId = 1L;
 
         int res = 0;
         try{
-            res = projectsService.insertProject(req, userId);
+            res = projectsService.insertProject(req, thumbnail, userId);
         } catch (Exception e){
             log.error(e.getMessage());
         }

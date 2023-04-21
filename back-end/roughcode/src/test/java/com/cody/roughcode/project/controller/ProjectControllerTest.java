@@ -1,7 +1,6 @@
 //package com.cody.roughcode.project.controller;
 //
 //import com.cody.roughcode.project.dto.req.ProjectReq;
-//import com.cody.roughcode.project.service.ProjectsService;
 //import com.cody.roughcode.project.service.ProjectsServiceImpl;
 //import com.cody.roughcode.user.entity.Users;
 //import com.google.gson.Gson;
@@ -14,19 +13,20 @@
 //import org.mockito.InjectMocks;
 //import org.mockito.Mock;
 //import org.mockito.junit.jupiter.MockitoExtension;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
+//import org.springframework.core.io.ByteArrayResource;
 //import org.springframework.http.MediaType;
+//import org.springframework.mock.web.MockMultipartFile;
 //import org.springframework.test.web.servlet.MockMvc;
 //import org.springframework.test.web.servlet.MvcResult;
 //import org.springframework.test.web.servlet.ResultActions;
 //import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 //import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 //
-//import java.nio.charset.Charset;
+//import java.io.ByteArrayOutputStream;
+//import java.io.InputStream;
+//import java.net.HttpURLConnection;
+//import java.net.URL;
 //import java.nio.charset.StandardCharsets;
-//import java.util.ArrayList;
 //import java.util.List;
 //
 //import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -40,6 +40,27 @@
 //public class ProjectControllerTest {
 //    static {
 //        System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+//    }
+//
+//    public static MockMultipartFile convert(String imageUrl, String imageName) throws Exception { // string to MultiPartFile
+//
+//        URL url = new URL(imageUrl);
+//        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//        connection.setRequestMethod("GET");
+//
+//        InputStream inputStream = connection.getInputStream();
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//
+//        byte[] buffer = new byte[1024];
+//        int bytesRead;
+//        while ((bytesRead = inputStream.read(buffer)) != -1) {
+//            outputStream.write(buffer, 0, bytesRead);
+//        }
+//
+//        byte[] imageBytes = outputStream.toByteArray();
+//
+//        ByteArrayResource resource = new ByteArrayResource(imageBytes);
+//        return new MockMultipartFile("file", imageName, null, resource.getByteArray());
 //    }
 //
 //    @InjectMocks
@@ -78,7 +99,7 @@
 //                .title("title")
 //                .url("https://www.google.com")
 //                .introduction("introduction")
-//                .img("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png")
+//                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
 //                .selectedTagsId(List.of(1L))
 //                .content("content")
 //                .notice("notice")
@@ -86,7 +107,7 @@
 //
 //        // ProjectService insertProject 대한 stub필요
 //        doReturn(1).when(projectsService)
-//                .insertProject(any(ProjectReq.class), any(Long.class));
+//                .insertProject(any(ProjectReq.class), thumbnail, any(Long.class));
 //
 //        // when
 //        final ResultActions resultActions = mockMvc.perform(
@@ -117,7 +138,7 @@
 //                .title("title")
 //                .url("https://www.google.com")
 //                .introduction("introduction")
-//                .img("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png")
+//                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
 //                .selectedTagsId(List.of(1L))
 //                .content("content")
 //                .notice("notice")
@@ -125,7 +146,7 @@
 //
 //        // ProjectService insertProject 대한 stub필요
 //        doReturn(0).when(projectsService)
-//                .insertProject(any(ProjectReq.class), any(Long.class));
+//                .insertProject(any(ProjectReq.class), thumbnail, any(Long.class));
 //
 //        // when
 //        final ResultActions resultActions = mockMvc.perform(
