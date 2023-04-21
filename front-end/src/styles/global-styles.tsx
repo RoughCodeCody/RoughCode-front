@@ -21,6 +21,7 @@ const GlobalStyles = createGlobalStyle`
         --red-color: #EF0000;
         --orange-color: #F95A00;
         --shad-color: #D9D9D9;
+        --banner-color: #68482F;
     
         /* Navigation bar height */
         --nav-height: 65px;
