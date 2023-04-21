@@ -9,6 +9,7 @@ interface Props {
   isDirectionRight?: boolean;
   color?: string;
   shadow?: boolean;
+  isNotice?: boolean;
 }
 
 // 정훈
@@ -20,12 +21,13 @@ export const NoticeAlarmItem = ({
   isDirectionRight,
   color,
   shadow,
+  isNotice,
 }: Props) => {
   return (
     <NoticeAlarmWrapper width={width} height={height} shadow={shadow}>
       <NoticeAlarmRibbon isDirectionRight={isDirectionRight} />
       <NoticeAlarmDiv
-        isNotice={false}
+        isNotice={isNotice}
         isDirectionRight={isDirectionRight}
         color={color}
       >
