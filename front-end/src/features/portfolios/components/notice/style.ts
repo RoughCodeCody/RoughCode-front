@@ -1,57 +1,91 @@
-import * as RadixNavMenu from "@radix-ui/react-navigation-menu";
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
+import Image from "next/image";
+import chevronDown from "@/assets/icons/chevron-down.svg";
+import { Text } from "@/components/elements";
 
-const RadixNavMenuRoot = styled(RadixNavMenu.Root)`
+const showDropdown = keyframes`
+  from { transform: translateY(-100%) }
+  to { transform: translateY(0) }
+`;
+
+const VersionDropdownWrapper = styled.div`
   width: 15%;
+  max-width: 11rem;
   position: relative;
 `;
 
-const RadixNavMenuItem = styled(RadixNavMenu.Item)`
-  ${({ theme }) => theme.MIXINS.flexBox()}
+const DropdownArrow = styled(Image).attrs({
+  width: 24,
+  height: 24,
+  src: chevronDown.src,
+  alt: "more",
+})<{ isOpen: boolean }>`
+  ${({ isOpen }) => css`
+    cursor: pointer;
+    transform: ${isOpen ? "rotate(180deg)" : "rotate(0)"};
+    transition: all 0.3s ease-in-out;
+  `}
 `;
 
-const RadixNavMenuTrigger = styled(RadixNavMenu.Trigger)`
-  all: unset;
-  width: 100%;
-  ${({ theme }) => theme.MIXINS.flexBox("row", "space-around")}
-`;
-
-const RadixNavMenuContent = styled(RadixNavMenu.Content)`
+const DropdownContentWrapper = styled.div`
   position: absolute;
   top: calc(3.75rem - 1px);
   left: 0;
   width: 100%;
-  background-color: var(--sub-one-color);
+  overflow: hidden;
+  z-index: 1;
 `;
 
-const VersionLink = styled.li`
-  padding: 1rem;
+const DropdownContent = styled.div`
+  padding: 0.5rem;
+  background-color: var(--sub-one-color);
+  border: 1px solid var(--main-color);
+  border-top: none;
+  ${({ theme }) => theme.MIXINS.flexBox("column")}
+  gap: 0.5rem;
+  transition: height 1s ease-in-out;
+
+  &[data-isopen="true"] {
+    animation: ${showDropdown} 0.5s ease;
+  }
+`;
+
+const DropdownItem = styled.div`
+  width: 100%;
+  height: 5rem;
+  background-color: var(--sub-one-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
   ${({ theme }) => theme.MIXINS.flexBox("row", "space-around")}
 
   &:hover {
-    & p {
-      color: var(--main-color);
-    }
+    background-color: var(--sub-two-color);
   }
 `;
+
+const NoticeTimeWrapper = styled.div`
+  width: 15%;
+  line-height: 1.2rem;
+  ${({ theme }) => theme.MIXINS.flexBox("column")}
+`;
+
+const NoticeTime = styled(Text).attrs({
+  size: "0.7rem",
+  pointer: true,
+})``;
 
 const NoticeContent = styled.div`
   width: 70%;
   ${({ theme }) => theme.MIXINS.flexBox("row", "start")};
 `;
 
-const NoticeTime = styled.div`
-  width: 15%;
-  line-height: 1.2rem;
-  ${({ theme }) => theme.MIXINS.flexBox("column")}
-`;
-
 export {
-  RadixNavMenuRoot,
-  RadixNavMenuItem,
-  RadixNavMenuTrigger,
-  RadixNavMenuContent,
-  VersionLink,
-  NoticeContent,
+  VersionDropdownWrapper,
+  DropdownArrow,
+  DropdownContentWrapper,
+  DropdownContent,
+  DropdownItem,
+  NoticeTimeWrapper,
   NoticeTime,
+  NoticeContent,
 };

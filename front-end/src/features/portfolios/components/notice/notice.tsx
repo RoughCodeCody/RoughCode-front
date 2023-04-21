@@ -1,18 +1,7 @@
-import Link from "next/link";
-import Image from "next/image";
-import * as RadixNavMenu from "@radix-ui/react-navigation-menu";
-import { Text } from "@/components/elements";
 import { NoticeAlarmItem } from "@/components/notice-alarm-item";
-import chevronDown from "@/assets/icons/chevron-down.svg";
-import {
-  RadixNavMenuRoot,
-  RadixNavMenuItem,
-  RadixNavMenuTrigger,
-  RadixNavMenuContent,
-  VersionLink,
-  NoticeContent,
-  NoticeTime,
-} from "./style";
+import { Text } from "@/components/elements";
+import { VersionDropdown } from "./version-dropdown";
+import { NoticeContent, NoticeTimeWrapper } from "./style";
 
 export const Notice = () => {
   //더미데이터
@@ -26,50 +15,18 @@ export const Notice = () => {
 
   return (
     <NoticeAlarmItem>
-      <RadixNavMenuRoot>
-        <RadixNavMenu.List>
-          <RadixNavMenuItem>
-            <RadixNavMenuTrigger>
-              <Text color="main" size="1.5rem">
-                {currentVersion}
-              </Text>
-              <Image src={chevronDown.src} alt="more" width={24} height={24} />
-              {/* <img src="@/assets/icons/chevron-down.svg" alt="more" /> */}
-            </RadixNavMenuTrigger>
-            <RadixNavMenuContent>
-              <ul>
-                {versions.map(({ version, createdAt }, idx) => (
-                  <VersionLink key={idx}>
-                    <Link href="/">
-                      <Text size="1.5rem" pointer={true}>
-                        {version}
-                      </Text>
-                    </Link>
-                    <NoticeTime>
-                      <Text size="0.7rem">{createdAt.split(" ")[0]}</Text>
-                      <Text size="0.7rem">{createdAt.split(" ")[1]}</Text>
-                    </NoticeTime>
-                  </VersionLink>
-                ))}
-              </ul>
-            </RadixNavMenuContent>
-          </RadixNavMenuItem>
-
-          <RadixNavMenu.Indicator />
-        </RadixNavMenu.List>
-
-        <RadixNavMenu.Viewport />
-      </RadixNavMenuRoot>
+      <VersionDropdown currentVersion={currentVersion} versions={versions} />
 
       <NoticeContent>
         <Text size="1.2rem" bold={true}>
           {noticeContent}
         </Text>
       </NoticeContent>
-      <NoticeTime>
+
+      <NoticeTimeWrapper>
         <Text size="0.8rem">{currentVersionCreatedAt.split(" ")[0]}</Text>
         <Text size="0.8rem">{currentVersionCreatedAt.split(" ")[1]}</Text>
-      </NoticeTime>
+      </NoticeTimeWrapper>
     </NoticeAlarmItem>
   );
 };
