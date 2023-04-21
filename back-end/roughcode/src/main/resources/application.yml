@@ -18,15 +18,21 @@ spring:
 cloud:
   aws:
     s3:
-      bucket: rough-code
+      bucket: roughcode
     region:
       static: ap-northeast-2 #Asia Pacific -> seoul
     stack:
       auto: false
     credentials:
-      access-key: AKIAQAA6BDQM7LN4ITOS
-      secret-key: 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
+      access-key: AKIAQEZDLRRQM3JMLXEO
+      secret-key: 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
 
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 
 jwt:
   secret: wjdtjdenchlrhwhwjdtjdenchlrhwhwjdtjdenchlrhwhwjdtjdenchlrhwh
