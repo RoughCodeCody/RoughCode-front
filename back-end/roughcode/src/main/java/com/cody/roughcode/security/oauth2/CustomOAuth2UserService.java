@@ -24,19 +24,16 @@ import java.util.Optional;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UsersRepository usersRepository;
-//    private final NicknameUtil nicknameUtil;
 
     public CustomOAuth2UserService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
-    //구글로 부터 받은 userRequest 데이터에 대한 후처리되는 함수
-    //함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
-    //OAuthAttributes: OAuth2UserService를 통해 가져온 OAuth2User의 attribute를 담을 클래스
-    //User: 엔티티 클래스
-    //UserRepository: 엔티티 클래스를 DB에 접근하게 해주는 인터페이스
-    //SessionUser: 세션에 사용자 정보를 저장하기 위한 Dto 클래스
-    //CustomOAuth2UserService: 구글 로그인 이후 가져온 사용자의 정보(email, name, picture 등)들을 기반으로 가입 및 정보수정, 세션 저장 등의 기능 지원
+    // 깃허브로부터 받은 userRequest 데이터에 대한 후처리되는 함수
+    // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
+    // OAuthAttributes: OAuth2UserService를 통해 가져온 OAuth2User의 attribute를 담을 클래스
+    // UsersRepository: 엔티티 클래스를 DB에 접근하게 해주는 인터페이스
+    // CustomOAuth2UserService: 깃허브 로그인 이후 가져온 사용자의 정보(email, name 등)들을 기반으로 가입 및 정보수정 등의 기능 지원
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -64,26 +61,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String name = oAuth2UserInfo.getName();
         String email = oAuth2UserInfo.getEmail();
 
-//        초반 닉네임 랜덤 설정
-//        String nickname = "roughcode" + '_' + oAuth2UserInfo.getProviderId();
-        //닉네임 랜덤 부여는 추후 생각해보기
-//        String nickname = nicknameUtil.generateRandomName();
-//        String profile = oAuth2UserInfo.getProfile();
-        //프로필 S3 업로드
-//        try {
-//            profile = fileUtil.urlUpload(profile, "profile");
-//        } catch (IOException e) {
-//            throw new RuntimeException("프로필 파일 경로가 이상함");
-//        }
-
-        //이미 가입되어있는지 찾아봄
+        // 이미 가입되어있는지 찾아봄
+        // DB에 해당 유저가 있으면 유저를 바로 반환
         Optional<Users> userOptional =
                 usersRepository.findByName(name);
-        // DB에 해당 유저가 있으면 유저를 바로 반환
+
         // DB에 해당 유저가 없으면 새로 만들어줌.
-        // 닉네임은 해당 유저의 이메일으로, 패스워드는 정해진 패스워드를 암호화해서 넣어줌
-        // user의 패스워드를 임의로 정해줬기 때문에 OAuth 유저는 일반적인 로그인을 할 수 없음.
-//        String finalProfile = profile;
+        // 닉네임은 해당 유저의 깃허브 아이디로, 이메일은 깃허브 연동 이메일을 넣어줌
         List<String> roles = new ArrayList<>();
         roles.add("ROLE_USER");
         Users user = userOptional.orElseGet(() ->

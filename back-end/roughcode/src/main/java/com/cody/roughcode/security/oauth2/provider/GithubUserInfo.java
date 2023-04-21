@@ -7,7 +7,6 @@ public class GithubUserInfo  implements OAuth2UserInfo {
     private final Map<String, Object> attributes;
 
     public GithubUserInfo(Map<String, Object> attributes) {
-        System.out.println(attributes);
         this.attributes = attributes;
     }
 

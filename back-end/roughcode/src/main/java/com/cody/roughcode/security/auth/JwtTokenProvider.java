@@ -6,6 +6,7 @@ import com.cody.roughcode.user.repository.UsersRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Component
 public class JwtTokenProvider {
 
@@ -92,6 +94,7 @@ public class JwtTokenProvider {
         return true;
     }
 
+    // Access Token 만료시 갱신 때 사용할 정보를 얻기 위해 Claim 리턴함
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
@@ -103,13 +106,6 @@ public class JwtTokenProvider {
     public Long getId(String token) {
         return Long.parseLong(parseClaims(token).get("id").toString());
     }
-
-//    public String parseToken(String token) {
-//        if (token.startsWith(JwtProperties.TOKEN_PREFIX)) {
-//            token = token.substring(JwtProperties.TOKEN_PREFIX.length());
-//        }
-//        return token;
-//    }
 
     public TokenReq getToken(HttpServletRequest request) {
         TokenReq tokenReq = new TokenReq();

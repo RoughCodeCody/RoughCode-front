@@ -21,11 +21,11 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        //우선 request에 있는 토큰 정보꺼내기
+        // request에 있는 토큰 정보 추출
         TokenReq tokenReq = jwtTokenProvider.getToken(request);
         Long userId = jwtTokenProvider.getId(tokenReq.getAccessToken());
-        //redis 에 해당 정보로 저장된 Refresh token 이 있는지 여부를 확인후 있다면 삭제
-        //없다면 Exception 보내기
+
+        // redis 에 해당 정보로 저장된 Refresh token 이 있는지 여부를 확인 후 있다면 삭제
         if (!Boolean.TRUE.equals(redisTemplate.delete(userId.toString()))) {
             throw new NoTokenException();
         }
