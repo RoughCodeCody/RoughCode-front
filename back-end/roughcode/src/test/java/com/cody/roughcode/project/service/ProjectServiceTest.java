@@ -1,6 +1,5 @@
 package com.cody.roughcode.project.service;
 
-import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
@@ -18,21 +17,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -41,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class) // 가짜 객체 주입을 사용
 public class ProjectServiceTest {
@@ -94,7 +84,6 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
@@ -134,7 +123,7 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
-        int success = projectsService.insertProject(req, 1L);
+        int success = projectsService.insertProject(req, thumbnail, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -159,7 +148,6 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
@@ -209,7 +197,7 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
-        int success = projectsService.insertProject(req, 1L);
+        int success = projectsService.insertProject(req, thumbnail, 1L);
 
         // then
         assertThat(success).isEqualTo(1);
@@ -233,7 +221,6 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
@@ -242,7 +229,7 @@ public class ProjectServiceTest {
         // when & then
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
+                NullPointerException.class, () -> projectsService.insertProject(req, thumbnail, 1L)
         );
 
         assertEquals("일치하는 유저가 존재하지 않습니다.", exception.getMessage());
@@ -266,7 +253,6 @@ public class ProjectServiceTest {
                 .title("title")
                 .url("https://www.google.com")
                 .introduction("introduction")
-                .thumbnail(thumbnail)
                 .selectedTagsId(List.of(1L))
                 .content("content")
                 .notice("notice")
@@ -277,7 +263,7 @@ public class ProjectServiceTest {
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertProject(req, 1L)
+                NullPointerException.class, () -> projectsService.insertProject(req, thumbnail, 1L)
         );
 
         assertEquals("일치하는 프로젝트가 존재하지 않습니다.", exception.getMessage());

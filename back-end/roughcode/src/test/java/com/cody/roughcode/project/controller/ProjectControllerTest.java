@@ -23,10 +23,12 @@
 //import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 //
 //import java.io.ByteArrayOutputStream;
+//import java.io.File;
 //import java.io.InputStream;
 //import java.net.HttpURLConnection;
 //import java.net.URL;
 //import java.nio.charset.StandardCharsets;
+//import java.nio.file.Files;
 //import java.util.List;
 //
 //import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -40,27 +42,6 @@
 //public class ProjectControllerTest {
 //    static {
 //        System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
-//    }
-//
-//    public static MockMultipartFile convert(String imageUrl, String imageName) throws Exception { // string to MultiPartFile
-//
-//        URL url = new URL(imageUrl);
-//        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//        connection.setRequestMethod("GET");
-//
-//        InputStream inputStream = connection.getInputStream();
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//
-//        byte[] buffer = new byte[1024];
-//        int bytesRead;
-//        while ((bytesRead = inputStream.read(buffer)) != -1) {
-//            outputStream.write(buffer, 0, bytesRead);
-//        }
-//
-//        byte[] imageBytes = outputStream.toByteArray();
-//
-//        ByteArrayResource resource = new ByteArrayResource(imageBytes);
-//        return new MockMultipartFile("file", imageName, null, resource.getByteArray());
 //    }
 //
 //    @InjectMocks
@@ -91,6 +72,14 @@
 //    @Test
 //    public void insertProjectSucceed() throws Exception {
 //        // given
+//        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+//        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+//        MockMultipartFile thumbnail = new MockMultipartFile(
+//                "thumbnail",
+//                "A306_ERD (2).png",
+//                MediaType.IMAGE_PNG_VALUE,
+//                imageBytes
+//        );
 //        final String url = "/api/v1/project";
 //
 //        ProjectReq req = ProjectReq.builder()
@@ -99,7 +88,7 @@
 //                .title("title")
 //                .url("https://www.google.com")
 //                .introduction("introduction")
-//                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
+//                .thumbnail(thumbnail)
 //                .selectedTagsId(List.of(1L))
 //                .content("content")
 //                .notice("notice")
@@ -107,7 +96,7 @@
 //
 //        // ProjectService insertProject 대한 stub필요
 //        doReturn(1).when(projectsService)
-//                .insertProject(any(ProjectReq.class), thumbnail, any(Long.class));
+//                .insertProject(any(ProjectReq.class), any(Long.class));
 //
 //        // when
 //        final ResultActions resultActions = mockMvc.perform(
@@ -126,44 +115,44 @@
 //        assertThat(message).isEqualTo("프로젝트 등록 성공");
 //    }
 //
-//    @DisplayName("프로젝트 등록 실패")
-//    @Test
-//    public void insertProjectFail() throws Exception {
-//        // given
-//        final String url = "/api/v1/project";
-//
-//        ProjectReq req = ProjectReq.builder()
-//                .codesId((long) -1)
-//                .projectId((long) -1)
-//                .title("title")
-//                .url("https://www.google.com")
-//                .introduction("introduction")
-//                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
-//                .selectedTagsId(List.of(1L))
-//                .content("content")
-//                .notice("notice")
-//                .build();
-//
-//        // ProjectService insertProject 대한 stub필요
-//        doReturn(0).when(projectsService)
-//                .insertProject(any(ProjectReq.class), thumbnail, any(Long.class));
-//
-//        // when
-//        final ResultActions resultActions = mockMvc.perform(
-//                MockMvcRequestBuilders.post(url)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(new Gson().toJson(req))
-//        );
-//
-//
-//        // then
-//        // HTTP Status가 OK인지 확인
-//        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
-//
-//        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
-//        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-//        String message = jsonObject.get("message").getAsString();
-//        assertThat(message).isEqualTo("프로젝트 등록 실패");
-//    }
+////    @DisplayName("프로젝트 등록 실패")
+////    @Test
+////    public void insertProjectFail() throws Exception {
+////        // given
+////        final String url = "/api/v1/project";
+////
+////        ProjectReq req = ProjectReq.builder()
+////                .codesId((long) -1)
+////                .projectId((long) -1)
+////                .title("title")
+////                .url("https://www.google.com")
+////                .introduction("introduction")
+////                .thumbnail(convert("https://www.linkpicture.com/q/KakaoTalk_20230413_101644169.png", "logo"))
+////                .selectedTagsId(List.of(1L))
+////                .content("content")
+////                .notice("notice")
+////                .build();
+////
+////        // ProjectService insertProject 대한 stub필요
+////        doReturn(0).when(projectsService)
+////                .insertProject(any(ProjectReq.class), thumbnail, any(Long.class));
+////
+////        // when
+////        final ResultActions resultActions = mockMvc.perform(
+////                MockMvcRequestBuilders.post(url)
+////                        .contentType(MediaType.APPLICATION_JSON)
+////                        .content(new Gson().toJson(req))
+////        );
+////
+////
+////        // then
+////        // HTTP Status가 OK인지 확인
+////        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+////
+////        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+////        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+////        String message = jsonObject.get("message").getAsString();
+////        assertThat(message).isEqualTo("프로젝트 등록 실패");
+////    }
 //
 //}
