@@ -36,8 +36,8 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 등록 API")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> insertProject(HttpServletRequest request,
-                                     @Parameter(description = "변경할 프로필 사진", required = true) @RequestPart MultipartFile thumbnail,
-                                     @Parameter(description = "프로젝트 정보 값", required = true) @RequestPart ProjectReq req) {
+                                     @Parameter(description = "변경할 프로필 사진", required = true) @RequestPart("thumbnail") MultipartFile thumbnail,
+                                     @Parameter(description = "프로젝트 정보 값", required = true) @RequestPart("req") ProjectReq req) {
 //        Long userId = jwtUtil.getUserId(request.getHeader(TOKEN_HEADER));
 //        Long userId = jwtUtil.getUserId("Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLqs6DsiJgiLCJ1c2VySWQiOjEsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE2ODA0OTYwMTd9.UyqF0ScQIgOs-npVcjaPGzAAfsWLmUmhXsDaLuprCvA");
         Long userId = 1L;
