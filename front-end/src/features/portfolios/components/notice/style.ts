@@ -27,7 +27,7 @@ const VersionLink = styled.li`
   ${({ theme }) => theme.MIXINS.flexBox("row", "space-around")}
 
   &:hover {
-    & span {
+    & p {
       color: var(--main-color);
     }
   }

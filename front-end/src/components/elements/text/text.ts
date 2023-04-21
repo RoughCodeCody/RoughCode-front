@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-export const Text = styled.span<{
+export const Text = styled.p<{
   size?: string;
   color?: string;
   bold?: boolean;
