@@ -5,8 +5,9 @@ const BtnWrapper = styled.button<{
   color?: string;
   padding?: string;
   margin?: string;
+  fontSize?: string;
 }>`
-  ${({ bgColor, color, padding, margin }) => css`
+  ${({ bgColor, color, padding, margin, fontSize }) => css`
     background-color: ${bgColor
       ? "var(--" + bgColor + "-color)"
       : "var(--main-color)"};
@@ -14,6 +15,7 @@ const BtnWrapper = styled.button<{
     border-radius: 5px;
     padding: ${padding || "0.5rem"};
     margin: ${margin || "0"};
+    font-size: ${fontSize || "1rem"};
     cursor: pointer;
   `}
 `;

@@ -1,15 +1,19 @@
 import { FlexDiv, Nickname, TagChipSub, Text } from "@/components/elements";
-import { FeedbackItemWrapper } from "./style";
+import { MiniFeedbackItemWrapper } from "./style";
 
-type FeedbackItemProps = {
+type MiniFeedbackItemProps = {
   user: string;
   content: string;
   tags?: string[];
 };
 
-export const FeedbackItem = ({ user, content, tags }: FeedbackItemProps) => {
+export const MiniFeedbackItem = ({
+  user,
+  content,
+  tags,
+}: MiniFeedbackItemProps) => {
   return (
-    <FeedbackItemWrapper>
+    <MiniFeedbackItemWrapper>
       <Nickname nickname={user} />
       <FlexDiv direction="column" gap="0.5rem" align="start">
         <Text>{content}</Text>
@@ -17,6 +21,6 @@ export const FeedbackItem = ({ user, content, tags }: FeedbackItemProps) => {
           <TagChipSub tag={tag} />
         ))}
       </FlexDiv>
-    </FeedbackItemWrapper>
+    </MiniFeedbackItemWrapper>
   );
 };

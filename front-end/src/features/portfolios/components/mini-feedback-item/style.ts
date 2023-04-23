@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const FeedbackItemWrapper = styled.div`
+const MiniFeedbackItemWrapper = styled.div`
   width: 100%;
   background-color: var(--white-color);
   box-shadow: 4px 4px 4px var(--shad-color);
@@ -10,4 +10,4 @@ const FeedbackItemWrapper = styled.div`
   gap: 1rem;
 `;
 
-export { FeedbackItemWrapper };
+export { MiniFeedbackItemWrapper };

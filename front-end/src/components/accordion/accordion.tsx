@@ -23,7 +23,7 @@ export const Accordion = ({
 }: AccordionProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleOpenState = (e) => {
     e.stopPropagation();
@@ -43,7 +43,7 @@ export const Accordion = ({
           <Text padding="0 1rem 0 0" size="1.2rem">
             {title}
           </Text>
-          {hasBtn && <Btn text={btnText} />}
+          {hasBtn && <Btn text={btnText} fontSize="0.85rem" />}
         </FlexDiv>
         <FlexDiv pointer={true} onClick={handleOpenState}>
           <Text size="0.9rem" padding="0 0.2rem" pointer={true}>
