@@ -10,6 +10,7 @@ export const FlexDiv = styled.div<{
   gap?: string;
   padding?: string;
   margin?: string;
+  pointer?: boolean;
 }>`
   ${({
     width,
@@ -21,6 +22,7 @@ export const FlexDiv = styled.div<{
     gap,
     padding,
     margin,
+    pointer,
   }) => css`
     display: flex;
     flex-direction: ${direction || "row"};
@@ -32,5 +34,6 @@ export const FlexDiv = styled.div<{
     height: ${height || "auto"};
     padding: ${padding || "0"};
     margin: ${margin || "0"};
+    cursor: ${pointer ? "pointer" : "auto"};
   `}
 `;
