@@ -1,18 +1,20 @@
 import Image from "next/image";
-
+import { Title } from "@/components/title";
 import {
   UnauthHomeContainer,
   Banner,
-  LinkCardWrapper,
+  LinkCardContainer,
   BannerTitleContainer,
   BannerContentContainer,
   FootContainer,
+  LinkCardBackground,
+  LinkCardwrapper,
 } from "./unauthenticated-landing-style";
-import { HomeLinkCard } from "@/components/card/home-link-card";
+import { HomeLinkCard } from "./components/home-link-card";
 import { Text } from "@/components/elements";
 
 // import dogFoot from "@/assets/icons/dog-foot.png";
-import dogFoot from "../../../../assets/dog-foot.png";
+import dogFoot from "@/assets/dog-foot.png";
 
 export const UnauthenticatedLanding = () => {
   return (
@@ -37,27 +39,35 @@ export const UnauthenticatedLanding = () => {
           </FootContainer>
         </Banner>
 
-        <LinkCardWrapper>
-          <HomeLinkCard
-            title={"프로젝트"}
-            content={
-              "우리의 토이 프로젝트를 공유합니다 우리의 토이 프로젝트를 공유합니다"
-            }
-            imageUrl={"Project URL"}
-          ></HomeLinkCard>
-          <HomeLinkCard
-            title={"코드"}
-            content={
-              "우리의 토이 코드를 공유합니다 우리의 토이 코드를 공유합니다"
-            }
-            imageUrl={"code URL"}
-          ></HomeLinkCard>
-          <HomeLinkCard
-            title={"로그인"}
-            content={"로그인로그인로그인 로그인로그인로그인"}
-            imageUrl={"login URL"}
-          ></HomeLinkCard>
-        </LinkCardWrapper>
+        <LinkCardContainer>
+          <LinkCardBackground />
+          <Title
+            title="시작하기"
+            description="프로젝트와 코드를 만나보세요"
+            color="bg"
+          ></Title>
+          <LinkCardwrapper>
+            <HomeLinkCard
+              title={"프로젝트"}
+              content={
+                "우리의 토이 프로젝트를 공유합니다 우리의 토이 프로젝트를 공유합니다"
+              }
+              imageUrl={"Project URL"}
+            ></HomeLinkCard>
+            <HomeLinkCard
+              title={"코드"}
+              content={
+                "우리의 토이 코드를 공유합니다 우리의 토이 코드를 공유합니다"
+              }
+              imageUrl={"code URL"}
+            ></HomeLinkCard>
+            <HomeLinkCard
+              title={"로그인"}
+              content={"로그인로그인로그인 로그인로그인로그인"}
+              imageUrl={"login URL"}
+            ></HomeLinkCard>
+          </LinkCardwrapper>
+        </LinkCardContainer>
       </UnauthHomeContainer>
     </>
   );

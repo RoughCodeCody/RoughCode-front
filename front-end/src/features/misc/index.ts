@@ -1,1 +1,1 @@
-export * from "./pages/unauthenticated-landing/unauthenticated-landing";
+export * from "./pages/unauthenticated-landing";

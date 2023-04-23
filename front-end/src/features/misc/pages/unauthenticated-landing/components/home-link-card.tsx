@@ -5,10 +5,11 @@ import {
   LinkCardTitle,
   LinkCardContent,
   LinkCardImage,
-} from "./home-link-card-style";
+  ArrowRightContainer,
+} from "./style";
 
-import { ArrowRightCircle } from "../../icon/arrow-right-circle";
-import { Text } from "../../elements/text";
+import { FiArrowRightCircle } from "react-icons/fi";
+import { Text } from "@/components/elements/text";
 
 interface HomeLinkCardProps {
   title: string;
@@ -28,7 +29,9 @@ export const HomeLinkCard = ({
           <Text size="2.3rem" bold={true}>
             {title}
           </Text>
-          <ArrowRightCircle />
+          <ArrowRightContainer>
+            <FiArrowRightCircle fontSize="2rem" color="var(--font-color)" />
+          </ArrowRightContainer>
         </LinkCardTitle>
         <LinkCardContent>
           <Text size="1.1rem" bold={true} lineHeight="1.6rem">

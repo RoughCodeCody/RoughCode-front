@@ -36,4 +36,17 @@ const LinkCardImage = styled.div`
   overflow: hidden;
 `;
 
-export { LinkCard, LinkCardTitle, LinkCardContent, LinkCardImage };
+const ArrowRightContainer = styled.div`
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+`;
+export {
+  LinkCard,
+  LinkCardTitle,
+  LinkCardContent,
+  LinkCardImage,
+  ArrowRightContainer,
+};

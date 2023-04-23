@@ -1,6 +1,11 @@
 import { ReactNode } from "react";
-import { NoticeAlarmWrapper, NoticeAlarmDiv, NoticeAlarmRibbon } from "./style";
-import { DeleteIconCircle } from "../icon/delete-icon-circle";
+import {
+  NoticeAlarmWrapper,
+  NoticeAlarmDiv,
+  NoticeAlarmRibbon,
+  DeleteIconContainer,
+} from "./style";
+import { RiCloseCircleLine } from "react-icons/ri";
 
 interface Props {
   children: ReactNode;
@@ -32,8 +37,10 @@ export const NoticeAlarmItem = ({
         color={color}
       >
         {children}
+        <DeleteIconContainer>
+          <RiCloseCircleLine fontSize="2rem" color="var(--font-color)" />
+        </DeleteIconContainer>
       </NoticeAlarmDiv>
-      <DeleteIconCircle />
     </NoticeAlarmWrapper>
   );
 };

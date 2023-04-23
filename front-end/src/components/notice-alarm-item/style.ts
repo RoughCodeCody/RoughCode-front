@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { RiCloseCircleLine } from "react-icons/ri";
 
 const NoticeAlarmWrapper = styled.div<{
   width?: string;
@@ -50,4 +51,16 @@ const NoticeAlarmRibbon = styled.div<{
   background-color: var(--main-color);
 `;
 
-export { NoticeAlarmWrapper, NoticeAlarmDiv, NoticeAlarmRibbon };
+const DeleteIconContainer = styled.div`
+  position: absolute;
+  right: 4rem;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+`;
+export {
+  NoticeAlarmWrapper,
+  NoticeAlarmDiv,
+  NoticeAlarmRibbon,
+  DeleteIconContainer,
+};
