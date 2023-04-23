@@ -1,6 +1,6 @@
 import { Accordion } from "@/components/accordion";
 import { TagChipSub } from "@/components/elements";
-import { FeedbackItem } from "../feedback-item";
+import { MiniFeedbackItem } from "../mini-feedback-item";
 
 export const RelatedCodes = () => {
   // 더미데이터
@@ -23,7 +23,7 @@ export const RelatedCodes = () => {
     >
       {codes.length !== 0 &&
         codes.map(({ user, content, tags }) => (
-          <FeedbackItem user={user} content={content} tags={tags} />
+          <MiniFeedbackItem user={user} content={content} tags={tags} />
         ))}
     </Accordion>
   );
