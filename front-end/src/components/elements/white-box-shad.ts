@@ -11,6 +11,6 @@ export const WhiteBoxShad = styled.div<{
     height: ${height || "100%"};
     background-color: var(--white-color);
     border-radius: ${radius || "25px"};
-    box-shadow: 0 0 1.5rem 0 var(--${shadColor || "shad"}-color);
+    box-shadow: 0 0 1.5rem -0.5rem var(--${shadColor || "shad"}-color);
   `}
 `;
