@@ -6,7 +6,7 @@ public class NoTokenException extends RuntimeException {
     }
 
     public NoTokenException() {
-        super("토큰이 없습니다.");
+        super("토큰이 없습니다");
     }
 }
 

@@ -7,6 +7,6 @@ public class NotNewestVersionException extends DataAccessException {
         super(message);
     }
     public NotNewestVersionException() {
-        super("최신 버전이 아닙니다.");
+        super("최신 버전이 아닙니다");
     }
 }

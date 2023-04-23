@@ -46,7 +46,7 @@ public class S3FileServiceImpl implements S3FileService {
 
         // 파일 변환
         File uploadFile = convertToFile(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("MultipartFile에서 File로 변환에 실패했습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("MultipartFile에서 File로 변환에 실패했습니다"));
 
         // 파일명에 project 정보 같이 입력
         StringBuilder fileInfo = new StringBuilder(dirName + "/" + fileName);
@@ -59,7 +59,7 @@ public class S3FileServiceImpl implements S3FileService {
 
         URL imageUrl = amazonS3Client.getUrl(bucket, String.valueOf(fileInfo));
         if (imageUrl == null) {
-            throw new NullPointerException("이미지 저장에 실패했습니다.");
+            throw new NullPointerException("이미지 저장에 실패했습니다");
         }
         String imageUrlString = imageUrl.toString();
 

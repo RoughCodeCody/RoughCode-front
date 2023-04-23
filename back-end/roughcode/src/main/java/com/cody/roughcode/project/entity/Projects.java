@@ -65,4 +65,8 @@ public class Projects extends BaseTimeEntity {
         this.title = req.getTitle();
         this.introduction = req.getIntroduction();
     }
+
+    public void setImgUrl(String imgUrl) {
+        this.img = imgUrl;
+    }
 }

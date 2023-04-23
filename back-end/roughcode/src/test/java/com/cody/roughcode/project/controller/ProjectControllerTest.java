@@ -2,6 +2,8 @@ package com.cody.roughcode.project.controller;
 
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
+import com.cody.roughcode.security.auth.JwtProperties;
+import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.user.entity.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -15,16 +17,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -39,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class) // @WebMVCTest를 이용할 수도 있지만 속도가 느리다
@@ -67,23 +74,19 @@ public class ProjectControllerTest {
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
 
+    final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTEyM0BnbWFpbC5jb20iLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjc0NzEyMDg2fQ.fMjhTvyLoCBzAXZ4gtJCAMS98j9DNsC7w2utcB-Uho";
+
+
     @Mock
     private ProjectsServiceImpl projectsService;
-    String email = "kosy1782@gmail.com";
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
-    @DisplayName("프로젝트 등록 성공")
+    @DisplayName("프로젝트 정보 등록 성공")
     @Test
     public void insertProjectSucceed() throws Exception {
         // given
-        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
-        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-        MockMultipartFile thumbnail = new MockMultipartFile(
-                "thumbnail",
-                "A306_ERD (2).png",
-                MediaType.IMAGE_PNG_VALUE,
-                imageBytes
-        );
-        final String url = "/api/v1/project";
+        final String url = "/api/v1/project/content";
 
         ProjectReq req = ProjectReq.builder()
                 .codesId((long) -1)
@@ -97,22 +100,16 @@ public class ProjectControllerTest {
                 .build();
 
         // ProjectService insertProject 대한 stub필요
-        doReturn(1).when(projectsService)
-                .insertProject(any(ProjectReq.class), any(MultipartFile.class), any(Long.class));
+        doReturn(1L).when(projectsService)
+                .insertProject(any(ProjectReq.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
-        ObjectMapper objectMapper = new ObjectMapper();
-        MockMultipartFile thumbnailFile = new MockMultipartFile(
-                "thumbnail", "thumbnail.png", "image/png", thumbnail.getBytes());
-
-        MockMultipartFile reqFile = new MockMultipartFile(
-                "req", "req.json", "application/json", objectMapper.writeValueAsString(req).getBytes());
-
-        System.out.println(objectMapper.writeValueAsString(req));
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.multipart("/api/v1/project")
-                        .file(thumbnailFile)
-                        .file(reqFile)
+                MockMvcRequestBuilders.post(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
         );
 
         // then
@@ -121,22 +118,14 @@ public class ProjectControllerTest {
         String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
-        assertThat(message).isEqualTo("프로젝트 등록 성공");
+        assertThat(message).isEqualTo("프로젝트 정보 등록 성공");
     }
 
-    @DisplayName("프로젝트 등록 실패")
+    @DisplayName("프로젝트 정보 등록 실패")
     @Test
     public void insertProjectFail() throws Exception {
         // given
-        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
-        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-        MockMultipartFile thumbnail = new MockMultipartFile(
-                "thumbnail",
-                "A306_ERD (2).png",
-                MediaType.IMAGE_PNG_VALUE,
-                imageBytes
-        );
-        final String url = "/api/v1/project";
+        final String url = "/api/v1/project/content";
 
         ProjectReq req = ProjectReq.builder()
                 .codesId((long) -1)
@@ -150,33 +139,25 @@ public class ProjectControllerTest {
                 .build();
 
         // ProjectService insertProject 대한 stub필요
-        doReturn(0).when(projectsService)
-                .insertProject(any(ProjectReq.class), any(MultipartFile.class), any(Long.class));
+        doReturn(-1L).when(projectsService)
+                .insertProject(any(ProjectReq.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
-        ObjectMapper objectMapper = new ObjectMapper();
-        MockMultipartFile thumbnailFile = new MockMultipartFile(
-                "thumbnail", "thumbnail.png", "image/png", thumbnail.getBytes());
-
-        MockMultipartFile reqFile = new MockMultipartFile(
-                "req", "req.json", "application/json", objectMapper.writeValueAsString(req).getBytes());
-
-        System.out.println(objectMapper.writeValueAsString(req));
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.multipart("/api/v1/project")
-                        .file(thumbnailFile)
-                        .file(reqFile)
+                MockMvcRequestBuilders.post(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
         );
-
 
         // then
         // HTTP Status가 OK인지 확인
         MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
-
         String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
-        assertThat(message).isEqualTo("프로젝트 등록 실패");
+        assertThat(message).isEqualTo("프로젝트 정보 등록 실패");
     }
 
 }

@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug(authentication.getName() + "의 인증정보 저장");
             } else {
-                log.debug("유효한 JWT 토큰이 없습니다.");
+                log.debug("유효한 JWT 토큰이 없습니다");
             }
         }
 
