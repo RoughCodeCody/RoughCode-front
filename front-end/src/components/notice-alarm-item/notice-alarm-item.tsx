@@ -9,7 +9,7 @@ export const NoticeAlarmItem = ({ children }: Props) => {
   return (
     <NoticeAlarmWrapper>
       <NoticeAlarmRibbon />
-      <NoticeAlarmDiv isNotice={false}>{children}</NoticeAlarmDiv>
+      <NoticeAlarmDiv isNotice={true}>{children}</NoticeAlarmDiv>
     </NoticeAlarmWrapper>
   );
 };
