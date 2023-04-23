@@ -43,7 +43,7 @@ export const Accordion = ({
           <Text padding="0 1rem 0 0" size="1.2rem">
             {title}
           </Text>
-          {hasBtn && <Btn text="+ 새 버전 등록" />}
+          {hasBtn && <Btn text={btnText} />}
         </FlexDiv>
         <FlexDiv pointer={true} onClick={handleOpenState}>
           <Text size="0.9rem" padding="0 0.2rem" pointer={true}>

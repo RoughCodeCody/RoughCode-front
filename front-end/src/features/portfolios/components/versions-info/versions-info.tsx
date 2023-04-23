@@ -30,7 +30,11 @@ export const VersionsInfo = () => {
   ];
 
   return (
-    <Accordion title="버전별 업그레이드 정보" hasBtn={isMine}>
+    <Accordion
+      title="버전별 업그레이드 정보"
+      hasBtn={isMine}
+      btnText="+ 새 버전 등록"
+    >
       <FlexDiv direction="column" gap="1rem">
         {versions.map(({ version, notice, current, feedbacks }) => (
           <VersionInfo
