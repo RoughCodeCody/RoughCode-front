@@ -5,6 +5,7 @@ const AccordionContainer = styled.div`
   border: 1px solid var(--main-color);
   border-radius: 0 0 25px 25px;
   padding: 1rem;
+  margin-top: 2.5rem;
 `;
 
 const AccordionHead = styled.div`
