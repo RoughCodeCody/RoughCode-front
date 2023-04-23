@@ -1,10 +1,5 @@
-import {
-  Count,
-  FlexDiv,
-  Nickname,
-  TagChipSub,
-  Text,
-} from "@/components/elements";
+import { FlexDiv, Nickname, TagChipSub, Text } from "@/components/elements";
+import { Count } from "@/components/count";
 import { UrlApkBtn } from "./style";
 import { useState } from "react";
 
