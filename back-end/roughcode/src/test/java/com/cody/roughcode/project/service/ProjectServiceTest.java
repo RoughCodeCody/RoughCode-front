@@ -389,11 +389,10 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 성공 - 새 프로젝트")
     @Test
-    void insertProjectSucceed() throws Exception {
+    void insertProjectSucceed() {
         // given
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
-                .codesId((long) -1)
                 .projectId((long) -1)
                 .title("title")
                 .url("https://www.google.com")
@@ -420,7 +419,6 @@ public class ProjectServiceTest {
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(users).when(usersRepository).save(any(Users.class));
-        doReturn(null).when(codesRepostiory).findByCodesId((long)-1);
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
         doReturn(ProjectSelectedTags.builder()
@@ -441,11 +439,10 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 성공 - 기존 프로젝트 업데이트")
     @Test
-    void insertProjectSucceedVersionUp() throws Exception {
+    void insertProjectSucceedVersionUp() {
         // given
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
-                .codesId((long) -1)
                 .projectId((long) 1)
                 .title("title")
                 .url("https://www.google.com")
@@ -482,7 +479,6 @@ public class ProjectServiceTest {
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(original).when(projectsRepository).findProjectWithMaxVersionByProjectsId(1L);
-        doReturn(null).when(codesRepostiory).findByCodesId((long)-1);
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
         doReturn(ProjectSelectedTags.builder()
@@ -503,10 +499,9 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 실패 - 존재하지 않는 유저 아이디")
     @Test
-    void insertProjectFailNoUser() throws Exception {
+    void insertProjectFailNoUser() {
         // given
         ProjectReq req = ProjectReq.builder()
-                .codesId((long) -1)
                 .projectId(1L)
                 .title("title")
                 .url("https://www.google.com")
@@ -527,10 +522,9 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 실패 - 존재하지 않는 project id")
     @Test
-    void insertProjectFailNoProject() throws Exception {
+    void insertProjectFailNoProject() {
         // given
         ProjectReq req = ProjectReq.builder()
-                .codesId((long) -1)
                 .projectId(1L)
                 .title("title")
                 .url("https://www.google.com")
@@ -553,10 +547,9 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 실패 - project 작성한 user랑 version up 하려는 user가 다름")
     @Test
-    void insertProjectFailUserDiffer() throws Exception {
+    void insertProjectFailUserDiffer() {
         // given
         ProjectReq req = ProjectReq.builder()
-                .codesId(-1L)
                 .projectId(1L)
                 .title("title")
                 .url("https://www.google.com")

@@ -5,6 +5,7 @@ import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
+import io.lettuce.core.ScriptOutputType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +73,7 @@ public class ProjectsController {
     ResponseEntity<?> insertProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                      @Parameter(description = "프로젝트 정보 값", required = true) @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
-//        Long userId = 1L;
+//        Long userId = 2L;
 
         Long res = 0L;
         try{

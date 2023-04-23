@@ -37,9 +37,4 @@ public class ProjectReq {
 
     @Schema(description = "선택한 tag의 id", example = "[1, 2, 3]")
     private List<Long> selectedTagsId;
-
-    // 삭제 예정
-    @Schema(description = "코드 id(연결한 코드가 없으면 -1)", example = "-1")
-    private Long codesId;
-
 }

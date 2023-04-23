@@ -20,10 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -71,8 +67,6 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         Long projectId = -1L;
         try {
-            List<Codes> codesList = (codesRepository.findByCodesId(req.getCodesId()) == null)? new ArrayList<>() : List.of(codesRepository.findByCodesId(req.getCodesId()));
-
             Projects project = Projects.builder()
                     .num(projectNum)
                     .version(projectVersion)
@@ -80,7 +74,6 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .introduction(req.getIntroduction())
                     .title(req.getTitle())
                     .projectWriter(user)
-                    .projectsCodes(codesList)
                     .likeCnt(likeCnt)
                     .build();
             Projects savedProject = projectsRepository.save(project);

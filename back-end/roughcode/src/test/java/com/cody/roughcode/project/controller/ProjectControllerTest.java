@@ -89,7 +89,6 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/content";
 
         ProjectReq req = ProjectReq.builder()
-                .codesId((long) -1)
                 .projectId((long) -1)
                 .title("title")
                 .url("https://www.google.com")
@@ -128,7 +127,6 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/content";
 
         ProjectReq req = ProjectReq.builder()
-                .codesId((long) -1)
                 .projectId((long) -1)
                 .title("title")
                 .url("https://www.google.com")
