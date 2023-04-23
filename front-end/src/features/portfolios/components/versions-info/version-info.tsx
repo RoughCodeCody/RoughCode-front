@@ -1,5 +1,6 @@
 import { FlexDiv, Nickname, Text, WhiteBoxNoshad } from "@/components/elements";
-import { FeedbackItem, VersionInfoWrapper } from "./style";
+import { VersionInfoWrapper } from "./style";
+import { FeedbackItem } from "../feedback-item";
 
 type VersionInfoProps = {
   version: string;
@@ -33,10 +34,7 @@ export const VersionInfo = ({
           <>
             <Text>반영한 피드백</Text>
             {feedbacks.map(({ user, content }) => (
-              <FeedbackItem>
-                <Nickname nickname={user} />
-                <Text>{content}</Text>
-              </FeedbackItem>
+              <FeedbackItem user={user} content={content} />
             ))}
           </>
         )}

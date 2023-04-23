@@ -13,14 +13,4 @@ const VersionInfoWrapper = styled.div<{
   gap: 5%;
 `;
 
-const FeedbackItem = styled.div`
-  width: 100%;
-  background-color: var(--white-color);
-  box-shadow: 4px 4px 4px var(--shad-color);
-  padding: 0.7rem;
-  padding-left: 1rem;
-  ${({ theme }) => theme.MIXINS.flexBox("row", "start")}
-  gap: 1rem;
-`;
-
-export { VersionInfoWrapper, FeedbackItem };
+export { VersionInfoWrapper };
