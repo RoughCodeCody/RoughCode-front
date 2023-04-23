@@ -1,6 +1,4 @@
-import styled, { css, keyframes } from "styled-components";
-import Image from "next/image";
-import chevronDown from "@/assets/icons/chevron-down.svg";
+import styled, { keyframes } from "styled-components";
 import { Text } from "@/components/elements";
 
 const showDropdown = keyframes`
@@ -12,19 +10,6 @@ const VersionDropdownWrapper = styled.div`
   width: 15%;
   max-width: 11rem;
   position: relative;
-`;
-
-const DropdownArrow = styled(Image).attrs({
-  width: 24,
-  height: 24,
-  src: chevronDown.src,
-  alt: "more",
-})<{ isOpen: boolean }>`
-  ${({ isOpen }) => css`
-    cursor: pointer;
-    transform: ${isOpen ? "rotate(180deg)" : "rotate(0)"};
-    transition: all 0.3s ease-in-out;
-  `}
 `;
 
 const DropdownContentWrapper = styled.div`
@@ -81,7 +66,6 @@ const NoticeContent = styled.div`
 
 export {
   VersionDropdownWrapper,
-  DropdownArrow,
   DropdownContentWrapper,
   DropdownContent,
   DropdownItem,

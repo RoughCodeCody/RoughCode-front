@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { FlexDiv, Text } from "@/components/elements";
+import { DropdownArrow, FlexDiv, Text } from "@/components/elements";
 import {
   VersionDropdownWrapper,
-  DropdownArrow,
   DropdownContentWrapper,
   DropdownContent,
   DropdownItem,
@@ -30,6 +29,7 @@ export const VersionDropdown = ({
         <DropdownArrow
           onClick={() => setVersionsOpen((prev) => !prev)}
           isOpen={versionsOpen}
+          size={22}
         />
       </FlexDiv>
 
