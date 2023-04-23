@@ -23,7 +23,7 @@ export const Accordion = ({
 }: AccordionProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleOpenState = (e) => {
     e.stopPropagation();

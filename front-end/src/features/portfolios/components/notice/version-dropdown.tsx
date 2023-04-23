@@ -18,7 +18,7 @@ export const VersionDropdown = ({
   currentVersion,
   versions,
 }: VersionDropdownProps) => {
-  const [versionsOpen, setVersionsOpen] = useState(false);
+  const [versionsOpen, setVersionsOpen] = useState<boolean>(false);
 
   return (
     <VersionDropdownWrapper>
