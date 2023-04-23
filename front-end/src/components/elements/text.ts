@@ -6,12 +6,14 @@ export const Text = styled.p<{
   bold?: boolean;
   pointer?: boolean;
   padding?: string;
+  margin?: string;
 }>`
-  ${({ size, color, bold, pointer, padding }) => css`
+  ${({ size, color, bold, pointer, padding, margin }) => css`
     font-size: ${size || "1rem"};
     font-weight: ${bold ? "700" : "400"};
     color: ${color ? "var(--" + color + "-color)" : "var(--font-color)"};
     cursor: ${pointer ? "pointer" : "auto"};
     padding: ${padding || "0"};
+    margin: ${margin || "0"};
   `}
 `;

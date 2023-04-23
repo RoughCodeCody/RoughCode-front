@@ -3,6 +3,7 @@ import { Notice } from "../components/notice";
 import { PortfolioInfo } from "../components/portfolio-info";
 import { VersionsInfo } from "../components/versions-info";
 import { PortfolioDescription } from "../components/portfolio-description";
+import { RelatedCodes } from "../components/related-codes";
 
 export const PortfolioDetail = () => {
   return (
@@ -13,6 +14,7 @@ export const PortfolioDetail = () => {
         <PortfolioInfo />
         <VersionsInfo />
         <PortfolioDescription />
+        <RelatedCodes />
       </WhiteBoxNoshad>
     </FlexDiv>
   );

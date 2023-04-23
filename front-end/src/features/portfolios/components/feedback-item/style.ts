@@ -6,7 +6,7 @@ const FeedbackItemWrapper = styled.div`
   box-shadow: 4px 4px 4px var(--shad-color);
   padding: 0.7rem;
   padding-left: 1rem;
-  ${({ theme }) => theme.MIXINS.flexBox("row", "start")}
+  ${({ theme }) => theme.MIXINS.flexBox("row", "start", "start")}
   gap: 1rem;
 `;
 

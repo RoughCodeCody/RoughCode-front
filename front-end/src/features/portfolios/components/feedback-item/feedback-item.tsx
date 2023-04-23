@@ -11,7 +11,7 @@ export const FeedbackItem = ({ user, content, tags }: FeedbackItemProps) => {
   return (
     <FeedbackItemWrapper>
       <Nickname nickname={user} />
-      <FlexDiv direction="column">
+      <FlexDiv direction="column" gap="0.5rem" align="start">
         <Text>{content}</Text>
         {tags?.map((tag) => (
           <TagChipSub tag={tag} />

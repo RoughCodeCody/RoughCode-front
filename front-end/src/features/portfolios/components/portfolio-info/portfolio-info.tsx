@@ -21,8 +21,10 @@ export const PortfolioInfo = () => {
     <>
       <FlexDiv direction="column" gap="1rem">
         <FlexDiv width="100%" justify="space-between">
-          <FlexDiv align="end">
-            <Text size="2.25rem">{title}</Text>
+          <FlexDiv>
+            <Text size="2.25rem" margin="0 1rem 0 0">
+              {title}
+            </Text>
             <Nickname nickname={nickname} color="main" />
           </FlexDiv>
           <FlexDiv>
