@@ -55,6 +55,7 @@ const GlobalStyles = createGlobalStyle`
      font-size: 100%;
      font: inherit;
      vertical-align: baseline;
+     color: var(--font-color);
    }
 
    /* HTML5 display-role reset for older browsers */
