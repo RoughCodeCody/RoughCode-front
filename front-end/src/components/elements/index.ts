@@ -12,3 +12,4 @@ export * from "./count";
 export * from "./notice-alarm-item";
 export * from "./title";
 export * from "./write-float-btn";
+export * from "./back-to-top";

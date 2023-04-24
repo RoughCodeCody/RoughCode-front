@@ -1,11 +1,12 @@
+import Link from "next/link";
 import styled from "styled-components";
 
-const WriteFloatBtnWrapper = styled.div<{ color: string }>`
+const WriteFloatBtnWrapper = styled(Link)<{ color: string }>`
   color: ${({ color }) => `var(--${color}-color)`};
-  font-size: 4rem;
+  font-size: 5rem;
   position: fixed;
-  bottom: 4rem;
-  right: 4rem;
+  bottom: 5rem;
+  right: 5rem;
   cursor: pointer;
 `;
 
