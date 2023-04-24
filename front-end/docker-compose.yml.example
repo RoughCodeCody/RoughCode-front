@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  rough-code-front-end-production:
+    container_name: rough-code-front-end-production
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    image: rough-code-front-end-production
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - my_network
+
+  # Add more containers below (nginx, postgres, etc.)
+
+# Define a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+networks:
+  my_network:
+    external: true
