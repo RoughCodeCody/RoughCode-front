@@ -104,6 +104,63 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+
+    @DisplayName("프로젝트 정보 수정 성공")
+    @Test
+    public void updateProjectSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/content";
+
+        // ProjectService updateProject 대한 stub필요
+        doReturn(1).when(projectsService)
+                .updateProject(any(ProjectReq.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 정보 수정 성공");
+    }
+
+    @DisplayName("프로젝트 정보 수정 실패")
+    @Test
+    public void updateProjectFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/content";
+
+        // ProjectService updateProject 대한 stub필요
+        doReturn(0).when(projectsService)
+                .updateProject(any(ProjectReq.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 정보 수정 실패");
+    }
+
     @DisplayName("프로젝트 썸네일 등록 성공")
     @Test
     public void updateProjectThumbnailSucceed() throws Exception {

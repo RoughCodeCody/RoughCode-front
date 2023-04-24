@@ -6,14 +6,8 @@ import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.entity.ProjectSelectedTags;
-import com.cody.roughcode.project.entity.ProjectTags;
-import com.cody.roughcode.project.entity.Projects;
-import com.cody.roughcode.project.entity.ProjectsInfo;
-import com.cody.roughcode.project.repository.ProjectSelectedTagsRepository;
-import com.cody.roughcode.project.repository.ProjectTagsRepository;
-import com.cody.roughcode.project.repository.ProjectsInfoRepository;
-import com.cody.roughcode.project.repository.ProjectsRepository;
+import com.cody.roughcode.project.entity.*;
+import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.aspectj.weaver.ast.Not;
@@ -64,6 +58,10 @@ public class ProjectServiceTest {
     private ProjectSelectedTagsRepository projectSelectedTagsRepository;
     @Mock
     private S3FileServiceImpl s3FileService;
+    @Mock
+    private FeedbacksRepository feedbacksRepository;
+    @Mock
+    private SelectedFeedbacksRepository selectedFeedbacksRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -115,314 +113,185 @@ public class ProjectServiceTest {
         return tagsList;
     }
 
-//    @DisplayName("프로젝트 수정 성공 - 이미지가 바뀌지 않은 경우")
-//    @Test
-//    void updateProjectNotChangeImgSucceed() throws Exception {
-//        // given
-//        List<ProjectTags> tagsList = tagsInit();
-//        Projects project = Projects.builder()
-//                .num(1L)
-//                .version(1)
-//                .img("imgUrl")
-//                .introduction("introduction")
-//                .title("title")
-//                .projectWriter(users)
-//                .projectsCodes(null)
-//                .likeCnt(1)
-//                .selectedTags(new ArrayList<>())
-//                .build();
-//        ProjectsInfo info = ProjectsInfo.builder()
-//                .url("www.google.com")
-//                .notice("notice")
-//                .build();
-//
-//        ProjectReq req = ProjectReq.builder()
-//                .projectId(1L)
-//                .title("title2")
-//                .url("https://www.google.com")
-//                .introduction("introduction2")
-//                .selectedTagsId(List.of(1L, 2L))
-//                .content("content2")
-//                .notice("notice2")
-//                .build();
-//
-//        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
-//        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-//        doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
-//        doReturn(ProjectSelectedTags.builder()
-//                .tags(tagsList.get(0))
-//                .projects(project)
-//                .build())
-//                .when(projectSelectedTagsRepository)
-//                .save(any(ProjectSelectedTags.class));
-//        doReturn(tagsList.get(0)).when(projectTagsRepository).save(any(ProjectTags.class));
-//
-//        // when
-//        int success = projectsService.updateProject(req, null, 1L);
-//
-//        // then
-//        assertThat(success).isEqualTo(1);
-//    }
-//
-//    // 이미지가 바뀌는 경우
-//    @DisplayName("프로젝트 수정 성공 - 이미지가 바뀌는 경우")
-//    @Test
-//    void updateProjectChangeImgSucceed() throws Exception {
-//        // given
-//        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
-//        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-//        MockMultipartFile thumbnail = new MockMultipartFile(
-//                "thumbnail",
-//                "A306_ERD (2).png",
-//                MediaType.IMAGE_PNG_VALUE,
-//                imageBytes
-//        );
-//        List<ProjectTags> tagsList = tagsInit();
-//        Projects project = Projects.builder()
-//                .num(1L)
-//                .version(1)
-//                .img("imgUrl")
-//                .introduction("introduction")
-//                .title("title")
-//                .projectWriter(users)
-//                .projectsCodes(null)
-//                .likeCnt(1)
-//                .selectedTags(new ArrayList<>())
-//                .build();
-//        ProjectsInfo info = ProjectsInfo.builder()
-//                .url("www.google.com")
-//                .notice("notice")
-//                .build();
-//
-//        ProjectReq req = ProjectReq.builder()
-//                .projectId(1L)
-//                .title("title2")
-//                .url("https://www.google.com")
-//                .introduction("introduction2")
-//                .selectedTagsId(List.of(1L, 2L))
-//                .content("content2")
-//                .notice("notice2")
-//                .build();
-//
-//        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
-//        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-//        doReturn("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
-//                .when(s3FileService).upload(any(MultipartFile.class), any(String.class), any(String.class));
-//        doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
-//        doReturn(ProjectSelectedTags.builder()
-//                .tags(tagsList.get(0))
-//                .projects(project)
-//                .build())
-//                .when(projectSelectedTagsRepository)
-//                .save(any(ProjectSelectedTags.class));
-//        doReturn(tagsList.get(0)).when(projectTagsRepository).save(any(ProjectTags.class));
-//
-//        // when
-//        int success = projectsService.updateProject(req, thumbnail, 1L);
-//
-//        // then
-//        assertThat(success).isEqualTo(1);
-//    }
-//
-//    // 일치하는 프로젝트 없음
-//    @DisplayName("프로젝트 수정 실패 - 일치하는 프로젝트 없음")
-//    @Test
-//    void updateProjectFailNoProject() throws Exception {
-//        // given
-//        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
-//        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-//        MockMultipartFile thumbnail = new MockMultipartFile(
-//                "thumbnail",
-//                "A306_ERD (2).png",
-//                MediaType.IMAGE_PNG_VALUE,
-//                imageBytes
-//        );
-//
-//        ProjectReq req = ProjectReq.builder()
-//                .projectId(1L)
-//                .title("title2")
-//                .url("https://www.google.com")
-//                .introduction("introduction2")
-//                .selectedTagsId(List.of(1L, 2L))
-//                .content("content2")
-//                .notice("notice2")
-//                .build();
-//
-//        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-//        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
-//
-//        // when
-//        // when & then
-//        NullPointerException exception = assertThrows(
-//                NullPointerException.class, () -> projectsService.updateProject(req, thumbnail, 1L)
-//        );
-//
-//        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
-//    }
-//
-//    // 최신 버전의 프로젝트가 아님
-//    @DisplayName("프로젝트 수정 실패 - 최신 버전의 프로젝트가 아님")
-//    @Test
-//    void updateProjectFailNotNewest() throws Exception {
-//        // given
-//        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
-//        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-//        MockMultipartFile thumbnail = new MockMultipartFile(
-//                "thumbnail",
-//                "A306_ERD (2).png",
-//                MediaType.IMAGE_PNG_VALUE,
-//                imageBytes
-//        );
-//        Projects project = Projects.builder()
-//                .num(1L)
-//                .version(1)
-//                .img("imgUrl")
-//                .introduction("introduction")
-//                .title("title")
-//                .projectWriter(users)
-//                .projectsCodes(null)
-//                .likeCnt(1)
-//                .selectedTags(new ArrayList<>())
-//                .build();
-//        Projects project2 = Projects.builder()
-//                .num(2L)
-//                .version(1)
-//                .img("imgUrl")
-//                .introduction("introduction")
-//                .title("title")
-//                .projectWriter(users)
-//                .projectsCodes(null)
-//                .likeCnt(1)
-//                .selectedTags(new ArrayList<>())
-//                .build();
-//
-//        ProjectReq req = ProjectReq.builder()
-//                .projectId(1L)
-//                .title("title2")
-//                .url("https://www.google.com")
-//                .introduction("introduction2")
-//                .selectedTagsId(List.of(1L, 2L))
-//                .content("content2")
-//                .notice("notice2")
-//                .build();
-//
-//        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
-//        doReturn(project2).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
-//
-//        // when & then
-//        NotNewestVersionException exception = assertThrows(
-//                NotNewestVersionException.class, () -> projectsService.updateProject(req, thumbnail, 1L)
-//        );
-//
-//        assertEquals("최신 버전이 아닙니다", exception.getMessage());
-//    }
-//
-//    // 일치하는 프로젝트 정보가 없음
-//    @DisplayName("프로젝트 수정 실패 - 일치하는 프로젝트 정보가 없음")
-//    @Test
-//    void updateProjectFailNoProjectInfo() throws Exception {
-//        // given
-//        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
-//        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-//        MockMultipartFile thumbnail = new MockMultipartFile(
-//                "thumbnail",
-//                "A306_ERD (2).png",
-//                MediaType.IMAGE_PNG_VALUE,
-//                imageBytes
-//        );
-//        Projects project = Projects.builder()
-//                .num(1L)
-//                .version(1)
-//                .img("imgUrl")
-//                .introduction("introduction")
-//                .title("title")
-//                .projectWriter(users)
-//                .projectsCodes(null)
-//                .likeCnt(1)
-//                .selectedTags(new ArrayList<>())
-//                .build();
-//
-//        ProjectReq req = ProjectReq.builder()
-//                .projectId(1L)
-//                .title("title2")
-//                .url("https://www.google.com")
-//                .introduction("introduction2")
-//                .selectedTagsId(List.of(1L, 2L))
-//                .content("content2")
-//                .notice("notice2")
-//                .build();
-//
-//        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
-//        doReturn(null).when(projectsInfoRepository).findByProjects(any(Projects.class));
-//
-//        // when & then
-//        NullPointerException exception = assertThrows(
-//                NullPointerException.class, () -> projectsService.updateProject(req, thumbnail, 1L)
-//        );
-//
-//        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
-//    }
-//
-//    // s3FileService deletion fail
-//    @DisplayName("프로젝트 수정 실패 - s3FileService deletion fail")
-//    @Test
-//    void updateProjectFailS3DeletionFail() throws Exception {
-//        // given
-//        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
-//        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-//        MockMultipartFile thumbnail = new MockMultipartFile(
-//                "thumbnail",
-//                "A306_ERD (2).png",
-//                MediaType.IMAGE_PNG_VALUE,
-//                imageBytes
-//        );
-//        List<ProjectTags> tagsList = tagsInit();
-//        Projects project = Projects.builder()
-//                .num(1L)
-//                .version(1)
-//                .img("imgUrl")
-//                .introduction("introduction")
-//                .title("title")
-//                .projectWriter(users)
-//                .projectsCodes(null)
-//                .likeCnt(1)
-//                .selectedTags(new ArrayList<>())
-//                .build();
-//        ProjectsInfo info = ProjectsInfo.builder()
-//                .url("www.google.com")
-//                .notice("notice")
-//                .build();
-//
-//        ProjectReq req = ProjectReq.builder()
-//                .projectId(1L)
-//                .title("title2")
-//                .url("https://www.google.com")
-//                .introduction("introduction2")
-//                .selectedTagsId(List.of(1L, 2L))
-//                .content("content2")
-//                .notice("notice2")
-//                .build();
-//
-//        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
-//        doReturn(project).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
-//        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-//        doThrow(new DeletionFailException("이미지")).when(s3FileService).delete(any(String.class));
-//
-//        // when & then
-//        UpdateFailedException exception = assertThrows(
-//                UpdateFailedException.class, () -> projectsService.updateProject(req, thumbnail, 1L)
-//        );
-//
-//        assertEquals("이미지 삭제에 실패했습니다", exception.getMessage());
-//    }
+    private List<Feedbacks> feedbacksInit(Projects project) {
+        List<Feedbacks> feedbacksList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            feedbacksList.add(Feedbacks.builder()
+                    .projects(project)
+                    .feedbacksId(i)
+                    .content("content")
+                    .users(null)
+                    .build());
+        }
+
+        return feedbacksList;
+    }
+
+    @DisplayName("프로젝트 수정 성공")
+    @Test
+    void updateProjectSucceed() throws Exception {
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        Projects project = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("imgUrl")
+                .introduction("introduction")
+                .title("title")
+                .projectWriter(users)
+                .projectsCodes(null)
+                .likeCnt(1)
+                .selectedTags(new ArrayList<>())
+                .build();
+        ProjectsInfo info = ProjectsInfo.builder()
+                .url("www.google.com")
+                .notice("notice")
+                .build();
+        List<Feedbacks> feedbacksList = feedbacksInit(project);
+
+        ProjectReq req = ProjectReq.builder()
+                .projectId(1L)
+                .title("title2")
+                .url("https://www.google.com")
+                .introduction("introduction2")
+                .selectedTagsId(List.of(1L, 2L))
+                .content("content2")
+                .notice("notice2")
+                .selectedFeedbacksId(List.of(1L, 2L))
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+        doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
+        doReturn(feedbacksList.get(0)).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+
+        // when
+        int success = projectsService.updateProject(req, 1L);
+
+        // then
+        assertThat(success).isEqualTo(1);
+    }
+
+    // 일치하는 프로젝트 없음
+    @DisplayName("프로젝트 수정 실패 - 일치하는 프로젝트 없음")
+    @Test
+    void updateProjectFailNoProject() throws Exception {
+        // given
+        ProjectReq req = ProjectReq.builder()
+                .projectId(1L)
+                .title("title2")
+                .url("https://www.google.com")
+                .introduction("introduction2")
+                .selectedTagsId(List.of(1L, 2L))
+                .content("content2")
+                .notice("notice2")
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.updateProject(req, 1L)
+        );
+
+        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
+    }
+
+    // 최신 버전의 프로젝트가 아님
+    @DisplayName("프로젝트 수정 실패 - 최신 버전의 프로젝트가 아님")
+    @Test
+    void updateProjectFailNotNewest() throws Exception {
+        // given
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("imgUrl")
+                .introduction("introduction")
+                .title("title")
+                .projectWriter(users)
+                .projectsCodes(null)
+                .likeCnt(1)
+                .selectedTags(new ArrayList<>())
+                .build();
+        Projects project2 = Projects.builder()
+                .projectsId(2L)
+                .num(2L)
+                .version(1)
+                .img("imgUrl")
+                .introduction("introduction")
+                .title("title")
+                .projectWriter(users)
+                .projectsCodes(null)
+                .likeCnt(1)
+                .selectedTags(new ArrayList<>())
+                .build();
+
+        ProjectReq req = ProjectReq.builder()
+                .projectId(1L)
+                .title("title2")
+                .url("https://www.google.com")
+                .introduction("introduction2")
+                .selectedTagsId(List.of(1L, 2L))
+                .content("content2")
+                .notice("notice2")
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project2).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+
+        // when & then
+        NotNewestVersionException exception = assertThrows(
+                NotNewestVersionException.class, () -> projectsService.updateProject(req, 1L)
+        );
+
+        assertEquals("최신 버전이 아닙니다", exception.getMessage());
+    }
+
+    // 일치하는 프로젝트 정보가 없음
+    @DisplayName("프로젝트 수정 실패 - 일치하는 프로젝트 정보가 없음")
+    @Test
+    void updateProjectFailNoProjectInfo() throws Exception {
+        // given
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("imgUrl")
+                .introduction("introduction")
+                .title("title")
+                .projectWriter(users)
+                .projectsCodes(null)
+                .likeCnt(1)
+                .selectedTags(new ArrayList<>())
+                .build();
+
+        ProjectReq req = ProjectReq.builder()
+                .projectId(1L)
+                .title("title2")
+                .url("https://www.google.com")
+                .introduction("introduction2")
+                .selectedTagsId(List.of(1L, 2L))
+                .content("content2")
+                .notice("notice2")
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+        doReturn(null).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.updateProject(req, 1L)
+        );
+
+        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
+    }
 
     @DisplayName("프로젝트 썸네일 등록 성공")
     @Test
@@ -432,6 +301,7 @@ public class ProjectServiceTest {
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn("imageUrl").when(s3FileService).upload(any(MultipartFile.class), any(String.class), any(String.class));
 
         // when
