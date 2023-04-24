@@ -1,12 +1,7 @@
 import Head from "next/head";
-import { Inter } from "next/font/google";
+import { Portfolios } from "@/features/portfolios/";
 
-import { Notifications } from "@/features/notifications";
-import { UnauthenticatedLanding } from "@/features/misc";
-
-const inter = Inter({ subsets: ["latin"] });
-
-export default function Home() {
+export default function Project() {
   return (
     <>
       <Head>
@@ -15,8 +10,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {/* <Notifications /> */}
-      <UnauthenticatedLanding />
+      <Portfolios />
     </>
   );
 }

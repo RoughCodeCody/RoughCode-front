@@ -25,6 +25,9 @@ dependencies:
   next-redux-wrapper:
     specifier: ^8.1.0
     version: 8.1.0(next@13.3.0)(react-redux@8.0.5)(react@18.2.0)
+  pnpm:
+    specifier: ^8.3.1
+    version: 8.3.1
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -1971,6 +1974,12 @@ packages:
   /picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  /pnpm@8.3.1:
+    resolution: {integrity: sha512-0mT2ZAv08J3nz8xUdWhRW88GE89IWgPo/xZhb6acQXK2+aCikl7kT7Bg31ZcnJqOrwYXSed68xjLd/ZoSnBR8w==}
+    engines: {node: '>=16.14'}
+    hasBin: true
+    dev: false
 
   /postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
