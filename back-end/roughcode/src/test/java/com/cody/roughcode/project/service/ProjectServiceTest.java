@@ -2,6 +2,7 @@ package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.exception.DeletionFailException;
+import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.ProjectReq;
@@ -27,6 +28,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +79,41 @@ public class ProjectServiceTest {
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
 
+
+    final Projects project = Projects.builder()
+            .projectsId(1L)
+            .num(1L)
+            .version(1)
+            .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+            .introduction("intro")
+            .title("title")
+            .projectWriter(users)
+            .projectsCodes(new ArrayList<>())
+            .build();
+
+    private static MockMultipartFile getThumbnail() throws IOException {
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
+        return thumbnail;
+    }
+    
+    private List<ProjectTags> tagsInit() {
+        List<ProjectTags> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(ProjectTags.builder()
+                    .tagsId(i)
+                    .name("tag1")
+                    .build());
+        }
+
+        return tagsList;
+    }
 
 //    @DisplayName("프로젝트 수정 성공 - 이미지가 바뀌지 않은 경우")
 //    @Test
@@ -387,6 +424,95 @@ public class ProjectServiceTest {
 //        assertEquals("이미지 삭제에 실패했습니다", exception.getMessage());
 //    }
 
+    @DisplayName("프로젝트 썸네일 등록 성공")
+    @Test
+    void updateProjectThumbnailSucceed() throws IOException {
+        // given
+        MockMultipartFile thumbnail = getThumbnail();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn("imageUrl").when(s3FileService).upload(any(MultipartFile.class), any(String.class), any(String.class));
+
+        // when
+        int success = projectsService.updateProjectThumbnail(thumbnail, 1L, 1L);
+        
+        // then
+        assertThat(success).isEqualTo(1L);
+    }
+    
+    @DisplayName("프로젝트 썸네일 등록 실패 - 존재하지 않는 유저 아이디")
+    @Test
+    void updateProjectThumbnailFailNoUser() throws IOException {
+        // given
+        MockMultipartFile thumbnail = getThumbnail();
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.updateProjectThumbnail(thumbnail, 1L, 1L)
+        );
+
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("프로젝트 썸네일 등록 실패 - 썸네일이 등록되어있지 않음")
+    @Test
+    void updateProjectThumbnailFailNoThumbnail() throws IOException {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.updateProjectThumbnail(null, 1L, 1L)
+        );
+
+        assertEquals("썸네일이 등록되어있지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("프로젝트 썸네일 등록 실패 - 일치하는 프로젝트가 없음")
+    @Test
+    void updateProjectThumbnailFailNoProject() throws IOException {
+        MockMultipartFile thumbnail = getThumbnail();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.updateProjectThumbnail(thumbnail, 1L, 1L)
+        );
+
+        assertEquals("일치하는 프로젝트가 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("프로젝트 썸네일 등록 실패 - 등록하려는 유저와 프로젝트의 유저가 일치하지 않음")
+    @Test
+    void updateProjectThumbnailFailUserDiffer() throws IOException {
+
+        MockMultipartFile thumbnail = getThumbnail();
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .projectsCodes(new ArrayList<>())
+                .build();
+
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.updateProjectThumbnail(thumbnail, 1L, 1L)
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+
     @DisplayName("프로젝트 등록 성공 - 새 프로젝트")
     @Test
     void insertProjectSucceed() {
@@ -574,24 +700,11 @@ public class ProjectServiceTest {
         doReturn(original).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
 
         // when & then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> projectsService.insertProject(req, 1L)
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.insertProject(req, 1L)
         );
 
-        assertEquals("잘못된 접근입니다", exception.getMessage());
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
     }
-
-    private List<ProjectTags> tagsInit() {
-        List<ProjectTags> tagsList = new ArrayList<>();
-        for (long i = 1L; i <= 3L; i++) {
-            tagsList.add(ProjectTags.builder()
-                    .tagsId(i)
-                    .name("tag1")
-                    .build());
-        }
-
-        return tagsList;
-    }
-
 
 }

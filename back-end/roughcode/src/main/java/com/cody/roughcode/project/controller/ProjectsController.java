@@ -49,23 +49,24 @@ public class ProjectsController {
 //    }
 
 
-//    @Operation(summary = "프로젝트 썸네일 등록/수정 API")
-//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    ResponseEntity<?> updateProjectThumbnail(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-//                                    @Parameter(description = "등록할 썸네일", required = true) @RequestPart("thumbnail") MultipartFile thumbnail) {
-////        Long userId = jwtTokenProvider.getId(accessToken);
+    @Operation(summary = "프로젝트 썸네일 등록/수정 API")
+    @PostMapping(value = "/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<?> updateProjectThumbnail(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                    @Parameter(description = "등록할 project id", required = true) @RequestParam("projectId") Long projectId,
+                                    @Parameter(description = "등록할 썸네일", required = true) @RequestPart("thumbnail") MultipartFile thumbnail) {
+        Long userId = jwtTokenProvider.getId(accessToken);
 //        Long userId = 1L;
-//
-//        int res = 0;
-//        try{
-//            res = projectsService.updateProjectThumbnail(thumbnail, userId);
-//        } catch (Exception e){
-//            log.error(e.getMessage());
-//        }
-//
-//        if(res == 0) return Response.notFound("프로젝트 등록 실패");
-//        return Response.ok("프로젝트 등록 성공");
-//    }
+
+        int res = 0;
+        try{
+            res = projectsService.updateProjectThumbnail(thumbnail, projectId, userId);
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
+
+        if(res == 0) return Response.notFound("프로젝트 썸네일 등록 실패");
+        return Response.ok("프로젝트 썸네일 등록 성공");
+    }
 
 
     @Operation(summary = "프로젝트 정보 등록 API")

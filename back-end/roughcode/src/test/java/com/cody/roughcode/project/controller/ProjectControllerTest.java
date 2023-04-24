@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.Cookie;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -76,27 +77,94 @@ public class ProjectControllerTest {
 
     final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTEyM0BnbWFpbC5jb20iLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjc0NzEyMDg2fQ.fMjhTvyLoCBzAXZ4gtJCAMS98j9DNsC7w2utcB-Uho";
 
+    final ProjectReq req = ProjectReq.builder()
+            .projectId((long) -1)
+            .title("title")
+            .url("https://www.google.com")
+            .introduction("introduction")
+            .selectedTagsId(List.of(1L))
+            .content("content")
+            .notice("notice")
+            .build();
+
+    private static MockMultipartFile getThumbnail() throws IOException {
+        File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
+        MockMultipartFile thumbnail = new MockMultipartFile(
+                "thumbnail",
+                "A306_ERD (2).png",
+                MediaType.IMAGE_PNG_VALUE,
+                imageBytes
+        );
+        return thumbnail;
+    }
 
     @Mock
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("프로젝트 썸네일 등록 성공")
+    @Test
+    public void updateProjectThumbnailSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/thumbnail";
+        final Long projectId = 1L;
+        MockMultipartFile thumbnail = getThumbnail();
+
+        // ProjectsService updateProjectThumbnail 대한 stub 필요
+        doReturn(1).when(projectsService).updateProjectThumbnail(any(MultipartFile.class), any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.multipart(url)
+                        .file(thumbnail)
+                        .param("projectId", String.valueOf(projectId))
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 썸네일 등록 성공");
+    }
+
+    @DisplayName("프로젝트 썸네일 등록 실패")
+    @Test
+    public void updateProjectThumbnailFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/thumbnail";
+        final Long projectId = 1L;
+        MockMultipartFile thumbnail = getThumbnail();
+
+        // ProjectsService updateProjectThumbnail 대한 stub 필요
+        doReturn(-1).when(projectsService).updateProjectThumbnail(any(MultipartFile.class), any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.multipart(url)
+                        .file(thumbnail)
+                        .param("projectId", String.valueOf(projectId))
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 썸네일 등록 성공");
+    }
+
     @DisplayName("프로젝트 정보 등록 성공")
     @Test
     public void insertProjectSucceed() throws Exception {
         // given
         final String url = "/api/v1/project/content";
-
-        ProjectReq req = ProjectReq.builder()
-                .projectId((long) -1)
-                .title("title")
-                .url("https://www.google.com")
-                .introduction("introduction")
-                .selectedTagsId(List.of(1L))
-                .content("content")
-                .notice("notice")
-                .build();
 
         // ProjectService insertProject 대한 stub필요
         doReturn(1L).when(projectsService)
@@ -125,16 +193,6 @@ public class ProjectControllerTest {
     public void insertProjectFail() throws Exception {
         // given
         final String url = "/api/v1/project/content";
-
-        ProjectReq req = ProjectReq.builder()
-                .projectId((long) -1)
-                .title("title")
-                .url("https://www.google.com")
-                .introduction("introduction")
-                .selectedTagsId(List.of(1L))
-                .content("content")
-                .notice("notice")
-                .build();
 
         // ProjectService insertProject 대한 stub필요
         doReturn(-1L).when(projectsService)

@@ -2,6 +2,7 @@ package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepostiory;
+import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
@@ -58,7 +59,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         } else { // 기존 프로젝트 버전 업
             Projects original = projectsRepository.findProjectWithMaxVersionByProjectsId(req.getProjectId());
             if(original == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
-            if(!original.getProjectWriter().equals(user)) throw new IllegalArgumentException("잘못된 접근입니다");
+            if(!original.getProjectWriter().equals(user)) throw new NotMatchException();
 
             projectNum = original.getNum();
             projectVersion = original.getVersion() + 1;
@@ -102,13 +103,13 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
-    public int updateProjectThumnail(MultipartFile thumbnail, Long projectsId, Long usersId) {
+    public int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
         Projects project = projectsRepository.findByProjectsId(projectsId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 없습니다");
-        if(!project.getProjectWriter().equals(user)) throw new IllegalArgumentException("잘못된 접근입니다");
+        if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
 
         Long projectNum = project.getNum();
         int projectVersion = project.getVersion();
