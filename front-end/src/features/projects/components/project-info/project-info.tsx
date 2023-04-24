@@ -1,7 +1,12 @@
-import { FlexDiv, Nickname, TagChipSub, Text } from "@/components/elements";
-import { Count } from "@/components/count";
-import { UrlApkBtn } from "./style";
 import { useState } from "react";
+import {
+  FlexDiv,
+  Nickname,
+  TagChipSub,
+  Text,
+  Count,
+} from "@/components/elements";
+import { UrlApkBtn } from "./style";
 
 export const ProjectInfo = () => {
   // 더미데이터

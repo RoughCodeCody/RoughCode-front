@@ -1,6 +1,8 @@
 import { ReactNode, useRef, useState } from "react";
-import { DropdownArrow, FlexDiv, Text } from "../elements";
-import { Btn } from "../elements/btn";
+import { DropdownArrow } from "../dropdown-arrow";
+import { FlexDiv } from "../flexdiv";
+import { Text } from "../text";
+import { Btn } from "../btn";
 import {
   AccordionContainer,
   AccordionHead,

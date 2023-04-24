@@ -1,6 +1,5 @@
-import { Accordion } from "@/components/accordion";
+import { Accordion, FlexDiv } from "@/components/elements";
 import { VersionInfo } from "./version-info";
-import { FlexDiv } from "@/components/elements";
 
 export const VersionsInfo = () => {
   // 더미데이터

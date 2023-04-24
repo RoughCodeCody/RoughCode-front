@@ -1,6 +1,6 @@
-import { FlexDiv } from "./flexdiv";
 import { BsPerson } from "react-icons/bs";
-import { Text } from "./text";
+import { FlexDiv } from "../flexdiv";
+import { Text } from "../text";
 
 type NicknameProps = {
   nickname: string;

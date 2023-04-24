@@ -1,8 +1,10 @@
-import { BottomHeader } from "@/components/bottom-header";
-import { FlexDiv } from "@/components/elements";
-import { Title } from "@/components/title";
+import {
+  BottomHeader,
+  FlexDiv,
+  Title,
+  WriteFloatBtn,
+} from "@/components/elements";
 import { CodeListItem } from "../components/code-list-item";
-import { WriteFloatBtn } from "@/components/write-float-btn";
 
 export const CodeList = () => {
   // 더미데이터

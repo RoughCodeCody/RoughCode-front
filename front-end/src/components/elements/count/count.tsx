@@ -5,7 +5,8 @@ import {
   TiStarOutline,
 } from "react-icons/ti";
 import { RiCodeSSlashFill } from "react-icons/ri";
-import { FlexDiv, Text } from "../elements";
+import { FlexDiv } from "../flexdiv";
+import { Text } from "../text";
 import { CountIcon } from "./count-icon";
 
 interface CountProps {

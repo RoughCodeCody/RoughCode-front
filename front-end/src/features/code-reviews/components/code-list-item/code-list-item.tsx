@@ -1,9 +1,14 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
 import dayjs from "dayjs";
-import { FlexDiv, Nickname, TagChipSub, Text } from "@/components/elements";
-import { Count } from "@/components/count";
+import {
+  FlexDiv,
+  Nickname,
+  TagChipSub,
+  Text,
+  Count,
+} from "@/components/elements";
 import { CodeListItemWrapper } from "./style";
-import { useRouter } from "next/router";
 
 type CodeListItemProps = {
   codeListItem: {

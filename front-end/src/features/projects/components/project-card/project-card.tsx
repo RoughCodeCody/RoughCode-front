@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { FlexDiv } from "@/components/elements";
-import { Text } from "@/components/elements";
+import { FlexDiv, Text } from "@/components/elements";
 
 export const ProjectCard = () => {
   return (
