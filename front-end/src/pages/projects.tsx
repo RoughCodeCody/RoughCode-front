@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Portfolios } from "@/features/portfolios/";
+import { Projects } from "@/features/projects";
 
 export default function Project() {
   return (
@@ -10,7 +10,7 @@ export default function Project() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Portfolios />
+      <Projects />
     </>
   );
 }

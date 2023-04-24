@@ -3,7 +3,7 @@ import { Count } from "@/components/count";
 import { UrlApkBtn } from "./style";
 import { useState } from "react";
 
-export const PortfolioInfo = () => {
+export const ProjectInfo = () => {
   // 더미데이터
   const title = "개발새발";
   const url = "https://rough-code.com";

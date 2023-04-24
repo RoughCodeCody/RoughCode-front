@@ -1,13 +1,13 @@
 import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
 import { Notice } from "../components/notice";
-import { PortfolioInfo } from "../components/portfolio-info";
+import { ProjectInfo } from "../components/project-info";
 import { VersionsInfo } from "../components/versions-info";
-import { PortfolioDescription } from "../components/portfolio-description";
+import { ProjectDescription } from "../components/project-description";
 import { RelatedCodes } from "../components/related-codes";
 import { FeedbackResister } from "@/components/feedback-resister";
 import { Feedbacks } from "@/components/feedbacks";
 
-export const PortfolioDetail = () => {
+export const ProjectDetail = () => {
   // 더미데이터
   const feedbacks = [
     {
@@ -53,9 +53,9 @@ export const PortfolioDetail = () => {
       <Notice />
 
       <WhiteBoxNoshad width="65%" padding="2.25rem">
-        <PortfolioInfo />
+        <ProjectInfo />
         <VersionsInfo />
-        <PortfolioDescription />
+        <ProjectDescription />
         <RelatedCodes />
       </WhiteBoxNoshad>
 
