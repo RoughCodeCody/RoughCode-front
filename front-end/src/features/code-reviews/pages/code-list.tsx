@@ -1,4 +1,5 @@
 import {
+  BackToTop,
   BottomHeader,
   FlexDiv,
   Title,
@@ -9,6 +10,61 @@ import { CodeListItem } from "../components/code-list-item";
 export const CodeList = () => {
   // 더미데이터
   const codelist = [
+    {
+      codesId: 1,
+      title: "제목 블라블라 코드 좀 봐주세요",
+      createdDate: new Date(),
+      modifiedDate: new Date(),
+      like: 10,
+      favorite: 4,
+      reviewCnt: 5,
+      tag: ["TypeScript"],
+      userName: "닉네임",
+    },
+    {
+      codesId: 1,
+      title: "제목 블라블라 코드 좀 봐주세요",
+      createdDate: new Date(),
+      modifiedDate: new Date(),
+      like: 10,
+      favorite: 4,
+      reviewCnt: 5,
+      tag: ["TypeScript"],
+      userName: "닉네임",
+    },
+    {
+      codesId: 1,
+      title: "제목 블라블라 코드 좀 봐주세요",
+      createdDate: new Date(),
+      modifiedDate: new Date(),
+      like: 10,
+      favorite: 4,
+      reviewCnt: 5,
+      tag: ["TypeScript"],
+      userName: "닉네임",
+    },
+    {
+      codesId: 1,
+      title: "제목 블라블라 코드 좀 봐주세요",
+      createdDate: new Date(),
+      modifiedDate: new Date(),
+      like: 10,
+      favorite: 4,
+      reviewCnt: 5,
+      tag: ["TypeScript"],
+      userName: "닉네임",
+    },
+    {
+      codesId: 1,
+      title: "제목 블라블라 코드 좀 봐주세요",
+      createdDate: new Date(),
+      modifiedDate: new Date(),
+      like: 10,
+      favorite: 4,
+      reviewCnt: 5,
+      tag: ["TypeScript"],
+      userName: "닉네임",
+    },
     {
       codesId: 1,
       title: "제목 블라블라 코드 좀 봐주세요",
@@ -67,6 +123,7 @@ export const CodeList = () => {
         </FlexDiv>
       </FlexDiv>
       <WriteFloatBtn navTo="/code-reviews/create" />
+      <BackToTop />
     </>
   );
 };
