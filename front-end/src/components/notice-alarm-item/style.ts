@@ -26,14 +26,14 @@ const NoticeAlarmDiv = styled.div<{
     background-color: ${color
       ? "var(--" + color + "-color)"
       : "var(--sub-one-color)"};
-    border: ${isNotice ? "1px solid var(--main-color)" : "none"};
+    border: ${isNotice ? "none" : "1px solid var(--main-color)"};
     border-radius: ${isDirectionRight ? "3rem 0 0 3rem" : "0 3rem 3rem 0"};
     padding-left: ${isDirectionRight ? "0" : "0.5rem"};
     padding-right: ${isDirectionRight ? "0.5rem" : "0"};
     ${({ theme }) =>
       isNotice
-        ? theme.MIXINS.flexBox("row", "space-between")
-        : theme.MIXINS.flexBox()}
+        ? theme.MIXINS.flexBox()
+        : theme.MIXINS.flexBox("row", "space-between")}
   `}
 `;
 
