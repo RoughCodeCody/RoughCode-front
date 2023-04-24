@@ -52,6 +52,21 @@ public class Users extends BaseTimeEntity{
             this.projectsCnt = 0L;
         this.projectsCnt += 1;
     }
+    
+    public void codesCntUp(){
+        if(this.codesCnt == null){
+            this.codesCnt = 0L;
+        }
+        this.codesCnt += 1;
+    }
+
+    public void updateName(String name){
+        this.name = name;
+    }
+
+    public void updateEmail(String email){
+        this.email = email;
+    }
 
     @Override
     public boolean equals(Object o) {
