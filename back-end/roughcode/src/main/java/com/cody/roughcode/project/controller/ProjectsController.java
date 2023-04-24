@@ -30,6 +30,24 @@ public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
 
+    @Operation(summary = "프로젝트 삭제 API")
+    @DeleteMapping("/{projectId}")
+    ResponseEntity<?> deleteProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                    @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try{
+            res = projectsService.deleteProject(projectId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("프로젝트 삭제 실패");
+        else return Response.ok("프로젝트 삭제 성공");
+    }
+
     @Operation(summary = "프로젝트 코드 연결 API")
     @PutMapping("/{projectId}/connect")
     ResponseEntity<?> connectProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,

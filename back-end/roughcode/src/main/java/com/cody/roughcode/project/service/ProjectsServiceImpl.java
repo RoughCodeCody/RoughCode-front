@@ -269,6 +269,43 @@ public class ProjectsServiceImpl implements ProjectsService{
         return codesList.size();
     }
 
+    @Override
+    public int deleteProject(Long projectsId, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        // 기존의 프로젝트 가져오기
+        Projects target = projectsRepository.findByProjectsId(projectsId);
+        if(target == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        Projects latestProject = projectsRepository.findLatestProject(target.getNum(), user.getUsersId());
+        if(!target.equals(latestProject)) throw new NotNewestVersionException();
+
+        ProjectsInfo originalInfo = projectsInfoRepository.findByProjects(target);
+        if(originalInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        projectsInfoRepository.delete(originalInfo);
+
+        if(target.getProjectsCodes() != null)
+            for (Codes code : target.getProjectsCodes()) {
+                code.setProject(null);
+                codesRepository.save(code);
+            }
+        else log.info("연결된 코드가 없습니다");
+        target.setCodes(null);
+        projectsRepository.save(target);
+
+        if(target.getSelectedTags() != null)
+            for (ProjectSelectedTags selectedTag : target.getSelectedTags()) {
+                ProjectTags projectTag = selectedTag.getTags();
+                projectTag.cntDown();
+                projectTagsRepository.save(projectTag);
+                projectSelectedTagsRepository.delete(selectedTag);
+            }
+        else log.info("연결된 태그가 없습니다");
+        projectsRepository.delete(target);
+
+        return 1;
+    }
+
 }
 
 

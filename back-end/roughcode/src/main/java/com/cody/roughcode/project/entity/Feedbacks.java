@@ -41,7 +41,7 @@ public class Feedbacks extends BaseTimeEntity {
 
     @Builder.Default
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "users_id", nullable = true)
     private Users users = null;
 
     public void selectedUp() {

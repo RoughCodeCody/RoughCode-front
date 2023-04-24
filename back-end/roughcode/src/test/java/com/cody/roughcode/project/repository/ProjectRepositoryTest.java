@@ -1,5 +1,13 @@
 package com.cody.roughcode.project.repository;
 
+import com.cody.roughcode.code.entity.CodeSelectedTags;
+import com.cody.roughcode.code.entity.CodeTags;
+import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.code.repository.CodeSelectedTagsRepository;
+import com.cody.roughcode.code.repository.CodeTagsRepository;
+import com.cody.roughcode.code.repository.CodesRepostiory;
+import com.cody.roughcode.project.entity.ProjectSelectedTags;
+import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.user.entity.Users;
@@ -11,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -29,11 +38,112 @@ public class ProjectRepositoryTest {
             .build();
 
     @Autowired
+    private CodesRepostiory codesRepostiory;
+    @Autowired
     private ProjectsRepository projectRepository;
     @Autowired
     private ProjectsInfoRepository projectInfoRepository;
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private ProjectSelectedTagsRepository projectSelectedTagsRepository;
+    @Autowired
+    private ProjectTagsRepository projectTagsRepository;
+    @Autowired
+    private CodeTagsRepository codeTagsRepository;
+    @Autowired
+    private CodeSelectedTagsRepository codeSelectedTagsRepository;
+
+    List<ProjectTags> projectTagsInit(){
+        List<ProjectTags> tagsList = new ArrayList<>();
+        for (long i = 1; i <= 3; i++) {
+            tagsList.add(ProjectTags.builder()
+                    .tagsId(i)
+                    .name("tag" + i)
+                    .build());
+        }
+
+        return tagsList;
+    }
+    List<CodeTags> codeTagsInit(){
+        List<CodeTags> tagsList = new ArrayList<>();
+        for (long i = 1; i <= 3; i++) {
+            tagsList.add(CodeTags.builder()
+                    .tagsId(i)
+                    .name("tag" + i)
+                    .build());
+        }
+
+        return tagsList;
+    }
+
+    @DisplayName("프로젝트 삭제하기")
+    @Test
+    void deleteProject(){
+        // given
+        usersRepository.save(users);
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("image url")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .build();
+        projectRepository.save(project);
+        List<ProjectTags> projectTagList = projectTagsInit();
+        List<ProjectSelectedTags> projectSelectedTagsList = new ArrayList<>();
+        for (ProjectTags tag : projectTagList) {
+            projectTagsRepository.save(tag);
+            projectSelectedTagsList.add(
+                    ProjectSelectedTags.builder()
+                            .projects(project)
+                            .selectedTagsId(tag.getTagsId())
+                            .tags(tag)
+                            .build()
+            );
+            projectSelectedTagsRepository.save(projectSelectedTagsList.get(projectSelectedTagsList.size() - 1));
+        }
+        Codes code = Codes.builder()
+                .codesId(1L)
+                .num(1L)
+                .version(1)
+                .codeWriter(users)
+                .title("title")
+                .build();
+        codesRepostiory.save(code);
+        List<CodeTags> codeTagList = codeTagsInit();
+        for (CodeTags tag : codeTagList) {
+            codeTagsRepository.save(tag);
+            codeSelectedTagsRepository.save(
+                    CodeSelectedTags.builder()
+                            .codes(code)
+                            .selectedTagsId(tag.getTagsId())
+                            .tags(tag)
+                            .build()
+            );
+        }
+
+        code.setProject(project);
+        codesRepostiory.save(code);
+        project.setCodes(List.of(code));
+        projectRepository.save(project);
+
+        // when
+        project.setCodes(null);
+        projectRepository.save(project);
+        code.setProject(null);
+        codesRepostiory.save(code);
+
+        // 카운트 다운 후 제거
+        projectSelectedTagsRepository.deleteAll(projectSelectedTagsList);
+        projectRepository.delete(project);
+
+        // then
+        Projects deleted = projectRepository.findByProjectsId(1L);
+        assertThat(deleted).isEqualTo(null);
+    }
 
     @DisplayName("프로젝트 Num 가져오기")
     @Test
