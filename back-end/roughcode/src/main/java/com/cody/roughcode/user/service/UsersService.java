@@ -16,6 +16,8 @@ public interface UsersService {
         return UserResp.builder()
                 .nickname(user.getName())
                 .email(user.getEmail())
+                .projectsCnt(user.getProjectsCnt())
+                .codesCnt(user.getCodesCnt())
                 .build();
     }
 

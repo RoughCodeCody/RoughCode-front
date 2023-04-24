@@ -21,8 +21,8 @@ public class UserResp {
     private String email;
 
     @Schema(description = "사용자가 작성한 프로젝트 수", example = "3")
-    private String projectsCnt;
+    private Long projectsCnt;
 
     @Schema(description = "사용자가 작성한 코드 수", example = "6")
-    private String codesCnt;
+    private Long codesCnt;
 }

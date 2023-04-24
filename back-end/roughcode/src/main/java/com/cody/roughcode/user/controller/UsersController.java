@@ -55,7 +55,9 @@ public class UsersController {
     }
 
     @GetMapping("/nicknameCheck")
-    public ResponseEntity<?> checkNickname(String nickname) {
+    public ResponseEntity<?> checkNickname(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken, String nickname) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
         boolean duplicated = usersService.checkNickname(nickname);
 
         Map<String, Object> res = new HashMap<>();
@@ -64,7 +66,7 @@ public class UsersController {
         if (duplicated) {
             return Response.makeResponse(HttpStatus.OK, "중복된 닉네임입니다. 다른 닉네임을 입력해주세요.", 1, res);
         }
-        return Response.makeResponse(HttpStatus.OK, "사용 가능한 닉네임입니다.", 1, res);
+        return Response.makeResponse(HttpStatus.OK, "사용 가능한 닉네임입니다.", 0, res);
     }
 
 }
