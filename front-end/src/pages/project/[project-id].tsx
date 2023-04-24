@@ -1,6 +1,7 @@
+import { NextPage } from "next";
 import { ProjectDetail } from "@/features/projects";
 
-const ProjectDetailPage = () => {
+const ProjectDetailPage: NextPage = () => {
   return <ProjectDetail />;
 };
 
