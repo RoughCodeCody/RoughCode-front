@@ -85,4 +85,8 @@ public class Projects extends BaseTimeEntity {
     public int hashCode() {
         return Objects.hash(projectsId, num, version, projectWriter);
     }
+
+    public void setCodes(List<Codes> codesList) {
+        this.projectsCodes = codesList;
+    }
 }

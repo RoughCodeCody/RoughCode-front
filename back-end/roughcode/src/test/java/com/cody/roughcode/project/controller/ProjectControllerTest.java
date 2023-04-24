@@ -1,5 +1,6 @@
 package com.cody.roughcode.project.controller;
 
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -104,6 +106,63 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("프로젝트 코드 연결 성공")
+    @Test
+    public void connectSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/connect";
+        List<Long> req = List.of(0L, 1L, 2L);
+
+        doReturn(req.size()).when(projectsService)
+                .connect(any(Long.class), any(Long.class), any(List.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 코드 연결 성공");
+        String result = jsonObject.get("result").getAsString();
+        assertThat(result).isEqualTo("3");
+    }
+
+    @DisplayName("프로젝트 코드 연결 실패")
+    @Test
+    public void connectFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/connect";
+        List<Long> req = List.of(0L, 1L, 2L);
+
+        doReturn(0).when(projectsService)
+                .connect(any(Long.class), any(Long.class), any(List.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 코드 연결 실패");
+    }
 
     @DisplayName("프로젝트 정보 수정 성공")
     @Test
