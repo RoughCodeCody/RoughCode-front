@@ -1,7 +1,7 @@
-import { PortfolioDetail } from "@/features/portfolios";
+import { ProjectDetail } from "@/features/projects";
 
-const PortfolioDetailPage = () => {
-  return <PortfolioDetail />;
+const ProjectDetailPage = () => {
+  return <ProjectDetail />;
 };
 
 // // This function gets called at build time
@@ -20,4 +20,4 @@ const PortfolioDetailPage = () => {
 //   return { paths, fallback: false }
 // }
 
-export default PortfolioDetailPage;
+export default ProjectDetailPage;

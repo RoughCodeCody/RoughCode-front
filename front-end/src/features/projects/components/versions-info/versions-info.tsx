@@ -36,12 +36,13 @@ export const VersionsInfo = () => {
       btnText="+ 새 버전 등록"
     >
       <FlexDiv direction="column" gap="1rem">
-        {versions.map(({ version, notice, current, feedbacks }) => (
+        {versions.map(({ version, notice, current, feedbacks }, idx) => (
           <VersionInfo
             version={version}
             notice={notice}
             current={current}
             feedbacks={feedbacks}
+            key={idx}
           />
         ))}
       </FlexDiv>

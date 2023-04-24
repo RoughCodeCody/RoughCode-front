@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FlexDiv } from "@/components/elements";
 import { Text } from "@/components/elements";
 
-export const PortfolioCard = () => {
+export const ProjectCard = () => {
   return (
     <FlexDiv
       width="24rem"

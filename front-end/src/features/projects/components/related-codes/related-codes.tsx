@@ -22,8 +22,13 @@ export const RelatedCodes = () => {
       btnText="+ 새 코드 연결"
     >
       {codes.length !== 0 &&
-        codes.map(({ user, content, tags }) => (
-          <MiniFeedbackItem user={user} content={content} tags={tags} />
+        codes.map(({ user, content, tags }, idx) => (
+          <MiniFeedbackItem
+            user={user}
+            content={content}
+            tags={tags}
+            key={idx}
+          />
         ))}
     </Accordion>
   );

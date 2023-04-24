@@ -1,6 +1,6 @@
 import { Accordion } from "@/components/accordion";
 
-export const PortfolioDescription = () => {
+export const ProjectDescription = () => {
   return (
     <Accordion title="프로젝트 상세" hasBtn={false}>
       <div>

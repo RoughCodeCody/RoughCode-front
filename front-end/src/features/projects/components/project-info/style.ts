@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const PortfolioInfoWrapper = styled.div``;
+const ProjectInfoWrapper = styled.div``;
 
 const UrlApkBtn = styled.button<{ isClosed?: boolean }>`
   width: 100%;
@@ -18,4 +18,4 @@ const UrlApkBtn = styled.button<{ isClosed?: boolean }>`
   }
 `;
 
-export { PortfolioInfoWrapper, UrlApkBtn };
+export { ProjectInfoWrapper, UrlApkBtn };
