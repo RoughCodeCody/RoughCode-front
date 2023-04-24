@@ -20,6 +20,7 @@ export const FlexDiv = styled.div<{
   border?: string;
   radius?: string;
   pointer?: boolean;
+  overflow?: string;
 }>`
   ${({
     width,
@@ -41,6 +42,7 @@ export const FlexDiv = styled.div<{
     border,
     radius,
     pointer,
+    overflow,
   }) => css`
     display: flex;
     flex-direction: ${direction || "row"};
@@ -64,5 +66,6 @@ export const FlexDiv = styled.div<{
     border: ${border ? border : "none"};
     border-radius: ${radius ? radius : "0"};
     cursor: ${pointer ? "pointer" : "auto"};
+    overflow: ${overflow ? overflow : "none"};
   `}
 `;

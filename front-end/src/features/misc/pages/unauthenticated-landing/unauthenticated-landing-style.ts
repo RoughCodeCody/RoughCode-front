@@ -8,7 +8,8 @@ const UnauthHomeContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  overflow: hidden;
+  overflow-x: hidden;
+  gap: 3rem;
 `;
 
 const Banner = styled.div`
