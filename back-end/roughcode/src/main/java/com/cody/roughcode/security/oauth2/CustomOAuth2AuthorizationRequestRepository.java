@@ -21,10 +21,10 @@ public class CustomOAuth2AuthorizationRequestRepository<T extends OAuth2Authoriz
         AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     //AuthorizationRequestRepository는 인가 요청을 시작한 시점부터 인가 요청을 받는 시점까지 OAuth2AuthorizationRequest를 유지해줌
-    //default는 HttpSession에 저장하는 HttpSessionOAuth2AuthorizationRequestRepository이다.
+    //default는 HttpSession에 저장하는 HttpSessionOAuth2AuthorizationRequestRepository이다
     //HttpSessionOAuth2AuthorizationRequestRepository는 세션을 이용해서 저장을 하는데
-    //우리는 프론트로부터 Authorization code를 받기 때문에, 이 과정이 필요없다.
-    //즉, remove과정만 진행하게 되므로 remove에서 올바른 OAuth2AuthorizationRequest를 반환해주면 된다.
+    //우리는 프론트로부터 Authorization code를 받기 때문에, 이 과정이 필요없다
+    //즉, remove과정만 진행하게 되므로 remove에서 올바른 OAuth2AuthorizationRequest를 반환해주면 된다
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     public CustomOAuth2AuthorizationRequestRepository(
@@ -33,7 +33,7 @@ public class CustomOAuth2AuthorizationRequestRepository<T extends OAuth2Authoriz
     }
 
     //client registration 설정을 가지고
-    //RequestResolver의 로직을 따라간다.
+    //RequestResolver의 로직을 따라간다
     private static String expandRedirectUri(HttpServletRequest request, ClientRegistration clientRegistration) {
         Map<String, String> uriVariables = new HashMap<>();
         uriVariables.put("registrationId", clientRegistration.getRegistrationId());
@@ -80,7 +80,7 @@ public class CustomOAuth2AuthorizationRequestRepository<T extends OAuth2Authoriz
 
         OAuth2AuthorizationRequest originalRequest;
 
-        //state에 google과 kakao를 구분할 수 있는 string을 넣어놓았다. 올바른 방법이 아니므로 다른 방법을 찾아봐야 한다.
+        //state에 google과 kakao를 구분할 수 있는 string을 넣어놓았다 올바른 방법이 아니므로 다른 방법을 찾아봐야 한다
         String registrationId = request.getParameter("state");
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration == null) {

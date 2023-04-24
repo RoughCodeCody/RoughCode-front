@@ -27,4 +27,6 @@ public class ProjectTags {
     public void cntUp() {
         this.cnt += 1;
     }
+
+    public void cntDown() { this.cnt -= 1; }
 }

@@ -30,7 +30,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     // 깃허브로부터 받은 userRequest 데이터에 대한 후처리되는 함수
-    // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
+    // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다
     // OAuthAttributes: OAuth2UserService를 통해 가져온 OAuth2User의 attribute를 담을 클래스
     // UsersRepository: 엔티티 클래스를 DB에 접근하게 해주는 인터페이스
     // CustomOAuth2UserService: 깃허브 로그인 이후 가져온 사용자의 정보(email, name 등)들을 기반으로 가입 및 정보수정 등의 기능 지원

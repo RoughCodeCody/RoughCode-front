@@ -1,6 +1,7 @@
 package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
@@ -8,6 +9,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -58,4 +60,27 @@ public class Projects extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "projects")
     private List<Codes> projectsCodes;
+
+    public void updateProject(ProjectReq req, String img) {
+        this.img = img;
+        this.title = req.getTitle();
+        this.introduction = req.getIntroduction();
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.img = imgUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Projects projects = (Projects) o;
+        return version == projects.version && projectsId.equals(projects.projectsId) && num.equals(projects.num) && projectWriter.equals(projects.projectWriter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(projectsId, num, version, projectWriter);
+    }
 }
