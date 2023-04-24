@@ -1,5 +1,6 @@
 package com.cody.roughcode.project.service;
 
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
@@ -12,10 +13,12 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -132,9 +135,11 @@ public class ProjectsServiceImpl implements ProjectsService{
     public int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
         if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
+
         Projects project = projectsRepository.findByProjectsId(projectsId);
-        if(project == null) throw new NullPointerException("일치하는 프로젝트가 없습니다");
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
         Projects latestProject = projectsRepository.findLatestProject(project.getNum(), usersId);
         if(!project.equals(latestProject)) throw new NotNewestVersionException();
@@ -232,6 +237,36 @@ public class ProjectsServiceImpl implements ProjectsService{
         }
 
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public int connect(Long projectsId, Long usersId, List<Long> codesIdList) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        if(codesIdList == null || codesIdList.size() == 0) throw new NullPointerException("연결할 코드가 입력되지 않았습니다");
+
+        Projects project = projectsRepository.findByProjectsId(projectsId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        ProjectsInfo projectInfo = projectsInfoRepository.findByProjects(project);
+        if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
+        if(projectInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        // code 연결
+        List<Codes> codesList = new ArrayList<>();
+        for(Long id : codesIdList) {
+            Codes codes = codesRepository.findByCodesId(id);
+            if(codes == null) throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+
+            codesList.add(codes);
+
+            codes.setProject(project);
+            codesRepository.save(codes);
+        }
+        project.setCodes(codesList);
+
+        return codesList.size();
     }
 
 }

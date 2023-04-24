@@ -48,4 +48,8 @@ public class Codes extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = false)
     private Projects projects;
+
+    public void setProject(Projects project) {
+        this.projects = project;
+    }
 }

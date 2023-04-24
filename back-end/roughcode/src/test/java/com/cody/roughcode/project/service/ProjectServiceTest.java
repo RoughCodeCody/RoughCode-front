@@ -1,5 +1,6 @@
 package com.cody.roughcode.project.service;
 
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.exception.DeletionFailException;
 import com.cody.roughcode.exception.NotMatchException;
@@ -10,6 +11,7 @@ import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.aspectj.weaver.ast.Not;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,7 +88,11 @@ public class ProjectServiceTest {
             .introduction("intro")
             .title("title")
             .projectWriter(users)
-            .projectsCodes(new ArrayList<>())
+            .build();
+
+    final ProjectsInfo info = ProjectsInfo.builder()
+            .url("www.google.com")
+            .notice("notice")
             .build();
 
     private static MockMultipartFile getThumbnail() throws IOException {
@@ -127,26 +133,92 @@ public class ProjectServiceTest {
         return feedbacksList;
     }
 
+    private List<Codes> codeInit() {
+        List<Codes> codeList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            codeList.add(Codes.builder()
+                .codesId(1L)
+                .codeWriter(users)
+                .version(1)
+                .num(1L)
+                .build());
+        }
+
+        return codeList;
+    }
+
+    @DisplayName("프로젝트 코드 연결 성공")
+    @Test
+    void connectProjectCodeSucceed(){
+        // given
+        List<Codes> codesList = codeInit();
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+        doReturn(codesList.get(0)).when(codesRepostiory).findByCodesId(any(Long.class));
+
+        // when
+        int success = projectsService.connect(project.getProjectsId(), users.getUsersId(), List.of(0L, 1L, 2L));
+
+        // then
+        assertThat(success).isEqualTo(codesList.size());
+    }
+
+    @DisplayName("프로젝트 코드 연결 실패 - 일치하는 프로젝트 없음")
+    @Test
+    void connectProjectCodeFailNoProject(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.connect(1L, 1L, List.of(0L, 1L, 2L))
+        );
+        
+        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("프로젝트 코드 연결 실패 - 일치하는 코드 없음")
+    @Test
+    void connectProjectCodeFailNoCode(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+        doReturn(null).when(codesRepostiory).findByCodesId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.connect(1L, 1L, List.of(0L, 1L, 2L))
+        );
+
+        assertEquals("일치하는 코드가 존재하지 않습니다", exception.getMessage());
+    }
+
+    // 프로젝트 코드 연결 실패 - code writer와 등록하려는 user가 일치하지 않음
+    @DisplayName("프로젝트 코드 연결 실패 - code writer와 등록하려는 user가 일치하지 않음")
+    @Test
+    void connectProjectCodeFailUserDiffer(){
+        // given
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.connect(1L, 1L, List.of(0L, 1L, 2L))
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+
+
     @DisplayName("프로젝트 수정 성공")
     @Test
     void updateProjectSucceed() throws Exception {
         // given
         List<ProjectTags> tagsList = tagsInit();
-        Projects project = Projects.builder()
-                .num(1L)
-                .version(1)
-                .img("imgUrl")
-                .introduction("introduction")
-                .title("title")
-                .projectWriter(users)
-                .projectsCodes(null)
-                .likeCnt(1)
-                .selectedTags(new ArrayList<>())
-                .build();
-        ProjectsInfo info = ProjectsInfo.builder()
-                .url("www.google.com")
-                .notice("notice")
-                .build();
         List<Feedbacks> feedbacksList = feedbacksInit(project);
 
         ProjectReq req = ProjectReq.builder()
@@ -174,7 +246,6 @@ public class ProjectServiceTest {
         assertThat(success).isEqualTo(1);
     }
 
-    // 일치하는 프로젝트 없음
     @DisplayName("프로젝트 수정 실패 - 일치하는 프로젝트 없음")
     @Test
     void updateProjectFailNoProject() throws Exception {
@@ -200,7 +271,6 @@ public class ProjectServiceTest {
         assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
     }
 
-    // 최신 버전의 프로젝트가 아님
     @DisplayName("프로젝트 수정 실패 - 최신 버전의 프로젝트가 아님")
     @Test
     void updateProjectFailNotNewest() throws Exception {
@@ -252,7 +322,6 @@ public class ProjectServiceTest {
         assertEquals("최신 버전이 아닙니다", exception.getMessage());
     }
 
-    // 일치하는 프로젝트 정보가 없음
     @DisplayName("프로젝트 수정 실패 - 일치하는 프로젝트 정보가 없음")
     @Test
     void updateProjectFailNoProjectInfo() throws Exception {
@@ -353,7 +422,7 @@ public class ProjectServiceTest {
                 NullPointerException.class, () -> projectsService.updateProjectThumbnail(thumbnail, 1L, 1L)
         );
 
-        assertEquals("일치하는 프로젝트가 없습니다", exception.getMessage());
+        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
     }
 
     @DisplayName("프로젝트 썸네일 등록 실패 - 등록하려는 유저와 프로젝트의 유저가 일치하지 않음")

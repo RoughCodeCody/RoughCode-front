@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import static com.cody.roughcode.security.auth.JwtProperties.TOKEN_HEADER;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/project")
@@ -28,6 +29,25 @@ import javax.servlet.http.HttpServletRequest;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
+
+    @Operation(summary = "프로젝트 코드 연결 API")
+    @PutMapping("/{projectId}/connect")
+    ResponseEntity<?> connectProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                     @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId,
+                                     @Parameter(description = "연결할 코드 아이디 리스트", required = true) @RequestBody List<Long> req){
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = projectsService.connect(projectId, userId, req);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("프로젝트 코드 연결 실패");
+        else return Response.makeResponse(HttpStatus.OK, "프로젝트 코드 연결 성공", 1, res);
+    }
 
     @Operation(summary = "프로젝트 수정 API")
     @PutMapping("/content")
