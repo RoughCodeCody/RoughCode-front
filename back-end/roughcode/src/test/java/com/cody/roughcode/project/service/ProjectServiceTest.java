@@ -119,6 +119,21 @@ public class ProjectServiceTest {
         return tagsList;
     }
 
+
+    private List<ProjectSelectedTags> selectedTagsInit() {
+        List<ProjectTags> tags = tagsInit();
+        List<ProjectSelectedTags> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(ProjectSelectedTags.builder()
+                    .selectedTagsId(i)
+                    .tags(tags.get((int) i - 1))
+                    .projects(project)
+                    .build());
+        }
+
+        return tagsList;
+    }
+
     private List<Feedbacks> feedbacksInit(Projects project) {
         List<Feedbacks> feedbacksList = new ArrayList<>();
         for (long i = 1L; i <= 3L; i++) {
@@ -145,6 +160,103 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+
+    @DisplayName("프로젝트 삭제 성공")
+    @Test
+    void deleteProjectSucceed(){
+        // given
+        List<ProjectSelectedTags> selectedTagsList = selectedTagsInit();
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .selectedTags(selectedTagsList)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when
+        int success = projectsService.deleteProject(project.getProjectsId(), users.getUsersId());
+
+        // then
+        assertThat(success).isEqualTo(1);
+    }
+
+    @DisplayName("프로젝트 삭제 실패 - 일치하는 유저 없음")
+    @Test
+    void deleteProjectFailNoUser(){
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.deleteProject(1L, 1L)
+        );
+
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("프로젝트 삭제 실패 - 일치하는 프로젝트 없음")
+    @Test
+    void deleteProjectFailNoProject(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.deleteProject(1L, 1L)
+        );
+
+        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
+    }
+
+
+    @DisplayName("프로젝트 삭제 실패 - 최신 버전의 프로젝트가 아님")
+    @Test
+    void deleteProjectFailNotNewest(){
+        // given
+        List<ProjectSelectedTags> selectedTagsList = selectedTagsInit();
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .selectedTags(selectedTagsList)
+                .build();
+        Projects project2 = Projects.builder()
+                .projectsId(2L)
+                .num(2L)
+                .version(2)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .selectedTags(selectedTagsList)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project2).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+
+        // when & then
+        NotNewestVersionException exception = assertThrows(
+                NotNewestVersionException.class, () -> projectsService.deleteProject(1L, 1L)
+        );
+
+        assertEquals("최신 버전이 아닙니다", exception.getMessage());
     }
 
     @DisplayName("프로젝트 코드 연결 성공")
@@ -196,7 +308,6 @@ public class ProjectServiceTest {
         assertEquals("일치하는 코드가 존재하지 않습니다", exception.getMessage());
     }
 
-    // 프로젝트 코드 연결 실패 - code writer와 등록하려는 user가 일치하지 않음
     @DisplayName("프로젝트 코드 연결 실패 - code writer와 등록하려는 user가 일치하지 않음")
     @Test
     void connectProjectCodeFailUserDiffer(){

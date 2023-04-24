@@ -12,4 +12,5 @@ public interface ProjectsService {
     int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId);
     int updateProject(ProjectReq req, Long usersId);
     int connect(Long projectsId, Long usersId, List<Long> codesIdList);
+    int deleteProject(Long projectsId, Long usersId);
 }

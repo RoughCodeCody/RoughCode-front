@@ -106,6 +106,56 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("프로젝트 삭제 성공")
+    @Test
+    public void deleteSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}";
+
+        doReturn(1).when(projectsService)
+                .deleteProject(any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 삭제 성공");
+    }
+
+    @DisplayName("프로젝트 삭제 실패")
+    @Test
+    public void deleteFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}";
+
+        doReturn(0).when(projectsService)
+                .deleteProject(any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 삭제 실패");
+    }
+
     @DisplayName("프로젝트 코드 연결 성공")
     @Test
     public void connectSucceed() throws Exception {
