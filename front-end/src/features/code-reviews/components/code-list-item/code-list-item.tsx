@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { FlexDiv, Nickname, TagChipSub, Text } from "@/components/elements";
 import { Count } from "@/components/count";
 import { CodeListItemWrapper } from "./style";
+import { useRouter } from "next/router";
 
 type CodeListItemProps = {
   codeListItem: {
@@ -31,11 +32,14 @@ export const CodeListItem = ({
     userName,
   },
 }: CodeListItemProps) => {
+  const router = useRouter();
   const [newLikeCnt, setNewLikeCnt] = useState<number>(like);
   const [newReviewCnt, setNewReviewCnt] = useState<number>(reviewCnt);
 
   return (
-    <CodeListItemWrapper>
+    <CodeListItemWrapper
+      onClick={() => router.push(`/code-reviews/${codesId}`)}
+    >
       <FlexDiv width="100%" justify="space-between" pointer={true}>
         <FlexDiv>
           <Text bold={true} padding="0 1rem 0 0" pointer={true}>
