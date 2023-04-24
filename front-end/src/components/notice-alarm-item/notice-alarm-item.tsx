@@ -37,9 +37,13 @@ export const NoticeAlarmItem = ({
         color={color}
       >
         {children}
-        <DeleteIconContainer>
-          <RiCloseCircleLine fontSize="2rem" color="var(--font-color)" />
-        </DeleteIconContainer>
+        {isNotice ? (
+          <DeleteIconContainer>
+            <RiCloseCircleLine fontSize="2rem" color="var(--font-color)" />
+          </DeleteIconContainer>
+        ) : (
+          <></>
+        )}
       </NoticeAlarmDiv>
     </NoticeAlarmWrapper>
   );

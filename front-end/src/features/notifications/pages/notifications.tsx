@@ -56,6 +56,7 @@ export const Notifications = () => {
                 {notice.map((notice: notice) => (
                   <NoticeAlarmItem
                     width={"100%"}
+                    isNotice={true}
                     isDirectionRight={notice.isProject}
                     color={notice.isProject ? "sub-three" : ""}
                     shadow={true}
