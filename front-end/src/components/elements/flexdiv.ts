@@ -19,6 +19,7 @@ export const FlexDiv = styled.div<{
   color?: string;
   border?: string;
   radius?: string;
+  pointer?: boolean;
 }>`
   ${({
     width,
@@ -39,6 +40,7 @@ export const FlexDiv = styled.div<{
     color,
     border,
     radius,
+    pointer,
   }) => css`
     display: flex;
     flex-direction: ${direction || "row"};
@@ -61,5 +63,6 @@ export const FlexDiv = styled.div<{
     background-color: ${color ? "var(--" + color + "-color)" : "none"};
     border: ${border ? border : "none"};
     border-radius: ${radius ? radius : "0"};
+    cursor: ${pointer ? "pointer" : "auto"};
   `}
 `;

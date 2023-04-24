@@ -15,6 +15,7 @@ const GlobalStyles = createGlobalStyle`
         --main-color: #319795;
         --font-color: #45474F;
         --white-color: #FFFFFF;
+        --black-color: #000000;
         --sub-one-color: #EFF8FF;
         --sub-two-color: #E2E8F0;
         --sub-three-color: #E9FBEF;
@@ -57,13 +58,16 @@ const GlobalStyles = createGlobalStyle`
      font-size: 100%;
      font: inherit;
      vertical-align: baseline;
+     color: var(--font-color);
    }
+
    /* HTML5 display-role reset for older browsers */
    article, aside, details, figcaption, figure, 
    footer, header, hgroup, menu, nav, section {
      display: block;
    }
    body {
+     background-color: var(--bg-color);
      line-height: 1;
    }
    ol, ul {
@@ -84,6 +88,10 @@ const GlobalStyles = createGlobalStyle`
    a {
     text-decoration: none;
    }
+   button {
+    border: none;
+   }
+
 
     `;
 

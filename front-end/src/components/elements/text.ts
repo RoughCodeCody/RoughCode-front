@@ -9,8 +9,10 @@ export const Text = styled.p<{
   wrap?: string;
   width?: string;
   height?: string;
+  padding?: string;
+  margin?: string;
 }>`
-  ${({ size, color, bold, pointer, lineHeight, wrap, width, height }) => css`
+  ${({ size, color, bold, pointer, lineHeight, wrap, width, height,padding,margin }) => css`
     font-size: ${size || "1rem"};
     font-weight: ${bold ? "700" : "400"};
     color: ${color ? "var(--" + color + "-color)" : "var(--font-color)"};
@@ -19,5 +21,7 @@ export const Text = styled.p<{
     overflow-wrap: ${wrap ? wrap : "none"};
     width: ${width ? width : "none"};
     height: ${height ? height : "none"};
+    padding: ${padding || "0"};
+    margin: ${margin || "0"};
   `}
 `;
