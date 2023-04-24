@@ -41,6 +41,7 @@ public class ProjectsController {
             res = projectsService.updateProject(req, userId);
         } catch (Exception e){
             log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
         }
 
         if(res == 0) return Response.notFound("프로젝트 정보 수정 실패");
@@ -79,6 +80,7 @@ public class ProjectsController {
             res = projectsService.insertProject(req, userId);
         } catch (Exception e){
             log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
         }
 
         if(res <= 0) return Response.notFound("프로젝트 정보 등록 실패");

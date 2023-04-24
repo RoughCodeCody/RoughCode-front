@@ -111,7 +111,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
                     SelectedFeedbacks selectedFeedback = SelectedFeedbacks.builder()
                             .feedbacks(feedback)
-                            .selectedProject(savedProject)
+                            .projects(savedProject)
                             .build();
                     selectedFeedbacksRepository.save(selectedFeedback);
                 }
@@ -121,7 +121,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectsInfoRepository.save(info);
         } catch(Exception e){
             log.error(e.getMessage());
-            throw new SaveFailedException("프로젝트 정보 저장에 실패하였습니다");
+            throw new SaveFailedException(e.getMessage());
         }
 
         return projectId;
@@ -151,7 +151,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectsRepository.save(project);
         } catch(Exception e){
             log.error(e.getMessage());
-            throw new SaveFailedException("프로젝트 썸네일 저장에 실패하였습니다");
+            throw new SaveFailedException(e.getMessage());
         }
 
         return 1;
@@ -215,7 +215,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                 for(Long id : req.getSelectedFeedbacksId()){
                     Feedbacks feedbacks = feedbacksRepository.findFeedbacksByFeedbacksId(id);
                     selectedFeedbacksRepository.save(SelectedFeedbacks.builder()
-                            .selectedProject(target)
+                            .projects(target)
                             .feedbacks(feedbacks)
                             .build());
 

@@ -24,5 +24,5 @@ public class SelectedFeedbacks {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selected_project_id", nullable = false)
-    private Projects selectedProject;
+    private Projects projects;
 }
