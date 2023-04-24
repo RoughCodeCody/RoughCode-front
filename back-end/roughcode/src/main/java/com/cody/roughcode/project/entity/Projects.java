@@ -59,10 +59,12 @@ public class Projects extends BaseTimeEntity {
     private List<ProjectSelectedTags> selectedTags;
 
     @OneToMany(mappedBy = "projects")
+    private List<SelectedFeedbacks> selectedFeedbacks;
+
+    @OneToMany(mappedBy = "projects")
     private List<Codes> projectsCodes;
 
-    public void updateProject(ProjectReq req, String img) {
-        this.img = img;
+    public void updateProject(ProjectReq req) {
         this.title = req.getTitle();
         this.introduction = req.getIntroduction();
     }

@@ -29,24 +29,24 @@ public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
 
-//    @Operation(summary = "프로젝트 수정 API")
-//    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    ResponseEntity<?> updateProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-//                                    @Parameter(description = "변경할 썸네일 사진") @RequestPart("thumbnail") MultipartFile thumbnail,
-//                                    @Parameter(description = "프로젝트 정보 값", required = true) @RequestPart("req") ProjectReq req) {
-//        Long userId = jwtTokenProvider.getId(accessToken);
-////        Long userId = 1L;
-//
-//        int res = 0;
-//        try{
-//            res = projectsService.updateProject(req, thumbnail, userId);
-//        } catch (Exception e){
-//            log.error(e.getMessage());
-//        }
-//
-//        if(res == 0) return Response.notFound("프로젝트 수정 실패");
-//        return Response.ok("프로젝트 수정 성공");
-//    }
+    @Operation(summary = "프로젝트 수정 API")
+    @PutMapping("/content")
+    ResponseEntity<?> updateProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                    @Parameter(description = "프로젝트 정보 값", required = true) @RequestBody ProjectReq req) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+//        Long userId = 1L;
+
+        int res = 0;
+        try{
+            res = projectsService.updateProject(req, userId);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res == 0) return Response.notFound("프로젝트 정보 수정 실패");
+        return Response.ok("프로젝트 정보 수정 성공");
+    }
 
     @Operation(summary = "프로젝트 썸네일 등록/수정 API")
     @PostMapping(value = "/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -61,6 +61,7 @@ public class ProjectsController {
             res = projectsService.updateProjectThumbnail(thumbnail, projectId, userId);
         } catch (Exception e){
             log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
         }
 
         if(res == 0) return Response.notFound("프로젝트 썸네일 등록 실패");
@@ -79,6 +80,7 @@ public class ProjectsController {
             res = projectsService.insertProject(req, userId);
         } catch (Exception e){
             log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
         }
 
         if(res <= 0) return Response.notFound("프로젝트 정보 등록 실패");

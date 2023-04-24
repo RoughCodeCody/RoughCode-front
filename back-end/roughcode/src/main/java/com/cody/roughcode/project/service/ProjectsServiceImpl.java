@@ -4,6 +4,7 @@ import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -29,6 +32,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectTagsRepository projectTagsRepository;
     private final CodesRepostiory codesRepository;
     private final FeedbacksRepository feedbacksRepository;
+    private final SelectedFeedbacksRepository selectedFeedbacksRepository;
 
     @Override
     @Transactional
@@ -102,8 +106,14 @@ public class ProjectsServiceImpl implements ProjectsService{
                     if(feedback == null) throw new NullPointerException("일치하는 피드백이 없습니다");
                     if(!feedback.getProjects().getNum().equals(projectNum))
                         throw new NullPointerException("피드백과 프로젝트가 일치하지 않습니다");
-                    feedback.setSelected(true);
+                    feedback.selectedUp();
                     feedbacksRepository.save(feedback);
+
+                    SelectedFeedbacks selectedFeedback = SelectedFeedbacks.builder()
+                            .feedbacks(feedback)
+                            .projects(savedProject)
+                            .build();
+                    selectedFeedbacksRepository.save(selectedFeedback);
                 }
             else log.info("선택한 피드백이 없습니다");
 
@@ -111,7 +121,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectsInfoRepository.save(info);
         } catch(Exception e){
             log.error(e.getMessage());
-            throw new SaveFailedException("프로젝트 정보 저장에 실패하였습니다");
+            throw new SaveFailedException(e.getMessage());
         }
 
         return projectId;
@@ -141,70 +151,89 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectsRepository.save(project);
         } catch(Exception e){
             log.error(e.getMessage());
-            throw new SaveFailedException("프로젝트 썸네일 저장에 실패하였습니다");
+            throw new SaveFailedException(e.getMessage());
         }
 
         return 1;
     }
 
-//    @Override
-//    public int updateProject(ProjectReq req, MultipartFile thumbnail, Long usersId) {
-//        Users user = usersRepository.findByUsersId(usersId);
-//        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-//
-//        // 기존의 프로젝트 가져오기
-//        Projects original = projectsRepository.findByProjectsId(req.getProjectId());
-//        if(original == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
-//        else if (!original.equals(projectsRepository.findProjectWithMaxVersionByProjectsId(req.getProjectId()))) {
-//            throw new NotNewestVersionException("최신 버전이 아닙니다");
-//        }
-//        ProjectsInfo originalInfo = projectsInfoRepository.findByProjects(original);
-//        if(originalInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
-//
-//        String imgUrl;
-//        String fileName = original.getNum() + "_" + original.getVersion();
-//
-//        try {
-//            if(thumbnail == null){ // 썸네일 바뀌지 않는 경우
-//                imgUrl = original.getImg();
-//            } else{ // 썸네일 바뀌는 경우
-//                // S3에서 해당하는 파일 찾아서 삭제하기
-//                s3FileService.delete(original.getImg());
-//
-//                // 새로 등록하기
-//                imgUrl = s3FileService.upload(thumbnail, "project", fileName);
-//            }
-//
-//            // tag 삭제
-//            List<ProjectSelectedTags> selectedTagsList = original.getSelectedTags();
-//            for (ProjectSelectedTags tag : selectedTagsList) {
-//                projectSelectedTagsRepository.delete(tag);
-//
-//                ProjectTags projectTag = tag.getTags();
-//                projectTag.cntDown();
-//            }
-//
-//            // tag 등록
-//            for(Long id : req.getSelectedTagsId()){
-//                ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
-//                projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
-//                        .tags(projectTag)
-//                        .projects(original)
-//                        .build());
-//
-//                projectTag.cntUp();
-//                projectTagsRepository.save(projectTag);
-//            }
-//
-//            original.updateProject(req, imgUrl);
-//            originalInfo.updateProject(req);
-//        } catch(Exception e){
-//            log.error(e.getMessage());
-//            throw new UpdateFailedException(e.getMessage());
-//        }
-//
-//        return 1;
-//    }
+    @Override
+    public int updateProject(ProjectReq req, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        // 기존의 프로젝트 가져오기
+        Projects target = projectsRepository.findByProjectsId(req.getProjectId());
+        if(target == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        Projects latestProject = projectsRepository.findLatestProject(target.getNum(), user.getUsersId());
+        if(!target.equals(latestProject)) throw new NotNewestVersionException();
+
+        ProjectsInfo originalInfo = projectsInfoRepository.findByProjects(target);
+        if(originalInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        try {
+            // tag 삭제
+            List<ProjectSelectedTags> selectedTagsList = target.getSelectedTags();
+            if(selectedTagsList != null)
+                for (ProjectSelectedTags tag : selectedTagsList) {
+                    ProjectTags projectTag = tag.getTags();
+                    projectTag.cntDown();
+                    projectTagsRepository.save(projectTag);
+
+                    projectSelectedTagsRepository.delete(tag);
+                }
+            else log.info("기존에 선택하였던 tag가 없습니다");
+
+            // tag 등록
+            if(req.getSelectedTagsId() != null)
+                for(Long id : req.getSelectedTagsId()){
+                    ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
+                    projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
+                            .tags(projectTag)
+                            .projects(target)
+                            .build());
+
+                    projectTag.cntUp();
+                    projectTagsRepository.save(projectTag);
+                }
+            else log.info("새로 선택한 tag가 없습니다");
+
+            // feedback 삭제
+            List<SelectedFeedbacks> selectedFeedbacksList = target.getSelectedFeedbacks();
+            if(selectedFeedbacksList != null)
+                for (SelectedFeedbacks feedback : selectedFeedbacksList) {
+                    Feedbacks feedbacks = feedback.getFeedbacks();
+                    feedbacks.selectedDown();
+                    feedbacksRepository.save(feedbacks);
+
+                    selectedFeedbacksRepository.delete(feedback);
+                }
+            else log.info("기존에 선택하였던 feedback이 없습니다");
+
+            // feedback 등록
+            if(req.getSelectedFeedbacksId() != null)
+                for(Long id : req.getSelectedFeedbacksId()){
+                    Feedbacks feedbacks = feedbacksRepository.findFeedbacksByFeedbacksId(id);
+                    selectedFeedbacksRepository.save(SelectedFeedbacks.builder()
+                            .projects(target)
+                            .feedbacks(feedbacks)
+                            .build());
+
+                    feedbacks.selectedUp();
+                    feedbacksRepository.save(feedbacks);
+                }
+            else log.info("새로 선택한 feedback이 없습니다");
+
+            target.updateProject(req); // title, introduction 업데이트
+            originalInfo.updateProject(req);
+        } catch(Exception e){
+            log.error(e.getMessage());
+            throw new UpdateFailedException(e.getMessage());
+        }
+
+        return 1;
+    }
+
 }
 
 

@@ -33,10 +33,7 @@ public class Feedbacks extends BaseTimeEntity {
 
     @Builder.Default
     @Column(name = "selected", nullable = true)
-    private boolean selected = false;
-
-    @Column(name = "comment", nullable = false, columnDefinition = "text")
-    private String comment;
+    private int selected = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = false)
@@ -47,7 +44,11 @@ public class Feedbacks extends BaseTimeEntity {
     @JoinColumn(name = "users_id")
     private Users users = null;
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void selectedUp() {
+        this.selected += 1;
+    }
+
+    public void selectedDown() {
+        this.selected -= 1;
     }
 }
