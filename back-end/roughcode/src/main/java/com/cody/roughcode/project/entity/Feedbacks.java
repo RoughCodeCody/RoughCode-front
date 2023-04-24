@@ -46,4 +46,8 @@ public class Feedbacks extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
     private Users users = null;
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 }

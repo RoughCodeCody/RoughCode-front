@@ -9,6 +9,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -68,5 +69,18 @@ public class Projects extends BaseTimeEntity {
 
     public void setImgUrl(String imgUrl) {
         this.img = imgUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Projects projects = (Projects) o;
+        return version == projects.version && projectsId.equals(projects.projectsId) && num.equals(projects.num) && projectWriter.equals(projects.projectWriter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(projectsId, num, version, projectWriter);
     }
 }

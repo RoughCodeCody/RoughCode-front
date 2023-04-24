@@ -1,18 +1,12 @@
 package com.cody.roughcode.project.service;
 
-import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.exception.NotMatchException;
+import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.entity.ProjectSelectedTags;
-import com.cody.roughcode.project.entity.ProjectTags;
-import com.cody.roughcode.project.entity.Projects;
-import com.cody.roughcode.project.entity.ProjectsInfo;
-import com.cody.roughcode.project.repository.ProjectSelectedTagsRepository;
-import com.cody.roughcode.project.repository.ProjectTagsRepository;
-import com.cody.roughcode.project.repository.ProjectsInfoRepository;
-import com.cody.roughcode.project.repository.ProjectsRepository;
+import com.cody.roughcode.project.entity.*;
+import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +28,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectSelectedTagsRepository projectSelectedTagsRepository;
     private final ProjectTagsRepository projectTagsRepository;
     private final CodesRepostiory codesRepository;
+    private final FeedbacksRepository feedbacksRepository;
 
     @Override
     @Transactional
@@ -57,8 +52,14 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectNum = user.getProjectsCnt();
             projectVersion = 1;
         } else { // 기존 프로젝트 버전 업
-            Projects original = projectsRepository.findProjectWithMaxVersionByProjectsId(req.getProjectId());
+            // num 가져오기
+            // num과 user가 일치하는 max version값 가져오기
+            // num과 user와 max version값에 일치하는 project 가져오기
+            Projects original = projectsRepository.findByProjectsId(req.getProjectId());
             if(original == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+            original = projectsRepository.findLatestProject(original.getNum(), user.getUsersId());
+            if(original == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
             if(!original.getProjectWriter().equals(user)) throw new NotMatchException();
 
             projectNum = original.getNum();
@@ -81,16 +82,30 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectId = savedProject.getProjectsId();
 
             // tag 등록
-            for(Long id : req.getSelectedTagsId()){
-                ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
-                projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
-                        .tags(projectTag)
-                        .projects(project)
-                        .build());
+            if(req.getSelectedTagsId() != null)
+                for(Long id : req.getSelectedTagsId()){
+                    ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
+                    projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
+                            .tags(projectTag)
+                            .projects(project)
+                            .build());
 
-                projectTag.cntUp();
-                projectTagsRepository.save(projectTag);
-            }
+                    projectTag.cntUp();
+                    projectTagsRepository.save(projectTag);
+                }
+            else log.info("등록한 태그가 없습니다");
+
+            // feedback 선택
+            if(req.getSelectedFeedbacksId() != null)
+                for(Long id : req.getSelectedFeedbacksId()){
+                    Feedbacks feedback = feedbacksRepository.findFeedbacksByFeedbacksId(id);
+                    if(feedback == null) throw new NullPointerException("일치하는 피드백이 없습니다");
+                    if(!feedback.getProjects().getNum().equals(projectNum))
+                        throw new NullPointerException("피드백과 프로젝트가 일치하지 않습니다");
+                    feedback.setSelected(true);
+                    feedbacksRepository.save(feedback);
+                }
+            else log.info("선택한 피드백이 없습니다");
 
             info.setProjects(savedProject);
             projectsInfoRepository.save(info);
@@ -103,6 +118,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -110,12 +126,14 @@ public class ProjectsServiceImpl implements ProjectsService{
         Projects project = projectsRepository.findByProjectsId(projectsId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 없습니다");
         if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
+        Projects latestProject = projectsRepository.findLatestProject(project.getNum(), usersId);
+        if(!project.equals(latestProject)) throw new NotNewestVersionException();
 
         Long projectNum = project.getNum();
         int projectVersion = project.getVersion();
 
         try{
-            String fileName = projectNum + "_" + projectVersion;
+            String fileName = user.getName() + "_" + projectNum + "_" + projectVersion;
 
             String imgUrl = s3FileService.upload(thumbnail, "project", fileName);
 

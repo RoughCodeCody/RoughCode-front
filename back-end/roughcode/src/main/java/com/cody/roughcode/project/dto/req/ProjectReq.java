@@ -37,4 +37,7 @@ public class ProjectReq {
 
     @Schema(description = "선택한 tag의 id", example = "[1, 2, 3]")
     private List<Long> selectedTagsId;
+
+    @Schema(description = "선택한 feedback id", example = "[1, 2, 3]")
+    private List<Long> selectedFeedbacksId;
 }

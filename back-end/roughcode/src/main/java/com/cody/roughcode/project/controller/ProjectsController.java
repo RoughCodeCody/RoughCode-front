@@ -48,7 +48,6 @@ public class ProjectsController {
 //        return Response.ok("프로젝트 수정 성공");
 //    }
 
-
     @Operation(summary = "프로젝트 썸네일 등록/수정 API")
     @PostMapping(value = "/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> updateProjectThumbnail(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
@@ -67,7 +66,6 @@ public class ProjectsController {
         if(res == 0) return Response.notFound("프로젝트 썸네일 등록 실패");
         return Response.ok("프로젝트 썸네일 등록 성공");
     }
-
 
     @Operation(summary = "프로젝트 정보 등록 API")
     @PostMapping("/content")

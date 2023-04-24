@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -50,5 +51,18 @@ public class Users extends BaseTimeEntity{
         if(this.projectsCnt == null)
             this.projectsCnt = 0L;
         this.projectsCnt += 1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Users users = (Users) o;
+        return usersId.equals(users.usersId) && Objects.equals(email, users.email) && name.equals(users.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(usersId, email, name);
     }
 }

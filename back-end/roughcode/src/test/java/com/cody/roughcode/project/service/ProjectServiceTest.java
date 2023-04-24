@@ -102,7 +102,7 @@ public class ProjectServiceTest {
         );
         return thumbnail;
     }
-    
+
     private List<ProjectTags> tagsInit() {
         List<ProjectTags> tagsList = new ArrayList<>();
         for (long i = 1L; i <= 3L; i++) {
@@ -436,11 +436,11 @@ public class ProjectServiceTest {
 
         // when
         int success = projectsService.updateProjectThumbnail(thumbnail, 1L, 1L);
-        
+
         // then
         assertThat(success).isEqualTo(1L);
     }
-    
+
     @DisplayName("프로젝트 썸네일 등록 실패 - 존재하지 않는 유저 아이디")
     @Test
     void updateProjectThumbnailFailNoUser() throws IOException {
@@ -604,7 +604,8 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(original).when(projectsRepository).findProjectWithMaxVersionByProjectsId(1L);
+        doReturn(original).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(original).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
         doReturn(ProjectSelectedTags.builder()
@@ -661,7 +662,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -697,7 +698,8 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(original).when(projectsRepository).findProjectWithMaxVersionByProjectsId(any(Long.class));
+        doReturn(original).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(original).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
