@@ -1,4 +1,4 @@
-import { FlexDiv } from "../elements";
+import { FlexDiv } from "@/components/elements";
 import { FeedbackItem } from "./feedback-item";
 
 interface FeedbacksProps {

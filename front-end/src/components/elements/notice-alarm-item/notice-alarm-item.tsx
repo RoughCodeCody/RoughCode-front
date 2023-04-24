@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
+import { RiCloseCircleLine } from "react-icons/ri";
 import {
   NoticeAlarmWrapper,
   NoticeAlarmDiv,
   NoticeAlarmRibbon,
   DeleteIconContainer,
 } from "./style";
-import { RiCloseCircleLine } from "react-icons/ri";
 
 interface Props {
   children: ReactNode;

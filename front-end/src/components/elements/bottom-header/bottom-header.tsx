@@ -1,5 +1,5 @@
-import { FlexDiv } from "../elements/flexdiv";
-import { Text } from "../elements/text";
+import { FlexDiv } from "../flexdiv";
+import { Text } from "../text";
 
 interface BottomHeaderProps {
   locations?: string[];

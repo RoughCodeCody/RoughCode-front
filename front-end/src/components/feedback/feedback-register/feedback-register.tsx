@@ -1,12 +1,11 @@
-import { FlexDiv, Text, WhiteBoxShad } from "@/components/elements";
-import { Btn } from "../elements/btn";
-import { FeedbackResisterTextarea } from "./style";
+import { FlexDiv, Text, WhiteBoxShad, Btn } from "@/components/elements";
+import { FeedbackRegisterTextarea } from "./style";
 
-type FeedbackResisterProps = {
+type FeedbackRegisterProps = {
   type: "feedback" | "review";
 };
 
-export const FeedbackResister = ({ type }: FeedbackResisterProps) => {
+export const FeedbackRegister = ({ type }: FeedbackRegisterProps) => {
   return (
     <FlexDiv direction="column" width="80%">
       <Text color="main" bold={true} padding="0.5rem 0">
@@ -21,7 +20,7 @@ export const FeedbackResister = ({ type }: FeedbackResisterProps) => {
           justify="space-between"
           padding="1.5rem"
         >
-          <FeedbackResisterTextarea
+          <FeedbackRegisterTextarea
             placeholder={
               type === "feedback"
                 ? "프로젝트에 제안할 점, 개선 의견, 발견한 버그 등을 피드백으로 남겨주세요"

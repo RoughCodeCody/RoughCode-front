@@ -1,5 +1,4 @@
-import { NoticeAlarmItem } from "@/components/notice-alarm-item";
-import { Text } from "@/components/elements";
+import { NoticeAlarmItem, Text } from "@/components/elements";
 import { VersionDropdown } from "./version-dropdown";
 import { NoticeContent, NoticeTimeWrapper } from "./style";
 

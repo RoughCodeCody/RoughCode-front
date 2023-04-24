@@ -1,5 +1,4 @@
-import { FlexDiv } from "@/components/elements";
-import { BottomHeader } from "@/components/elements";
+import { FlexDiv, BottomHeader } from "@/components/elements";
 import { ProjectCard } from "../components/project-card";
 
 export const Projects = () => {

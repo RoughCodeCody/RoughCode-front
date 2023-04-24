@@ -1,5 +1,4 @@
-import { Accordion } from "@/components/accordion";
-import { TagChipSub } from "@/components/elements";
+import { Accordion, TagChipSub } from "@/components/elements";
 import { MiniFeedbackItem } from "../mini-feedback-item";
 
 export const RelatedCodes = () => {

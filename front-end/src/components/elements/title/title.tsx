@@ -1,4 +1,3 @@
-import { describe } from "node:test";
 import { TitleContainer, TitleText, Description } from "./style";
 
 interface TitleProps {

@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Count } from "../count";
-import { FlexDiv, Nickname, Text } from "../elements";
+import { Count, FlexDiv, Nickname, Text } from "@/components/elements";
+import { Selection } from "@/components/selection";
 import { FeedbackItemWrapper } from "./style";
-import { Selection } from "../selection";
 
 interface FeedbackItemProps {
   feedback: {

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const FeedbackResisterTextarea = styled.textarea.attrs(({ placeholder }) => ({
+const FeedbackRegisterTextarea = styled.textarea.attrs(({ placeholder }) => ({
   placeholder: placeholder,
 }))`
   width: 85%;
@@ -23,4 +23,4 @@ const FeedbackResisterTextarea = styled.textarea.attrs(({ placeholder }) => ({
   }
 `;
 
-export { FeedbackResisterTextarea };
+export { FeedbackRegisterTextarea };
