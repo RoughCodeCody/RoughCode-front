@@ -6,7 +6,9 @@ import com.cody.roughcode.exception.DeletionFailException;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.UpdateFailedException;
+import com.cody.roughcode.project.dto.req.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
+import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
@@ -19,6 +21,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -162,6 +168,479 @@ public class ProjectServiceTest {
         return codeList;
     }
 
+    @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 포함, 최신순")
+    @Test
+    void getProjectListWithClosedWithoutTagsNewest(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+
+        String sort = "modifiedDate";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(true)
+                .tagIdList(null)
+                .keyword("title")
+                .build();
+
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectsRepository).findAllByKeyword(req.getKeyword(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
+
+    @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 포함, 좋아요순")
+    @Test
+    void getProjectListWithClosedWithoutTagsLike(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+
+        String sort = "likeCnt";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(true)
+                .tagIdList(null)
+                .keyword("title")
+                .build();
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+        
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectsRepository).findAllByKeyword(req.getKeyword(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
+
+    @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 포함, 피드백순")
+    @Test
+    void getProjectListWithClosedWithoutTagsFeedback(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+
+        String sort = "feedbackCnt";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(true)
+                .tagIdList(null)
+                .keyword("title")
+                .build();
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectsRepository).findAllByKeyword(req.getKeyword(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
+
+    @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 미포함, 최신순")
+    @Test
+    void getProjectListWithoutTagsNewest(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+
+        String sort = "modifiedDate";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(false)
+                .tagIdList(null)
+                .keyword("title")
+                .build();
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(req.getKeyword(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
+
+    @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 미포함, 좋아요순")
+    @Test
+    void getProjectListWithoutTagsLike(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+
+        String sort = "likeCnt";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(false)
+                .tagIdList(null)
+                .keyword("title")
+                .build();
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(req.getKeyword(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
+
+    @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 미포함, 피드백순")
+    @Test
+    void getProjectListWithoutTagsFeedback(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+
+        String sort = "feedbackCnt";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(false)
+                .tagIdList(null)
+                .keyword("title")
+                .build();
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(req.getKeyword(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
+
+    @DisplayName("프로젝트 목록 조회 성공 - tag o, closed 포함, 최신순")
+    @Test
+    void getProjectListWithTagsNewest(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+
+        String sort = "modifiedDate";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(true)
+                .tagIdList(List.of(2L))
+                .keyword("title")
+                .build();
+
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectSelectedTagsRepository).findAllByKeywordAndTag(req.getKeyword(), req.getTagIdList(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
+
+    @DisplayName("프로젝트 목록 조회 성공 - tag o, closed 미포함, 최신순")
+    @Test
+    void getProjectListWithoutClosedWithTagsNewest(){
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+
+        String sort = "modifiedDate";
+        int page = 0;
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(false)
+                .tagIdList(List.of(2L))
+                .keyword("title")
+                .build();
+
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
+        );
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(projectsPage).when(projectSelectedTagsRepository).findAllOpenedByKeywordAndTag(req.getKeyword(), req.getTagIdList(), pageRequest);
+
+        // when
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+    }
 
     @DisplayName("프로젝트 삭제 성공")
     @Test

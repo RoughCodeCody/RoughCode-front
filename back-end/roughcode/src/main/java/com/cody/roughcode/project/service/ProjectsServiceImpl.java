@@ -6,14 +6,18 @@ import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.exception.UpdateFailedException;
+import com.cody.roughcode.project.dto.req.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
+import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.apache.bcel.classfile.Code;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -304,6 +308,72 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectsRepository.delete(target);
 
         return 1;
+    }
+
+    @Override
+    public List<ProjectInfoRes> getProjectList(String sort, int page, ProjectSearchReq req) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+        String keyword = req.getKeyword();
+        if(keyword == null) keyword = "";
+        if(req.getTagIdList() == null || req.getTagIdList().size() == 0){ // tag 검색 x
+            Page<Projects> projectsPage = null;
+            if(req.getClosed())
+                projectsPage = projectsRepository.findAllByKeyword(keyword, pageRequest);
+            else
+                projectsPage = projectsRepository.findAllOpenedByKeyword(keyword, pageRequest);
+
+            List<Projects> projectList = projectsPage.getContent();
+            List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
+            for (Projects p : projectList) {
+                List<String> tagList = new ArrayList<>();
+                for (ProjectSelectedTags selected : p.getSelectedTags()) {
+                    tagList.add(selected.getTags().getName());
+                }
+
+                projectInfoRes.add(ProjectInfoRes.builder()
+                        .date(p.getModifiedDate())
+                        .img(p.getImg())
+                        .projectId(p.getProjectsId())
+                        .feedbackCnt(p.getFeedbackCnt())
+                        .introduction(p.getIntroduction())
+                        .likeCnt(p.getLikeCnt())
+                        .tags(tagList)
+                        .title(p.getTitle())
+                        .version(p.getVersion())
+                        .build()
+                );
+            }
+            return projectInfoRes;
+        } else { // tag 검색
+            Page<Projects> projectsPage = null;
+            if(req.getClosed())
+                projectsPage = projectSelectedTagsRepository.findAllByKeywordAndTag(keyword, req.getTagIdList(), pageRequest);
+            else
+                projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, req.getTagIdList(), pageRequest);
+
+            List<Projects> projectList = projectsPage.getContent();
+            List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
+            for (Projects p : projectList) {
+                List<String> tagList = new ArrayList<>();
+                for (ProjectSelectedTags selected : p.getSelectedTags()) {
+                    tagList.add(selected.getTags().getName());
+                }
+
+                projectInfoRes.add(ProjectInfoRes.builder()
+                        .date(p.getModifiedDate())
+                        .img(p.getImg())
+                        .projectId(p.getProjectsId())
+                        .feedbackCnt(p.getFeedbackCnt())
+                        .introduction(p.getIntroduction())
+                        .likeCnt(p.getLikeCnt())
+                        .tags(tagList)
+                        .title(p.getTitle())
+                        .version(p.getVersion())
+                        .build()
+                );
+            }
+            return projectInfoRes;
+        }
     }
 
 }

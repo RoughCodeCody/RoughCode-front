@@ -1,8 +1,8 @@
 package com.cody.roughcode.project.service;
 
-import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.project.dto.req.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.entity.Projects;
+import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,4 +13,5 @@ public interface ProjectsService {
     int updateProject(ProjectReq req, Long usersId);
     int connect(Long projectsId, Long usersId, List<Long> codesIdList);
     int deleteProject(Long projectsId, Long usersId);
+    List<ProjectInfoRes> getProjectList(String sort, int page, ProjectSearchReq req);
 }

@@ -1,6 +1,8 @@
 package com.cody.roughcode.project.controller;
 
+import com.cody.roughcode.project.dto.req.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
+import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import static com.cody.roughcode.security.auth.JwtProperties.TOKEN_HEADER;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,6 +32,22 @@ import java.util.List;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
+
+    @Operation(summary = "프로젝트 목록 조회 API")
+    @GetMapping
+    ResponseEntity<?> insertProject(@Parameter(description = "정렬 기준") @RequestParam(defaultValue = "modifiedDate") String sort,
+                                    @Parameter(description = "페이지 수") @RequestParam(defaultValue = "10") int page,
+                                    @Parameter(description = "검색 정보") @RequestBody ProjectSearchReq req) {
+        List<ProjectInfoRes> res = new ArrayList<>();
+        try{
+            res = projectsService.getProjectList(sort, page, req);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 목록 조회 성공", res.size(), res);
+    }
 
     @Operation(summary = "프로젝트 삭제 API")
     @DeleteMapping("/{projectId}")

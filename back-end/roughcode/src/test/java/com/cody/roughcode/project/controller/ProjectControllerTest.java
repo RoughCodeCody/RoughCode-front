@@ -1,7 +1,12 @@
 package com.cody.roughcode.project.controller;
 
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.project.dto.req.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
+import com.cody.roughcode.project.dto.req.ProjectSearchReq;
+import com.cody.roughcode.project.entity.ProjectSelectedTags;
+import com.cody.roughcode.project.entity.ProjectTags;
+import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -18,27 +23,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
@@ -47,8 +43,6 @@ import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class) // @WebMVCTest를 이용할 수도 있지만 속도가 느리다
@@ -105,6 +99,111 @@ public class ProjectControllerTest {
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("프로젝트 목록 조회 성공")
+    @Test
+    public void getProjectListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project";
+
+        int page = 10;
+
+        final Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .build();
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(project.getModifiedDate())
+                        .img(project.getImg())
+                        .projectId(project.getProjectsId())
+                        .feedbackCnt(project.getFeedbackCnt())
+                        .introduction(project.getIntroduction())
+                        .likeCnt(project.getLikeCnt())
+                        .tags(List.of("springboot"))
+                        .title(project.getTitle())
+                        .version(project.getVersion())
+                        .build()
+        );
+        doReturn(projectInfoRes).when(projectsService)
+                .getProjectList(any(String.class), any(int.class), any(ProjectSearchReq.class));
+
+        ProjectSearchReq req = ProjectSearchReq.builder()
+                .closed(false)
+                .tagIdList(List.of(2L))
+                .keyword("title")
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .param("sort", "modifiedDate")
+                        .param("page", String.valueOf(page))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 목록 조회 성공");
+    }
+
+    @DisplayName("프로젝트 목록 조회 withdout sort and page")
+    @Test
+    public void getProjectListSucceedWithNoParams() throws Exception {
+        // given
+        final String url = "/api/v1/project";
+        int page = 10;
+
+        final Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .build();
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(project.getModifiedDate())
+                        .img(project.getImg())
+                        .projectId(project.getProjectsId())
+                        .feedbackCnt(project.getFeedbackCnt())
+                        .introduction(project.getIntroduction())
+                        .likeCnt(project.getLikeCnt())
+                        .tags(List.of("springboot"))
+                        .title(project.getTitle())
+                        .version(project.getVersion())
+                        .build()
+        );
+        doReturn(projectInfoRes).when(projectsService)
+                .getProjectList(any(String.class), any(int.class), any(ProjectSearchReq.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 목록 조회 성공");
+    }
 
     @DisplayName("프로젝트 삭제 성공")
     @Test
