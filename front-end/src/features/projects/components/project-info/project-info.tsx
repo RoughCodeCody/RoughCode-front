@@ -13,13 +13,16 @@ export const ProjectInfo = () => {
   const title = "개발새발";
   const url = "https://rough-code.com";
   const nickname = "닉네임";
-  const defaultLikeCnt = 0;
-  const isLiked = true;
+  const defaultLikeCnt = 1;
+  const defaultIsLiked = true;
   const defaultBMCnt = 0;
-  const isBookmarked = false;
+  const defaultIsBookmarked = false;
   const tagList = ["next.js", "spring boot"];
 
+  const [isLiked, setisLiked] = useState<boolean>(defaultIsLiked);
   const [likeCnt, setLikeCnt] = useState<number>(defaultLikeCnt);
+  const [isBookmarked, setIsBookmarked] =
+    useState<boolean>(defaultIsBookmarked);
   const [bookmarkCnt, setBookmarkCnt] = useState<number>(defaultBMCnt);
 
   return (
@@ -38,12 +41,14 @@ export const ProjectInfo = () => {
               cnt={likeCnt}
               setCnt={setLikeCnt}
               isChecked={isLiked}
+              setIsChecked={setisLiked}
             />
             <Count
               type="bookmark"
               cnt={bookmarkCnt}
               setCnt={setBookmarkCnt}
               isChecked={isBookmarked}
+              setIsChecked={setIsBookmarked}
             />
           </FlexDiv>
         </FlexDiv>
