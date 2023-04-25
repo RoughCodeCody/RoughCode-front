@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useRef, useState, MouseEvent } from "react";
 import { DropdownArrow } from "../dropdown-arrow";
 import { FlexDiv } from "../flexdiv";
 import { Text } from "../text";
@@ -27,7 +27,7 @@ export const Accordion = ({
   const childRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleOpenState = (e) => {
+  const handleOpenState = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if (!parentRef.current || !childRef.current) return;
 
@@ -47,7 +47,7 @@ export const Accordion = ({
           </Text>
           {hasBtn && <Btn text={btnText} fontSize="0.85rem" />}
         </FlexDiv>
-        <FlexDiv pointer={true} onClick={handleOpenState}>
+        <FlexDiv pointer={true} onClick={(e) => handleOpenState(e)}>
           <Text size="0.9rem" padding="0 0.2rem" pointer={true}>
             {isOpen ? "접기" : "더보기"}
           </Text>
