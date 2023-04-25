@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +37,19 @@ public class ProjectsController {
 
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping
-    ResponseEntity<?> insertProject(@Parameter(description = "정렬 기준") @RequestParam(defaultValue = "modifiedDate") String sort,
-                                    @Parameter(description = "페이지 수") @RequestParam(defaultValue = "10") int page,
+    ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준") @RequestParam(defaultValue = "modifiedDate") String sort,
+                                    @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
+                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size,
                                     @Parameter(description = "검색 정보") @RequestBody ProjectSearchReq req) {
+        List<String> sortList = List.of("modifiedDate", "likeCnt", "feedbackCnt");
+        if(!sortList.contains(sort) || page < 0 || size < 0){
+            return Response.badRequest("잘못된 요청입니다");
+        }
+
         List<ProjectInfoRes> res = new ArrayList<>();
         try{
-            res = projectsService.getProjectList(sort, page, req);
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sort));
+            res = projectsService.getProjectList(sort, pageRequest, req);
         } catch (Exception e){
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

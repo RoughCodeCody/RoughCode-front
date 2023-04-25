@@ -311,8 +311,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
-    public List<ProjectInfoRes> getProjectList(String sort, int page, ProjectSearchReq req) {
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
+    public List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, ProjectSearchReq req) {
         String keyword = req.getKeyword();
         if(keyword == null) keyword = "";
         if(req.getTagIdList() == null || req.getTagIdList().size() == 0){ // tag 검색 x
@@ -322,58 +321,43 @@ public class ProjectsServiceImpl implements ProjectsService{
             else
                 projectsPage = projectsRepository.findAllOpenedByKeyword(keyword, pageRequest);
 
-            List<Projects> projectList = projectsPage.getContent();
-            List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
-            for (Projects p : projectList) {
-                List<String> tagList = new ArrayList<>();
-                for (ProjectSelectedTags selected : p.getSelectedTags()) {
-                    tagList.add(selected.getTags().getName());
-                }
-
-                projectInfoRes.add(ProjectInfoRes.builder()
-                        .date(p.getModifiedDate())
-                        .img(p.getImg())
-                        .projectId(p.getProjectsId())
-                        .feedbackCnt(p.getFeedbackCnt())
-                        .introduction(p.getIntroduction())
-                        .likeCnt(p.getLikeCnt())
-                        .tags(tagList)
-                        .title(p.getTitle())
-                        .version(p.getVersion())
-                        .build()
-                );
-            }
-            return projectInfoRes;
+            return getProjectInfoRes(projectsPage);
         } else { // tag 검색
             Page<Projects> projectsPage = null;
             if(req.getClosed())
-                projectsPage = projectSelectedTagsRepository.findAllByKeywordAndTag(keyword, req.getTagIdList(), pageRequest);
+                projectsPage = projectSelectedTagsRepository.findAllByKeywordAndTag(keyword, req.getTagIdList(), (long) req.getTagIdList().size(), pageRequest);
             else
-                projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, req.getTagIdList(), pageRequest);
+                projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, req.getTagIdList(), (long) req.getTagIdList().size(), pageRequest);
 
-            List<Projects> projectList = projectsPage.getContent();
-            List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
-            for (Projects p : projectList) {
-                List<String> tagList = new ArrayList<>();
+            return getProjectInfoRes(projectsPage);
+        }
+    }
+
+    private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {
+        List<Projects> projectList = projectsPage.getContent();
+        List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
+        for (Projects p : projectList) {
+            List<String> tagList = new ArrayList<>();
+            if(p.getSelectedTags() != null)
                 for (ProjectSelectedTags selected : p.getSelectedTags()) {
                     tagList.add(selected.getTags().getName());
                 }
 
-                projectInfoRes.add(ProjectInfoRes.builder()
-                        .date(p.getModifiedDate())
-                        .img(p.getImg())
-                        .projectId(p.getProjectsId())
-                        .feedbackCnt(p.getFeedbackCnt())
-                        .introduction(p.getIntroduction())
-                        .likeCnt(p.getLikeCnt())
-                        .tags(tagList)
-                        .title(p.getTitle())
-                        .version(p.getVersion())
-                        .build()
-                );
-            }
-            return projectInfoRes;
+            projectInfoRes.add(ProjectInfoRes.builder()
+                    .date(p.getModifiedDate())
+                    .img(p.getImg())
+                    .projectId(p.getProjectsId())
+                    .feedbackCnt(p.getFeedbackCnt())
+                    .introduction(p.getIntroduction())
+                    .likeCnt(p.getLikeCnt())
+                    .tags(tagList)
+                    .title(p.getTitle())
+                    .version(p.getVersion())
+                    .closed(p.isClosed())
+                    .build()
+            );
         }
+        return projectInfoRes;
     }
 
 }

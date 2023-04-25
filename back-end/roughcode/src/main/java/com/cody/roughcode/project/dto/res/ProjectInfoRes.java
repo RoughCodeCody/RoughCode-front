@@ -43,4 +43,7 @@ public class ProjectInfoRes {
 
     @Schema(description = "한줄 설명", example = "개발새발 프로젝트입니다")
     private String introduction;
+
+    @Schema(description = "닫힘 여부", example = "false")
+    private Boolean closed;
 }

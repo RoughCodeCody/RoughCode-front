@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -131,7 +132,7 @@ public class ProjectControllerTest {
                         .build()
         );
         doReturn(projectInfoRes).when(projectsService)
-                .getProjectList(any(String.class), any(int.class), any(ProjectSearchReq.class));
+                .getProjectList(any(String.class), any(PageRequest.class), any(ProjectSearchReq.class));
 
         ProjectSearchReq req = ProjectSearchReq.builder()
                 .closed(false)
@@ -187,7 +188,7 @@ public class ProjectControllerTest {
                         .build()
         );
         doReturn(projectInfoRes).when(projectsService)
-                .getProjectList(any(String.class), any(int.class), any(ProjectSearchReq.class));
+                .getProjectList(any(String.class), any(PageRequest.class), any(ProjectSearchReq.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(

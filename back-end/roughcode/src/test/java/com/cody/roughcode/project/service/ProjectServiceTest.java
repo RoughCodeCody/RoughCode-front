@@ -220,7 +220,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(req.getKeyword(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.get(0).getProjectId()).isEqualTo(1L);
@@ -270,7 +270,7 @@ public class ProjectServiceTest {
                         .version(projectsList.get(0).getVersion())
                         .build()
         );
-        
+
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, sort));
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
@@ -278,7 +278,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(req.getKeyword(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -337,7 +337,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(req.getKeyword(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -396,7 +396,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(req.getKeyword(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -455,7 +455,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(req.getKeyword(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -514,7 +514,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(req.getKeyword(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -571,10 +571,10 @@ public class ProjectServiceTest {
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
         final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
-        doReturn(projectsPage).when(projectSelectedTagsRepository).findAllByKeywordAndTag(req.getKeyword(), req.getTagIdList(), pageRequest);
+        doReturn(projectsPage).when(projectSelectedTagsRepository).findAllByKeywordAndTag(req.getKeyword(), req.getTagIdList(), (long) req.getTagIdList().size(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -631,10 +631,10 @@ public class ProjectServiceTest {
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
         final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
-        doReturn(projectsPage).when(projectSelectedTagsRepository).findAllOpenedByKeywordAndTag(req.getKeyword(), req.getTagIdList(), pageRequest);
+        doReturn(projectsPage).when(projectSelectedTagsRepository).findAllOpenedByKeywordAndTag(req.getKeyword(), req.getTagIdList(), (long) req.getTagIdList().size(), pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, page, req);
+        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, req);
 
         // then
         assertThat(result.size()).isEqualTo(1);
