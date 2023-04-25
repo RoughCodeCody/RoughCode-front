@@ -7,7 +7,7 @@ import {
 import { RiCodeSSlashFill } from "react-icons/ri";
 import { FlexDiv } from "../flexdiv";
 import { Text } from "../text";
-import { CountIcon } from "./count-icon";
+import { IconWrapper } from "./style";
 
 interface CountProps {
   type: "like" | "bookmark" | "code";
@@ -19,19 +19,19 @@ interface CountProps {
 // like, bookmark, code 카운트 표시
 export const Count = ({ type, isChecked, cnt, setCnt }: CountProps) => {
   return (
-    <FlexDiv padding="0.5rem">
+    <FlexDiv padding="0 0.5rem">
       {type === "like" ? (
-        <CountIcon
-          color="red"
-          icon={isChecked ? <TiHeartFullOutline /> : <TiHeartOutline />}
-        />
+        <IconWrapper color="red" pointer={true}>
+          {isChecked ? <TiHeartFullOutline /> : <TiHeartOutline />}
+        </IconWrapper>
       ) : type === "bookmark" ? (
-        <CountIcon
-          color="main"
-          icon={isChecked ? <TiStarFullOutline /> : <TiStarOutline />}
-        />
+        <IconWrapper color="main" pointer={true}>
+          {isChecked ? <TiStarFullOutline /> : <TiStarOutline />}
+        </IconWrapper>
       ) : (
-        <CountIcon color="font" icon={<RiCodeSSlashFill />} />
+        <IconWrapper color="font" pointer={false}>
+          {<RiCodeSSlashFill />}
+        </IconWrapper>
       )}
       <Text as="span" padding="0 0 0 0.3rem">
         {cnt}
