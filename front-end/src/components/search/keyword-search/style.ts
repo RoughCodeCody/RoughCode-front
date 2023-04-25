@@ -31,12 +31,12 @@ export const SearchButton = styled.button`
   font-size: 1rem;
   width: 100%;
   height: 100%;
-  max-width: 160px;
-  max-height: 58px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  padding-left: 16px;
-  padding-right: 16px;
+  max-width: 10rem;
+  max-height: 3.7rem;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;

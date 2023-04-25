@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import Link from "next/link";
 
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { FlexDiv } from "@/components/elements";
 import { Text } from "@/components/elements";
@@ -10,8 +11,30 @@ import {
   TagContainer,
 } from "./style";
 import { TagChipSub } from "@/components/elements";
+import { Count } from "@/components/count";
 
-export const PortfolioCard = () => {
+interface PortfolioCardProps {
+  projectId: number;
+  version: number;
+  title: string;
+  date?: Date;
+  likeCnt: number;
+  feedbackCnt: number;
+  img: string;
+  tagId: number[];
+  introduction: string;
+}
+
+export const PortfolioCard = ({
+  projectId,
+  version,
+  title,
+  likeCnt,
+  feedbackCnt,
+  img,
+  tagId,
+  introduction,
+}: PortfolioCardProps) => {
   const [isDown, setIsDown] = useState(false);
   const [startX, setStartX] = useState<number | null>(null);
   const [scrollLeft, setScrollLeft] = useState<number>(0);
@@ -58,17 +81,21 @@ export const PortfolioCard = () => {
       border="solid 1px var(--shad-color)"
       radius="32px"
       padding="2rem 0 1rem 0"
+      shadow={true}
     >
+      {/* 썸네일 */}
       <ThumbnailContainer>
-        <ImageContainer>
-          <Image
-            src="https://picsum.photos/400/300"
-            width={343.6}
-            height={234.4}
-            alt={"PJT"}
-            object-fit="cover"
-          />
-        </ImageContainer>
+        <Link href={`/portfolio/${projectId}`}>
+          <ImageContainer>
+            <Image
+              src={img}
+              width={343.6}
+              height={234.4}
+              alt={"PJT"}
+              object-fit="cover"
+            />
+          </ImageContainer>
+        </Link>
       </ThumbnailContainer>
 
       {/* 분리선 */}
@@ -78,6 +105,7 @@ export const PortfolioCard = () => {
         border="solid 1px var(--shad-color)"
       ></FlexDiv>
 
+      {/* 내용 */}
       <FlexDiv
         width="100%"
         height="35%"
@@ -86,10 +114,24 @@ export const PortfolioCard = () => {
         justify="center"
         align="start"
       >
-        <FlexDiv paddingY="0.5rem">
-          <Text size="1.3rem" bold={true}>
-            title
-          </Text>
+        {/* 타이틀 컨테이너 */}
+        <FlexDiv width="100%" paddingY="0.5rem" justify="space-between">
+          {/* 타이틀 */}
+          <FlexDiv gap="0.6rem" align="end">
+            <Text size="1.5rem" bold={true} color="main">
+              V{version}
+            </Text>
+            <Link href={`/portfolio/${projectId}`}>
+              <Text size="1.3rem" bold={true} pointer={true}>
+                {title}
+              </Text>
+            </Link>
+          </FlexDiv>
+          {/* 좋아요 리뷰 아이콘 */}
+          <FlexDiv>
+            <Count type={"like"} cnt={likeCnt} setCnt={() => {}} />
+            <Count type={"code"} cnt={feedbackCnt} setCnt={() => {}} />
+          </FlexDiv>
         </FlexDiv>
         <FlexDiv
           width="100%"
@@ -98,9 +140,9 @@ export const PortfolioCard = () => {
           justify="space-between"
           align="start"
         >
-          <ProjectCardDescription>
-            descriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescriptdescript
-          </ProjectCardDescription>
+          {/* 한 줄 설명 */}
+          <ProjectCardDescription>{introduction}</ProjectCardDescription>
+          {/* 태그들 */}
           <TagContainer
             ref={tagContainerRef}
             onMouseDown={handleMouseDown}
@@ -109,14 +151,10 @@ export const PortfolioCard = () => {
             onMouseMove={handleMouseMove}
             onWheel={handleWheel}
           >
-            <TagChipSub tag="Javascript" />
-            <TagChipSub tag="Java" />
-            <TagChipSub tag="React" />
-            <TagChipSub tag="Spring" />
-            <TagChipSub tag="Javascript" />
-            <TagChipSub tag="Java" />
-            <TagChipSub tag="React" />
-            <TagChipSub tag="Spring" />
+            {tagId.map((tag) => (
+              // 임시로 tag에 스트링 씌움
+              <TagChipSub tag={String(tag)} />
+            ))}
           </TagContainer>
         </FlexDiv>
       </FlexDiv>
