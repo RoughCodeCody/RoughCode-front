@@ -18,6 +18,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -49,6 +51,9 @@ public class SecurityConfig {
 //                .logoutSuccessUrl("/login") // 로그아웃 성공후 이동할 페이지
                 .deleteCookies("accessToken", "refreshToken") // 쿠키 삭제
                 .addLogoutHandler(customLogoutHandler)// 로그아웃 구현할 class 넣기
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                })
                 .and()
                 .authorizeRequests()
                 .anyRequest().permitAll()//authenticated() // 인가 검증
