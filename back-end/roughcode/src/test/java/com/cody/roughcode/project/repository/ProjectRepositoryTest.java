@@ -12,10 +12,14 @@ import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
+import org.joda.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +79,268 @@ public class ProjectRepositoryTest {
         }
 
         return tagsList;
+    }
+
+    @DisplayName("프로젝트 목록 가져오기 - 닫혀있는 것 포함 최신순")
+    @Test
+    void getProjectListNew(){
+        // given
+        usersRepository.save(users);
+        Projects project1 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(33)
+                .build();
+        Projects project2 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url2")
+                .introduction("intro2")
+                .title("title2")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(11)
+                .build();
+        Projects project3 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url3")
+                .introduction("intro3")
+                .title("title3")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(22)
+                .build();
+        Projects project4 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url4")
+                .introduction("intro4")
+                .title("title4")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(4554)
+                .build();
+
+        projectRepository.save(project1);
+        projectRepository.save(project3);
+        projectRepository.save(project4);
+        projectRepository.save(project2);
+
+        // when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+        Page<Projects> projectsList = projectRepository.findAllByKeyword("", pageRequest);
+        List<Projects> projects = projectsList.getContent();
+
+        // then
+        assertThat(projects.size()).isEqualTo(4);
+        assertThat(projects.get(0)).isEqualTo(project2);
+        assertThat(projects.get(1)).isEqualTo(project4);
+        assertThat(projects.get(2)).isEqualTo(project3);
+        assertThat(projects.get(3)).isEqualTo(project1);
+    }
+
+    @DisplayName("프로젝트 목록 가져오기 - 닫혀있는 것 포함 좋아요순")
+    @Test
+    void getProjectListLike(){
+        // given
+        usersRepository.save(users);
+        Projects project1 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(33)
+                .build();
+        Projects project2 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url2")
+                .introduction("intro2")
+                .title("title2")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(11)
+                .build();
+        Projects project3 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url3")
+                .introduction("intro3")
+                .title("title3")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(22)
+                .build();
+        Projects project4 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url4")
+                .introduction("intro4")
+                .title("title4")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(4554)
+                .build();
+
+        projectRepository.save(project1);
+        projectRepository.save(project3);
+        projectRepository.save(project4);
+        projectRepository.save(project2);
+
+        // when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "likeCnt"));
+        Page<Projects> projectsList = projectRepository.findAllByKeyword("title", pageRequest);
+        List<Projects> projects = projectsList.getContent();
+
+        // then
+        assertThat(projects.size()).isEqualTo(4);
+        assertThat(projects.get(0)).isEqualTo(project4);
+        assertThat(projects.get(1)).isEqualTo(project1);
+        assertThat(projects.get(2)).isEqualTo(project3);
+        assertThat(projects.get(3)).isEqualTo(project2);
+    }
+
+    @DisplayName("프로젝트 목록 가져오기 - 닫혀있는 것 포함 피드백순")
+    @Test
+    void getProjectListFeedback(){
+        // given
+        usersRepository.save(users);
+        Projects project1 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(33)
+                .feedbackCnt(1231)
+                .build();
+        Projects project2 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url2")
+                .introduction("intro2")
+                .title("title2")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(11)
+                .feedbackCnt(23)
+                .build();
+        Projects project3 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url3")
+                .introduction("intro3")
+                .title("title3")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(22)
+                .feedbackCnt(0)
+                .build();
+        Projects project4 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url4")
+                .introduction("intro4")
+                .title("title4")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(4554)
+                .feedbackCnt(12)
+                .build();
+
+        projectRepository.save(project1);
+        projectRepository.save(project3);
+        projectRepository.save(project4);
+        projectRepository.save(project2);
+
+        // when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "feedbackCnt"));
+        Page<Projects> projectsList = projectRepository.findAllByKeyword("", pageRequest);
+        List<Projects> projects = projectsList.getContent();
+
+        // then
+        assertThat(projects.size()).isEqualTo(4);
+        assertThat(projects.get(0)).isEqualTo(project1);
+        assertThat(projects.get(1)).isEqualTo(project2);
+        assertThat(projects.get(2)).isEqualTo(project4);
+        assertThat(projects.get(3)).isEqualTo(project3);
+    }
+
+    @DisplayName("프로젝트 목록 가져오기 - 닫혀있는 것 미포함 피드백순")
+    @Test
+    void getProjectListOpenedFeedback(){
+        // given
+        usersRepository.save(users);
+        Projects project1 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(33)
+                .feedbackCnt(1231)
+                .build();
+        Projects project2 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url2")
+                .introduction("intro2")
+                .title("title2")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(11)
+                .feedbackCnt(23)
+                .build();
+        Projects project3 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url3")
+                .introduction("intro3")
+                .title("title3")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(22)
+                .feedbackCnt(0)
+                .build();
+        Projects project4 = Projects.builder()
+                .num(1L)
+                .version(1)
+                .img("image url4")
+                .introduction("intro4")
+                .title("title4")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(4554)
+                .feedbackCnt(12)
+                .build();
+
+        projectRepository.save(project1);
+        projectRepository.save(project3);
+        projectRepository.save(project4);
+        projectRepository.save(project2);
+
+        // when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "feedbackCnt"));
+        Page<Projects> projectsList = projectRepository.findAllOpenedByKeyword("", pageRequest);
+        List<Projects> projects = projectsList.getContent();
+
+        // then
+        assertThat(projects.size()).isEqualTo(2);
+        assertThat(projects.get(0)).isEqualTo(project2);
+        assertThat(projects.get(1)).isEqualTo(project3);
     }
 
     @DisplayName("프로젝트 삭제하기")
