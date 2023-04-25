@@ -7,16 +7,13 @@ import com.cody.roughcode.security.oauth2.provider.GoogleUserInfo;
 import com.cody.roughcode.security.oauth2.provider.KaKaoUserInfo;
 import com.cody.roughcode.security.oauth2.provider.OAuth2UserInfo;
 import com.cody.roughcode.user.entity.Users;
-import com.cody.roughcode.user.enums.Role;
 import com.cody.roughcode.user.repository.UsersRepository;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +73,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                 .name(name)
                                 .email(email)
                                 .roles(roles)
+                                .projectsCnt(0L)
+                                .codesCnt(0L)
                                 .build()
                 ));
         return new UserDetailsCustom(user, oAuth2User.getAttributes());
