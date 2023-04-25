@@ -19,7 +19,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // Cookie 에서 JWT Token 추출
         String token = jwtTokenProvider.getAccessToken(request);
-        if (!((HttpServletRequest) request).getRequestURI().equals("/tokens/reissue")) {
+        if (!((HttpServletRequest) request).getRequestURI().equals("/api/v1/user/token")) {
             //재발급 요청이 아니라면
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);

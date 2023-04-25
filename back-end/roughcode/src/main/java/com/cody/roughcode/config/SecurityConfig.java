@@ -7,7 +7,6 @@ import com.cody.roughcode.security.handler.AuthenticationFailureHandler;
 import com.cody.roughcode.security.handler.CustomLogoutHandler;
 import com.cody.roughcode.security.handler.AuthenticationSuccessHandler;
 import com.cody.roughcode.security.oauth2.CookieOAuth2AuthorizationRequestRepository;
-import com.cody.roughcode.security.oauth2.CustomOAuth2AuthorizationRequestRepository;
 import com.cody.roughcode.security.oauth2.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +15,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -26,16 +26,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CorsConfig corsConfig;
-//    private final CustomOAuth2AuthorizationRequestRepository<OAuth2AuthorizationRequest> customOAuth2AuthorizationRequestRepository;
     private final CookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationFailureHandler authenticationFailureHandler;
 
     private final CustomLogoutHandler customLogoutHandler;
+    private final String URL_PREFIX = "/api/v1";
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/user/token", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**", "/favicon.ico");
+        return (web) -> web.ignoring().antMatchers(URL_PREFIX+"/user/token", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**", "/favicon.ico");
     }
 
     @Bean
@@ -47,10 +47,13 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt 사용으로 session 비활성화
                 .and()
                 .logout()
-                .logoutUrl("/logout") // 로그아웃 처리 URL
+                .logoutUrl(URL_PREFIX+"/user/logout") // 로그아웃 처리 URL
 //                .logoutSuccessUrl("/login") // 로그아웃 성공후 이동할 페이지
                 .deleteCookies("accessToken", "refreshToken") // 쿠키 삭제
                 .addLogoutHandler(customLogoutHandler)// 로그아웃 구현할 class 넣기
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                })
                 .and()
                 .authorizeRequests()
                 .anyRequest().permitAll()//authenticated() // 인가 검증
@@ -58,7 +61,7 @@ public class SecurityConfig {
                 .oauth2Login()
                 .authorizationEndpoint(authorize -> {
                     // 프론트엔드에서 백엔드로 소셜로그인 요청을 보내는 URI
-                    authorize.baseUri("/api/v1/oauth2/authorization");
+                    authorize.baseUri(URL_PREFIX+"/oauth2/authorization");
                     // Authorization 과정에서 기본으로 Session을 사용하지만 Cookie로 변경하기 위해 설정함
                     authorize.authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository);
                 })
