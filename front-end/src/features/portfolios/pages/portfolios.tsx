@@ -1,8 +1,5 @@
 import { FlexDiv } from "@/components/elements";
 import { BottomHeader } from "@/components/elements";
-import { PortfolioCard } from "../components/portfolio-card";
-import { KeywordSearch } from "@/components/search/keyword-search";
-import { TagSearch } from "@/components/search/tag-search";
 import { Search } from "@/components/search/search";
 import { Title } from "@/components/title";
 import { PortfolioList } from "../components/lists";
@@ -13,7 +10,7 @@ export const Portfolios = () => {
       <BottomHeader locations={["프로젝트"]} />
       <FlexDiv
         width="100%"
-        maxWidth="1112px"
+        maxWidth="70rem"
         direction="column"
         align="center"
         gap="1rem"

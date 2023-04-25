@@ -1,12 +1,31 @@
-import { FlexDiv } from "@/components/elements";
-import { SearchInput } from "./style";
-import { TagChip } from "@/components/elements/tag-chip/tag-chip";
+import { useEffect, useState } from "react";
+
+import { DropdownArrow } from "@/components/elements";
+import { FlexDiv, TagChip } from "@/components/elements";
+
+import { SearchInput, TagSelectContainer } from "./style";
+import { TagSelectItem } from "./tag-select-item";
 
 type SelectedTags = string[];
 
 export const TagSearch = () => {
   // 더미데이터
-  const SelectedTags: SelectedTags = [
+  const dummyTags: SelectedTags = [
+    "자바",
+    "리액트",
+    "파이썬",
+    "씨쁠쁠",
+    "스프링",
+    "자바",
+    "리액트",
+    "파이썬",
+    "씨쁠쁠",
+    "스프링",
+    "자바",
+    "리액트",
+    "파이썬",
+    "씨쁠쁠",
+    "스프링",
     "자바",
     "리액트",
     "파이썬",
@@ -14,13 +33,17 @@ export const TagSearch = () => {
     "스프링",
   ];
 
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => console.log("ㄴㅁㅇㅎㅁㄴㅇㄹ"), [isOpen]);
+
   return (
     <FlexDiv
       width="100%"
-      maxWidth="1112px"
+      maxWidth="70rem"
       justify="space-between"
       align="start"
-      gap="16px"
+      gap="1rem"
     >
       <FlexDiv
         gap="1rem"
@@ -29,13 +52,41 @@ export const TagSearch = () => {
         justify="start"
         wrap="wrap"
       >
-        {SelectedTags.length == 0 ? (
-          <TagChip tag={"전체"} />
+        {selectedTags.length == 0 ? (
+          <TagChip tag={"없음"} />
         ) : (
-          SelectedTags.map((tag) => <TagChip tag={tag} key={tag} />)
+          selectedTags.map((tag) => <TagChip tag={tag} key={tag} />)
         )}
       </FlexDiv>
-      <SearchInput padding="0 1.1rem 0 1.1rem" placeholder="태그 검색" />
+      <FlexDiv
+        position="relative"
+        width="100%"
+        height="3.7rem"
+        maxWidth="17.5rem"
+        maxHeight="3.7rem"
+        padding="0 1.1rem 0 1.1rem"
+        justify="space-between"
+        radius="8px"
+        color="white"
+        pointer={true}
+        shadow={true}
+      >
+        <SearchInput onFocus={() => setIsOpen(true)} placeholder="태그 검색" />
+        <DropdownArrow
+          isOpen={isOpen}
+          size={30}
+          onClick={() => setIsOpen(!isOpen)}
+        />
+        {isOpen ? (
+          <TagSelectContainer>
+            {dummyTags.map((tag) => (
+              <TagSelectItem tag={tag} />
+            ))}
+          </TagSelectContainer>
+        ) : (
+          <></>
+        )}
+      </FlexDiv>
     </FlexDiv>
   );
 };
