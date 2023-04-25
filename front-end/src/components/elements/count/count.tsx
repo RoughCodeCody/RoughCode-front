@@ -12,14 +12,14 @@ import { IconWrapper } from "./style";
 
 interface CountProps {
   type: "like" | "bookmark" | "code";
-  isChecked?: boolean;
-  setIsChecked?: Dispatch<SetStateAction<boolean>>;
+  isChecked: boolean | null;
+  setIsChecked: Dispatch<SetStateAction<boolean>> | null;
   cnt: number;
-  setCnt: Dispatch<SetStateAction<number>>;
+  setCnt: Dispatch<SetStateAction<number>> | null;
 }
 
 // like, bookmark, code 카운트 표시
-
+// type === "code"일 때는 isChecked, setIsChecked props null로 지정할 것
 export const Count = ({
   type,
   isChecked,
@@ -29,11 +29,13 @@ export const Count = ({
 }: CountProps) => {
   // 좋아요, 북마크 아이콘 클릭시 상태 및 카운트 변경
   const handleIconClick = () => {
-    if (isChecked && setIsChecked) {
+    if (!setIsChecked || !setCnt) return;
+
+    if (isChecked) {
       // api 요청 성공시
       setIsChecked(false);
       setCnt((prev) => prev - 1);
-    } else if (!isChecked && setIsChecked) {
+    } else {
       // api 요청 성공시
       setIsChecked(true);
       setCnt((prev) => prev + 1);

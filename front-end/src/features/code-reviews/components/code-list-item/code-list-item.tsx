@@ -17,7 +17,7 @@ type CodeListItemProps = {
     createdDate: Date;
     modifiedDate: Date;
     like: number;
-    favorite: number;
+    isLiked: boolean;
     reviewCnt: number;
     tag: string[];
     userName: string;
@@ -31,15 +31,13 @@ export const CodeListItem = ({
     createdDate,
     modifiedDate,
     like,
-    favorite,
+    isLiked,
     reviewCnt,
     tag,
     userName,
   },
 }: CodeListItemProps) => {
   const router = useRouter();
-  const [newLikeCnt, setNewLikeCnt] = useState<number>(like);
-  const [newReviewCnt, setNewReviewCnt] = useState<number>(reviewCnt);
 
   return (
     <CodeListItemWrapper
@@ -53,8 +51,20 @@ export const CodeListItem = ({
           <TagChipSub tag={tag[0]} />
         </FlexDiv>
         <FlexDiv>
-          <Count type="like" cnt={newLikeCnt} setCnt={setNewLikeCnt} />
-          <Count type="code" cnt={newReviewCnt} setCnt={setNewReviewCnt} />
+          <Count
+            type="like"
+            isChecked={isLiked}
+            setIsChecked={null}
+            cnt={like}
+            setCnt={null}
+          />
+          <Count
+            type="code"
+            isChecked={null}
+            setIsChecked={null}
+            cnt={reviewCnt}
+            setCnt={null}
+          />
         </FlexDiv>
       </FlexDiv>
 

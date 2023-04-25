@@ -39,6 +39,7 @@ export const FeedbackItem = ({
           <Count
             type="like"
             isChecked={newIsLiked}
+            setIsChecked={setNewIsLiked}
             cnt={newLikeCnt}
             setCnt={setNewLikeCnt}
           />
