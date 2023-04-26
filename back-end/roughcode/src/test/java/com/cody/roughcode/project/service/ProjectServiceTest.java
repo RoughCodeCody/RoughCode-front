@@ -95,11 +95,13 @@ public class ProjectServiceTest {
             .introduction("intro")
             .title("title")
             .projectWriter(users)
+            .feedbackCnt(1)
             .build();
 
     final ProjectsInfo info = ProjectsInfo.builder()
             .url("www.google.com")
             .notice("notice")
+            .projects(project)
             .build();
 
     private static MockMultipartFile getThumbnail() throws IOException {
@@ -168,6 +170,95 @@ public class ProjectServiceTest {
 
         return codeList;
     }
+
+    @DisplayName("피드백 삭제 성공")
+    @Test
+    void deleteFeedbackSucceed(){
+        // given
+        Feedbacks feedback = Feedbacks.builder()
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .feedbacksId(1L)
+                .projectsInfo(info)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when
+        int success = projectsService.deleteFeedback(1L, 1L);
+
+        // then
+        assertThat(success).isEqualTo(1);
+    }
+
+    @DisplayName("피드백 삭제 실패 - 선택된 피드백입니다")
+    @Test
+    void deleteFeedbackFail(){
+        // given
+        Feedbacks feedback = Feedbacks.builder()
+                .content("feedback")
+                .selected(1)
+                .users(users)
+                .feedbacksId(1L)
+                .projectsInfo(info)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when & then
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class, () -> projectsService.deleteFeedback(1L, 1L)
+        );
+        assertEquals("채택된 피드백은 삭제할 수 없습니다", exception.getReason());
+    }
+
+    @DisplayName("피드백 삭제 실패 - 존재하지 않는 피드백입니다")
+    @Test
+    void deleteFeedbackFailNoFeedback(){
+        // given
+        Feedbacks feedback = Feedbacks.builder()
+                .content("feedback")
+                .selected(1)
+                .users(users)
+                .feedbacksId(1L)
+                .projectsInfo(info)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.deleteFeedback(1L, 1L)
+        );
+        assertEquals("일치하는 피드백이 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("피드백 삭제 실패 - 피드백 작성자 != 로그인 유저")
+    @Test
+    void deleteFeedbackFailNotMatch(){
+        // given
+        Feedbacks feedback = Feedbacks.builder()
+                .content("feedback")
+                .selected(1)
+                .users(users2)
+                .feedbacksId(1L)
+                .projectsInfo(info)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.deleteFeedback(1L, 1L)
+        );
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+
 
     @DisplayName("피드백 목록 조회 성공")
     @Test
@@ -344,7 +435,7 @@ public class ProjectServiceTest {
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class, () -> projectsService.updateFeedback(req, 1L)
         );
-        assertEquals("409 CONFLICT \"채택된 피드백은 수정할 수 없습니다\"", exception.getMessage());
+        assertEquals("채택된 피드백은 수정할 수 없습니다", exception.getReason());
     }
 
     @DisplayName("피드백 등록 성공 - 로그인")

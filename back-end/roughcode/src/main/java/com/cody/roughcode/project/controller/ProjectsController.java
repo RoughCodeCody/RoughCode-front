@@ -43,6 +43,27 @@ public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
 
+    @Operation(summary = "피드백 삭제 API")
+    @DeleteMapping("/feedback/{feedbackId}")
+    ResponseEntity<?> deleteFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                      @Parameter(description = "피드백 아이디") @PathVariable Long feedbackId){
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = projectsService.deleteFeedback(feedbackId, userId);
+        } catch(ResponseStatusException e){
+            log.error(e.getReason());
+            return Response.makeResponse(e.getStatus(), e.getReason());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("피드백 삭제 실패");
+        return Response.ok("피드백 삭제 성공");
+    }
+
     @Operation(summary = "피드백 목록 조회 API")
     @GetMapping("/{projectId}/feedback")
     ResponseEntity<?> getFeedbackList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
