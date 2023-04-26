@@ -1,6 +1,7 @@
 package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
@@ -20,4 +21,5 @@ public interface ProjectsService {
     ProjectDetailRes getProject(Long projectId, Long usersId);
 
     int insertFeedback(FeedbackReq req, Long usersId);
+    Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
 }

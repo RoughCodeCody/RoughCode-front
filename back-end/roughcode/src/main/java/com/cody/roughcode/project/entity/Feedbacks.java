@@ -54,4 +54,8 @@ public class Feedbacks extends BaseTimeEntity {
     public void selectedDown() {
         this.selected -= 1;
     }
+
+    public void editContent(String content) {
+        this.content = content;
+    }
 }

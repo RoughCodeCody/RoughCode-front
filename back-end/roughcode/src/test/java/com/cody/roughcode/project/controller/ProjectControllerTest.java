@@ -2,6 +2,7 @@ package com.cody.roughcode.project.controller;
 
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
@@ -27,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +37,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import java.io.File;
@@ -47,6 +50,7 @@ import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class) // @WebMVCTest를 이용할 수도 있지만 속도가 느리다
@@ -103,6 +107,90 @@ public class ProjectControllerTest {
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("피드백 수정 성공")
+    @Test
+    public void updateFeedbackSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback";
+
+        FeedbackUpdateReq req = FeedbackUpdateReq.builder()
+                .content("개발새발 최고")
+                .feedbackId(1L)
+                .build();
+
+        doReturn(true).when(projectsService)
+                .updateFeedback(any(FeedbackUpdateReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 수정 성공");
+    }
+
+    @DisplayName("피드백 수정 실패 - 이미 채택된 피드백")
+    @Test
+    public void updateFeedbackFailAlreadySelected() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback";
+
+        doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "채택된 피드백은 수정할 수 없습니다"))
+                .when(projectsService)
+                .updateFeedback(any(FeedbackUpdateReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isConflict()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("채택된 피드백은 수정할 수 없습니다");
+    }
+
+    @DisplayName("피드백 수정 실패")
+    @Test
+    public void updateFeedbackFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback";
+
+        doReturn(false).when(projectsService)
+                .updateFeedback(any(FeedbackUpdateReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 수정 실패");
+    }
 
     @DisplayName("피드백 등록 성공")
     @Test
