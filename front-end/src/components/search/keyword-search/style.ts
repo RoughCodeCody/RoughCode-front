@@ -8,8 +8,16 @@ export const SearchBarForm = styled.form`
   justify-content: start;
   align-items: center;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--bg-color);
   border-radius: 8px;
   overflow: hidden;
+  :focus-within {
+    border: 1px solid var(--main-color);
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    transition-property: all;
+  }
 `;
 
 export const SearchInput = styled.input`
@@ -24,7 +32,6 @@ export const SearchInput = styled.input`
     outline: none;
   }
 `;
-
 export const SearchButton = styled.button`
   background-color: var(--main-color);
   color: var(--white-color);

@@ -1,11 +1,7 @@
 import Head from "next/head";
 import { Portfolios } from "@/features/portfolios/";
 
-import {
-  useInfiniteQuery,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export default function Project() {
   const queryClient = new QueryClient();
