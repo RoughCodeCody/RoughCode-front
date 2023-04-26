@@ -6,6 +6,7 @@ import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.exception.UpdateFailedException;
+import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.res.*;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
@@ -82,6 +83,13 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectNum = original.getNum();
             projectVersion = original.getVersion() + 1;
             likeCnt = original.getLikeCnt();
+
+            // 이전 버전 프로젝트 전부 닫기
+            List<Projects> oldProjects = projectsRepository.findByNumAndProjectWriter(projectNum, user);
+            for (Projects p : oldProjects) {
+                p.close(true);
+                projectsRepository.save(p);
+            }
         }
 
         Long projectId = -1L;
@@ -403,9 +411,9 @@ public class ProjectsServiceImpl implements ProjectsService{
         // Selected가 우선, usersId가 같은것이 더 앞, 이후 최신순
         feedbackResList.sort(Comparator.comparing(FeedbackRes::getSelected).reversed()
                 .thenComparing((f1, f2) -> {
-                    if (f1.getUserId().equals(usersId) && !f2.getUserId().equals(usersId)) {
+                    if ((f1.getUserId() != null && f1.getUserId().equals(usersId)) && (f2.getUserId() == null || !f2.getUserId().equals(usersId))) {
                         return -1;
-                    } else if (!f1.getUserId().equals(usersId) && f2.getUserId().equals(usersId)) {
+                    } else if ((f1.getUserId() == null || !f1.getUserId().equals(usersId)) && (f2.getUserId() != null && f2.getUserId().equals(usersId))) {
                         return 1;
                     } else {
                         return f2.getDate().compareTo(f1.getDate());
@@ -414,6 +422,27 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectDetailRes.setFeedbacks(feedbackResList);
 
         return projectDetailRes;
+    }
+
+    @Override
+    public int insertFeedback(FeedbackReq req, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        Projects project = projectsRepository.findByProjectsId(req.getProjectId());
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
+        if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        Feedbacks savedFeedback = feedbacksRepository.save(
+                Feedbacks.builder()
+                        .projectsInfo(projectsInfo)
+                        .content(req.getContent())
+                        .users(users)
+                        .build()
+        );
+        projectsInfo.setFeedbacks(savedFeedback);
+        projectsInfoRepository.save(projectsInfo);
+
+        return projectsInfo.getFeedbacks().size();
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {

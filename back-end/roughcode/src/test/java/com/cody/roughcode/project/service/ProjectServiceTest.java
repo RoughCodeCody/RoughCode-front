@@ -6,6 +6,7 @@ import com.cody.roughcode.exception.DeletionFailException;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.UpdateFailedException;
+import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
@@ -169,6 +170,80 @@ public class ProjectServiceTest {
         return codeList;
     }
 
+    @DisplayName("피드백 등록 성공 - 로그인")
+    @Test
+    void insertFeedbackSucceedWithLogin() {
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        FeedbackReq req = FeedbackReq.builder()
+                .content("개발새발 최고")
+                .projectId(1L)
+                .build();
+        Feedbacks feedbacks = Feedbacks.builder()
+                .projectsInfo(info)
+                .content(req.getContent())
+                .users(users)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+        doReturn(feedbacks).when(feedbacksRepository).save(any(Feedbacks.class));
+
+        // when
+        int success = projectsService.insertFeedback(req, 1L);
+
+        // then
+        assertThat(success).isEqualTo(1);
+    }
+
+    @DisplayName("피드백 등록 성공 - 로그인x")
+    @Test
+    void insertFeedbackSucceedWithoutLogin() {
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        FeedbackReq req = FeedbackReq.builder()
+                .content("개발새발 최고")
+                .projectId(1L)
+                .build();
+        Feedbacks feedbacks = Feedbacks.builder()
+                .projectsInfo(info)
+                .content(req.getContent())
+                .users(null)
+                .build();
+
+        doReturn(null).when(usersRepository).findByUsersId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+        doReturn(feedbacks).when(feedbacksRepository).save(any(Feedbacks.class));
+
+        // when
+        int success = projectsService.insertFeedback(req, 1L);
+
+        // then
+        assertThat(success).isEqualTo(1);
+    }
+
+    @DisplayName("피드백 등록 실패 - 프로젝트 없음")
+    @Test
+    void insertFeedbackFailNoProject() {
+        // given
+        List<ProjectTags> tagsList = tagsInit();
+        FeedbackReq req = FeedbackReq.builder()
+                .content("개발새발 최고")
+                .projectId(1L)
+                .build();
+
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.insertFeedback(req, any(Long.class))
+        );
+
+        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
+    }
 
     @DisplayName("프로젝트 상세 조회 성공")
     @Test

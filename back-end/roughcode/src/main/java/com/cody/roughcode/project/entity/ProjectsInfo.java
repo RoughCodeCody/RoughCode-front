@@ -5,6 +5,7 @@ import com.cody.roughcode.project.dto.req.ProjectReq;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -52,5 +53,10 @@ public class ProjectsInfo {
         this.content = req.getContent();
         this.url = req.getUrl();
         this.notice = req.getNotice();
+    }
+
+    public void setFeedbacks(Feedbacks feedbacks) {
+        if(this.feedbacks == null) this.feedbacks = new ArrayList<>();
+        this.feedbacks.add(feedbacks);
     }
 }
