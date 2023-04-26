@@ -1,7 +1,7 @@
 package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.repository.CodesRepostiory;
+import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +36,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectsInfoRepository projectsInfoRepository;
     private final ProjectSelectedTagsRepository projectSelectedTagsRepository;
     private final ProjectTagsRepository projectTagsRepository;
-    private final CodesRepostiory codesRepository;
+    private final CodesRepository codesRepository;
     private final FeedbacksRepository feedbacksRepository;
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
 
