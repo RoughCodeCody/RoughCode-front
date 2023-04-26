@@ -33,7 +33,7 @@ export const TagSearch = () => {
     "스프링",
   ];
 
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState<SelectedTags>([]);
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => console.log("ㄴㅁㅇㅎㅁㄴㅇㄹ"), [isOpen]);
 
@@ -52,11 +52,14 @@ export const TagSearch = () => {
         justify="start"
         wrap="wrap"
       >
-        {selectedTags.length == 0 ? (
-          <TagChip tag={"없음"} />
-        ) : (
-          selectedTags.map((tag) => <TagChip tag={tag} key={tag} />)
-        )}
+        {selectedTags.map((tag) => (
+          <TagChip
+            tag={tag}
+            key={tag}
+            selectedTags={selectedTags}
+            setSelectedTags={setSelectedTags}
+          />
+        ))}
       </FlexDiv>
       <FlexDiv
         position="relative"
@@ -80,7 +83,11 @@ export const TagSearch = () => {
         {isOpen ? (
           <TagSelectContainer>
             {dummyTags.map((tag) => (
-              <TagSelectItem tag={tag} />
+              <TagSelectItem
+                tag={tag}
+                selectedTags={selectedTags}
+                setSelectedTags={setSelectedTags}
+              />
             ))}
           </TagSelectContainer>
         ) : (

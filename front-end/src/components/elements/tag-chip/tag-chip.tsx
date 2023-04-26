@@ -5,9 +5,15 @@ import { IoClose } from "react-icons/io5";
 
 type TagChipProps = {
   tag: string;
+  selectedTags: string[];
+  setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-export const TagChip = ({ tag }: TagChipProps) => {
+export const TagChip = ({
+  tag,
+  selectedTags,
+  setSelectedTags,
+}: TagChipProps) => {
   return (
     <TagChipContainer>
       <Text size="1.2rem" color="bg" bold={true}>
@@ -16,11 +22,13 @@ export const TagChip = ({ tag }: TagChipProps) => {
 
       <IoClose
         onClick={() => {
+          setSelectedTags(() => selectedTags.filter((item) => item !== tag));
           console.log("tag delete");
         }}
         cursor="pointer"
-        fontSize="1.7rem"
-        color="var(--bg-color)"
+        fontSize="1.3rem"
+        color="var(--sub-two-color)"
+        opacity="0.7"
       />
     </TagChipContainer>
   );
