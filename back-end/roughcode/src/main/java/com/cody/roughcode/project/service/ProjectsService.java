@@ -24,4 +24,5 @@ public interface ProjectsService {
     int insertFeedback(FeedbackReq req, Long usersId);
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
     List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId);
+    int deleteFeedback(Long feedbackId, Long usersId);
 }

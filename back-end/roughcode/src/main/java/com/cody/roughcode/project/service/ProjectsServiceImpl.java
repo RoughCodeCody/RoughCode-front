@@ -444,6 +444,9 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectsInfo.setFeedbacks(savedFeedback);
         projectsInfoRepository.save(projectsInfo);
 
+        project.feedbackCntUp();
+        projectsRepository.save(project);
+
         return projectsInfo.getFeedbacks().size();
     }
 
@@ -484,6 +487,26 @@ public class ProjectsServiceImpl implements ProjectsService{
         }
 
         return feedbackInfoResList;
+    }
+
+    @Override
+    public int deleteFeedback(Long feedbackId, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        Feedbacks feedbacks = feedbacksRepository.findByFeedbacksId(feedbackId);
+        if(feedbacks == null) throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
+
+        if(feedbacks.getUsers() == null || !feedbacks.getUsers().equals(users)) throw new NotMatchException();
+
+        if(feedbacks.getSelected() > 0) throw new ResponseStatusException(HttpStatus.CONFLICT, "채택된 피드백은 삭제할 수 없습니다");
+
+        Projects projects = feedbacks.getProjectsInfo().getProjects();
+        projects.feedbackCntDown();
+        projectsRepository.save(projects);
+
+        feedbacksRepository.delete(feedbacks);
+        return 1;
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {

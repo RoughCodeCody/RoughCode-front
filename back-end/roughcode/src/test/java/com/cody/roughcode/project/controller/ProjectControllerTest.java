@@ -109,6 +109,79 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("피드백 삭제 성공")
+    @Test
+    public void deleteFeedbackSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback/{feedbackId}";
+
+        doReturn(1).when(projectsService)
+                .deleteFeedback(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 삭제 성공");
+    }
+
+    @DisplayName("피드백 삭제 실패")
+    @Test
+    public void deleteFeedbackFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback/{feedbackId}";
+
+        doReturn(0).when(projectsService)
+                .deleteFeedback(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 삭제 실패");
+    }
+
+    @DisplayName("피드백 삭제 실패 - 이미 채택된 피드백")
+    @Test
+    public void deleteFeedbackFailAlreadySelected() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback/{feedbackId}";
+
+        doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "채택된 피드백은 삭제할 수 없습니다"))
+                .when(projectsService)
+                .deleteFeedback(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isConflict()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("채택된 피드백은 삭제할 수 없습니다");
+    }
+
     @DisplayName("피드백 목록 조회 성공")
     @Test
     public void getFeedbackListSucceed() throws Exception {

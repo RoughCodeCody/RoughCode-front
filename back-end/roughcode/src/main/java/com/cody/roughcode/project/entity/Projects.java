@@ -98,4 +98,12 @@ public class Projects extends BaseTimeEntity {
     public void close(boolean b) {
         this.closed = b;
     }
+
+    public void feedbackCntDown(){
+        this.feedbackCnt -= 1;
+    }
+
+    public void feedbackCntUp() {
+        this.feedbackCnt += 1;
+    }
 }
