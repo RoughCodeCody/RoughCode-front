@@ -10,6 +10,7 @@ import axios from "axios";
 import { PortfolioCard } from "../portfolio-card";
 import { PortfolioCardGrid } from "./style";
 import { FlexDiv } from "@/components/elements";
+import { DropLabel } from "@/components/drop-label";
 
 interface PortfolioCardProps {
   projectId: number;
@@ -73,6 +74,7 @@ export const PortfolioList = () => {
 
   return (
     <>
+      <DropLabel options={["최신순", "좋아요순", "리뷰순"]}></DropLabel>
       {status === "loading" && <p>Loading...</p>}
       {status === "success" && (
         <>

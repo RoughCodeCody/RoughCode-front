@@ -6,7 +6,13 @@ import { PortfolioList } from "../components/lists";
 
 export const Portfolios = () => {
   return (
-    <FlexDiv direction="column" align="center" gap="4rem" overflow="hidden">
+    <FlexDiv
+      direction="column"
+      align="center"
+      justify="center"
+      gap="4rem"
+      overflow="hidden"
+    >
       <BottomHeader locations={["프로젝트"]} />
       <FlexDiv
         width="100%"
