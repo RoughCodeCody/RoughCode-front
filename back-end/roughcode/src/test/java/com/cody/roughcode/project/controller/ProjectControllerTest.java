@@ -3,6 +3,7 @@ package com.cody.roughcode.project.controller;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
+import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
@@ -107,6 +108,62 @@ public class ProjectControllerTest {
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("피드백 목록 조회 성공")
+    @Test
+    public void getFeedbackListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/feedback";
+
+        FeedbackInfoRes feedbackInfoRes = FeedbackInfoRes.builder()
+                .feedbackId(1L)
+                .userName("user")
+                .userId(1L)
+                .content("content")
+                .selected(true)
+                .build();
+
+        doReturn(List.of(feedbackInfoRes)).when(projectsService)
+                .getFeedbackList(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 목록 조회 성공");
+    }
+
+    @DisplayName("피드백 목록 조회 실패")
+    @Test
+    public void getFeedbackListFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/feedback";
+
+        doReturn(null).when(projectsService)
+                .getFeedbackList(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 목록 조회 실패");
+    }
 
     @DisplayName("피드백 수정 성공")
     @Test

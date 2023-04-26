@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -126,7 +125,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             // feedback 선택
             if(req.getSelectedFeedbacksId() != null)
                 for(Long id : req.getSelectedFeedbacksId()){
-                    Feedbacks feedback = feedbacksRepository.findFeedbacksByFeedbacksId(id);
+                    Feedbacks feedback = feedbacksRepository.findByFeedbacksId(id);
                     if(feedback == null) throw new NullPointerException("일치하는 피드백이 없습니다");
                     if(!feedback.getProjectsInfo().getProjects().getNum().equals(projectNum))
                         throw new NullPointerException("피드백과 프로젝트가 일치하지 않습니다");
@@ -239,7 +238,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             // feedback 등록
             if(req.getSelectedFeedbacksId() != null)
                 for(Long id : req.getSelectedFeedbacksId()){
-                    Feedbacks feedbacks = feedbacksRepository.findFeedbacksByFeedbacksId(id);
+                    Feedbacks feedbacks = feedbacksRepository.findByFeedbacksId(id);
                     selectedFeedbacksRepository.save(SelectedFeedbacks.builder()
                             .projects(target)
                             .feedbacks(feedbacks)
@@ -453,7 +452,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         Users users = usersRepository.findByUsersId(userId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
-        Feedbacks feedbacks = feedbacksRepository.findFeedbacksByFeedbacksId(req.getFeedbackId());
+        Feedbacks feedbacks = feedbacksRepository.findByFeedbacksId(req.getFeedbackId());
         if(feedbacks == null) throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
         else if(feedbacks.getUsers() == null || !feedbacks.getUsers().equals(users)) throw new NotMatchException();
         else if(feedbacks.getSelected() > 0)
@@ -463,6 +462,28 @@ public class ProjectsServiceImpl implements ProjectsService{
         Feedbacks updated = feedbacksRepository.save(feedbacks);
 
         return updated.getContent().equals(req.getContent());
+    }
+
+    @Override
+    public List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        Projects project = projectsRepository.findByProjectsId(projectId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        List<Projects> allVersion = projectsRepository.findByNumAndProjectWriter(project.getNum(), users);
+
+        List<FeedbackInfoRes> feedbackInfoResList = new ArrayList<>();
+        for (Projects p : allVersion) {
+            ProjectsInfo info = projectsInfoRepository.findByProjects(p);
+            List<Feedbacks> feedbacksList = info.getFeedbacks();
+            for (Feedbacks f : feedbacksList) {
+                feedbackInfoResList.add(new FeedbackInfoRes(f, p.getVersion(), f.getUsers()));
+            }
+        }
+
+        return feedbackInfoResList;
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {

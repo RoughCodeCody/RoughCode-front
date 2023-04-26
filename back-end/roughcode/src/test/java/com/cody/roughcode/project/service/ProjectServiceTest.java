@@ -2,12 +2,11 @@ package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepostiory;
-import com.cody.roughcode.exception.DeletionFailException;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
-import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
+import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
@@ -16,8 +15,6 @@ import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
-import org.aspectj.apache.bcel.classfile.Code;
-import org.aspectj.weaver.ast.Not;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -172,6 +169,35 @@ public class ProjectServiceTest {
         return codeList;
     }
 
+    @DisplayName("피드백 목록 조회 성공")
+    @Test
+    void getFeedbackListSucceed(){
+        // given
+        Feedbacks feedbacks = Feedbacks.builder()
+                .feedbacksId(1L)
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .build();
+
+        final ProjectsInfo info = ProjectsInfo.builder()
+                .url("www.google.com")
+                .notice("notice")
+                .feedbacks(List.of(feedbacks))
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(List.of(project)).when(projectsRepository).findByNumAndProjectWriter(any(Long.class), any(Users.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when
+        List<FeedbackInfoRes> success = projectsService.getFeedbackList(1L, 1L);
+
+        // then
+        assertThat(success.size()).isEqualTo(1);
+    }
+
     @DisplayName("피드백 수정 성공")
     @Test
     void updateFeedbackSucceed(){
@@ -192,7 +218,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
         doReturn(updated).when(feedbacksRepository).save(any(Feedbacks.class));
 
         // when
@@ -235,7 +261,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -264,7 +290,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -288,7 +314,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+        doReturn(null).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -312,7 +338,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
 
         // when & then
         ResponseStatusException exception = assertThrows(
@@ -1110,7 +1136,7 @@ public class ProjectServiceTest {
         doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
-        doReturn(feedbacksList.get(0)).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+        doReturn(feedbacksList.get(0)).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
 
         // when
         int success = projectsService.updateProject(req, 1L);

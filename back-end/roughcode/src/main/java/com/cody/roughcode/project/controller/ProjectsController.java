@@ -2,6 +2,7 @@ package com.cody.roughcode.project.controller;
 
 import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
+import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
@@ -41,6 +42,24 @@ import java.util.Map;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
+
+    @Operation(summary = "피드백 목록 조회 API")
+    @GetMapping("/{projectId}/feedback")
+    ResponseEntity<?> getFeedbackList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                     @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        List<FeedbackInfoRes> res = null;
+        try {
+            res = projectsService.getFeedbackList(projectId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res == null) return Response.notFound("피드백 목록 조회 실패");
+        return Response.makeResponse(HttpStatus.OK, "피드백 목록 조회 성공", res.size(), res);
+    }
 
     @Operation(summary = "피드백 수정 API")
     @PutMapping("/feedback")
