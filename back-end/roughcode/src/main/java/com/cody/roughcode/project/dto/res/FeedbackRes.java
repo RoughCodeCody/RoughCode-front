@@ -22,8 +22,9 @@ public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.�
     private int like;
     private int selected;
     private LocalDateTime date;
+    private Boolean liked;
 
-    public FeedbackRes(Feedbacks f) {
+    public FeedbackRes(Feedbacks f, Boolean feedbackLiked) {
         this.feedbackId = f.getFeedbacksId();
         if(f.getUsers() != null) {
             this.userId = f.getUsers().getUsersId();
@@ -33,5 +34,6 @@ public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.�
         this.like = f.getLikeCnt();
         this.selected = f.getSelected();
         this.date = f.getModifiedDate();
+        this.liked = feedbackLiked;
     }
 }

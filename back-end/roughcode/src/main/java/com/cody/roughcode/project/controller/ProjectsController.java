@@ -26,7 +26,9 @@ import static com.cody.roughcode.security.auth.JwtProperties.TOKEN_HEADER;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/project")
@@ -74,7 +76,10 @@ public class ProjectsController {
             return Response.badRequest(e.getMessage());
         }
 
-        return Response.makeResponse(HttpStatus.OK, "프로젝트 목록 조회 성공", res.size(), res);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("nextPage", page + 1);
+        resultMap.put("list", res);
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 목록 조회 성공", res.size(), resultMap);
     }
 
     @Operation(summary = "프로젝트 삭제 API")

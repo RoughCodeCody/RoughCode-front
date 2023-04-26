@@ -44,6 +44,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final ProjectFavoritesRepository projectFavoritesRepository;
     private final ProjectLikesRepository projectLikesRepository;
+    private final FeedbacksLikesRepository feedbacksLikesRepository;
 
     @Override
     @Transactional
@@ -53,6 +54,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         ProjectsInfo info = ProjectsInfo.builder()
                 .url(req.getUrl())
                 .notice(req.getNotice())
+                .content(req.getContent())
                 .build();
 
         // 새 프로젝트를 생성하는거면 projectNum은 작성자의 projects_cnt + 1
@@ -394,7 +396,9 @@ public class ProjectsServiceImpl implements ProjectsService{
         List<FeedbackRes> feedbackResList = new ArrayList<>();
         if(projectsInfo.getFeedbacks() != null)
             for (Feedbacks f : projectsInfo.getFeedbacks()) {
-                feedbackResList.add(new FeedbackRes(f));
+                FeedbacksLikes feedbackLike = (user != null)? feedbacksLikesRepository.findByFeedbacksAndUsers(f, user) : null;
+                Boolean feedbackLiked = feedbackLike != null;
+                feedbackResList.add(new FeedbackRes(f, feedbackLiked));
             }
         // Selected가 우선, usersId가 같은것이 더 앞, 이후 최신순
         feedbackResList.sort(Comparator.comparing(FeedbackRes::getSelected).reversed()

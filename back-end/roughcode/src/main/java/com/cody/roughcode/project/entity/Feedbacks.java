@@ -5,6 +5,7 @@ import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,6 +43,9 @@ public class Feedbacks extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = true)
     private Users users = null;
+
+    @OneToMany(mappedBy = "feedbacks")
+    private List<FeedbacksLikes> feedbacksLikes;
 
     public void selectedUp() {
         this.selected += 1;

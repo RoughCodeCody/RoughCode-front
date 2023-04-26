@@ -34,6 +34,7 @@ public class ProjectDetailRes {
     private Boolean favorite;
     private List<VersionRes> versions;
     private List<FeedbackRes> feedbacks;
+    private String content;
 
     public ProjectDetailRes(Projects project, ProjectsInfo projectsInfo, List<String> tagList,
                             Boolean liked, Boolean favorite) {
@@ -46,6 +47,7 @@ public class ProjectDetailRes {
         this.favoriteCnt = projectsInfo.getFavoriteCnt();
         this.img = project.getImg();
         this.closed = project.isClosed();
+        this.content = projectsInfo.getContent();
         this.url = projectsInfo.getUrl();
         List<CodeInfoRes> codeInfoResList = new ArrayList<>();
         if(project.getProjectsCodes() != null)
