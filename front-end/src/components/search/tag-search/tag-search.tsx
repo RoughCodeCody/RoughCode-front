@@ -34,8 +34,7 @@ export const TagSearch = () => {
   ];
 
   const [selectedTags, setSelectedTags] = useState<SelectedTags>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => console.log("ㄴㅁㅇㅎㅁㄴㅇㄹ"), [isOpen]);
+  const [isOpen, setisOpen] = useState(false);
 
   return (
     <FlexDiv
@@ -74,11 +73,11 @@ export const TagSearch = () => {
         pointer={true}
         shadow={true}
       >
-        <SearchInput onFocus={() => setIsOpen(true)} placeholder="태그 검색" />
+        <SearchInput onFocus={() => setisOpen(true)} placeholder="태그 검색" />
         <DropdownArrow
           isOpen={isOpen}
           size={30}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setisOpen(!isOpen)}
         />
         {isOpen ? (
           <TagSelectContainer>

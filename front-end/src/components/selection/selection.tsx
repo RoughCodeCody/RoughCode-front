@@ -8,11 +8,11 @@ type SelectionProps = {
 };
 
 export const Selection = ({ isMine }: SelectionProps) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setisOpen] = useState<boolean>(false);
 
   return (
     <SelectionWrapper>
-      <TbDotsVertical onClick={() => setIsOpen((prev) => !prev)} />
+      <TbDotsVertical onClick={() => setisOpen((prev) => !prev)} />
       {isOpen && (
         <SelectionList>
           {isMine ? (

@@ -35,7 +35,7 @@ export const VersionDropdown = ({
 
       {versionsOpen && (
         <DropdownContentWrapper>
-          <DropdownContent data-isopen={versionsOpen}>
+          <DropdownContent data-isOpen={versionsOpen}>
             {versions.map(({ version, createdAt }, idx) => (
               <DropdownItem key={idx}>
                 <Text size="1.5rem" pointer={true}>
