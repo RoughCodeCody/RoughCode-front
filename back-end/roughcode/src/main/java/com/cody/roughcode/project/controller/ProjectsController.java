@@ -52,6 +52,7 @@ public class ProjectsController {
         try {
             res = projectsService.updateFeedback(req, userId);
         } catch(ResponseStatusException e){
+            log.error(e.getReason());
             return Response.makeResponse(e.getStatus(), e.getReason());
         } catch (Exception e) {
             log.error(e.getMessage());
