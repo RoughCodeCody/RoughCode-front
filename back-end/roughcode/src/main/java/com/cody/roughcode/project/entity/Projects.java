@@ -64,6 +64,12 @@ public class Projects extends BaseTimeEntity {
     @OneToMany(mappedBy = "projects")
     private List<Codes> projectsCodes;
 
+    @OneToMany(mappedBy = "projects")
+    private List<ProjectFavorites> projectFavorites;
+
+    @OneToMany(mappedBy = "projects")
+    private List<ProjectLikes> projectLikes;
+
     public void updateProject(ProjectReq req) {
         this.title = req.getTitle();
         this.introduction = req.getIntroduction();

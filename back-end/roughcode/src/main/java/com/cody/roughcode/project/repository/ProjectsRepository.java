@@ -23,4 +23,6 @@ public interface ProjectsRepository extends JpaRepository<Projects, Long> {
 
     @Query("SELECT p FROM Projects p WHERE p.closed = false AND (LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%)")
     Page<Projects> findAllOpenedByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    List<Projects> findByNumAndProjectWriter(Long num, Users projectWriter);
 }
