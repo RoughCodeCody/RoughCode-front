@@ -17,13 +17,19 @@ const TagText = styled.span`
   cursor: pointer;
 `;
 
-type TagType = {
+interface TagType {
   tag: string;
-};
+  selectedTags: string[];
+  setSelectedTags: (newData: string[]) => void;
+}
 
-export const TagSelectItem = ({ tag }: TagType) => {
+export const TagSelectItem = ({
+  tag,
+  selectedTags,
+  setSelectedTags,
+}: TagType) => {
   return (
-    <BorderLineDiv>
+    <BorderLineDiv onClick={() => setSelectedTags([...selectedTags, tag])}>
       <TagText>{tag}</TagText>
     </BorderLineDiv>
   );
