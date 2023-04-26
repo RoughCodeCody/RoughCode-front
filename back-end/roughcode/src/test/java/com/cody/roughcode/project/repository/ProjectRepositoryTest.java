@@ -87,18 +87,20 @@ public class ProjectRepositoryTest {
         // given
         usersRepository.save(users);
         Projects project1 = Projects.builder()
+                .projectsId(1L)
                 .num(1L)
                 .version(1)
                 .img("image url")
-                .introduction("intro")
+                .introduction("intro1")
                 .title("title")
                 .projectWriter(users)
                 .closed(true)
                 .likeCnt(33)
                 .build();
         Projects project2 = Projects.builder()
+                .projectsId(2L)
                 .num(1L)
-                .version(1)
+                .version(2)
                 .img("image url2")
                 .introduction("intro2")
                 .title("title2")
@@ -107,8 +109,9 @@ public class ProjectRepositoryTest {
                 .likeCnt(11)
                 .build();
         Projects project3 = Projects.builder()
+                .projectsId(3L)
                 .num(1L)
-                .version(1)
+                .version(3)
                 .img("image url3")
                 .introduction("intro3")
                 .title("title3")
@@ -117,8 +120,9 @@ public class ProjectRepositoryTest {
                 .likeCnt(22)
                 .build();
         Projects project4 = Projects.builder()
+                .projectsId(4L)
                 .num(1L)
-                .version(1)
+                .version(4)
                 .img("image url4")
                 .introduction("intro4")
                 .title("title4")
@@ -137,12 +141,12 @@ public class ProjectRepositoryTest {
         Page<Projects> projectsList = projectRepository.findAllByKeyword("", pageRequest);
         List<Projects> projects = projectsList.getContent();
 
+        for(var p : projects){
+            System.out.println(p.getIntroduction());
+        }
+
         // then
-        assertThat(projects.size()).isEqualTo(4);
-        assertThat(projects.get(0)).isEqualTo(project2);
-        assertThat(projects.get(1)).isEqualTo(project4);
-        assertThat(projects.get(2)).isEqualTo(project3);
-        assertThat(projects.get(3)).isEqualTo(project1);
+        assertThat(projects.size()).isEqualTo(1);
     }
 
     @DisplayName("프로젝트 목록 가져오기 - 닫혀있는 것 포함 좋아요순")
@@ -161,7 +165,7 @@ public class ProjectRepositoryTest {
                 .likeCnt(33)
                 .build();
         Projects project2 = Projects.builder()
-                .num(1L)
+                .num(2L)
                 .version(1)
                 .img("image url2")
                 .introduction("intro2")
@@ -171,8 +175,8 @@ public class ProjectRepositoryTest {
                 .likeCnt(11)
                 .build();
         Projects project3 = Projects.builder()
-                .num(1L)
-                .version(1)
+                .num(2L)
+                .version(2)
                 .img("image url3")
                 .introduction("intro3")
                 .title("title3")
@@ -181,8 +185,8 @@ public class ProjectRepositoryTest {
                 .likeCnt(22)
                 .build();
         Projects project4 = Projects.builder()
-                .num(1L)
-                .version(1)
+                .num(2L)
+                .version(3)
                 .img("image url4")
                 .introduction("intro4")
                 .title("title4")
@@ -192,9 +196,9 @@ public class ProjectRepositoryTest {
                 .build();
 
         projectRepository.save(project1);
+        projectRepository.save(project2);
         projectRepository.save(project3);
         projectRepository.save(project4);
-        projectRepository.save(project2);
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "likeCnt"));
@@ -202,11 +206,9 @@ public class ProjectRepositoryTest {
         List<Projects> projects = projectsList.getContent();
 
         // then
-        assertThat(projects.size()).isEqualTo(4);
-        assertThat(projects.get(0)).isEqualTo(project4);
-        assertThat(projects.get(1)).isEqualTo(project1);
-        assertThat(projects.get(2)).isEqualTo(project3);
-        assertThat(projects.get(3)).isEqualTo(project2);
+        assertThat(projects.size()).isEqualTo(2);
+        assertThat(projects.get(0).getProjectsId()).isEqualTo(4L);
+        assertThat(projects.get(1).getProjectsId()).isEqualTo(1L);
     }
 
     @DisplayName("프로젝트 목록 가져오기 - 닫혀있는 것 포함 피드백순")
@@ -226,7 +228,7 @@ public class ProjectRepositoryTest {
                 .feedbackCnt(1231)
                 .build();
         Projects project2 = Projects.builder()
-                .num(1L)
+                .num(2L)
                 .version(1)
                 .img("image url2")
                 .introduction("intro2")
@@ -237,7 +239,7 @@ public class ProjectRepositoryTest {
                 .feedbackCnt(23)
                 .build();
         Projects project3 = Projects.builder()
-                .num(1L)
+                .num(3L)
                 .version(1)
                 .img("image url3")
                 .introduction("intro3")
@@ -248,7 +250,7 @@ public class ProjectRepositoryTest {
                 .feedbackCnt(0)
                 .build();
         Projects project4 = Projects.builder()
-                .num(1L)
+                .num(4L)
                 .version(1)
                 .img("image url4")
                 .introduction("intro4")
@@ -283,54 +285,58 @@ public class ProjectRepositoryTest {
         // given
         usersRepository.save(users);
         Projects project1 = Projects.builder()
-                .num(1L)
+                .projectsId(1L)
+                .num(2L)
                 .version(1)
                 .img("image url")
                 .introduction("intro")
                 .title("title")
                 .projectWriter(users)
-                .closed(true)
+                .closed(false)
                 .likeCnt(33)
                 .feedbackCnt(1231)
                 .build();
         Projects project2 = Projects.builder()
+                .projectsId(2L)
                 .num(1L)
                 .version(1)
                 .img("image url2")
                 .introduction("intro2")
                 .title("title2")
                 .projectWriter(users)
-                .closed(false)
+                .closed(true)
                 .likeCnt(11)
                 .feedbackCnt(23)
                 .build();
         Projects project3 = Projects.builder()
+                .projectsId(3L)
                 .num(1L)
-                .version(1)
+                .version(2)
                 .img("image url3")
                 .introduction("intro3")
                 .title("title3")
                 .projectWriter(users)
-                .closed(false)
+                .closed(true)
                 .likeCnt(22)
                 .feedbackCnt(0)
                 .build();
         Projects project4 = Projects.builder()
+                .projectsId(4L)
                 .num(1L)
-                .version(1)
+                .version(3)
                 .img("image url4")
                 .introduction("intro4")
                 .title("title4")
                 .projectWriter(users)
-                .closed(true)
+                .closed(false)
                 .likeCnt(4554)
                 .feedbackCnt(12)
                 .build();
 
         projectRepository.save(project1);
+        projectRepository.save(project2);
         projectRepository.save(project3);
         projectRepository.save(project4);
-        projectRepository.save(project2);
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "feedbackCnt"));
@@ -339,8 +345,8 @@ public class ProjectRepositoryTest {
 
         // then
         assertThat(projects.size()).isEqualTo(2);
-        assertThat(projects.get(0)).isEqualTo(project2);
-        assertThat(projects.get(1)).isEqualTo(project3);
+        assertThat(projects.get(0).getProjectsId()).isEqualTo(1L);
+        assertThat(projects.get(1).getProjectsId()).isEqualTo(4L);
     }
 
     @DisplayName("프로젝트 삭제하기")

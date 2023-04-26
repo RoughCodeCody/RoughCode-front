@@ -16,20 +16,22 @@ import java.util.List;
 @AllArgsConstructor
 public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.나머지.. 순으로 정렬
     private Long feedbackId;
-    private Long userId;
-    private String userName;
+    private Long userId = 0L;
+    private String userName = "";
     private String content;
     private int like;
-    private Boolean selected;
+    private int selected;
     private LocalDateTime date;
 
-    public FeedbackRes(Feedbacks f, Boolean isSelected) {
+    public FeedbackRes(Feedbacks f) {
         this.feedbackId = f.getFeedbacksId();
-        this.userId = f.getUsers().getUsersId();
-        this.userName = f.getUsers().getName();
+        if(f.getUsers() != null) {
+            this.userId = f.getUsers().getUsersId();
+            this.userName = f.getUsers().getName();
+        }
         this.content = f.getContent();
         this.like = f.getLikeCnt();
-        this.selected = isSelected;
+        this.selected = f.getSelected();
         this.date = f.getModifiedDate();
     }
 }

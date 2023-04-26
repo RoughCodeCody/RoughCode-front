@@ -40,7 +40,7 @@ public class ProjectsController {
     @GetMapping("/{projectId}")
     ResponseEntity<?> getProjectList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                      @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId) {
-        Long userId = jwtTokenProvider.getId(accessToken);
+        Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
 
         ProjectDetailRes res = null;
         try{

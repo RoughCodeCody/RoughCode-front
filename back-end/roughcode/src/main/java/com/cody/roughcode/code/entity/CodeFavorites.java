@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class CodeFavorites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT")
     private Long favoritesId;
 
 

@@ -14,14 +14,13 @@ import java.util.Objects;
 @Entity
 @Getter
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "projects")
 public class Projects extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT")
     private Long projectsId;
 
     @Column(name = "num", nullable = false)

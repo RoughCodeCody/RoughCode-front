@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -113,7 +115,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                 for(Long id : req.getSelectedFeedbacksId()){
                     Feedbacks feedback = feedbacksRepository.findFeedbacksByFeedbacksId(id);
                     if(feedback == null) throw new NullPointerException("일치하는 피드백이 없습니다");
-                    if(!feedback.getProjects().getNum().equals(projectNum))
+                    if(!feedback.getProjectsInfo().getProjects().getNum().equals(projectNum))
                         throw new NullPointerException("피드백과 프로젝트가 일치하지 않습니다");
                     feedback.selectedUp();
                     feedbacksRepository.save(feedback);
@@ -307,6 +309,19 @@ public class ProjectsServiceImpl implements ProjectsService{
                 projectSelectedTagsRepository.delete(selectedTag);
             }
         else log.info("연결된 태그가 없습니다");
+
+        // feedback 삭제
+        List<SelectedFeedbacks> selectedFeedbacksList = target.getSelectedFeedbacks();
+        if(selectedFeedbacksList != null)
+            for (SelectedFeedbacks feedback : selectedFeedbacksList) {
+                Feedbacks feedbacks = feedback.getFeedbacks();
+                feedbacks.selectedDown();
+                feedbacksRepository.save(feedbacks);
+
+                selectedFeedbacksRepository.delete(feedback);
+            }
+        else log.info("기존에 선택하였던 feedback이 없습니다");
+
         projectsRepository.delete(target);
 
         return 1;
@@ -375,12 +390,23 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .build());
         }
         projectDetailRes.setVersions(versionResList);
+
         List<FeedbackRes> feedbackResList = new ArrayList<>();
-        if(projectsInfo.getProjectsFeedbacks() != null)
-            for (Feedbacks f : projectsInfo.getProjectsFeedbacks()) {
-                Boolean isSelected = selectedFeedbacksRepository.findByFeedbacksAndProjects(f, project) != null;
-                feedbackResList.add(new FeedbackRes(f, isSelected));
+        if(projectsInfo.getFeedbacks() != null)
+            for (Feedbacks f : projectsInfo.getFeedbacks()) {
+                feedbackResList.add(new FeedbackRes(f));
             }
+        // Selected가 우선, usersId가 같은것이 더 앞, 이후 최신순
+        feedbackResList.sort(Comparator.comparing(FeedbackRes::getSelected).reversed()
+                .thenComparing((f1, f2) -> {
+                    if (f1.getUserId().equals(usersId) && !f2.getUserId().equals(usersId)) {
+                        return -1;
+                    } else if (!f1.getUserId().equals(usersId) && f2.getUserId().equals(usersId)) {
+                        return 1;
+                    } else {
+                        return f2.getDate().compareTo(f1.getDate());
+                    }
+                }));
         projectDetailRes.setFeedbacks(feedbackResList);
 
         return projectDetailRes;

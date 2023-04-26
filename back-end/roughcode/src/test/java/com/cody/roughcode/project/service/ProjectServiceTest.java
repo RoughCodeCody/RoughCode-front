@@ -145,7 +145,7 @@ public class ProjectServiceTest {
         List<Feedbacks> feedbacksList = new ArrayList<>();
         for (long i = 1L; i <= 3L; i++) {
             feedbacksList.add(Feedbacks.builder()
-                    .projects(project)
+                    .projectsInfo(info)
                     .feedbacksId(i)
                     .content("content")
                     .users(null)
