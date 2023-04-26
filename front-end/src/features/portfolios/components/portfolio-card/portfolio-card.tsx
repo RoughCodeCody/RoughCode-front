@@ -21,8 +21,9 @@ interface PortfolioCardProps {
   likeCnt: number;
   feedbackCnt: number;
   img: string;
-  tagId: number[];
+  tags: string[];
   introduction: string;
+  closed: boolean;
 }
 
 export const PortfolioCard = ({
@@ -32,8 +33,9 @@ export const PortfolioCard = ({
   likeCnt,
   feedbackCnt,
   img,
-  tagId,
+  tags,
   introduction,
+  closed,
 }: PortfolioCardProps) => {
   const [isDown, setIsDown] = useState(false);
   const [startX, setStartX] = useState<number | null>(null);
@@ -151,9 +153,9 @@ export const PortfolioCard = ({
             onMouseMove={handleMouseMove}
             onWheel={handleWheel}
           >
-            {tagId.map((tag) => (
+            {tags.map((tag) => (
               // 임시로 tag에 스트링 씌움
-              <TagChipSub tag={String(tag)} />
+              <TagChipSub tag={tag} />
             ))}
           </TagContainer>
         </FlexDiv>

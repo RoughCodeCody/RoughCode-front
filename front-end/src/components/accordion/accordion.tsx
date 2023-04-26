@@ -23,7 +23,7 @@ export const Accordion = ({
 }: AccordionProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setisOpen] = useState<boolean>(false);
 
   const handleOpenState = (e) => {
     e.stopPropagation();
@@ -33,7 +33,7 @@ export const Accordion = ({
       parentRef.current.style.height = "0";
     else parentRef.current.style.height = `${childRef.current.clientHeight}px`;
 
-    setIsOpen((prev) => !prev);
+    setisOpen((prev) => !prev);
   };
 
   return (

@@ -1,6 +1,15 @@
-import internal from "stream";
+import { useState, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import {
+  useInfiniteQuery,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import axios from "axios";
+
 import { PortfolioCard } from "../portfolio-card";
 import { PortfolioCardGrid } from "./style";
+import { FlexDiv } from "@/components/elements";
 
 interface PortfolioCardProps {
   projectId: number;
@@ -10,124 +19,90 @@ interface PortfolioCardProps {
   likeCnt: number;
   feedbackCnt: number;
   img: string;
-  tagId: number[];
+  tags: string[];
   introduction: string;
+  closed: boolean;
 }
 
 export const PortfolioList = () => {
-  const dummy = {
-    message: "프로젝트 목록 조회 성공",
-    count: 9,
-    result: {
-      projects: [
-        {
-          projectId: 1,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 2,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 3,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 4,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 5,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 6,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 7,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 8,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-        {
-          projectId: 9,
-          version: 4,
-          title: "개발새발", // 프로젝트 이름
-          likeCnt: 13,
-          feedbackCnt: 16,
-          img: "https://picsum.photos/400/300",
-          tagId: [1, 2, 3, 4, 5],
-          introduction: "개발새발 프로젝트 입니다 하하",
-        },
-      ],
-    },
+  const { ref, inView } = useInView();
+  const [pageNum, setPageNum] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(true);
+
+  const fetchProjects = async ({ pageParam = pageNum }) => {
+    const res = await axios.get(
+      "http://localhost:4000/dummy?_page=" + pageParam + "&_limit=9"
+    );
+    console.log(res.data);
+    if (res.data.length === 0) {
+      setHasNextPage(false);
+      console.log(hasNextPage);
+    }
+    return res.data;
   };
 
+  const {
+    status,
+    data,
+    error,
+    isFetching,
+    isFetchingNextPage,
+    isFetchingPreviousPage,
+    fetchNextPage,
+    fetchPreviousPage,
+    hasPreviousPage,
+  } = useInfiniteQuery(["projects"], fetchProjects, {
+    onSuccess: () => {
+      setPageNum(pageNum + 1);
+      console.log(pageNum);
+    },
+    // getPreviousPageParam: (firstPage) => firstPage.previousId ?? undefined,
+    // getNextPageParam: (lastPage) => lastPage.nextId ? undefined,
+    getNextPageParam: () => pageNum,
+  });
+
+  console.log(data);
+  console.log(status);
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      console.log(hasNextPage);
+      fetchNextPage();
+    }
+  }, [inView]);
+
   return (
-    <PortfolioCardGrid>
-      {dummy.result.projects.map((project: PortfolioCardProps) => (
-        <PortfolioCard
-          projectId={project.projectId}
-          version={project.version}
-          title={project.title}
-          likeCnt={project.likeCnt}
-          feedbackCnt={project.feedbackCnt}
-          img={project.img}
-          tagId={project.tagId}
-          introduction={project.introduction}
-        />
-      ))}
-    </PortfolioCardGrid>
+    <>
+      {status === "loading" && <p>Loading...</p>}
+      {status === "success" && (
+        <>
+          {data.pages.map((page) => (
+            <PortfolioCardGrid key={page.nextId}>
+              {page.map((project: PortfolioCardProps) => (
+                <PortfolioCard
+                  key={project.projectId}
+                  projectId={project.projectId}
+                  version={project.version}
+                  title={project.title}
+                  likeCnt={project.likeCnt}
+                  feedbackCnt={project.feedbackCnt}
+                  img={project.img}
+                  tags={project.tags}
+                  introduction={project.introduction}
+                  closed={project.closed}
+                />
+              ))}
+            </PortfolioCardGrid>
+          ))}
+          {hasNextPage ? (
+            <FlexDiv justify="center">
+              <p ref={ref}>Loading more...</p>
+            </FlexDiv>
+          ) : (
+            <></>
+          )}
+        </>
+      )}
+    </>
   );
 };

@@ -30,7 +30,7 @@ const DropdownContent = styled.div`
   gap: 0.5rem;
   transition: height 1s ease-in-out;
 
-  &[data-isopen="true"] {
+  &[data-isOpen="true"] {
     animation: ${showDropdown} 0.5s ease;
   }
 `;

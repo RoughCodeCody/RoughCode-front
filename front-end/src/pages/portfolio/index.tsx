@@ -1,8 +1,14 @@
 import Head from "next/head";
 import { Portfolios } from "@/features/portfolios/";
-import { Accordion } from "@/components/accordion";
+
+import {
+  useInfiniteQuery,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 
 export default function Project() {
+  const queryClient = new QueryClient();
   return (
     <>
       <Head>
@@ -12,7 +18,9 @@ export default function Project() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Portfolios />
+      <QueryClientProvider client={queryClient}>
+        <Portfolios />
+      </QueryClientProvider>
     </>
   );
 }
