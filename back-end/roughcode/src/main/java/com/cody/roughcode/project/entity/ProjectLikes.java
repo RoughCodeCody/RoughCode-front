@@ -11,20 +11,16 @@ import javax.persistence.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "project_favorites")
-public class ProjectFavorites {
+@Table(name = "project_likes")
+public class ProjectLikes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT")
-    private Long favoritesId;
+    @Column(name = "likes_id", nullable = false, columnDefinition = "BIGINT")
+    private Long likesId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
     private Users users;
-
-    @Builder.Default
-    @Column(name = "content", nullable = true, columnDefinition = "text")
-    private String content = "";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = false)

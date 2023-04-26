@@ -1,4 +1,4 @@
-package com.cody.roughcode.project.dto.req;
+package com.cody.roughcode.project.dto.res;
 
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;

@@ -11,22 +11,18 @@ import javax.persistence.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "project_favorites")
-public class ProjectFavorites {
+@Table(name = "feedbacks_likes")
+public class FeedbacksLikes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT")
-    private Long favoritesId;
+    @Column(name = "feedbakcs_likes_id", nullable = false, columnDefinition = "BIGINT")
+    private Long feedbacksLikesId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
     private Users users;
 
-    @Builder.Default
-    @Column(name = "content", nullable = true, columnDefinition = "text")
-    private String content = "";
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projects_id", nullable = false)
-    private Projects projects;
+    @JoinColumn(name = "feedbacks_id", nullable = false)
+    private Feedbacks feedbacks;
 }

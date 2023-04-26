@@ -1,7 +1,8 @@
 package com.cody.roughcode.project.controller;
 
 import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.project.dto.req.ProjectInfoRes;
+import com.cody.roughcode.project.dto.res.ProjectDetailRes;
+import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
@@ -100,6 +101,52 @@ public class ProjectControllerTest {
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("프로젝트 상세 조회 성공")
+    @Test
+    public void getProjectSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}";
+
+        doReturn(new ProjectDetailRes()).when(projectsService)
+                .getProject(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 상세 조회 성공");
+    }
+
+    @DisplayName("프로젝트 상세 조회 실패")
+    @Test
+    public void getProjectFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}";
+
+        doReturn(null).when(projectsService)
+                .getProject(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 상세 조회 실패");
+    }
 
     @DisplayName("프로젝트 목록 조회 성공")
     @Test

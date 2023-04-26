@@ -5,18 +5,18 @@ import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "feedbacks")
 public class Feedbacks extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedbacks_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "feedbacks_id", nullable = false, columnDefinition = "BIGINT")
     private Long feedbacksId;
 
     @Builder.Default
@@ -36,13 +36,16 @@ public class Feedbacks extends BaseTimeEntity {
     private int selected = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projects_id", nullable = false)
-    private Projects projects;
+    @JoinColumn(name = "id", nullable = false)
+    private ProjectsInfo projectsInfo;
 
     @Builder.Default
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = true)
     private Users users = null;
+
+    @OneToMany(mappedBy = "feedbacks")
+    private List<FeedbacksLikes> feedbacksLikes;
 
     public void selectedUp() {
         this.selected += 1;

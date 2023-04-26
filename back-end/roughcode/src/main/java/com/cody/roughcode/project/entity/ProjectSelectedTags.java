@@ -8,14 +8,13 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "project_selected_tags")
 public class ProjectSelectedTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT")
     private Long selectedTagsId;
 
     @ManyToOne(fetch = FetchType.LAZY)

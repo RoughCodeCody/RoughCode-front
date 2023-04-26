@@ -38,6 +38,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .antMatchers(HttpMethod.GET, "/api/v1/project")
+                .antMatchers(HttpMethod.GET, "/api/v1/project/{projectId}")
                 .antMatchers(URL_PREFIX+"/user/token", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**", "/favicon.ico");
     }
 

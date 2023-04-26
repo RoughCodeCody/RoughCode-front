@@ -6,9 +6,10 @@ import com.cody.roughcode.exception.DeletionFailException;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.UpdateFailedException;
-import com.cody.roughcode.project.dto.req.ProjectInfoRes;
+import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
+import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
@@ -144,7 +145,7 @@ public class ProjectServiceTest {
         List<Feedbacks> feedbacksList = new ArrayList<>();
         for (long i = 1L; i <= 3L; i++) {
             feedbacksList.add(Feedbacks.builder()
-                    .projects(project)
+                    .projectsInfo(info)
                     .feedbacksId(i)
                     .content("content")
                     .users(null)
@@ -167,6 +168,62 @@ public class ProjectServiceTest {
 
         return codeList;
     }
+
+
+    @DisplayName("프로젝트 상세 조회 성공")
+    @Test
+    void getProjectSucceed() {
+        // given
+        Long projectId = 1L;
+        List<ProjectTags> tagsList = tagsInit();
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("introduction")
+                .title("title")
+                .projectWriter(users)
+                .projectsCodes(new ArrayList<>())
+                .build();
+        Projects project2 = Projects.builder()
+                .projectsId(2L)
+                .num(1L)
+                .version(2)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("introduction")
+                .title("title2")
+                .projectWriter(users)
+                .projectsCodes(new ArrayList<>())
+                .build();
+        Codes code = Codes.builder()
+                .codesId(2L)
+                .version(1)
+                .codeWriter(users)
+                .title("title")
+                .projects(project)
+                .num(1L)
+                .build();
+        project.setCodes(List.of(code));
+        ProjectsInfo info = ProjectsInfo.builder()
+                .url("url")
+                .notice("notice")
+                .build();
+
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+        doReturn(List.of(project, project2)).when(projectsRepository).findByNumAndProjectWriter(any(Long.class), any(Users.class));
+
+        // when
+        ProjectDetailRes success = projectsService.getProject(projectId, 0L);
+
+        // then
+        System.out.println(success.toString());
+        assertThat(success.getProjectId()).isEqualTo(1L);
+        assertThat(success.getVersions().size()).isEqualTo(2);
+    }
+
 
     @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 포함, 최신순")
     @Test

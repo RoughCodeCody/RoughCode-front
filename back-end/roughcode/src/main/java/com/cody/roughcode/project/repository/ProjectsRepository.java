@@ -18,9 +18,13 @@ public interface ProjectsRepository extends JpaRepository<Projects, Long> {
     @Query(value = "SELECT p FROM Projects p WHERE p.num = :num AND p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE p2.num = :num AND p2.projectWriter.usersId = :userId) AND p.projectWriter.usersId = :userId")
     Projects findLatestProject(@Param("num") Long num, @Param("userId") Long userId);
 
-    @Query("SELECT p FROM Projects p WHERE LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%")
+    @Query("SELECT p FROM Projects p WHERE p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter)) " +
+            "AND (LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%)")
     Page<Projects> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT p FROM Projects p WHERE p.closed = false AND (LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%)")
+    @Query("SELECT p FROM Projects p WHERE p.closed = false AND p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter)) " +
+            "AND (LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%)")
     Page<Projects> findAllOpenedByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    List<Projects> findByNumAndProjectWriter(Long num, Users projectWriter);
 }

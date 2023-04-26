@@ -17,7 +17,7 @@ import java.util.List;
 public class ProjectsInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(nullable = false, columnDefinition = "BIGINT")
     private Long id;
 
     @Column(columnDefinition = "text")
@@ -41,8 +41,8 @@ public class ProjectsInfo {
     @JoinColumn(name = "projects_id", nullable = false)
     private Projects projects;
 
-    @OneToMany(mappedBy = "projects")
-    private List<Feedbacks> projectsFeedbacks;
+    @OneToMany(mappedBy = "projectsInfo")
+    private List<Feedbacks> feedbacks;
 
     public void setProjects(Projects projects) {
         this.projects = projects;

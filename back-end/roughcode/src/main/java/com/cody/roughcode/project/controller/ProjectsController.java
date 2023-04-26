@@ -1,6 +1,7 @@
 package com.cody.roughcode.project.controller;
 
-import com.cody.roughcode.project.dto.req.ProjectInfoRes;
+import com.cody.roughcode.project.dto.res.ProjectDetailRes;
+import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
@@ -25,7 +26,9 @@ import static com.cody.roughcode.security.auth.JwtProperties.TOKEN_HEADER;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/project")
@@ -34,6 +37,24 @@ import java.util.List;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
+
+    @Operation(summary = "프로젝트 상세 조회 API")
+    @GetMapping("/{projectId}")
+    ResponseEntity<?> getProjectList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                     @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId) {
+        Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
+
+        ProjectDetailRes res = null;
+        try{
+            res = projectsService.getProject(projectId, userId);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res == null) return Response.notFound("프로젝트 상세 조회 실패");
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 상세 조회 성공", 1, res);
+    }
 
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping
@@ -55,7 +76,10 @@ public class ProjectsController {
             return Response.badRequest(e.getMessage());
         }
 
-        return Response.makeResponse(HttpStatus.OK, "프로젝트 목록 조회 성공", res.size(), res);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("nextPage", page + 1);
+        resultMap.put("list", res);
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 목록 조회 성공", res.size(), resultMap);
     }
 
     @Operation(summary = "프로젝트 삭제 API")
