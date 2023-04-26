@@ -7,6 +7,7 @@ import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
@@ -30,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -168,6 +170,155 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("피드백 수정 성공")
+    @Test
+    void updateFeedbackSucceed(){
+        // given
+        FeedbackUpdateReq req = FeedbackUpdateReq.builder()
+                .feedbackId(1L)
+                .content("수정된feedback")
+                .build();
+        Feedbacks feedbacks = Feedbacks.builder()
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .build();
+        Feedbacks updated = Feedbacks.builder()
+                .content("수정된feedback")
+                .selected(0)
+                .users(users)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+        doReturn(updated).when(feedbacksRepository).save(any(Feedbacks.class));
+
+        // when
+        Boolean success = projectsService.updateFeedback(req, 1L);
+
+        // then
+        assertThat(success).isTrue();
+    }
+
+    @DisplayName("피드백 수정 실패 - 로그인 안함")
+    @Test
+    void updateFeedbackFailNoUser(){
+        // given
+        FeedbackUpdateReq req = FeedbackUpdateReq.builder()
+                .feedbackId(1L)
+                .content("수정된feedback")
+                .build();
+
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+            NullPointerException.class, () -> projectsService.updateFeedback(req, 1L)
+        );
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("피드백 수정 실패 - 익명의 피드백임")
+    @Test
+    void updateFeedbackFailAnonymousUser(){
+        // given
+        FeedbackUpdateReq req = FeedbackUpdateReq.builder()
+                .feedbackId(1L)
+                .content("수정된feedback")
+                .build();
+        Feedbacks feedbacks = Feedbacks.builder()
+                .content("feedback")
+                .selected(0)
+                .users(null)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.updateFeedback(req, 1L)
+        );
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("피드백 수정 실패 - 일치하는 유저가 아님")
+    @Test
+    void updateFeedbackFailUserNotMatch(){
+        // given
+        FeedbackUpdateReq req = FeedbackUpdateReq.builder()
+                .feedbackId(1L)
+                .content("수정된feedback")
+                .build();
+        Feedbacks feedbacks = Feedbacks.builder()
+                .content("feedback")
+                .selected(0)
+                .users(users2)
+                .build();
+        Feedbacks updated = Feedbacks.builder()
+                .content("수정된feedback")
+                .selected(0)
+                .users(users)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.updateFeedback(req, 1L)
+        );
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("피드백 수정 실패 - 존재하지 않는 피드백")
+    @Test
+    void updateFeedbackFailNoFeedback(){
+        // given
+        FeedbackUpdateReq req = FeedbackUpdateReq.builder()
+                .feedbackId(1L)
+                .content("수정된feedback")
+                .build();
+        Feedbacks feedbacks = Feedbacks.builder()
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.updateFeedback(req, 1L)
+        );
+        assertEquals("일치하는 피드백이 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("피드백 수정 실패 - 이미 선택돼서 수정 불가")
+    @Test
+    void updateFeedbackFailAlreadySelected(){
+        // given
+        FeedbackUpdateReq req = FeedbackUpdateReq.builder()
+                .feedbackId(1L)
+                .content("수정된feedback")
+                .build();
+        Feedbacks feedbacks = Feedbacks.builder()
+                .content("feedback")
+                .selected(1)
+                .users(users)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedbacks).when(feedbacksRepository).findFeedbacksByFeedbacksId(any(Long.class));
+
+        // when & then
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class, () -> projectsService.updateFeedback(req, 1L)
+        );
+        assertEquals("409 CONFLICT \"채택된 피드백은 수정할 수 없습니다\"", exception.getMessage());
     }
 
     @DisplayName("피드백 등록 성공 - 로그인")

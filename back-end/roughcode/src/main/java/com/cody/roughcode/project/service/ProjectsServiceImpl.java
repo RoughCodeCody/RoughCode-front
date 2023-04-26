@@ -7,6 +7,7 @@ import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.*;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
@@ -19,9 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -443,6 +446,23 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectsInfoRepository.save(projectsInfo);
 
         return projectsInfo.getFeedbacks().size();
+    }
+
+    @Override
+    public Boolean updateFeedback(FeedbackUpdateReq req, Long userId) {
+        Users users = usersRepository.findByUsersId(userId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        Feedbacks feedbacks = feedbacksRepository.findFeedbacksByFeedbacksId(req.getFeedbackId());
+        if(feedbacks == null) throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
+        else if(feedbacks.getUsers() == null || !feedbacks.getUsers().equals(users)) throw new NotMatchException();
+        else if(feedbacks.getSelected() > 0)
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "채택된 피드백은 수정할 수 없습니다");
+
+        feedbacks.editContent(req.getContent());
+        Feedbacks updated = feedbacksRepository.save(feedbacks);
+
+        return updated.getContent().equals(req.getContent());
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {
