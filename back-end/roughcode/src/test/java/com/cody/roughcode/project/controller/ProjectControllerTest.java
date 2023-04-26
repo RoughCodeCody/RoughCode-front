@@ -1,6 +1,7 @@
 package com.cody.roughcode.project.controller;
 
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jdk.jfr.ContentType;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -101,6 +103,61 @@ public class ProjectControllerTest {
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("피드백 등록 성공")
+    @Test
+    public void insertFeedbackSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback";
+
+        FeedbackReq req = FeedbackReq.builder()
+                .content("개발새발 최고")
+                .projectId(1L)
+                .build();
+
+        doReturn(1).when(projectsService)
+                .insertFeedback(any(FeedbackReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 등록 성공");
+    }
+
+    @DisplayName("피드백 등록 실패")
+    @Test
+    public void insertFeedbackFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/feedback";
+
+        doReturn(0).when(projectsService)
+                .insertFeedback(any(FeedbackReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("피드백 등록 실패");
+    }
 
     @DisplayName("프로젝트 상세 조회 성공")
     @Test

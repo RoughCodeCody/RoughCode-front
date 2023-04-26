@@ -1,5 +1,6 @@
 package com.cody.roughcode.project.controller;
 
+import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import static com.cody.roughcode.security.auth.JwtProperties.TOKEN_HEADER;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Executable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +39,24 @@ import java.util.Map;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
+
+    @Operation(summary = "피드백 등록 API")
+    @PostMapping("/feedback")
+    ResponseEntity<?> insertFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                     @Parameter(description = "피드백 정보") @RequestBody FeedbackReq req){
+        Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
+
+        int res = 0;
+        try {
+            res = projectsService.insertFeedback(req, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("피드백 등록 실패");
+        return Response.ok("피드백 등록 성공");
+    }
 
     @Operation(summary = "프로젝트 상세 조회 API")
     @GetMapping("/{projectId}")

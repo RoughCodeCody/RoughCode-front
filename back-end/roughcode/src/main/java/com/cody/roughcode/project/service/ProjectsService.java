@@ -1,5 +1,6 @@
 package com.cody.roughcode.project.service;
 
+import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
@@ -17,4 +18,6 @@ public interface ProjectsService {
     int deleteProject(Long projectsId, Long usersId);
     List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, ProjectSearchReq req);
     ProjectDetailRes getProject(Long projectId, Long usersId);
+
+    int insertFeedback(FeedbackReq req, Long usersId);
 }

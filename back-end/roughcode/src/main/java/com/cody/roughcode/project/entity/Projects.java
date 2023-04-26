@@ -94,4 +94,8 @@ public class Projects extends BaseTimeEntity {
     public void setCodes(List<Codes> codesList) {
         this.projectsCodes = codesList;
     }
+
+    public void close(boolean b) {
+        this.closed = b;
+    }
 }
