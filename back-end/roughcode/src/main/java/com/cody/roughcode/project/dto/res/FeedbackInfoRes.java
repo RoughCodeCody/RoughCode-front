@@ -17,12 +17,19 @@ public class FeedbackInfoRes {
     private String userName;
     private String content;
     private Boolean selected;
+    private int version;
 
-    public FeedbackInfoRes(Feedbacks f, Users users) {
+    public FeedbackInfoRes(Feedbacks f, int version, Users users) {
         this.feedbackId = f.getFeedbacksId();
-        this.userId = users.getUsersId();
-        this.userName = users.getName();
+        if(users != null) {
+            this.userId = users.getUsersId();
+            this.userName = users.getName();
+        } else {
+            this.userId = 0L;
+            this.userName = "";
+        }
         this.content = f.getContent();
         this.selected = f.getSelected() > 0;
+        this.version = version;
     }
 }

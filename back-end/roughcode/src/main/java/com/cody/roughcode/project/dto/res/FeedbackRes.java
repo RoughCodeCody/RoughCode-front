@@ -16,10 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.나머지.. 순으로 정렬
     private Long feedbackId;
-    @Builder.Default
-    private Long userId = 0L;
-    @Builder.Default
-    private String userName = "";
+    private Long userId;
+    private String userName;
     private String content;
     private int like;
     private int selected;
@@ -31,6 +29,9 @@ public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.�
         if(f.getUsers() != null) {
             this.userId = f.getUsers().getUsersId();
             this.userName = f.getUsers().getName();
+        } else {
+            this.userId = 0L;
+            this.userName = "";
         }
         this.content = f.getContent();
         this.like = f.getLikeCnt();

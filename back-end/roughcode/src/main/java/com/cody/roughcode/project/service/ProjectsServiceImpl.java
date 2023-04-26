@@ -479,7 +479,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             ProjectsInfo info = projectsInfoRepository.findByProjects(p);
             List<Feedbacks> feedbacksList = info.getFeedbacks();
             for (Feedbacks f : feedbacksList) {
-                feedbackInfoResList.add(new FeedbackInfoRes(f, users));
+                feedbackInfoResList.add(new FeedbackInfoRes(f, p.getVersion(), f.getUsers()));
             }
         }
 
