@@ -3,6 +3,7 @@ package com.cody.roughcode.code.service;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
+import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
@@ -22,6 +23,8 @@ import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -205,12 +208,54 @@ class CodesServiceTest {
     @DisplayName("코드 등록 실패 - 존재하지 않는 유저 아이디")
     @Test
     void insertCodeFailNoUser() {
+        // given
+        CodeReq req = CodeReq.builder()
+                .codeId(1L)
+                .title("개발새발 코드")
+                .selectedTagsId(List.of(1L))
+                .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
+                .content("시간초과 뜹니다")
+                .projectId(1L)
+                .build();
 
+        // when & then
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> codesService.insertCode(req, 1L)
+        );
+
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
     }
 
     @DisplayName("코드 등록 실패 - code 작성한 user랑 version up 하려는 user가 다름")
     @Test
     void insertCodeFailUserDiffer() {
+        // given
+        CodeReq req = CodeReq.builder()
+                .codeId(1L)
+                .title("개발새발 코드")
+                .selectedTagsId(List.of(1L))
+                .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
+                .content("시간초과 뜹니다")
+                .projectId(1L)
+                .build();
 
+        Codes original = Codes.builder()
+                .codesId(1L)
+                .num(1L)
+                .version(1)
+                .title("개발새발 코드")
+                .codeWriter(user2)
+                .build();
+
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(original).when(codesRepository).findLatestByCodesId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> codesService.insertCode(req, 1L)
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
     }
 }
