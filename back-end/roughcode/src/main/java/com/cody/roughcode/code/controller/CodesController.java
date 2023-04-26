@@ -36,7 +36,7 @@ public class CodesController {
             return Response.badRequest(e.getMessage());
         }
 
-        if (res == 0) {
+        if (res <= 0) {
             return Response.notFound("코드 정보 등록 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드 정보 등록 성공", 1, res);

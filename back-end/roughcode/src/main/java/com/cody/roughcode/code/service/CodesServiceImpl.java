@@ -11,8 +11,6 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,7 +109,7 @@ public class CodesServiceImpl implements CodesService {
                     if (review == null) {
                         throw new NullPointerException("일치하는 리뷰가 없습니다.");
                     }
-                    if (review.getCodes().getNum() != savedCode.getNum()) {
+                    if (!review.getCodes().getNum().equals(codeNum)) {
                         throw new NullPointerException("리뷰와 프로젝트가 일치하지 않습니다.");
                     }
                     review.selectedUp();
