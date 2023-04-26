@@ -1,13 +1,13 @@
 package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.repository.CodesRepostiory;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
+import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
@@ -60,7 +60,7 @@ public class ProjectServiceTest {
     @Mock
     private UsersRepository usersRepository;
     @Mock
-    private CodesRepostiory codesRepostiory;
+    private CodesRepository codesRepository;
     @Mock
     private ProjectTagsRepository projectTagsRepository;
     @Mock
@@ -1146,7 +1146,7 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(codesList.get(0)).when(codesRepostiory).findByCodesId(any(Long.class));
+        doReturn(codesList.get(0)).when(codesRepository).findByCodesId(any(Long.class));
 
         // when
         int success = projectsService.connect(project.getProjectsId(), users.getUsersId(), List.of(0L, 1L, 2L));
@@ -1177,7 +1177,7 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(null).when(codesRepostiory).findByCodesId(any(Long.class));
+        doReturn(null).when(codesRepository).findByCodesId(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(

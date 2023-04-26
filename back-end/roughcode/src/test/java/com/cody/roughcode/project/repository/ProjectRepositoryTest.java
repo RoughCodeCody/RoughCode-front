@@ -5,14 +5,13 @@ import com.cody.roughcode.code.entity.CodeTags;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodeSelectedTagsRepository;
 import com.cody.roughcode.code.repository.CodeTagsRepository;
-import com.cody.roughcode.code.repository.CodesRepostiory;
+import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
-import org.joda.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,7 @@ public class ProjectRepositoryTest {
             .build();
 
     @Autowired
-    private CodesRepostiory codesRepostiory;
+    private CodesRepository codesRepository;
     @Autowired
     private ProjectsRepository projectRepository;
     @Autowired
@@ -384,7 +382,7 @@ public class ProjectRepositoryTest {
                 .codeWriter(users)
                 .title("title")
                 .build();
-        codesRepostiory.save(code);
+        codesRepository.save(code);
         List<CodeTags> codeTagList = codeTagsInit();
         for (CodeTags tag : codeTagList) {
             codeTagsRepository.save(tag);
@@ -398,7 +396,7 @@ public class ProjectRepositoryTest {
         }
 
         code.setProject(project);
-        codesRepostiory.save(code);
+        codesRepository.save(code);
         project.setCodes(List.of(code));
         projectRepository.save(project);
 
@@ -406,7 +404,7 @@ public class ProjectRepositoryTest {
         project.setCodes(null);
         projectRepository.save(project);
         code.setProject(null);
-        codesRepostiory.save(code);
+        codesRepository.save(code);
 
         // 카운트 다운 후 제거
         projectSelectedTagsRepository.deleteAll(projectSelectedTagsList);

@@ -20,8 +20,13 @@ public class CodesInfo {
     private Long id;
 
     @Builder.Default
+    @Column(name = "github_url", nullable = false)
+    private String githubUrl = "";
+
+    @Builder.Default
     @Column(name = "content", nullable = true, columnDefinition = "text")
     private String content = "";
+
     @Builder.Default
     @Column(name = "favorite_cnt", nullable = true)
     private int favoriteCnt = 0;

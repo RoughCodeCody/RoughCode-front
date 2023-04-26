@@ -44,8 +44,7 @@ public class Reviews extends BaseTimeEntity {
 
     @Builder.Default
     @Column(name = "selected", nullable = true)
-    private boolean selected = false;
-
+    private int selected = 0;
 
     @OneToMany(mappedBy = "reviews")
     private List<ReReviews> reviewsRereviewss;
@@ -58,4 +57,8 @@ public class Reviews extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
     private Users users = null;
+
+    public void selectedUp() {
+        this.selected += 1;
+    }
 }

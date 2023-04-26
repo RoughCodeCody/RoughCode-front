@@ -1,7 +1,7 @@
 package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.repository.CodesRepostiory;
+import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
@@ -42,7 +42,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectsInfoRepository projectsInfoRepository;
     private final ProjectSelectedTagsRepository projectSelectedTagsRepository;
     private final ProjectTagsRepository projectTagsRepository;
-    private final CodesRepostiory codesRepository;
+    private final CodesRepository codesRepository;
     private final FeedbacksRepository feedbacksRepository;
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final ProjectFavoritesRepository projectFavoritesRepository;
