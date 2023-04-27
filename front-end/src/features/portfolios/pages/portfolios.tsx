@@ -3,6 +3,8 @@ import { BottomHeader } from "@/components/elements";
 import { Search } from "@/components/search/search";
 import { Title } from "@/components/title";
 import { PortfolioList } from "../components/lists";
+import { DropLabel } from "@/components/drop-label";
+import { SwitchDemo } from "@/components/switch";
 
 export const Portfolios = () => {
   return (
@@ -27,7 +29,13 @@ export const Portfolios = () => {
         />
       </FlexDiv>
       <Search />
-      <PortfolioList />
+      <FlexDiv width="100%" maxWidth="1440px" direction="column" gap="1.7rem">
+        <FlexDiv width="100%" justify="end" gap="2rem" paddingX="5rem">
+          <SwitchDemo />
+          <DropLabel options={["최신순", "좋아요순", "리뷰순"]} />
+        </FlexDiv>
+        <PortfolioList />
+      </FlexDiv>
     </FlexDiv>
   );
 };

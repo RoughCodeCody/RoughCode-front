@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import {
-  useInfiniteQuery,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 import { PortfolioCard } from "../portfolio-card";
@@ -73,44 +69,17 @@ export const PortfolioList = () => {
   }, [inView]);
 
   return (
-    <FlexDiv direction="column" gap="1rem">
+    <FlexDiv width="100%" direction="column">
       {status === "loading" && <p>Loading...</p>}
       {status === "success" && (
         <>
           {data.pages.map((page) => (
             <PortfolioCardGrid key={page.nextId}>
-              {page.map((project: PortfolioCardProps, index: number) =>
-                index === 0 ? (
-                  <div ref={ref}>
-                    <PortfolioCard
-                      key={project.projectId}
-                      projectId={project.projectId}
-                      version={project.version}
-                      title={project.title}
-                      likeCnt={project.likeCnt}
-                      feedbackCnt={project.feedbackCnt}
-                      img={project.img}
-                      tags={project.tags}
-                      introduction={project.introduction}
-                      closed={project.closed}
-                    />
-                  </div>
-                ) : (
-                  <PortfolioCard
-                    ref={undefined}
-                    key={project.projectId}
-                    projectId={project.projectId}
-                    version={project.version}
-                    title={project.title}
-                    likeCnt={project.likeCnt}
-                    feedbackCnt={project.feedbackCnt}
-                    img={project.img}
-                    tags={project.tags}
-                    introduction={project.introduction}
-                    closed={project.closed}
-                  />
-                )
-              )}
+              {page.map((project: PortfolioCardProps, index: number) => (
+                <FlexDiv ref={index === 0 ? ref : undefined} justify="center">
+                  <PortfolioCard key={project.projectId} project={project} />
+                </FlexDiv>
+              ))}
             </PortfolioCardGrid>
           ))}
         </>

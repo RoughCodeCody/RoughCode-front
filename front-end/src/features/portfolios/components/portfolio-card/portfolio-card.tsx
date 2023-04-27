@@ -14,35 +14,36 @@ import { TagChipSub } from "@/components/elements";
 import { Count } from "@/components/count";
 
 interface PortfolioCardProps {
-  ref?: React.ForwardedRef<HTMLDivElement>;
-  projectId: number;
-  version: number;
-  title: string;
-  date?: Date;
-  likeCnt: number;
-  feedbackCnt: number;
-  img: string;
-  tags: string[];
-  introduction: string;
-  closed: boolean;
+  project: {
+    projectId: number;
+    version: number;
+    title: string;
+    date?: Date;
+    likeCnt: number;
+    feedbackCnt: number;
+    img: string;
+    tags: string[];
+    introduction: string;
+    closed: boolean;
+  };
 }
-
 export const PortfolioCard = ({
-  projectId,
-  version,
-  title,
-  likeCnt,
-  feedbackCnt,
-  img,
-  tags,
-  introduction,
-  closed,
+  project: {
+    projectId,
+    version,
+    title,
+    likeCnt,
+    feedbackCnt,
+    img,
+    tags,
+    introduction,
+    closed,
+  },
 }: PortfolioCardProps) => {
   const [isDown, setIsDown] = useState(false);
   const [startX, setStartX] = useState<number | null>(null);
   const [scrollLeft, setScrollLeft] = useState<number>(0);
   const tagContainerRef = useRef<HTMLDivElement>(null);
-
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     setIsDown(true);
     if (tagContainerRef.current) {

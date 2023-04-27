@@ -34,7 +34,7 @@ export const TagSearch = () => {
   ];
 
   const [selectedTags, setSelectedTags] = useState<SelectedTags>([]);
-  const [isOpen, setisOpen] = useState(false);
+  const [isOpen, setisOpen] = useState<boolean>(false);
 
   return (
     <FlexDiv

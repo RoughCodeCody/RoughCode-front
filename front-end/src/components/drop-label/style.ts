@@ -22,7 +22,7 @@ export const DropLabelBox = styled.div`
 `;
 export const DropOptionContainer = styled.div`
   position: absolute;
-  top: 102%;
+  top: 104%;
   left: 0;
   width: 100%;
   display: flex;
