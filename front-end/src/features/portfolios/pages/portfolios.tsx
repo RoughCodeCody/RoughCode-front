@@ -3,8 +3,11 @@ import { BottomHeader } from "@/components/elements";
 import { Search } from "@/components/search/search";
 import { Title } from "@/components/title";
 import { PortfolioList } from "../components/lists";
+import { DropLabel } from "@/components/drop-label";
+import { SwitchDemo } from "@/components/switch";
 
 export const Portfolios = () => {
+  const sortOptions = ["최신순", "좋아요순", "리뷰순"];
   return (
     <FlexDiv
       direction="column"
@@ -25,6 +28,14 @@ export const Portfolios = () => {
           title="프로젝트"
           description="우리의 토이 프로젝트를 구경해 보세요"
         />
+      </FlexDiv>
+      <Search />
+      <FlexDiv width="100%" maxWidth="1440px" direction="column" gap="1.7rem">
+        <FlexDiv width="100%" justify="end" gap="2rem" paddingX="5rem">
+          <SwitchDemo />
+          <DropLabel sortOptions={sortOptions} />
+        </FlexDiv>
+        <PortfolioList />
       </FlexDiv>
       <Search />
       <PortfolioList />

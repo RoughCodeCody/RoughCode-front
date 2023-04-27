@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const DropLabelBox = styled.div`
-  z-index: 999;
+  z-index: 998;
   position: relative;
   width: 100%;
   max-width: 11rem;
@@ -22,7 +22,7 @@ export const DropLabelBox = styled.div`
 `;
 export const DropOptionContainer = styled.div`
   position: absolute;
-  top: 102%;
+  top: 104%;
   left: 0;
   width: 100%;
   display: flex;

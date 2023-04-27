@@ -23,7 +23,6 @@ export const TagChip = ({
       <IoClose
         onClick={() => {
           setSelectedTags(() => selectedTags.filter((item) => item !== tag));
-          console.log("tag delete");
         }}
         cursor="pointer"
         fontSize="1.3rem"
