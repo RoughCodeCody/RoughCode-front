@@ -72,4 +72,37 @@ public class ReviewRes {
         this.reReviews = reReviews;
     }
 
+    public static ReviewRes toDto(Reviews review, Boolean liked, List<ReReviewRes> reReviews) {
+
+        Long userId;
+        String userName;
+        if(review.getUsers() != null) {
+            userId = review.getUsers().getUsersId();
+            userName = review.getUsers().getName();
+        } else { // 익명인 경우
+            userId = 0L;
+            userName = "";
+        }
+
+        // 선택한 코드 부분
+        List<Integer> lineNumbers = Arrays.stream(review.getLineNumbers().replaceAll("\\[|\\]|\\s", "").split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        return ReviewRes.builder()
+                .reviewId(review.getReviewsId())
+                .userId(userId)
+                .userName(userName)
+                .liked(liked)
+                .codeContent(review.getCodeContent())
+                .content(review.getContent())
+                .lineNumbers(lineNumbers)
+                .likeCnt(review.getLikeCnt())
+                .selected(review.getSelected())
+                .liked(liked)
+                .date(review.getModifiedDate())
+                .reReviews(reReviews)
+                .build();
+    }
+
 }

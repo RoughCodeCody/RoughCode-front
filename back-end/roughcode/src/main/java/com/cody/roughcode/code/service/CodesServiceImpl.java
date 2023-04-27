@@ -1,14 +1,11 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
-import com.cody.roughcode.code.dto.res.CodeDetailRes;
-import com.cody.roughcode.code.dto.res.ReviewRes;
-import com.cody.roughcode.code.dto.res.VersionRes;
+import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.SaveFailedException;
-import com.cody.roughcode.project.dto.res.FeedbackRes;
 import com.cody.roughcode.project.entity.CodeFavorites;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
@@ -16,6 +13,7 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -178,8 +176,29 @@ public class CodesServiceImpl implements CodesService {
         Boolean favorite = myFavorite != null;
         Boolean liked = myLike != null;
 
-        List<VersionRes> versionResList = new ArrayList<>();
+        List<Pair<Codes, CodesInfo>> otherVersions = new ArrayList<>();
+        List<Codes> codeList = codesRepository.findByNumAndCodeWriter(code.getNum(), code.getCodeWriter());
+        for (Codes c : codeList) {
+            otherVersions.add(Pair.of(c, codesInfoRepository.findByCodes(c)));
+        }
 
+        List<VersionRes> versionResList = new ArrayList<>();
+        for (Pair<Codes, CodesInfo> c : otherVersions) {
+            List<SelectedReviewRes> selectedReviewResList = new ArrayList<>();
+            if(c.getRight().getSelectedReviews() != null)
+                for (var selectedReview : c.getRight().getSelectedReviews()) {
+                    selectedReviewResList.add(SelectedReviewRes.builder()
+                            .reviewId(selectedReview.getReviews().getReviewsId())
+                            .userName(selectedReview.getReviews().getUsers().getName())
+                            .content(selectedReview.getReviews().getContent())
+                            .build());
+                }
+            versionResList.add(VersionRes.builder()
+                    .selectedReviews(selectedReviewResList)
+                    .codeId(c.getLeft().getCodesId())
+                    .version(c.getLeft().getVersion())
+                    .build());
+        }
 
         // 리뷰 목록
         // - 순서 : 1.반영된 리뷰, 2.내가 쓴 리뷰, 3.나머지
@@ -188,17 +207,24 @@ public class CodesServiceImpl implements CodesService {
             for(Reviews review : codesInfo.getReviews()){
                 ReviewLikes reviewLike =  (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user): null;
                 Boolean reviewLiked = reviewLike != null;
-//                reviewResList.add(toDto(review, reviewLiked));
+
+                List<ReReviewRes> reReviewResList = new ArrayList<>();
+                for(ReReviews reReview: review.getReReviews()){
+                    ReReviewLikes reReviewLike =  (user != null) ? reReviewLikesRepository.findByReReviewsAndUsers(reReview, user): null;
+                    Boolean reReviewLiked = reReviewLike != null;
+                    reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
+                }
+                reviewResList.add(ReviewRes.toDto(review, reviewLiked, reReviewResList));
             }
         }
         reviewResList.sort(Comparator.comparing(ReviewRes::getSelected).reversed()
-                .thenComparing((f1, f2) -> {
-                    if ((f1.getUserId() != null && f1.getUserId().equals(userId)) && (f2.getUserId() == null || !f2.getUserId().equals(userId))) {
+                .thenComparing((r1, r2) -> {
+                    if ((r1.getUserId() != null && r1.getUserId().equals(userId)) && (r2.getUserId() == null || !r2.getUserId().equals(userId))) {
                         return -1;
-                    } else if ((f1.getUserId() == null || !f1.getUserId().equals(userId)) && (f2.getUserId() != null && f2.getUserId().equals(userId))) {
+                    } else if ((r1.getUserId() == null || !r1.getUserId().equals(userId)) && (r2.getUserId() != null && r2.getUserId().equals(userId))) {
                         return 1;
                     } else {
-                        return f2.getDate().compareTo(f1.getDate());
+                        return r2.getDate().compareTo(r1.getDate());
                     }
                 }));
 

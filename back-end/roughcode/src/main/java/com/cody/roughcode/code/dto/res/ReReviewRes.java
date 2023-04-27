@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.dto.res;
 
+import com.cody.roughcode.code.entity.ReReviews;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,5 +35,17 @@ public class ReReviewRes {
 
     @Schema(description = "리리뷰 수정 시간 ", example = "2023-04-17T13:40:00")
     private LocalDateTime modifiedDate;
+
+    public static ReReviewRes toDto(ReReviews reReviews, Boolean liked) {
+        return ReReviewRes.builder()
+                .reReviewId(reReviews.getReReviewsId())
+                .userId(reReviews.getUsers().getUsersId())
+                .userName(reReviews.getUsers().getName())
+                .liked(liked)
+                .content(reReviews.getContent())
+                .createdDate(reReviews.getCreatedDate())
+                .modifiedDate(reReviews.getModifiedDate())
+                .build();
+    }
 
 }
