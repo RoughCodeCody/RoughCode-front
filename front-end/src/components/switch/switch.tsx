@@ -17,7 +17,6 @@ export const SwitchDemo = () => {
           id="airplane-mode"
           onClick={() => {
             setClosedValue(!searchCriteria.closed);
-            console.log(searchCriteria);
           }}
         >
           <SwitchThumb className="SwitchThumb" />

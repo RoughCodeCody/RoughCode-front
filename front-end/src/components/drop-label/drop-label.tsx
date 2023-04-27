@@ -4,16 +4,18 @@ import { DropLabelBox, DropOptionContainer, DropOption } from "./style";
 import { FlexDiv, Text } from "../elements";
 import { DropdownArrow } from "../elements";
 
+import { useSearchCriteriaStore } from "@/stores";
+
 interface DropLabelProps {
-  options: string[];
+  sortOptions: string[];
 }
 
-export const DropLabel = ({ options }: DropLabelProps) => {
+export const DropLabel = ({ sortOptions }: DropLabelProps) => {
+  const { searchCriteria, setSort } = useSearchCriteriaStore();
+
   const [selectedOption, setSelectedOption] = useState("최신순");
   const [isOpened, setIsOpened] = useState(false);
-  const temp = ["최신순", "좋아요순", "리뷰순"];
 
-  useEffect(() => console.log(isOpened), [isOpened]);
   return (
     <DropLabelBox>
       <FlexDiv
@@ -30,14 +32,16 @@ export const DropLabel = ({ options }: DropLabelProps) => {
 
       {isOpened ? (
         <DropOptionContainer>
-          {options.map((option) => (
+          {sortOptions.map((sortOption) => (
             <DropOption
+              key={sortOption}
               onClick={() => {
-                setSelectedOption(option);
+                setSort(sortOption);
+                setSelectedOption(sortOption);
                 setIsOpened(false);
               }}
             >
-              <Text pointer={true}>{option}</Text>
+              <Text pointer={true}>{sortOption}</Text>
             </DropOption>
           ))}
         </DropOptionContainer>

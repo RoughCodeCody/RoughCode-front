@@ -29,10 +29,8 @@ export const PortfolioList = () => {
     const res = await axios.get(
       "http://localhost:4000/dummy?_page=" + pageParam + "&_limit=9"
     );
-    console.log(res.data);
     if (res.data.length === 0) {
       setHasNextPage(false);
-      console.log(hasNextPage);
     }
     return res.data;
   };
@@ -50,20 +48,14 @@ export const PortfolioList = () => {
   } = useInfiniteQuery(["projects"], fetchProjects, {
     onSuccess: () => {
       setPageNum(pageNum + 1);
-      console.log(pageNum);
     },
     getNextPageParam: () => pageNum,
     // getPreviousPageParam: (firstPage) => firstPage.previousId ?? undefined,
     // getNextPageParam: (lastPage) => lastPage.nextId ? undefined,
   });
 
-  console.log(data);
-  console.log(status);
-
   useEffect(() => {
-    console.log(inView);
     if (inView && hasNextPage) {
-      console.log(hasNextPage);
       fetchNextPage();
     }
   }, [inView]);

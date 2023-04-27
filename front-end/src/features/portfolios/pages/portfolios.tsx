@@ -7,6 +7,7 @@ import { DropLabel } from "@/components/drop-label";
 import { SwitchDemo } from "@/components/switch";
 
 export const Portfolios = () => {
+  const sortOptions = ["최신순", "좋아요순", "리뷰순"];
   return (
     <FlexDiv
       direction="column"
@@ -32,7 +33,7 @@ export const Portfolios = () => {
       <FlexDiv width="100%" maxWidth="1440px" direction="column" gap="1.7rem">
         <FlexDiv width="100%" justify="end" gap="2rem" paddingX="5rem">
           <SwitchDemo />
-          <DropLabel options={["최신순", "좋아요순", "리뷰순"]} />
+          <DropLabel sortOptions={sortOptions} />
         </FlexDiv>
         <PortfolioList />
       </FlexDiv>
