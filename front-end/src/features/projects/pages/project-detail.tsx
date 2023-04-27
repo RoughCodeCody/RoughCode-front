@@ -1,11 +1,10 @@
 import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
+import { FeedbackRegister, Feedbacks } from "@/components/feedback";
 import { Notice } from "../components/notice";
 import { ProjectInfo } from "../components/project-info";
 import { VersionsInfo } from "../components/versions-info";
 import { ProjectDescription } from "../components/project-description";
 import { RelatedCodes } from "../components/related-codes";
-import { FeedbackResister } from "@/components/feedback-resister";
-import { Feedbacks } from "@/components/feedbacks";
 
 export const ProjectDetail = () => {
   // 더미데이터
@@ -59,7 +58,7 @@ export const ProjectDetail = () => {
         <RelatedCodes />
       </WhiteBoxNoshad>
 
-      <FeedbackResister type="feedback" />
+      <FeedbackRegister type="feedback" />
       <Feedbacks feedbacks={feedbacks} />
     </FlexDiv>
   );

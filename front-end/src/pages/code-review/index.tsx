@@ -1,6 +1,7 @@
+import { NextPage } from "next";
 import { CodeList } from "@/features/code-reviews";
 
-const CodeListPage = () => {
+const CodeListPage: NextPage = () => {
   return <CodeList />;
 };
 

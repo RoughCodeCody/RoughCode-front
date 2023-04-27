@@ -17,8 +17,8 @@ export const MiniFeedbackItem = ({
       <Nickname nickname={user} />
       <FlexDiv direction="column" gap="0.5rem" align="start">
         <Text>{content}</Text>
-        {tags?.map((tag) => (
-          <TagChipSub tag={tag} />
+        {tags?.map((tag, idx) => (
+          <TagChipSub tag={tag} key={idx} />
         ))}
       </FlexDiv>
     </MiniFeedbackItemWrapper>

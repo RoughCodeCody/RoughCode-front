@@ -8,6 +8,8 @@ interface BtnProps {
   padding?: string;
   margin?: string;
   fontSize?: string;
+  width?: string;
+  height?: string;
   onClickFunc?: MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -18,6 +20,8 @@ export const Btn = ({
   padding,
   margin,
   fontSize,
+  width,
+  height,
   onClickFunc,
 }: BtnProps) => {
   return (
@@ -27,6 +31,8 @@ export const Btn = ({
       padding={padding}
       margin={margin}
       fontSize={fontSize}
+      width={width}
+      height={height}
       onClick={onClickFunc}
     >
       {text}
