@@ -17,6 +17,13 @@ import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.webrisk.v1.WebRiskServiceClient;
+import com.google.cloud.webrisk.v1.WebRiskServiceSettings;
+import com.google.webrisk.v1.SearchUrisRequest;
+import com.google.webrisk.v1.SearchUrisResponse;
+import com.google.webrisk.v1.ThreatType;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,6 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -103,9 +115,10 @@ public class ProjectsServiceImpl implements ProjectsService{
 
             // 알람 받을 사람 등록
             List<Users> favoritedUsers = projectFavoritesRepository.findByProjects(original);
-            for (Users u : favoritedUsers) {
-                bookmarkAlarm.add(u.getUsersId());
-            }
+            if(favoritedUsers != null)
+                for (Users u : favoritedUsers) {
+                    bookmarkAlarm.add(u.getUsersId());
+                }
         }
 
         Projects savedProject = null;
@@ -560,6 +573,57 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         feedbacksRepository.delete(feedbacks);
         return 1;
+    }
+
+    public boolean isOpen(String url) {
+        try {
+            URL u = new URL(url);
+            HttpURLConnection huc = (HttpURLConnection) u.openConnection();
+            huc.setRequestMethod("GET");
+            huc.connect();
+            int responseCode = huc.getResponseCode();
+            // 400 이상은 안전하지 않은 URL로 판단
+            return responseCode < 400;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public Boolean checkProject(String url, Long usersId) throws IOException {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        if (!isOpen(url)) throw new IOException("서버 확인이 필요한 URL입니다");
+
+        SearchUrisResponse searchUrisResponse;
+        try {
+            String credentialsPath = "credentials.json"; // 인증 정보 파일 경로
+            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsPath));
+
+            WebRiskServiceSettings settings =
+                    WebRiskServiceSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+
+            // create-webrisk-client
+            try (WebRiskServiceClient webRiskServiceClient = WebRiskServiceClient.create(settings)) {
+                // Query the url for a specific threat type
+                SearchUrisRequest searchUrisRequest =
+                        SearchUrisRequest.newBuilder().addThreatTypes(ThreatType.MALWARE).setUri(url).build();
+                searchUrisResponse = webRiskServiceClient.searchUris(searchUrisRequest);
+                webRiskServiceClient.shutdownNow();
+                if (!searchUrisResponse.getThreat().getThreatTypesList().isEmpty()) {
+                    log.info("The URL has the following threat : ");
+                    log.info(String.valueOf(searchUrisResponse));
+                } else {
+                    log.info("The URL is safe!");
+                }
+            }
+        } catch (Exception e) {
+            throw new IOException("서비스 검사 실패");
+        }
+
+        return searchUrisResponse.getThreat().getThreatTypesList().isEmpty();
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {

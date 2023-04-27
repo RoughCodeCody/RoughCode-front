@@ -43,6 +43,23 @@ public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
 
+    @Operation(summary = "프로젝트 URL 검사 API")
+    @GetMapping("/check")
+    ResponseEntity<?> projectURLCheck(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                      @Parameter(description = "프로젝트 url") @RequestBody String url){
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        Boolean res = false;
+        try{
+            res = projectsService.checkProject(url, userId);
+        } catch(Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 검사 성공", 1, res);
+    }
+
     @Operation(summary = "피드백 삭제 API")
     @DeleteMapping("/feedback/{feedbackId}")
     ResponseEntity<?> deleteFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
