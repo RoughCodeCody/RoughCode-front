@@ -18,7 +18,7 @@ services:
       - "6379:6379"
   backend:
     build:
-      context: ./back-end
+      context: ./back-end/roughcode
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
