@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { useState, useRef } from "react";
+import { useState, useRef, ReactNode } from "react";
 import Image from "next/image";
 import { FlexDiv } from "@/components/elements";
 import { Text } from "@/components/elements";
@@ -14,6 +14,7 @@ import { TagChipSub } from "@/components/elements";
 import { Count } from "@/components/count";
 
 interface PortfolioCardProps {
+  ref?: React.ForwardedRef<HTMLDivElement>;
   projectId: number;
   version: number;
   title: string;
