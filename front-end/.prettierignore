@@ -35,6 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# docker
+.dockerignore
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudiocode,nextjs,react
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,visualstudiocode,nextjs,react
