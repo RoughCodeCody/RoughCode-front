@@ -63,9 +63,9 @@ public class ProjectsServiceImpl implements ProjectsService{
                 .content(req.getContent())
                 .build();
 
-        // 북마크한 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트  -> [“북마크한”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        // 북마크한 무슨무슨 프로젝트 ver1의 새 버전 ver2 업데이트  -> [“북마크한”, “무슨무슨 프로젝트 ver1의 새 버전 ver2”, “업데이트”]
         List<Long> bookmarkAlarm = new ArrayList<>(); // 알람을 보낼 user Id
-        // 작성한 피드백이 반영된 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트 -> [“작성한 피드백이 반영된”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        // 작성한 피드백이 반영된 무슨무슨 프로젝트 ver1의 새 버전 ver2 업데이트 -> [“작성한 피드백이 반영된”, “무슨무슨 프로젝트 ver1의 새 버전 ver2”, “업데이트”]
         List<Long> feedbackAlarm = new ArrayList<>(); // 알람을 보낼 user Id
 
         // 새 프로젝트를 생성하는거면 projectNum은 작성자의 projects_cnt + 1
@@ -165,20 +165,20 @@ public class ProjectsServiceImpl implements ProjectsService{
         }
 
         // 알람들 저장
-        // 북마크한 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트  -> [“북마크한”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        // 북마크한 무슨무슨 프로젝트 ver1의 새 버전 ver2 업데이트  -> [“북마크한”, “무슨무슨 프로젝트 ver1의 새 버전 ver2”, “업데이트”]
         for (Long id : bookmarkAlarm) {
             alarmService.insertAlarm(AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("북마크한", savedProject.getTitle() + " v." + (savedProject.getVersion() - 1) + "의 새 버전 v." + savedProject.getVersion(), "업데이트"))
+                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
                     .postId(projectId).build());
         }
-        // 작성한 피드백이 반영된 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트 -> [“작성한 피드백이 반영된”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        // 작성한 피드백이 반영된 무슨무슨 프로젝트 ver1의 새 버전 ver2 업데이트 -> [“작성한 피드백이 반영된”, “무슨무슨 프로젝트 ver1의 새 버전 ver2”, “업데이트”]
         for (Long id : feedbackAlarm) {
             alarmService.insertAlarm(AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " v." + (savedProject.getVersion() - 1) + "의 새 버전 v." + savedProject.getVersion(), "업데이트"))
+                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
                     .postId(projectId).build());
         }
 
@@ -486,6 +486,16 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         project.feedbackCntUp();
         projectsRepository.save(project);
+
+        // 작성한 무슨무슨 프로젝트 ver1에 새 피드백 등록 -> [“작성한”, “무슨무슨 프로젝트 ver1”, “새 피드백 등록”]
+        alarmService.insertAlarm(
+                AlarmReq.builder()
+                        .content(List.of("작성한", project.getTitle() + " ver" + project.getVersion(), "새 피드백 등록"))
+                        .userId(project.getProjectWriter().getUsersId())
+                        .postId(project.getProjectsId())
+                        .section("project")
+                        .build()
+        );
 
         return projectsInfo.getFeedbacks().size();
     }
