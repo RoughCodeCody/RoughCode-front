@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const DropLabelBox = styled.div`
-  z-index: 999;
+  z-index: 998;
   position: relative;
   width: 100%;
   max-width: 11rem;
