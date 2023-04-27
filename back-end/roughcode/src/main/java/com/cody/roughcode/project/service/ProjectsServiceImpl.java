@@ -34,6 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Value;
+
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -588,6 +590,8 @@ public class ProjectsServiceImpl implements ProjectsService{
             return false;
         }
     }
+    @Value("${credential.path}")
+    private String credentialsPath; // 인증 정보 파일 경로
 
     @Override
     @Transactional
@@ -599,8 +603,9 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         SearchUrisResponse searchUrisResponse;
         try {
-            String credentialsPath = "credentials.json"; // 인증 정보 파일 경로
+            System.out.println(credentialsPath);
             GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsPath));
+            System.out.println(credentials.toString());
 
             WebRiskServiceSettings settings =
                     WebRiskServiceSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();

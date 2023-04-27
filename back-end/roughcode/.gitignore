@@ -36,8 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-### yml ###
-*.yml
-
 ### credential ###
 credentials.json
