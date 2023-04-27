@@ -16,9 +16,18 @@ services:
     image: redis:6.2.6-alpine
     ports:
       - "6379:6379"
+  mongodb:
+    image: mongo:4.4.10
+    volumes:
+      - mongodb-data:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=ssafy306
+      - MONGO_INITDB_ROOT_PASSWORD=ssafy306
   backend:
     build:
-      context: ./back-end
+      context: ./back-end/roughcode
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -32,6 +41,13 @@ services:
       - SPRING_DATASOURCE_USERNAME=ssafy306
       - SPRING_DATASOURCE_PASSWORD=ssafy306
       - REDIS_HOST=redis
+  my-app:
+    image: my-image
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/google-credentials.json
+    volumes:
+      - /path/to/google-credentials.json:/app/google-credentials.json
 
 volumes:
   db-data:
+  mongodb-data:
