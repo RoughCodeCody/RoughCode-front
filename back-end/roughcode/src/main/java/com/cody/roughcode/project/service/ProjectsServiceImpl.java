@@ -1,5 +1,7 @@
 package com.cody.roughcode.project.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.exception.NotMatchException;
@@ -36,6 +38,7 @@ import java.util.List;
 public class ProjectsServiceImpl implements ProjectsService{
 
     private final S3FileServiceImpl s3FileService;
+    private final AlarmServiceImpl alarmService;
 
     private final UsersRepository usersRepository;
     private final ProjectsRepository projectsRepository;
@@ -59,6 +62,11 @@ public class ProjectsServiceImpl implements ProjectsService{
                 .notice(req.getNotice())
                 .content(req.getContent())
                 .build();
+
+        // 북마크한 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트  -> [“북마크한”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        List<Long> bookmarkAlarm = new ArrayList<>(); // 알람을 보낼 user Id
+        // 작성한 피드백이 반영된 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트 -> [“작성한 피드백이 반영된”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        List<Long> feedbackAlarm = new ArrayList<>(); // 알람을 보낼 user Id
 
         // 새 프로젝트를 생성하는거면 projectNum은 작성자의 projects_cnt + 1
         // 전의 프로젝트를 업데이트하는거면 projectNum은 전의 projectNum과 동일
@@ -92,8 +100,15 @@ public class ProjectsServiceImpl implements ProjectsService{
                 p.close(true);
                 projectsRepository.save(p);
             }
+
+            // 알람 받을 사람 등록
+            List<Users> favoritedUsers = projectFavoritesRepository.findByProjects(original);
+            for (Users u : favoritedUsers) {
+                bookmarkAlarm.add(u.getUsersId());
+            }
         }
 
+        Projects savedProject = null;
         Long projectId = -1L;
         try {
             Projects project = Projects.builder()
@@ -105,7 +120,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .projectWriter(user)
                     .likeCnt(likeCnt)
                     .build();
-            Projects savedProject = projectsRepository.save(project);
+            savedProject = projectsRepository.save(project);
             projectId = savedProject.getProjectsId();
 
             // tag 등록
@@ -123,11 +138,11 @@ public class ProjectsServiceImpl implements ProjectsService{
             else log.info("등록한 태그가 없습니다");
 
             // feedback 선택
-            if(req.getSelectedFeedbacksId() != null)
-                for(Long id : req.getSelectedFeedbacksId()){
+            if(req.getSelectedFeedbacksId() != null) {
+                for (Long id : req.getSelectedFeedbacksId()) {
                     Feedbacks feedback = feedbacksRepository.findByFeedbacksId(id);
-                    if(feedback == null) throw new NullPointerException("일치하는 피드백이 없습니다");
-                    if(!feedback.getProjectsInfo().getProjects().getNum().equals(projectNum))
+                    if (feedback == null) throw new NullPointerException("일치하는 피드백이 없습니다");
+                    if (!feedback.getProjectsInfo().getProjects().getNum().equals(projectNum))
                         throw new NullPointerException("피드백과 프로젝트가 일치하지 않습니다");
                     feedback.selectedUp();
                     feedbacksRepository.save(feedback);
@@ -137,7 +152,9 @@ public class ProjectsServiceImpl implements ProjectsService{
                             .projects(savedProject)
                             .build();
                     selectedFeedbacksRepository.save(selectedFeedback);
+                    feedbackAlarm.add(feedback.getUsers().getUsersId());
                 }
+            }
             else log.info("선택한 피드백이 없습니다");
 
             info.setProjects(savedProject);
@@ -145,6 +162,24 @@ public class ProjectsServiceImpl implements ProjectsService{
         } catch(Exception e){
             log.error(e.getMessage());
             throw new SaveFailedException(e.getMessage());
+        }
+
+        // 알람들 저장
+        // 북마크한 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트  -> [“북마크한”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        for (Long id : bookmarkAlarm) {
+            alarmService.insertAlarm(AlarmReq.builder()
+                    .section("project")
+                    .userId(id)
+                    .content(List.of("북마크한", savedProject.getTitle() + " v." + (savedProject.getVersion() - 1) + "의 새 버전 v." + savedProject.getVersion(), "업데이트"))
+                    .postId(projectId).build());
+        }
+        // 작성한 피드백이 반영된 무슨무슨 프로젝트 v.1의 새 버전 v.2 업데이트 -> [“작성한 피드백이 반영된”, “무슨무슨 프로젝트 v.1의 새 버전 v.2”, “업데이트”]
+        for (Long id : feedbackAlarm) {
+            alarmService.insertAlarm(AlarmReq.builder()
+                    .section("project")
+                    .userId(id)
+                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " v." + (savedProject.getVersion() - 1) + "의 새 버전 v." + savedProject.getVersion(), "업데이트"))
+                    .postId(projectId).build());
         }
 
         return projectId;
@@ -183,6 +218,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public int updateProject(ProjectReq req, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -290,6 +326,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public int deleteProject(Long projectsId, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -340,6 +377,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, ProjectSearchReq req) {
         String keyword = req.getKeyword();
         if(keyword == null) keyword = "";
@@ -363,6 +401,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public ProjectDetailRes getProject(Long projectId, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         Projects project = projectsRepository.findByProjectsId(projectId);
@@ -427,6 +466,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public int insertFeedback(FeedbackReq req, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         Projects project = projectsRepository.findByProjectsId(req.getProjectId());
@@ -451,6 +491,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public Boolean updateFeedback(FeedbackUpdateReq req, Long userId) {
         Users users = usersRepository.findByUsersId(userId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -468,6 +509,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -490,6 +532,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public int deleteFeedback(Long feedbackId, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
