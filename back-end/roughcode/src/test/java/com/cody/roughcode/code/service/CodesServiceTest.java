@@ -169,9 +169,9 @@ class CodesServiceTest {
                 .reviewsId(1L)
                 .users(user)
                 .codes(code)
-                .content("최소힙을 사용해보세요.")
                 .lineNumbers("1,3,4,5")
-                .reviewCode("리뷰리뷰")
+                .codeContent("리뷰리뷰")
+                .content("최소힙을 사용해보세요.")
                 .build();
         SelectedReviews selectedReviews = SelectedReviews.builder()
                 .selectedReviewsId(1L)

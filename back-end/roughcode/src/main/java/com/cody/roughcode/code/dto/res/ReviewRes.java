@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.dto.res;
 
+import com.cody.roughcode.code.entity.Reviews;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +8,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -47,5 +50,26 @@ public class ReviewRes {
 
     @Schema(description = "리뷰에 대한 리뷰 목록", example = "[ReReview]")
     private List<ReReviewRes> reReviews;
+
+    public ReviewRes(Reviews r, Boolean reviewLiked, List<ReReviewRes> reReviews) {
+        this.reviewId = r.getReviewsId();
+        if(r.getUsers() != null) {
+            this.userId = r.getUsers().getUsersId();
+            this.userName = r.getUsers().getName();
+        } else { // 익명인 경우
+            this.userId = 0L;
+            this.userName = "";
+        }
+        this.codeContent = r.getCodeContent();
+        this.content = r.getContent();
+        this.lineNumbers = Arrays.stream(r.getLineNumbers().replaceAll("\\[|\\]|\\s", "").split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        this.likeCnt = r.getLikeCnt();
+        this.selected = r.getSelected();
+        this.liked = reviewLiked;
+        this.date = r.getModifiedDate();
+        this.reReviews = reReviews;
+    }
 
 }

@@ -43,7 +43,7 @@ public class Codes extends BaseTimeEntity {
     private int reviewCnt = 0;
 
     @OneToMany(mappedBy = "codes")
-    private List<CodeSelectedTags> tags;
+    private List<CodeSelectedTags> selectedTags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = true)

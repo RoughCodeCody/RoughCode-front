@@ -46,13 +46,13 @@ public class CodeDetailRes {
     private Long userId;
 
     @Schema(description = "코드 정보 작성자 닉네임", example = "아이유")
-    private Long userName;
+    private String userName;
 
     @Schema(description = "연결된 프로젝트 id", example = "1")
     private Long projectId;
 
     @Schema(description = "연결된 프로젝트 제목(없을 경우 null)", example = "Sense and Sensibility")
-    private Long projectTitle;
+    private String projectTitle;
 
     @Schema(description = "코드 상세 설명", example = "이 코드는 시간초과가 뜹니다")
     private String content;
@@ -61,7 +61,7 @@ public class CodeDetailRes {
     private Boolean liked;
 
     @Schema(description = "내가 즐겨찾기 눌렀는지 여부", example = "true")
-    private Boolean favorited;
+    private Boolean favorite;
 
     @Schema(description = "버전 정보", example = "[Version]")
     private List<VersionRes> versions;

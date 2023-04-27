@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
+import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -43,4 +44,24 @@ public class CodesController {
 
     }
 
+    @Operation(summary = "코드 상세 조회 API")
+    @GetMapping("/{codeId}")
+    ResponseEntity<?> selectOneCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        CodeDetailRes res = null;
+        try {
+            res = codesService.getCode(codeId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res == null) {
+            return Response.notFound("코드 상세 조회 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 상세 조회 성공", 1, res);
+
+    }
 }

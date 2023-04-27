@@ -24,8 +24,8 @@ public class CodeInfoRes {
         this.codeId = code.getCodesId();
         this.title = code.getTitle();
         this.tags = new ArrayList<>();
-        if(code.getTags() != null)
-            for(var codeTag : code.getTags()){
+        if(code.getSelectedTags() != null)
+            for(var codeTag : code.getSelectedTags()){
                 this.tags.add(codeTag.getTags().getName());
             }
     }
