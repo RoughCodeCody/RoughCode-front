@@ -1,10 +1,5 @@
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "styled-components";
-<<<<<<< HEAD
-=======
-import { theme } from "@/styles/theme";
-// import { wrapper } from "@/stores";
->>>>>>> dev-front
 
 import { AppProvider } from "@/providers/app";
 import GlobalStyles from "@/styles/global-styles";
@@ -27,8 +22,3 @@ export default function App({ Component, pageProps }: AppProps) {
     </>
   );
 }
-<<<<<<< HEAD
-=======
-
-export default App;
->>>>>>> dev-front
