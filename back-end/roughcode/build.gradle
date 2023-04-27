@@ -53,6 +53,10 @@ dependencies {
 
     // mongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // web risk
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.16.0'
+    implementation 'com.google.cloud:google-cloud-webrisk:2.14.0'
 }
 
 tasks.named('test') {

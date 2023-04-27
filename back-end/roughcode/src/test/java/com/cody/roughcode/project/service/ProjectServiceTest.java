@@ -1,5 +1,7 @@
 package com.cody.roughcode.project.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
@@ -42,7 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class) // 가짜 객체 주입을 사용
 public class ProjectServiceTest {
@@ -68,9 +69,13 @@ public class ProjectServiceTest {
     @Mock
     private S3FileServiceImpl s3FileService;
     @Mock
+    private AlarmServiceImpl alarmService;
+    @Mock
     private FeedbacksRepository feedbacksRepository;
     @Mock
     private SelectedFeedbacksRepository selectedFeedbacksRepository;
+    @Mock
+    private ProjectFavoritesRepository projectFavoritesRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -107,13 +112,12 @@ public class ProjectServiceTest {
     private static MockMultipartFile getThumbnail() throws IOException {
         File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
         byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-        MockMultipartFile thumbnail = new MockMultipartFile(
+        return new MockMultipartFile(
                 "thumbnail",
                 "A306_ERD (2).png",
                 MediaType.IMAGE_PNG_VALUE,
                 imageBytes
         );
-        return thumbnail;
     }
 
     private List<ProjectTags> tagsInit() {
@@ -143,7 +147,7 @@ public class ProjectServiceTest {
         return tagsList;
     }
 
-    private List<Feedbacks> feedbacksInit(Projects project) {
+    private List<Feedbacks> feedbacksInit() {
         List<Feedbacks> feedbacksList = new ArrayList<>();
         for (long i = 1L; i <= 3L; i++) {
             feedbacksList.add(Feedbacks.builder()
@@ -169,6 +173,48 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("url 체크 - safe")
+    @Test
+    void checkProjectUrlSafe() throws IOException {
+        // given
+        String url = "http://www.google.com";
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when
+        Boolean success = projectsService.checkProject(url, 1L);
+
+        // then
+        assertThat(success).isTrue();
+    }
+
+    @DisplayName("url 체크 - not safe")
+    @Test
+    void checkProjectUrlNotSafe() throws IOException {
+        // given
+            String url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/";
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when
+        Boolean success = projectsService.checkProject(url, 1L);
+
+        // then
+        assertThat(success).isFalse();
+    }
+
+    @DisplayName("url 체크 - not opened")
+    @Test
+    void checkProjectUrlNotOpened() throws IOException {
+        // given
+        String url = "http://15.164.198.227:8080";
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        IOException exception = assertThrows(
+                IOException.class, () -> projectsService.checkProject(url, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("서버 확인이 필요한 URL입니다");
     }
 
     @DisplayName("피드백 삭제 성공")
@@ -219,14 +265,6 @@ public class ProjectServiceTest {
     @Test
     void deleteFeedbackFailNoFeedback(){
         // given
-        Feedbacks feedback = Feedbacks.builder()
-                .content("feedback")
-                .selected(1)
-                .users(users)
-                .feedbacksId(1L)
-                .projectsInfo(info)
-                .build();
-
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(null).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
 
@@ -374,11 +412,6 @@ public class ProjectServiceTest {
                 .selected(0)
                 .users(users2)
                 .build();
-        Feedbacks updated = Feedbacks.builder()
-                .content("수정된feedback")
-                .selected(0)
-                .users(users)
-                .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(feedbacks).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
@@ -397,11 +430,6 @@ public class ProjectServiceTest {
         FeedbackUpdateReq req = FeedbackUpdateReq.builder()
                 .feedbackId(1L)
                 .content("수정된feedback")
-                .build();
-        Feedbacks feedbacks = Feedbacks.builder()
-                .content("feedback")
-                .selected(0)
-                .users(users)
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
@@ -442,7 +470,6 @@ public class ProjectServiceTest {
     @Test
     void insertFeedbackSucceedWithLogin() {
         // given
-        List<ProjectTags> tagsList = tagsInit();
         FeedbackReq req = FeedbackReq.builder()
                 .content("개발새발 최고")
                 .projectId(1L)
@@ -469,7 +496,6 @@ public class ProjectServiceTest {
     @Test
     void insertFeedbackSucceedWithoutLogin() {
         // given
-        List<ProjectTags> tagsList = tagsInit();
         FeedbackReq req = FeedbackReq.builder()
                 .content("개발새발 최고")
                 .projectId(1L)
@@ -496,7 +522,6 @@ public class ProjectServiceTest {
     @Test
     void insertFeedbackFailNoProject() {
         // given
-        List<ProjectTags> tagsList = tagsInit();
         FeedbackReq req = FeedbackReq.builder()
                 .content("개발새발 최고")
                 .projectId(1L)
@@ -518,7 +543,6 @@ public class ProjectServiceTest {
     void getProjectSucceed() {
         // given
         Long projectId = 1L;
-        List<ProjectTags> tagsList = tagsInit();
         Projects project = Projects.builder()
                 .projectsId(1L)
                 .num(1L)
@@ -1209,7 +1233,7 @@ public class ProjectServiceTest {
     void updateProjectSucceed() throws Exception {
         // given
         List<ProjectTags> tagsList = tagsInit();
-        List<Feedbacks> feedbacksList = feedbacksInit(project);
+        List<Feedbacks> feedbacksList = feedbacksInit();
 
         ProjectReq req = ProjectReq.builder()
                 .projectId(1L)

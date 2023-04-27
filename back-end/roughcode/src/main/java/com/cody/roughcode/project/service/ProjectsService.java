@@ -10,6 +10,8 @@ import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public interface ProjectsService {
@@ -25,4 +27,6 @@ public interface ProjectsService {
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
     List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId);
     int deleteFeedback(Long feedbackId, Long usersId);
+
+    Boolean checkProject(String url, Long usersId) throws IOException;
 }

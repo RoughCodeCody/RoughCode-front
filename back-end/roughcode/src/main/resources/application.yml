@@ -54,3 +54,6 @@ jwt:
 app:
   oauth2:
     authorizedRedirectUri: http://${HOST}:3000/oauth2/redirect
+
+credential:
+  path: ${CREDENTIAL_PATH}
