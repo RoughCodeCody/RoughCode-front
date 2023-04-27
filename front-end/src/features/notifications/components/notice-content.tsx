@@ -1,5 +1,4 @@
-import { FlexDiv } from "@/components/elements";
-import { Text } from "@/components/elements";
+import { FlexDiv, Text } from "@/components/elements";
 
 interface NoticeContentProps {
   writer: string;
