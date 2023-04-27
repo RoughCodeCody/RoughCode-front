@@ -1,7 +1,10 @@
 import Head from "next/head";
 import { Projects } from "@/features/projects";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 export default function Project() {
+  const queryClient = new QueryClient();
   return (
     <>
       <Head>
@@ -10,7 +13,10 @@ export default function Project() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Projects />
+
+      <QueryClientProvider client={queryClient}>
+        <Projects />
+      </QueryClientProvider>
     </>
   );
 }
