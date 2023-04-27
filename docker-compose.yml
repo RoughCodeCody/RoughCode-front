@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.6.5
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=ssafy306
+      - MYSQL_DATABASE=ssafy306
+      - MYSQL_USER=ssafy306
+      - MYSQL_PASSWORD=ssafy306
+    ports:
+      - "3306:3306"
+  redis:
+    image: redis:6.2.6-alpine
+    ports:
+      - "6379:6379"
+  backend:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./back-end:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://k8a306.p.ssafy.io:3306/ssafy306
+      - SPRING_DATASOURCE_USERNAME=ssafy306
+      - SPRING_DATASOURCE_PASSWORD=ssafy306
+      - REDIS_HOST=redis
+
+volumes:
+  db-data:
