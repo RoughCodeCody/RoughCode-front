@@ -50,6 +50,9 @@ dependencies {
 
     implementation 'org.hibernate:hibernate-validator:6.2.5.Final'
     testImplementation 'org.glassfish:jakarta.el'
+
+    // mongoDB
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }
 
 tasks.named('test') {
