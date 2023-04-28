@@ -44,9 +44,9 @@ services:
   google-cloud-cli:
     image: google/cloud-sdk:latest
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/google-credentials.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/back-end/roughcode/google-credentials.json
     volumes:
-      - /path/to/google-credentials.json:/app/google-credentials.json
+      - /path/to/google-credentials.json:/back-end/roughcode/google-credentials.json
       - /path/to/.env:/.env
     entrypoint: /bin/bash
 
