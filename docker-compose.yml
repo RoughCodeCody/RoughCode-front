@@ -41,12 +41,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=ssafy306
       - SPRING_DATASOURCE_PASSWORD=ssafy306
       - REDIS_HOST=redis
-  # my-app:
-  #   image: my-image
-  #   environment:
-  #     - GOOGLE_APPLICATION_CREDENTIALS=/app/google-credentials.json
-  #   volumes:
-  #     - /path/to/google-credentials.json:/app/google-credentials.json
+  my-app:
+    image: my-image
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/google-credentials.json
+    volumes:
+      - /path/to/google-credentials.json:/app/google-credentials.json
 
 volumes:
   db-data:
