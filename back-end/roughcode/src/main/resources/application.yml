@@ -14,7 +14,7 @@ spring:
       show-sql: true
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://${HOST}:3306/RoughCode
+    url: jdbc:mariadb://${HOST}:3306/roughcode
     username: ${MARIADB_USER}
     password: ${MARIADB_PASSWORD}
   security:
