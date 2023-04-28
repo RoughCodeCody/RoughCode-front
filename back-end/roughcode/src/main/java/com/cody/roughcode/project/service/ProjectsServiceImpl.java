@@ -35,13 +35,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.beans.factory.annotation.Value;
 
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -603,6 +603,31 @@ public class ProjectsServiceImpl implements ProjectsService{
         feedbacksRepository.save(feedbacks);
 
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public int isProjectOpen(Long projectId) {
+        Projects project = projectsRepository.findByProjectsId(projectId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
+        if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        if(isOpen(projectsInfo.getUrl())) {
+            projectsInfo.setClosedChecked(null);
+            return 1;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if(projectsInfo.getClosedChecked() == null) // 처음 닫힌 것이 확인됨
+            projectsInfo.setClosedChecked(now);
+        else { // 전에도 닫혀있음이 확인됐었음
+            if (now.isAfter(projectsInfo.getClosedChecked().plusMinutes(60))) { // 1시간 이상 지났으면
+                project.close(true);
+                return -1;
+            }
+        }
+
+        return 0;
     }
 
     public boolean isOpen(String url) {
