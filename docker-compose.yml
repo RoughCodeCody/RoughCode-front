@@ -35,6 +35,8 @@ services:
       - db
       - mongodb
       - redis
+    environment:
+      - CREDENTIAL_PATH=/home/ubuntu/.env
   google-cloud-cli:
     image: google/cloud-sdk:latest
     volumes:
