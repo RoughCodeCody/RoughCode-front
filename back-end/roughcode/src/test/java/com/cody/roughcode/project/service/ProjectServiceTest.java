@@ -175,6 +175,100 @@ public class ProjectServiceTest {
         return codeList;
     }
 
+    @DisplayName("feedback 신고 성공")
+    @Test
+    void feedbackComplainSucceed(){
+        // given
+        Feedbacks feedback = Feedbacks.builder()
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .feedbacksId(1L)
+                .projectsInfo(info)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when
+        int success = projectsService.feedbackComplain(1L, 1L);
+
+        // then
+        assertThat(success).isEqualTo(1);
+    }
+
+    @DisplayName("feedback 신고 실패 - 이미 삭제된 피드백")
+    @Test
+    void feedbackComplainFailAlreadyDeleted(){
+        // given
+        Feedbacks feedback = Feedbacks.builder()
+                .content("")
+                .selected(0)
+                .users(users)
+                .feedbacksId(1L)
+                .projectsInfo(info)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when & then
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class, () -> projectsService.feedbackComplain(1L, 1L)
+        );
+        assertEquals("이미 삭제된 피드백입니다", exception.getReason());
+    }
+
+    @DisplayName("feedback 신고 실패 - 이미 신고한 피드백")
+    @Test
+    void feedbackComplainFailAlreadyComplained(){
+        // given
+        Feedbacks feedback = Feedbacks.builder()
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .feedbacksId(1L)
+                .projectsInfo(info)
+                .complaint("1")
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when & then
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class, () -> projectsService.feedbackComplain(1L, 1L)
+        );
+        assertEquals("이미 신고한 피드백입니다", exception.getReason());
+    }
+
+    @DisplayName("feedback 신고 실패 - 일치하는 유저 없음")
+    @Test
+    void feedbackComplainFailNoUser(){
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.feedbackComplain(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @DisplayName("feedback 신고 실패 - 일치하는 피드백 없음")
+    @Test
+    void feedbackComplainFailNoFeedback(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.feedbackComplain(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 피드백이 존재하지 않습니다");
+    }
+
     @DisplayName("tag 목록 검색 성공")
     @Test
     void searchTagsSucceed(){

@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -169,6 +170,27 @@ public class ProjectsController {
 
         if(res == null) return Response.notFound("프로젝트 상세 조회 실패");
         return Response.makeResponse(HttpStatus.OK, "프로젝트 상세 조회 성공", 1, res);
+    }
+
+    @Operation(summary = "피드백 신고 API")
+    @PutMapping("/feedback/{feedbackId}/complaint")
+    ResponseEntity<?> feedbackComplain(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                       @Parameter(description = "피드백 아이디") @PathVariable Long feedbackId){
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = projectsService.feedbackComplain(feedbackId, userId);
+        } catch(ResponseStatusException e){
+            log.error(e.getReason());
+            return Response.makeResponse(e.getStatus(), e.getReason());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("프로젝트 피드백 신고 실패");
+        return Response.ok("프로젝트 피드백 신고 성공");
     }
 
     @Operation(summary = "프로젝트 목록 조회 API")

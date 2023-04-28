@@ -54,6 +54,3 @@ jwt:
 app:
   oauth2:
     authorizedRedirectUri: http://localhost:3000/oauth2/redirect
-
-credential:
-  path: google-credentials.json
