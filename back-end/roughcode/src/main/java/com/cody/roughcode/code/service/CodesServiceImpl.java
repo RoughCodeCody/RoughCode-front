@@ -176,8 +176,18 @@ public class CodesServiceImpl implements CodesService {
         Boolean favorite = myFavorite != null;
         Boolean liked = myLike != null;
 
+        // 연결된 프로젝트 정보(id, 제목) 저장
+        Long connectedProjectId = null;
+        String connectedProjectTitle = null;
+        if (code.getProjects() != null) {
+            connectedProjectId = code.getProjects().getProjectsId();
+            connectedProjectTitle = code.getProjects().getTitle();
+        }
+
+        // 모든 버전 정보 미리보기
         List<Pair<Codes, CodesInfo>> otherVersions = new ArrayList<>();
         List<Codes> codeList = codesRepository.findByNumAndCodeWriter(code.getNum(), code.getCodeWriter());
+
         for (Codes c : codeList) {
             otherVersions.add(Pair.of(c, codesInfoRepository.findByCodes(c)));
         }
@@ -228,6 +238,7 @@ public class CodesServiceImpl implements CodesService {
                     }
                 }));
 
+        // 코드 상세 정보 response dto
         CodeDetailRes codeDetailRes = CodeDetailRes.builder()
                 .codeId(code.getCodesId())
                 .title(code.getTitle())
@@ -240,16 +251,14 @@ public class CodesServiceImpl implements CodesService {
                 .tags(tagList)
                 .userId(user.getUsersId())
                 .userName(user.getName())
-                .projectId(code.getProjects().getProjectsId())
-                .projectTitle(code.getProjects().getTitle())
+                .projectId(connectedProjectId)
+                .projectTitle(connectedProjectTitle)
                 .content(codesInfo.getContent())
                 .liked(liked)
                 .favorite(favorite)
                 .versions(versionResList)
                 .reviews(reviewResList)
                 .build();
-
-        log.info("코드에 달린 리뷰 개수" + code.getReviewCnt());
 
         return codeDetailRes;
     }

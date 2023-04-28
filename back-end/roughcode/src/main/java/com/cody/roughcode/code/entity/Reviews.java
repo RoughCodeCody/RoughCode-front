@@ -54,6 +54,9 @@ public class Reviews extends BaseTimeEntity {
     @JoinColumn(name = "users_id")
     private Users users = null;
 
+    @OneToMany(mappedBy = "reviews")
+    private List<ReviewLikes> reviewLikes;
+
     public void selectedUp() {
         this.selected += 1;
     }
