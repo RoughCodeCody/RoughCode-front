@@ -35,6 +35,7 @@ public class ProjectDetailRes {
     private List<VersionRes> versions;
     private List<FeedbackRes> feedbacks;
     private String content;
+    private String notice;
 
     public ProjectDetailRes(Projects project, ProjectsInfo projectsInfo, List<String> tagList,
                             Boolean liked, Boolean favorite) {
@@ -59,6 +60,7 @@ public class ProjectDetailRes {
         this.tags = tagList;
         this.liked = liked;
         this.favorite = favorite;
+        this.notice = projectsInfo.getNotice();
     }
 
     public void setVersions(List<VersionRes> versionResList) {

@@ -56,4 +56,4 @@ app:
     authorizedRedirectUri: http://localhost:3000/oauth2/redirect
 
 credential:
-  path: ${CREDENTIAL_PATH}
+  path: google-credentials.json
