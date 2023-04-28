@@ -39,7 +39,6 @@ services:
     image: google/cloud-sdk:latest
     volumes:
       - /home/ubuntu/google-credentials.json:${CREDENTIAL_PATH}
-      - /path/to/.env:/.env
     entrypoint: /bin/bash
     environment:
       - CREDENTIAL_PATH=${CREDENTIAL_PATH}
