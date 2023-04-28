@@ -5,6 +5,10 @@ COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
 COPY src src
+
+COPY credentials.json credentials.json
+COPY .env .env
+
 RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
 
