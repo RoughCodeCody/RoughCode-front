@@ -27,6 +27,7 @@ public interface ProjectsService {
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
     List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId);
     int deleteFeedback(Long feedbackId, Long usersId);
+    int feedbackComplain(Long feedbackId, Long usersId);
 
     Boolean checkProject(String url, Long usersId) throws IOException;
 
