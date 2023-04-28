@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
+import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -28,6 +29,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -116,5 +118,49 @@ class CodesControllerTest {
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
         assertThat(message).isEqualTo("코드 정보 등록 실패");
+    }
+
+    @DisplayName("코드 상세 조회 성공")
+    @Test
+    public void getCodeSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}";
+
+        doReturn(new CodeDetailRes()).when(codesService).getCode(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+        );
+
+        // then
+        // HTTP Status가 OK 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 상세 조회 성공");
+    }
+
+    @DisplayName("코드 상세 조회 실패")
+    @Test
+    public void getCodeFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}";
+
+        doReturn(null).when(codesService).getCode(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+        );
+
+        // then
+        // HTTP Status가 NotFound 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 상세 조회 실패");
     }
 }
