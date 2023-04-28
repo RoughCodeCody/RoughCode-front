@@ -1,4 +1,4 @@
-docker-compose -f docker-compose.yml pull
+docker-compose -f docker-compose-deploy.yml pull
 
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f docker-compose-deploy.yml up --build -d
 
