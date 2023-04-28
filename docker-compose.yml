@@ -37,6 +37,7 @@ services:
       - redis
     environment:
       - S3_ACCESSKEY=${S3_ACCESSKEY}
+      - S3_SECRETKEY=${S3_SECRETKEY}
   google-cloud-cli:
     image: google/cloud-sdk:latest
     volumes:
