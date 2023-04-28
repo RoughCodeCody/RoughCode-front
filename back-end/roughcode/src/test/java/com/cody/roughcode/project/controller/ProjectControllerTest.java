@@ -6,7 +6,6 @@ import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
@@ -268,8 +267,7 @@ public class ProjectControllerTest {
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
                         .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson("check할 url"))
+                        .param("url", url)
         );
 
         // then
@@ -296,8 +294,7 @@ public class ProjectControllerTest {
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
                         .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson("check할 url"))
+                        .param("url", url)
         );
 
         // then
@@ -656,13 +653,11 @@ public class ProjectControllerTest {
                         .build()
         );
         doReturn(projectInfoRes).when(projectsService)
-                .getProjectList(any(String.class), any(PageRequest.class), any(ProjectSearchReq.class));
+                .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
-        ProjectSearchReq req = ProjectSearchReq.builder()
-                .closed(false)
-                .tagIdList(List.of(2L))
-                .keyword("title")
-                .build();
+        String keyword = "title";
+        String tagIds = "2";
+        int closed = 0;
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -712,7 +707,7 @@ public class ProjectControllerTest {
                         .build()
         );
         doReturn(projectInfoRes).when(projectsService)
-                .getProjectList(any(String.class), any(PageRequest.class), any(ProjectSearchReq.class));
+                .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
