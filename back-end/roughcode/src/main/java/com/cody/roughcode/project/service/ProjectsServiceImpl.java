@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -629,6 +629,16 @@ public class ProjectsServiceImpl implements ProjectsService{
         }
 
         return searchUrisResponse.getThreat().getThreatTypesList().isEmpty();
+    }
+
+    @Override
+    public List<ProjectTagsRes> searchTags(String keyword) {
+        List<ProjectTags> tags = projectTagsRepository.findAllByNameContaining(keyword, Sort.by(Sort.Direction.ASC, "name"));
+        List<ProjectTagsRes> result = new ArrayList<>();
+        for (ProjectTags tag : tags) {
+            result.add(new ProjectTagsRes(tag));
+        }
+        return result;
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {
