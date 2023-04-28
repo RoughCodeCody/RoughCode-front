@@ -6,8 +6,6 @@ COPY build.gradle .
 COPY settings.gradle .
 COPY src src
 
-COPY google-credentials.json google-credentials.json
-COPY .env .env
 
 RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
