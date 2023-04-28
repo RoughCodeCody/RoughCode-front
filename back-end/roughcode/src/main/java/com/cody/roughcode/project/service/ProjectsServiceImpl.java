@@ -12,7 +12,6 @@ import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.*;
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
@@ -43,8 +42,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -393,26 +394,30 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, ProjectSearchReq req) {
-        String keyword = req.getKeyword();
+    public List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest,
+                                               String keyword, String tagIds, int closed) {
+        List<Long> tagIdList = null;
+        if(tagIds.length() > 0)
+             tagIdList = Arrays.stream(tagIds.split(","))
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+
         if(keyword == null) keyword = "";
-        if(req.getTagIdList() == null || req.getTagIdList().size() == 0){ // tag 검색 x
-            Page<Projects> projectsPage = null;
-            if(req.getClosed())
+        Page<Projects> projectsPage = null;
+        if(tagIdList == null || tagIdList.size() == 0){ // tag 검색 x
+            if(closed == 1)
                 projectsPage = projectsRepository.findAllByKeyword(keyword, pageRequest);
             else
                 projectsPage = projectsRepository.findAllOpenedByKeyword(keyword, pageRequest);
 
-            return getProjectInfoRes(projectsPage);
         } else { // tag 검색
-            Page<Projects> projectsPage = null;
-            if(req.getClosed())
-                projectsPage = projectSelectedTagsRepository.findAllByKeywordAndTag(keyword, req.getTagIdList(), (long) req.getTagIdList().size(), pageRequest);
+            if(closed == 1)
+                projectsPage = projectSelectedTagsRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
             else
-                projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, req.getTagIdList(), (long) req.getTagIdList().size(), pageRequest);
+                projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
 
-            return getProjectInfoRes(projectsPage);
         }
+        return getProjectInfoRes(projectsPage);
     }
 
     @Override
