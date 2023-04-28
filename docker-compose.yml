@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.6.5
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MARIADB_PASSWORD}
+      - MYSQL_DATABASE=roughcode
+    ports:
+      - "3306:3306"
+  redis:
+    image: redis:6.2.6-alpine
+    ports:
+      - "6379:6379"
+  mongodb:
+    image: mongo:4.4.10
+    volumes:
+      - mongodb-data:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+  backend:
+    build:
+      context: ./back-end/roughcode
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./back-end:/app
+    depends_on:
+      - db
+      - mongodb
+      - redis
+    environment:
+      - S3_ACCESSKEY=${S3_ACCESSKEY}
+      - S3_SECRETKEY=${S3_SECRETKEY}
+      - HOST=${HOST}
+      - JWT_SECRET=${JWT_SECRET}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_USER=${MONGODB_USER}
+      - OAUTH2_CLIENT_ID=${OAUTH2_CLIENT_ID}
+      - OAUTH2_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - CREDENTIAL_PATH=${CREDENTIAL_PATH}
+
+  google-cloud-cli:
+    image: google/cloud-sdk:latest
+    volumes:
+      - /home/ubuntu/google-credentials.json:/app/roughcode:rw
+    entrypoint: /bin/bash
+    environment:
+      - CREDENTIAL_PATH=${CREDENTIAL_PATH}
+
+volumes:
+  db-data:
+  mongodb-data:
