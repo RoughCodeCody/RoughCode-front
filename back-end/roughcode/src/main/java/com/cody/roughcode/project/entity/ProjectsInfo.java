@@ -5,6 +5,7 @@ import com.cody.roughcode.project.dto.req.ProjectReq;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,10 @@ public class ProjectsInfo {
     @Column(name = "favorite_cnt", nullable = true)
     private int favoriteCnt = 0;
 
+    @Builder.Default
+    @Column(name = "closed_checked", nullable = true)
+    private LocalDateTime closedChecked = null;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = false)
     private Projects projects;
@@ -58,5 +63,9 @@ public class ProjectsInfo {
     public void setFeedbacks(Feedbacks feedbacks) {
         if(this.feedbacks == null) this.feedbacks = new ArrayList<>();
         this.feedbacks.add(feedbacks);
+    }
+
+    public void setClosedChecked(LocalDateTime now) {
+        this.closedChecked = now;
     }
 }

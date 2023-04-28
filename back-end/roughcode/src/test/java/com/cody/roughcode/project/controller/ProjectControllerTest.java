@@ -120,6 +120,50 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("프로젝트 열림 확인 성공")
+    @Test
+    public void isProjectOpenSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/check/{projectId}";
+
+        doReturn(1).when(projectsService)
+                .isProjectOpen(any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 열림 확인 성공");
+    }
+
+    @DisplayName("프로젝트 열림 확인 실패")
+    @Test
+    public void isProjectOpenFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/check/{projectId}";
+
+        doReturn(-2).when(projectsService)
+                .isProjectOpen(any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 열림 확인 실패");
+    }
+
     @DisplayName("피드백 신고 성공")
     @Test
     public void feedbackComplainSucceed() throws Exception {
