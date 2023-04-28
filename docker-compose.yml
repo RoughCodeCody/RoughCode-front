@@ -31,10 +31,10 @@ services:
       - "8081:8081"
     volumes:
       - ./back-end:/app
-    depends_on:
-      - db
-      - mongodb
-      - redis
+    # depends_on:
+    #   - db
+    #   - mongodb
+    #   - redis
     environment:
       - S3_ACCESSKEY=${S3_ACCESSKEY}
       - S3_SECRETKEY=${S3_SECRETKEY}
