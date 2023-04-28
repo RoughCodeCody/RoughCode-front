@@ -6,10 +6,8 @@ services:
     volumes:
       - db-data:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=ssafy306
-      - MYSQL_DATABASE=alarm
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=ssafy306
+      - MYSQL_ROOT_PASSWORD=${MARIADB_PASSWORD}
+      - MYSQL_DATABASE=roughcode
     ports:
       - "3306:3306"
   redis:
@@ -23,8 +21,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=ssafy306
-      - MONGO_INITDB_ROOT_PASSWORD=ssafy306
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
   backend:
     build:
       context: ./back-end/roughcode
@@ -35,20 +33,16 @@ services:
       - ./back-end:/app
     depends_on:
       - db
+      - mongodb
       - redis
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mariadb://k8a306.p.ssafy.io:3306/ssafy306
-      - SPRING_DATASOURCE_USERNAME=ssafy306
-      - SPRING_DATASOURCE_PASSWORD=ssafy306
-      - REDIS_HOST=redis
   google-cloud-cli:
     image: google/cloud-sdk:latest
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/back-end/roughcode/google-credentials.json
     volumes:
-      - /path/to/google-credentials.json:/back-end/roughcode/google-credentials.json
+      - /path/to/google-credentials.json:${CREDENTIAL_PATH}
       - /path/to/.env:/.env
     entrypoint: /bin/bash
+    environment:
+      - CREDENTIAL_PATH=${CREDENTIAL_PATH}
 
 volumes:
   db-data:
