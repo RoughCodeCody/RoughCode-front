@@ -23,6 +23,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -33,6 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudiocode,nextjs,react
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,visualstudiocode,nextjs,react

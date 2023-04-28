@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 
 export const FlexDiv = styled.div<{
+  position?: string;
   width?: string;
   minWidth?: string;
   maxWidth?: string;
@@ -20,8 +21,11 @@ export const FlexDiv = styled.div<{
   border?: string;
   radius?: string;
   pointer?: boolean;
+  overflow?: string;
+  shadow?: boolean;
 }>`
   ${({
+    position,
     width,
     minWidth,
     maxWidth,
@@ -41,6 +45,8 @@ export const FlexDiv = styled.div<{
     border,
     radius,
     pointer,
+    overflow,
+    shadow,
   }) => css`
     display: flex;
     flex-direction: ${direction || "row"};
@@ -54,6 +60,7 @@ export const FlexDiv = styled.div<{
     height: ${height || "auto"};
     min-height: ${minHeight || "none"};
     max-height: ${maxHeight || "none"};
+    position: ${position || "none"};
     padding: ${padding || "0"};
     padding-left: ${paddingX || "none"};
     padding-right: ${paddingX || "none"};
@@ -64,5 +71,7 @@ export const FlexDiv = styled.div<{
     border: ${border ? border : "none"};
     border-radius: ${radius ? radius : "0"};
     cursor: ${pointer ? "pointer" : "auto"};
+    overflow: ${overflow ? overflow : "none"};
+    box-shadow: ${shadow ? "0px 4px 4px rgba(0, 0, 0, 0.05)" : "none"};
   `}
 `;

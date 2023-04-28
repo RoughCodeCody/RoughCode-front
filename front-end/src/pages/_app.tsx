@@ -1,18 +1,24 @@
 import type { AppProps } from "next/app";
-import GlobalStyles from "@/styles/global-styles";
 import { ThemeProvider } from "styled-components";
-import { theme } from "@/styles/theme";
-import { wrapper } from "@/stores";
 
-function App({ Component, pageProps }: AppProps) {
+import { AppProvider } from "@/providers/app";
+import GlobalStyles from "@/styles/global-styles";
+import { theme } from "@/styles/theme";
+
+export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <GlobalStyles />
       <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
+        <GlobalStyles />
+        <AppProvider>
+          <Component {...pageProps} />
+        </AppProvider>
+        <GlobalStyles />
+        <AppProvider>
+          <Component {...pageProps} />
+        </AppProvider>
       </ThemeProvider>
     </>
   );
 }
-
-export default wrapper.withRedux(App);

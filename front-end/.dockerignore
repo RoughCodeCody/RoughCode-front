@@ -5,3 +5,8 @@ npm-debug.log
 README.md
 .next
 .git
+
+# cody
+.vscode
+.gitignore
+docker-compose.yml.example
