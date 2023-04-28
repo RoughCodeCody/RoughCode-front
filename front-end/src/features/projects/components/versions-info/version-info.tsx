@@ -33,8 +33,8 @@ export const VersionInfo = ({
         {feedbacks.length !== 0 && (
           <>
             <Text>반영한 피드백</Text>
-            {feedbacks.map(({ user, content }) => (
-              <MiniFeedbackItem user={user} content={content} />
+            {feedbacks.map(({ user, content }, idx) => (
+              <MiniFeedbackItem user={user} content={content} key={idx} />
             ))}
           </>
         )}
