@@ -1,6 +1,6 @@
-import { KeywordSearch } from "./keyword-search";
-import { TagSearch } from "./tag-search";
-import { FlexDiv } from "../elements";
+import { KeywordSearch } from "./components";
+import { TagSearch } from "./components";
+import { FlexDiv } from "@/components/elements";
 
 export const Search = () => {
   return (

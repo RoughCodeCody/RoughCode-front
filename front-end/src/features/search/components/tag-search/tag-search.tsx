@@ -5,10 +5,14 @@ import { FlexDiv, TagChip } from "@/components/elements";
 
 import { SearchInput, TagSelectContainer } from "./style";
 import { TagSelectItem } from "./tag-select-item";
+import { useSearchCriteriaStore } from "@/stores";
+import { stringify } from "querystring";
 
 type SelectedTags = string[];
 
 export const TagSearch = () => {
+  const { searchCriteria, addTagId } = useSearchCriteriaStore();
+
   // 더미데이터
   const dummyTags: SelectedTags = [
     "자바",
@@ -51,13 +55,8 @@ export const TagSearch = () => {
         justify="start"
         wrap="wrap"
       >
-        {selectedTags.map((tag) => (
-          <TagChip
-            tag={tag}
-            key={tag}
-            selectedTags={selectedTags}
-            setSelectedTags={setSelectedTags}
-          />
+        {searchCriteria.tagIdList.map((tag) => (
+          <TagChip tag={tag} key={tag} />
         ))}
       </FlexDiv>
       <FlexDiv
@@ -83,6 +82,7 @@ export const TagSearch = () => {
           <TagSelectContainer>
             {dummyTags.map((tag) => (
               <TagSelectItem
+                key={tag}
                 tag={tag}
                 selectedTags={selectedTags}
                 setSelectedTags={setSelectedTags}

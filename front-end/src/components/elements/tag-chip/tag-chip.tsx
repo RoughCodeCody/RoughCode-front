@@ -3,17 +3,15 @@ import { TagChipContainer } from "./style";
 import { Text } from "../text";
 import { IoClose } from "react-icons/io5";
 
+import { useSearchCriteriaStore } from "@/stores";
+
 type TagChipProps = {
-  tag: string;
-  selectedTags: string[];
-  setSelectedTags: React.Dispatch<React.SetStateAction<string[]>>;
+  tag: number;
 };
 
-export const TagChip = ({
-  tag,
-  selectedTags,
-  setSelectedTags,
-}: TagChipProps) => {
+export const TagChip = ({ tag }: TagChipProps) => {
+  const { searchCriteria, deleteTagId } = useSearchCriteriaStore();
+
   return (
     <TagChipContainer>
       <Text size="1.2rem" color="bg" bold={true}>
@@ -22,7 +20,7 @@ export const TagChip = ({
 
       <IoClose
         onClick={() => {
-          setSelectedTags(() => selectedTags.filter((item) => item !== tag));
+          deleteTagId(tag);
         }}
         cursor="pointer"
         fontSize="1.3rem"

@@ -68,7 +68,11 @@ export const ProjectList = () => {
           {data.pages.map((page) => (
             <ProjectCardGrid key={page.nextId}>
               {page.map((project: ProjectCardProps, index: number) => (
-                <FlexDiv ref={index === 0 ? ref : undefined} justify="center">
+                <FlexDiv
+                  key={index}
+                  ref={index === 0 ? ref : undefined}
+                  justify="center"
+                >
                   <ProjectCard key={project.projectId} project={project} />
                 </FlexDiv>
               ))}

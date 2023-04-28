@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 
 type SearchCriteria = {
   keyword: string;
@@ -13,6 +13,8 @@ type SearchCriteriaStore = {
   searchCriteria: SearchCriteria;
   setClosedValue: (closed: boolean) => void;
   setSort: (sortOption: string) => void;
+  addTagId: (tagId: number) => void;
+  deleteTagId: (tagId: number) => void;
 };
 
 export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
@@ -25,6 +27,7 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
     size: 9,
   },
   setClosedValue: (ClosedValue) => {
+    // 전체 프로젝트 보기, 열린 프로젝트만 보기
     set((state) => ({
       searchCriteria: {
         ...state.searchCriteria,
@@ -34,6 +37,7 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
     }));
   },
   setSort: (sortOption) => {
+    // 최신순, 좋아요순, 리뷰순 정렬
     let mappedSortOption: "modifiedDate" | "likeCnt" | "feedbackCnt";
     if (sortOption === "최신순") {
       mappedSortOption = "modifiedDate";
@@ -48,5 +52,33 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
         sort: mappedSortOption,
       },
     }));
+  },
+  addTagId: (tagId) => {
+    // 이미 있는 태그는 추가하지 않음
+    set((state) => {
+      if (state.searchCriteria.tagIdList.includes(tagId)) return state;
+      else
+        return {
+          searchCriteria: {
+            ...state.searchCriteria,
+            keyword: "",
+            tagIdList: [...state.searchCriteria.tagIdList, tagId],
+          },
+        };
+    });
+  },
+  deleteTagId: (tagId) => {
+    // 선택된 태그에서 제거
+    set((state) => {
+      let newTagIdList: number[];
+      newTagIdList = state.searchCriteria.tagIdList.filter((id) => id != tagId);
+      return {
+        searchCriteria: {
+          ...state.searchCriteria,
+          keyword: "",
+          tagIdList: newTagIdList,
+        },
+      };
+    });
   },
 }));

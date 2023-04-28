@@ -2,6 +2,7 @@ import * as Switch from "@radix-ui/react-switch";
 import styled from "styled-components";
 
 export const SwitchRoot = styled(Switch.Root)`
+  border: none;
   padding: 0;
   width: 42px;
   height: 25px;

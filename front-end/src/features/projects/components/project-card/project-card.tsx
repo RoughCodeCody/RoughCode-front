@@ -133,8 +133,8 @@ export const ProjectCard = ({
           </FlexDiv>
           {/* 좋아요 리뷰 아이콘 */}
           <FlexDiv>
-            <Count type={"like"} cnt={likeCnt} setCnt={() => {}} />
-            <Count type={"code"} cnt={feedbackCnt} setCnt={() => {}} />
+            {/* <Count type={"like"} cnt={likeCnt} setCnt={() => {}} />
+            <Count type={"code"} cnt={feedbackCnt} setCnt={() => {}} /> */}
           </FlexDiv>
         </FlexDiv>
         <FlexDiv
@@ -155,9 +155,9 @@ export const ProjectCard = ({
             onMouseMove={handleMouseMove}
             onWheel={handleWheel}
           >
-            {tags.map((tag) => (
+            {tags.map((tag, idx) => (
               // 임시로 tag에 스트링 씌움
-              <TagChipSub tag={tag} />
+              <TagChipSub tag={tag} key={idx} />
             ))}
           </TagContainer>
         </FlexDiv>
