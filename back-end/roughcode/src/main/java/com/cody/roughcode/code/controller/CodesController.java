@@ -46,7 +46,9 @@ public class CodesController {
 
     @Operation(summary = "코드 상세 조회 API")
     @GetMapping("/{codeId}")
-    ResponseEntity<?> getCode(@Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+    ResponseEntity<?> getCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
 
         CodeDetailRes res = null;
         try {
