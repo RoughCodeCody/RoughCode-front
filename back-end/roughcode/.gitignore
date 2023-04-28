@@ -37,4 +37,6 @@ out/
 .vscode/
 
 ### credential ###
-credentials.json
+*credentials.json
+
+.env
