@@ -59,6 +59,21 @@ public class ProjectsController {
         return Response.makeResponse(HttpStatus.OK, "프로젝트 태그 목록 조회 성공", res.size(),  res);
     }
 
+    @Operation(summary = "프로젝트 열림 확인 API")
+    @PutMapping("/check/{projectId}")
+    ResponseEntity<?> isProjectOpen(@Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+        int res = -2;
+        try{
+            res = projectsService.isProjectOpen(projectId);
+        } catch(Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= -2) return Response.notFound("프로젝트 열림 확인 실패");
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 열림 확인 성공", 1, res);
+    }
+
     @Operation(summary = "프로젝트 URL 검사 API")
     @GetMapping("/check")
     ResponseEntity<?> projectURLCheck(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
@@ -86,7 +101,7 @@ public class ProjectsController {
         try {
             res = projectsService.deleteFeedback(feedbackId, userId);
         } catch(ResponseStatusException e){
-            log.error(e.getReason());
+            log.warn(e.getReason());
             return Response.makeResponse(e.getStatus(), e.getReason());
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -125,7 +140,7 @@ public class ProjectsController {
         try {
             res = projectsService.updateFeedback(req, userId);
         } catch(ResponseStatusException e){
-            log.error(e.getReason());
+            log.warn(e.getReason());
             return Response.makeResponse(e.getStatus(), e.getReason());
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -182,7 +197,7 @@ public class ProjectsController {
         try {
             res = projectsService.feedbackComplain(feedbackId, userId);
         } catch(ResponseStatusException e){
-            log.error(e.getReason());
+            log.warn(e.getReason());
             return Response.makeResponse(e.getStatus(), e.getReason());
         } catch (Exception e) {
             log.error(e.getMessage());

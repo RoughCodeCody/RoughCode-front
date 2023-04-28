@@ -36,6 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -173,6 +174,103 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("프로젝트 닫힘 확인 성공 - 열려있음")
+    @Test
+    void isProjectClosedSucceedOpen(){
+        // given
+        String url = "https://google.com";
+        final Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .feedbackCnt(1)
+                .build();
+
+        final ProjectsInfo info = ProjectsInfo.builder()
+                .url(url)
+                .notice("notice")
+                .projects(project)
+                .build();
+
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when
+        int open = projectsService.isProjectOpen(1L);
+
+        // then
+        assertThat(open).isEqualTo(1);
+    }
+
+    @DisplayName("프로젝트 닫힘 확인 성공 - 닫혀있음")
+    @Test
+    void isProjectClosedSucceedClose(){
+        // given
+        String url = "https://rough-code.com";
+        final Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .feedbackCnt(1)
+                .build();
+
+        final ProjectsInfo info = ProjectsInfo.builder()
+                .url(url)
+                .notice("notice")
+                .projects(project)
+                .build();
+
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when
+        int open = projectsService.isProjectOpen(1L);
+
+        // then
+        assertThat(open).isEqualTo(0);
+    }
+
+    @DisplayName("프로젝트 닫힘 확인 성공 - 닫힌지 1시간 지남")
+    @Test
+    void isProjectClosedSucceedCloseProject(){
+        // given
+        String url = "https://rough-code.com";
+        final Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .feedbackCnt(1)
+                .build();
+
+        final ProjectsInfo info = ProjectsInfo.builder()
+                .url(url)
+                .notice("notice")
+                .projects(project)
+                .closedChecked(LocalDateTime.now().minusMinutes(70))
+                .build();
+
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when
+        int open = projectsService.isProjectOpen(1L);
+
+        // then
+        assertThat(open).isEqualTo(-1);
     }
 
     @DisplayName("feedback 신고 성공")

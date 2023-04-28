@@ -39,6 +39,7 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .antMatchers(HttpMethod.GET, "/api/v1/project")
                 .antMatchers(HttpMethod.GET, "/api/v1/project/{projectId}")
+                .antMatchers(HttpMethod.PUT, "/api/v1/project/check/{projectId}")
                 .antMatchers(URL_PREFIX+"/user/token", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**", "/favicon.ico");
     }
 
