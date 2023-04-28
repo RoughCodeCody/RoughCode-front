@@ -36,7 +36,7 @@ services:
       - mongodb
       - redis
     environment:
-      - CREDENTIAL_PATH=/home/ubuntu/.env
+      - S3_ACCESSKEY=${S3_ACCESSKEY}
   google-cloud-cli:
     image: google/cloud-sdk:latest
     volumes:
