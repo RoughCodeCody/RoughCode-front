@@ -38,7 +38,7 @@ services:
   google-cloud-cli:
     image: google/cloud-sdk:latest
     volumes:
-      - /home/ubuntu/google-credentials.json:${CREDENTIAL_PATH}
+      - /home/ubuntu/google-credentials.json:/app/roughcode:rw
     entrypoint: /bin/bash
     environment:
       - CREDENTIAL_PATH=${CREDENTIAL_PATH}
