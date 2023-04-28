@@ -6,7 +6,7 @@ COPY build.gradle .
 COPY settings.gradle .
 COPY src src
 
-COPY credentials.json credentials.json
+COPY google-credentials.json google-credentials.json
 COPY .env .env
 
 RUN chmod +x ./gradlew
