@@ -488,6 +488,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
         if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        if(req.getContent() == null || req.getContent().equals("")) throw new NullPointerException("내용을 입력해주세요");
 
         Feedbacks savedFeedback = feedbacksRepository.save(
                 Feedbacks.builder()
@@ -549,6 +550,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             ProjectsInfo info = projectsInfoRepository.findByProjects(p);
             List<Feedbacks> feedbacksList = info.getFeedbacks();
             for (Feedbacks f : feedbacksList) {
+                if(f.getContent() == null || f.getContent().equals("")) continue;
                 feedbackInfoResList.add(new FeedbackInfoRes(f, p.getVersion(), f.getUsers()));
             }
         }
@@ -577,6 +579,32 @@ public class ProjectsServiceImpl implements ProjectsService{
         return 1;
     }
 
+    @Override
+    @Transactional
+    public int feedbackComplain(Long feedbackId, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Feedbacks feedbacks = feedbacksRepository.findByFeedbacksId(feedbackId);
+        if(feedbacks == null)
+            throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
+
+        List<String> complainList = new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
+
+        if(feedbacks.getContent() == null || feedbacks.getContent().equals(""))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 피드백입니다");
+        if(feedbacks.getComplaint().contains(String.valueOf(usersId)))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 피드백입니다");
+
+        if(complainList.size() >= 10){
+            feedbacks.deleteContent();
+        }
+        complainList.add(String.valueOf(usersId));
+        feedbacks.setComplaint(complainList);
+        feedbacksRepository.save(feedbacks);
+
+        return 1;
+    }
+
     public boolean isOpen(String url) {
         try {
             URL u = new URL(url);
@@ -590,12 +618,12 @@ public class ProjectsServiceImpl implements ProjectsService{
             return false;
         }
     }
-    @Value("${credential.path}")
-    private String credentialsPath; // 인증 정보 파일 경로
 
     @Override
     @Transactional
     public Boolean checkProject(String url, Long usersId) throws IOException {
+        String credentialsPath = "google-credentials.json"; // 인증 정보 파일 경로
+
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
@@ -603,9 +631,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         SearchUrisResponse searchUrisResponse;
         try {
-            System.out.println(credentialsPath);
             GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsPath));
-            System.out.println(credentials.toString());
 
             WebRiskServiceSettings settings =
                     WebRiskServiceSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
@@ -632,6 +658,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public List<ProjectTagsRes> searchTags(String keyword) {
         List<ProjectTags> tags = projectTagsRepository.findAllByNameContaining(keyword, Sort.by(Sort.Direction.ASC, "name"));
         List<ProjectTagsRes> result = new ArrayList<>();

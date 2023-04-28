@@ -5,7 +5,10 @@ import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,8 +31,9 @@ public class Feedbacks extends BaseTimeEntity {
     private int likeCnt = 0;
 
     @Builder.Default
-    @Column(name = "complaint", nullable = true)
-    private int complaint = 0;
+    @Column(name = "complaint", nullable = true, columnDefinition = "text")
+    private String complaint = "";
+
 
     @Builder.Default
     @Column(name = "selected", nullable = true)
@@ -57,5 +61,13 @@ public class Feedbacks extends BaseTimeEntity {
 
     public void editContent(String content) {
         this.content = content;
+    }
+
+    public void deleteContent() {
+        this.content = "";
+    }
+
+    public void setComplaint(List<String> complainList) {
+        this.complaint = String.join(",", complainList);
     }
 }
