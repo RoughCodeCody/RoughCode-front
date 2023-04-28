@@ -21,10 +21,6 @@ public class Reviews extends BaseTimeEntity {
     private Long reviewsId;
 
     @Builder.Default
-    @Column(name = "content", nullable = false, columnDefinition = "text")
-    private String content = "";
-
-    @Builder.Default
     @Column(name = "like_cnt", nullable = true)
     private int likeCnt = 0;
 
@@ -36,18 +32,18 @@ public class Reviews extends BaseTimeEntity {
     @Column(name = "line_numbers", nullable = true, columnDefinition = "text")
     private String lineNumbers = "";
 
-    @Column(name = "comment", columnDefinition = "text")
-    private String comment;
+    @Column(name = "content", columnDefinition = "text")
+    private String content;
 
-    @Column(name = "review_code", columnDefinition = "longtext")
-    private String reviewCode;
+    @Column(name = "code_content", columnDefinition = "longtext")
+    private String codeContent;
 
     @Builder.Default
     @Column(name = "selected", nullable = true)
     private int selected = 0;
 
     @OneToMany(mappedBy = "reviews")
-    private List<ReReviews> reviewsRereviewss;
+    private List<ReReviews> reReviews;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_id", nullable = false)
@@ -57,6 +53,9 @@ public class Reviews extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
     private Users users = null;
+
+    @OneToMany(mappedBy = "reviews")
+    private List<ReviewLikes> reviewLikes;
 
     public void selectedUp() {
         this.selected += 1;

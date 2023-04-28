@@ -5,7 +5,6 @@ import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +19,7 @@ public interface ProjectsService {
     int updateProject(ProjectReq req, Long usersId);
     int connect(Long projectsId, Long usersId, List<Long> codesIdList);
     int deleteProject(Long projectsId, Long usersId);
-    List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, ProjectSearchReq req);
+    List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
     ProjectDetailRes getProject(Long projectId, Long usersId);
 
     int insertFeedback(FeedbackReq req, Long usersId);

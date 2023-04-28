@@ -6,13 +6,11 @@ import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
-import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
-import io.lettuce.core.ScriptOutputType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +20,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import static com.cody.roughcode.security.auth.JwtProperties.TOKEN_HEADER;
-
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Executable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +70,7 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 URL 검사 API")
     @GetMapping("/check")
     ResponseEntity<?> projectURLCheck(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                      @Parameter(description = "프로젝트 url") @RequestBody String url){
+                                      @Parameter(description = "프로젝트 url") @RequestParam String url){
         Long userId = jwtTokenProvider.getId(accessToken);
 
         Boolean res = false;
@@ -213,7 +206,9 @@ public class ProjectsController {
     ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준") @RequestParam(defaultValue = "modifiedDate") String sort,
                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
                                      @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size,
-                                    @Parameter(description = "검색 정보") @RequestBody ProjectSearchReq req) {
+                                     @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
+                                     @Parameter(description = "태그 아이디 리스트") @RequestParam(defaultValue = "") String tagIdList,
+                                     @Parameter(description = "닫힘 포함 여부(0: 닫힘 미포함, 1: 닫힘 포함)") @RequestParam(defaultValue = "0") int closed) {
         List<String> sortList = List.of("modifiedDate", "likeCnt", "feedbackCnt");
         if(!sortList.contains(sort) || page < 0 || size < 0){
             return Response.badRequest("잘못된 요청입니다");
@@ -222,7 +217,7 @@ public class ProjectsController {
         List<ProjectInfoRes> res = new ArrayList<>();
         try{
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sort));
-            res = projectsService.getProjectList(sort, pageRequest, req);
+            res = projectsService.getProjectList(sort, pageRequest, keyword, tagIdList, closed);
         } catch (Exception e){
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

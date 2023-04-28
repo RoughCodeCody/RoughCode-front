@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.repository;
 
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.user.entity.Users;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,7 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
     {
         return findLatestCodesByCodesId(codeId, PageRequest.of(0, 1)).get(0);
     }
+
+    List<Codes> findByNumAndCodeWriter(Long num, Users codeWriter);
+
 }

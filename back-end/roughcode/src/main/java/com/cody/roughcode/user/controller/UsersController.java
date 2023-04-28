@@ -8,6 +8,8 @@ import com.cody.roughcode.user.dto.res.UserResp;
 import com.cody.roughcode.user.service.JwtService;
 import com.cody.roughcode.user.service.UsersService;
 import com.cody.roughcode.util.Response;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ public class UsersController {
     private final UsersService usersService;
     private final JwtService jwtService;
 
+    @Operation(summary = "회원 정보 상세 조회 API")
     @GetMapping
     public ResponseEntity<?> selectOneUser(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken) {
         Long userId = jwtTokenProvider.getId(accessToken);
@@ -44,8 +47,10 @@ public class UsersController {
         return Response.makeResponse(HttpStatus.OK, "회원 정보 조회 성공", 1, resp);
     }
 
+    @Operation(summary = "회원 정보 수정 API")
     @PutMapping
-    public ResponseEntity<?> updateUser(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken, @RequestBody UserReq userReq) {
+    public ResponseEntity<?> updateUser(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                        @Parameter(description = "회원 정보 값", required = true) @RequestBody UserReq userReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         try{
@@ -59,8 +64,10 @@ public class UsersController {
 
     }
 
+    @Operation(summary = "닉네임 중복 검사 API")
     @GetMapping("/nicknameCheck")
-    public ResponseEntity<?> checkNickname(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken, String nickname) {
+    public ResponseEntity<?> checkNickname(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                           @Parameter(description = "변경할 닉네임 값", required = true) String nickname) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         boolean duplicated = usersService.checkNickname(nickname);
@@ -74,6 +81,7 @@ public class UsersController {
         return Response.makeResponse(HttpStatus.OK, "사용 가능한 닉네임입니다.", 0, res);
     }
 
+    @Operation(summary = "토큰 재발급 API")
     @PostMapping("/token")
     public ResponseEntity<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
         try {
