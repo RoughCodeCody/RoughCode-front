@@ -1,16 +1,16 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
+import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.project.entity.ProjectSelectedTags;
-import com.cody.roughcode.project.entity.ProjectTags;
+import com.cody.roughcode.project.entity.CodeFavorites;
 import com.cody.roughcode.project.entity.Projects;
-import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +43,10 @@ class CodesServiceTest {
     @Mock
     private CodeSelectedTagsRepository codeSelectedTagsRepository;
     @Mock
+    private CodeFavoritesRepository codeFavoritesRepository;
+    @Mock
+    private CodeLikesRepository codeLikesRepository;
+    @Mock
     private ProjectsRepository projectsRepository;
     @Mock
     private ReviewsRepository reviewsRepository;
@@ -64,7 +68,7 @@ class CodesServiceTest {
             .name("코디")
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
-    
+
     final Codes code = Codes.builder()
             .codesId(1L)
             .num(1L)
@@ -78,21 +82,21 @@ class CodesServiceTest {
             .content("시간초과 뜹니다")
             .build();
 
-    private List<CodeTags> tagsInit(){
+    private List<CodeTags> tagsInit() {
         List<CodeTags> tagsList = new ArrayList<>();
-        for(Long i = 1L; i<=10L; i++) {
+        for (Long i = 1L; i <= 10L; i++) {
             tagsList.add(CodeTags.builder()
                     .tagsId(i)
-                    .name("tag"+i.toString())
+                    .name("tag" + i.toString())
                     .build());
         }
         return tagsList;
     }
 
-    private List<CodeSelectedTags> selectedTagsList(){
+    private List<CodeSelectedTags> selectedTagsList() {
         List<CodeTags> tags = tagsInit();
         List<CodeSelectedTags> tagsList = new ArrayList<>();
-        for(Long i=1L; i<=3L; i++){
+        for (Long i = 1L; i <= 3L; i++) {
             tagsList.add(CodeSelectedTags.builder()
                     .selectedTagsId(i)
                     .tags(tags.get(i.intValue()))
@@ -169,9 +173,9 @@ class CodesServiceTest {
                 .reviewsId(1L)
                 .users(user)
                 .codes(code)
-                .content("최소힙을 사용해보세요.")
                 .lineNumbers("1,3,4,5")
-                .reviewCode("리뷰리뷰")
+                .codeContent("리뷰리뷰")
+                .content("최소힙을 사용해보세요.")
                 .build();
         SelectedReviews selectedReviews = SelectedReviews.builder()
                 .selectedReviewsId(1L)
@@ -258,4 +262,57 @@ class CodesServiceTest {
 
         assertEquals("접근 권한이 없습니다", exception.getMessage());
     }
+
+    @DisplayName("코드 상세 조회 성공")
+    @Test
+    void getCodeSucceed() {
+        // given
+        Long codeId = 1L;
+        Codes code = Codes.builder()
+                .codesId(1L)
+                .num(1L)
+                .version(1)
+                .title("개발새발 코드")
+                .codeWriter(user)
+                .projects(project)
+                .build();
+        Codes code2 = Codes.builder()
+                .codesId(2L)
+                .num(2L)
+                .version(2)
+                .title("개발새발 코드2")
+                .codeWriter(user)
+                .projects(project)
+                .build();
+        CodesInfo info = CodesInfo.builder()
+                .githubUrl("github url")
+                .content("시간초과 떠요")
+                .favoriteCnt(1)
+                .build();
+        CodeFavorites favorite = CodeFavorites.builder()
+                .favoritesId(1L)
+                .codes(code)
+                .users(user)
+                .build();
+        CodeLikes like = CodeLikes.builder()
+                .likesId(1L)
+                .codes(code)
+                .users(user)
+                .build();
+
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
+        doReturn(favorite).when(codeFavoritesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
+        doReturn(like).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
+        doReturn(List.of(code, code2)).when(codesRepository).findByNumAndCodeWriter(any(Long.class), any(Users.class));
+
+        // when
+        CodeDetailRes success = codesService.getCode(codeId, 0L);
+
+        // then
+        assertThat(success.getCodeId()).isEqualTo(1L);
+        assertThat(success.getVersions().size()).isEqualTo(2);
+    }
+
 }

@@ -42,12 +42,13 @@ public class Codes extends BaseTimeEntity {
     @Column(name = "review_cnt", nullable = true)
     private int reviewCnt = 0;
 
-    @OneToMany(mappedBy = "codes")
-    private List<CodeSelectedTags> tags;
+    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    private List<CodeSelectedTags> selectedTags;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = true)
     private Projects projects;
+
 
     public void setProject(Projects project) {
         this.projects = project;

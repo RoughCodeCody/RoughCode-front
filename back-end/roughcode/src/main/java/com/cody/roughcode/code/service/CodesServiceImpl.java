@@ -1,18 +1,25 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
+import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.project.entity.CodeFavorites;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -27,6 +34,11 @@ public class CodesServiceImpl implements CodesService {
     private final ProjectsRepository projectsRepository;
     private final ReviewsRepository reviewsRepository;
     private final SelectedReviewsRepository selectedReviewsRepository;
+    private final CodeFavoritesRepository codeFavoritesRepository;
+    private final CodeLikesRepository codeLikesRepository;
+    private final ReviewLikesRepository reviewLikesRepository;
+    private final ReReviewsRepository reReviewsRepository;
+    private final ReReviewLikesRepository reReviewLikesRepository;
 
     @Override
     @Transactional
@@ -139,5 +151,124 @@ public class CodesServiceImpl implements CodesService {
         }
 
         return codeId;
+    }
+
+    @Override
+    public CodeDetailRes getCode(Long codeId, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+        Codes code = codesRepository.findByCodesId(codeId);
+
+        if (code == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+        CodesInfo codesInfo = codesInfoRepository.findByCodes(code);
+        if (codesInfo == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+
+        // 코드에 등록된 태그 목록
+        List<String> tagList = getTagNames(code);
+
+        // 내가 즐겨찾기/좋아요 눌렀는지 여부
+        CodeFavorites myFavorite = (user != null) ? codeFavoritesRepository.findByCodesAndUsers(code, user) : null;
+        CodeLikes myLike = (user != null) ? codeLikesRepository.findByCodesAndUsers(code, user) : null;
+        Boolean favorite = myFavorite != null;
+        Boolean liked = myLike != null;
+
+        // 연결된 프로젝트 정보(id, 제목) 저장
+        Long connectedProjectId = null;
+        String connectedProjectTitle = null;
+        if (code.getProjects() != null) {
+            connectedProjectId = code.getProjects().getProjectsId();
+            connectedProjectTitle = code.getProjects().getTitle();
+        }
+
+        // 모든 버전 정보 미리보기
+        List<Pair<Codes, CodesInfo>> otherVersions = new ArrayList<>();
+        List<Codes> codeList = codesRepository.findByNumAndCodeWriter(code.getNum(), code.getCodeWriter());
+
+        for (Codes c : codeList) {
+            otherVersions.add(Pair.of(c, codesInfoRepository.findByCodes(c)));
+        }
+
+        List<VersionRes> versionResList = new ArrayList<>();
+        for (Pair<Codes, CodesInfo> c : otherVersions) {
+            List<SelectedReviewRes> selectedReviewResList = new ArrayList<>();
+            if(c.getRight().getSelectedReviews() != null)
+                for (var selectedReview : c.getRight().getSelectedReviews()) {
+                    selectedReviewResList.add(SelectedReviewRes.builder()
+                            .reviewId(selectedReview.getReviews().getReviewsId())
+                            .userName(selectedReview.getReviews().getUsers().getName())
+                            .content(selectedReview.getReviews().getContent())
+                            .build());
+                }
+            versionResList.add(VersionRes.builder()
+                    .selectedReviews(selectedReviewResList)
+                    .codeId(c.getLeft().getCodesId())
+                    .version(c.getLeft().getVersion())
+                    .build());
+        }
+
+        // 리뷰 목록
+        // - 순서 : 1.반영된 리뷰, 2.내가 쓴 리뷰, 3.나머지
+        List<ReviewRes> reviewResList = new ArrayList<>();
+        if(codesInfo.getReviews() != null) {
+            for(Reviews review : codesInfo.getReviews()){
+                ReviewLikes reviewLike =  (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user): null;
+                Boolean reviewLiked = reviewLike != null;
+
+                List<ReReviewRes> reReviewResList = new ArrayList<>();
+                for(ReReviews reReview: review.getReReviews()){
+                    ReReviewLikes reReviewLike =  (user != null) ? reReviewLikesRepository.findByReReviewsAndUsers(reReview, user): null;
+                    Boolean reReviewLiked = reReviewLike != null;
+                    reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
+                }
+                reviewResList.add(ReviewRes.toDto(review, reviewLiked, reReviewResList));
+            }
+        }
+        reviewResList.sort(Comparator.comparing(ReviewRes::getSelected).reversed()
+                .thenComparing((r1, r2) -> {
+                    if ((r1.getUserId() != null && r1.getUserId().equals(userId)) && (r2.getUserId() == null || !r2.getUserId().equals(userId))) {
+                        return -1;
+                    } else if ((r1.getUserId() == null || !r1.getUserId().equals(userId)) && (r2.getUserId() != null && r2.getUserId().equals(userId))) {
+                        return 1;
+                    } else {
+                        return r2.getDate().compareTo(r1.getDate());
+                    }
+                }));
+
+        // 코드 상세 정보 response dto
+        CodeDetailRes codeDetailRes = CodeDetailRes.builder()
+                .codeId(code.getCodesId())
+                .title(code.getTitle())
+                .version(code.getVersion())
+                .date(code.getModifiedDate())
+                .likeCnt(code.getLikeCnt())
+                .reviewCnt(code.getReviewCnt())
+                .favoriteCnt(codesInfo.getFavoriteCnt())
+                .githubUrl(codesInfo.getGithubUrl())
+                .tags(tagList)
+                .userId(user.getUsersId())
+                .userName(user.getName())
+                .projectId(connectedProjectId)
+                .projectTitle(connectedProjectTitle)
+                .content(codesInfo.getContent())
+                .liked(liked)
+                .favorite(favorite)
+                .versions(versionResList)
+                .reviews(reviewResList)
+                .build();
+
+        return codeDetailRes;
+    }
+
+    private static List<String> getTagNames(Codes code) {
+        List<String> tagList = new ArrayList<>();
+        if (code.getSelectedTags() != null)
+            for (CodeSelectedTags selected : code.getSelectedTags()) {
+                tagList.add(selected.getTags().getName());
+            }
+        return tagList;
     }
 }
