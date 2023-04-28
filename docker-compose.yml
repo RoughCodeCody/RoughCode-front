@@ -28,7 +28,7 @@ services:
       context: ./back-end/roughcode
       dockerfile: Dockerfile
     ports:
-      - "8081:8081"
+      - "8081:8080"
     volumes:
       - ./back-end:/app
     depends_on:
