@@ -7,10 +7,10 @@ import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,4 +29,6 @@ public interface ProjectsService {
     int deleteFeedback(Long feedbackId, Long usersId);
 
     Boolean checkProject(String url, Long usersId) throws IOException;
+
+    List<ProjectTagsRes> searchTags(String s);
 }

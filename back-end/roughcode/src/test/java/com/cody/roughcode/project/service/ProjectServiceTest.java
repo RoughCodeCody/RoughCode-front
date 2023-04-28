@@ -13,6 +13,7 @@ import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
@@ -132,7 +133,6 @@ public class ProjectServiceTest {
         return tagsList;
     }
 
-
     private List<ProjectSelectedTags> selectedTagsInit() {
         List<ProjectTags> tags = tagsInit();
         List<ProjectSelectedTags> tagsList = new ArrayList<>();
@@ -173,6 +173,20 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("tag 목록 검색 성공")
+    @Test
+    void searchTagsSucceed(){
+        // given
+        List<ProjectTags> tags = tagsInit();
+        doReturn(tags).when(projectTagsRepository).findAllByNameContaining("", Sort.by(Sort.Direction.ASC, "name"));
+
+        // when
+        List<ProjectTagsRes> result = projectsService.searchTags("");
+
+        // then
+        assertThat(result.size()).isEqualTo(3);
     }
 
     @DisplayName("url 체크 - safe")

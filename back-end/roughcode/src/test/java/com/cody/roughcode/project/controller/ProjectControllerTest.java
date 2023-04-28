@@ -7,6 +7,7 @@ import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -98,10 +100,71 @@ public class ProjectControllerTest {
         return thumbnail;
     }
 
+
+    private List<ProjectTagsRes> tagsResInit() {
+        List<String> list = List.of("SpringBoot", "React", "AWS");
+        List<ProjectTagsRes> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(ProjectTagsRes.builder()
+                    .tagId(i)
+                    .name(list.get((int)i-1))
+                    .cnt(0)
+                    .build());
+        }
+
+        return tagsList;
+    }
+
     @Mock
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("tag 목록 검색 실패")
+    @Test
+    public void searchTagsFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/tag";
+
+        List<ProjectTagsRes> tagList = tagsResInit();
+        doThrow(new NullPointerException()).when(projectsService).searchTags("");
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .queryParam("keyword", "")
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isBadRequest()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 태그 목록 조회 실패");
+    }
+
+    @DisplayName("tag 목록 검색 성공")
+    @Test
+    public void searchTags() throws Exception {
+        // given
+        final String url = "/api/v1/project/tag";
+
+        List<ProjectTagsRes> tagList = tagsResInit();
+        doReturn(tagList).when(projectsService).searchTags("");
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .queryParam("keyword", "")
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 태그 목록 조회 성공");
+    }
 
     @DisplayName("url 체크 성공 - safe")
     @Test

@@ -7,6 +7,7 @@ import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.req.ProjectSearchReq;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -42,6 +43,20 @@ import java.util.Map;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
+
+    @Operation(summary = "프로젝트 태그 목록 조회 API")
+    @GetMapping("/tag")
+    ResponseEntity<?> searchTags(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
+        List<ProjectTagsRes> res;
+        try {
+            res = projectsService.searchTags(keyword);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest("프로젝트 태그 목록 조회 실패");
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 태그 목록 조회 성공", res.size(),  res);
+    }
 
     @Operation(summary = "프로젝트 URL 검사 API")
     @GetMapping("/check")
