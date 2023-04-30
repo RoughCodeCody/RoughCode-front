@@ -14,12 +14,18 @@ import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -39,6 +45,36 @@ public class CodesServiceImpl implements CodesService {
     private final ReviewLikesRepository reviewLikesRepository;
     private final ReReviewsRepository reReviewsRepository;
     private final ReReviewLikesRepository reReviewLikesRepository;
+
+    @Override
+    @Transactional
+    public List<CodeInfoRes> getCodeList(String sort, org.springframework.data.domain.PageRequest pageRequest,
+                                         String keyword, String tagIds, Long userId) {
+        Users user = usersRepository.findByUsersId(userId);
+        if(user==null) {
+            user = Users.builder().usersId(0L).build(); // 익명
+        }
+        List<Long> tagIdList = null;
+        if(tagIds.length()>0){
+            tagIdList = Arrays.stream(tagIds.split(","))
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+        }
+
+        if(keyword == null) {
+            keyword = "";
+        }
+
+        Page<Codes> codesPage = null;
+        if(tagIdList == null || tagIdList.size() == 0) {
+            codesPage = codesRepository.findAllByKeyword(keyword, pageRequest);
+        } else {
+            codesPage = codeSelectedTagsRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
+        }
+
+        return getCodeInfoRes(codesPage, user);
+    }
+
 
     @Override
     @Transactional
@@ -154,6 +190,7 @@ public class CodesServiceImpl implements CodesService {
     }
 
     @Override
+    @Transactional
     public CodeDetailRes getCode(Long codeId, Long userId) {
 
         Users user = usersRepository.findByUsersId(userId);
@@ -261,6 +298,32 @@ public class CodesServiceImpl implements CodesService {
                 .build();
 
         return codeDetailRes;
+    }
+
+    private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
+        List<Codes> codeList = codesPage.getContent();
+        List<CodeInfoRes> codeInfoRes = new ArrayList<>();
+        for (Codes c : codeList) {
+            List<String> tagList = getTagNames(c);
+
+            // 내가 좋아요 눌렀는지 여부
+            CodeLikes codeLikes = codeLikesRepository.findByCodesAndUsers(c, user);
+            Boolean liked = codeLikes != null ? true: false;
+
+            codeInfoRes.add(CodeInfoRes.builder()
+                    .codeId(c.getCodesId())
+                    .version(c.getVersion())
+                    .title(c.getTitle())
+                    .date(c.getModifiedDate())
+                    .likeCnt(c.getLikeCnt())
+                    .reviewCnt(c.getReviewCnt())
+                    .tags(tagList)
+                    .userName(c.getCodeWriter().getName())
+                    .liked(liked)
+                    .build()
+            );
+        }
+        return codeInfoRes;
     }
 
     private static List<String> getTagNames(Codes code) {
