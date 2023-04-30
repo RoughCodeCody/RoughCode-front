@@ -3,7 +3,7 @@ import { create } from "zustand";
 type SearchCriteria = {
   keyword: string;
   tagIdList: number[];
-  closed: boolean;
+  closed: 0 | 1;
   sort: "modifiedDate" | "likeCnt" | "feedbackCnt";
   page: number;
   size: number;
@@ -11,7 +11,7 @@ type SearchCriteria = {
 
 type SearchCriteriaStore = {
   searchCriteria: SearchCriteria;
-  setClosedValue: (closed: boolean) => void;
+  setClosedValue: (closed: 0 | 1) => void;
   setSort: (sortOption: string) => void;
   addTagId: (tagId: number) => void;
   deleteTagId: (tagId: number) => void;
@@ -21,7 +21,7 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
   searchCriteria: {
     keyword: "",
     tagIdList: [],
-    closed: true,
+    closed: 1,
     sort: "modifiedDate",
     page: 0,
     size: 9,

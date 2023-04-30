@@ -37,8 +37,6 @@ export const Projects = () => {
         </FlexDiv>
         <ProjectList />
       </FlexDiv>
-      <Search />
-      <ProjectList />
     </FlexDiv>
   );
 };

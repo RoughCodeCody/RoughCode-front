@@ -10,13 +10,13 @@ export const SwitchDemo = () => {
       <div style={{ display: "flex", alignItems: "center" }}>
         <Label className="Label" style={{ paddingRight: 15 }}>
           <Text size="1.1rem" color="font">
-            {searchCriteria.closed ? "전체 게시물" : "열린 게시물"}
+            {searchCriteria.closed === 1 ? "전체 게시물" : "열린 게시물"}
           </Text>
         </Label>
         <SwitchRoot
           id="airplane-mode"
           onClick={() => {
-            setClosedValue(!searchCriteria.closed);
+            setClosedValue(searchCriteria.closed === 1 ? 0 : 1);
           }}
         >
           <SwitchThumb className="SwitchThumb" />

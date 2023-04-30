@@ -1,4 +1,4 @@
-export type ProjectList = {
+export type ProjectsList = {
   projectId: number;
   version: number;
   title: String;
@@ -11,7 +11,7 @@ export type ProjectList = {
   closed: Boolean;
 };
 
-export type CodeList = {
+export type CodesList = {
   codesId: number;
   title: String;
   createdDate: Date;
