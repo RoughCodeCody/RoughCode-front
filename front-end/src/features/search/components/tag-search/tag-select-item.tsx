@@ -1,4 +1,5 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
+import { useSearchCriteriaStore } from "@/stores";
 
 const BorderLineDiv = styled.div`
   width: 100%;
@@ -18,19 +19,23 @@ const TagText = styled.span`
 `;
 
 interface TagType {
-  tag: string;
-  selectedTags: string[];
-  setSelectedTags: (newData: string[]) => void;
+  tagId?: number;
+  name: string;
+  cnt?: number;
 }
 
-export const TagSelectItem = ({
-  tag,
-  selectedTags,
-  setSelectedTags,
-}: TagType) => {
+export const TagSelectItem = ({ tagId, name, cnt }: TagType) => {
+  const { searchCriteria, addTagId } = useSearchCriteriaStore();
+
+  const handleClick = () => {
+    if (tagId) {
+      addTagId({ tagId, name });
+    }
+  };
+
   return (
-    <BorderLineDiv onClick={() => setSelectedTags([...selectedTags, tag])}>
-      <TagText>{tag}</TagText>
+    <BorderLineDiv onClick={handleClick}>
+      <TagText>{name}</TagText>
     </BorderLineDiv>
   );
 };

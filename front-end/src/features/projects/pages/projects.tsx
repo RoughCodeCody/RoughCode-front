@@ -8,6 +8,7 @@ import { SwitchDemo } from "@/features/search/components/switch";
 
 export const Projects = () => {
   const sortOptions = ["최신순", "좋아요순", "리뷰순"];
+
   return (
     <FlexDiv
       direction="column"
@@ -15,6 +16,7 @@ export const Projects = () => {
       justify="center"
       gap="4rem"
       overflow="hidden"
+      height="100%"
     >
       <BottomHeader locations={["프로젝트"]} />
       <FlexDiv
@@ -30,7 +32,13 @@ export const Projects = () => {
         />
       </FlexDiv>
       <Search />
-      <FlexDiv width="100%" maxWidth="1440px" direction="column" gap="1.7rem">
+      <FlexDiv
+        width="100%"
+        height="100%"
+        maxWidth="1440px"
+        direction="column"
+        gap="1.7rem"
+      >
         <FlexDiv width="100%" justify="end" gap="2rem" paddingX="5rem">
           <SwitchDemo />
           <DropLabel sortOptions={sortOptions} />

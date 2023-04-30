@@ -1,8 +1,13 @@
 import { create } from "zustand";
 
+type Tag = {
+  tagId: number;
+  name: string;
+};
+
 type SearchCriteria = {
   keyword: string;
-  tagIdList: number[];
+  tagIdList: Tag[];
   closed: 0 | 1;
   sort: "modifiedDate" | "likeCnt" | "feedbackCnt";
   page: number;
@@ -13,18 +18,18 @@ type SearchCriteriaStore = {
   searchCriteria: SearchCriteria;
   setClosedValue: (closed: 0 | 1) => void;
   setSort: (sortOption: string) => void;
-  addTagId: (tagId: number) => void;
-  deleteTagId: (tagId: number) => void;
+  addTagId: (Tag: Tag) => void;
+  deleteTagId: (TagId: number) => void;
 };
 
 export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
   searchCriteria: {
-    keyword: "",
-    tagIdList: [],
-    closed: 1,
     sort: "modifiedDate",
     page: 0,
     size: 9,
+    keyword: "",
+    tagIdList: [],
+    closed: 1,
   },
   setClosedValue: (ClosedValue) => {
     // 전체 프로젝트 보기, 열린 프로젝트만 보기
@@ -53,25 +58,28 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
       },
     }));
   },
-  addTagId: (tagId) => {
+  addTagId: (Tag) => {
     // 이미 있는 태그는 추가하지 않음
     set((state) => {
-      if (state.searchCriteria.tagIdList.includes(tagId)) return state;
+      if (state.searchCriteria.tagIdList.find((el) => el.tagId === Tag.tagId))
+        return state;
       else
         return {
           searchCriteria: {
             ...state.searchCriteria,
             keyword: "",
-            tagIdList: [...state.searchCriteria.tagIdList, tagId],
+            tagIdList: [...state.searchCriteria.tagIdList, Tag],
           },
         };
     });
   },
-  deleteTagId: (tagId) => {
+  deleteTagId: (TagId) => {
     // 선택된 태그에서 제거
     set((state) => {
-      let newTagIdList: number[];
-      newTagIdList = state.searchCriteria.tagIdList.filter((id) => id != tagId);
+      let newTagIdList: Tag[];
+      newTagIdList = state.searchCriteria.tagIdList.filter(
+        (item) => item.tagId != TagId
+      );
       return {
         searchCriteria: {
           ...state.searchCriteria,

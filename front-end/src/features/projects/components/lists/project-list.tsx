@@ -33,12 +33,13 @@ export const ProjectList = () => {
 
   const usingKeyword = keyword.length === 0 ? undefined : keyword;
   const stringTagIdList =
-    tagIdList.length === 0 ? undefined : tagIdList.join(",");
+    tagIdList.length === 0
+      ? undefined
+      : tagIdList.map((tag) => tag.tagId).join(",");
 
   const fetchProjects = async ({ pageParam = 0 }) => {
     const res = await axios.get(
       "http://k8a306.p.ssafy.io:8081/api/v1/project?_page=" + pageParam,
-
       {
         params: {
           sort: sort,
@@ -63,11 +64,16 @@ export const ProjectList = () => {
     }
   );
 
+  // 조건이 바뀌면 query데이터 모두 삭제하고 새로운 데이터로 갈아치움
   useEffect(() => {
+    queryClient.removeQueries(["projects"]);
+    // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
     return () => {
       queryClient.removeQueries(["projects"]);
     };
-  }, []);
+  }, [sort, size, usingKeyword, stringTagIdList, closed]);
+
+  // 스크롤 트리거
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage();
@@ -75,17 +81,17 @@ export const ProjectList = () => {
   }, [inView]);
 
   return (
-    <FlexDiv width="100%" direction="column">
+    <FlexDiv height="100%" width="100%" direction="column">
       {status === "loading" && <p>Loading...</p>}
       {status === "success" && (
         <>
           {console.log(data)}
           {data.pages.map((page) => (
-            <ProjectCardGrid key={page.nextId}>
+            <ProjectCardGrid key={page.result.nextPage}>
               {page.result.list.map(
                 (project: ProjectCardProps, index: number) => (
                   <FlexDiv
-                    key={index}
+                    key={project.projectId}
                     ref={index === 0 ? ref : undefined}
                     justify="center"
                   >
@@ -100,8 +106,3 @@ export const ProjectList = () => {
     </FlexDiv>
   );
 };
-
-// 1. 우리 서버와 무한스크롤을 연동함
-// 2. bulletproof의 방식을 따르진 못함
-// 3. 다른 페이지 갔다가 다시 돌아오면 여전히 그 데이터가 남아있고 새로 데이터를 불러옴
-// 4. 효율적인 방법인지는 모르겠지만 언마운트될 때 해당 쿼리키의 캐싱값을 제거했음

@@ -3,31 +3,31 @@ import { useQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 
-import { Comment } from "../types";
+import { Tag } from "../types";
 
-export const getComments = ({
-  discussionId,
+export const getTags = ({
+  tagKeyword,
 }: {
-  discussionId: string;
-}): Promise<Comment[]> => {
-  return axios.get(`/comments`, {
+  tagKeyword: string;
+}): Promise<Tag[]> => {
+  return axios.get(`/project/tag`, {
     params: {
-      discussionId,
+      keyword: tagKeyword,
     },
   });
 };
 
-type QueryFnType = typeof getComments;
+type QueryFnType = typeof getTags;
 
-type UseCommentsOptions = {
-  discussionId: string;
+type UseTagsOptions = {
+  tagKeyword: string;
   config?: QueryConfig<QueryFnType>;
 };
 
-export const useComments = ({ discussionId, config }: UseCommentsOptions) => {
+export const useTags = ({ tagKeyword, config }: UseTagsOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ["comments", discussionId],
-    queryFn: () => getComments({ discussionId }),
+    queryKey: ["tags", tagKeyword],
+    queryFn: () => getTags({ tagKeyword }),
     ...config,
   });
 };

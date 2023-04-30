@@ -23,3 +23,10 @@ export type CodesList = {
   userName: String;
   liked: boolean;
 };
+
+export type Tag = {
+  result: object;
+  tagId: number;
+  name: String;
+  cnt: number;
+};
