@@ -1,19 +1,7 @@
 version: "3.8"
 
-services:
-  nginx:
-    restart: always
-    container_name: nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    networks:
-      - frontend
 
   frontend:
-    driver: bridge
     build:
       # 어디에서 도커를 시작할 것인가
       context: ./front-end
@@ -24,3 +12,15 @@ services:
       - 80:3000
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+  services:
+    nginx:
+      restart: always
+      container_name: nginx
+      build:
+        context: ./nginx
+        dockerfile: Dockerfile
+      ports:
+        - "3000:80"
+      networks:
+        - frontend
