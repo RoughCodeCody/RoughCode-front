@@ -7,7 +7,8 @@ type VersionInfoProps = {
   version: number;
   notice: string;
   current: boolean;
-  feedbacks: { user: string; content: string }[];
+  // feedbacks: { user: string; content: string }[];
+  feedbacks: number[];
 };
 
 export const VersionInfo = ({
