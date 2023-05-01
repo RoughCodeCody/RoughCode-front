@@ -340,10 +340,29 @@ public class ProjectsController {
         return Response.ok("프로젝트 정보 수정 성공");
     }
 
+    @Operation(summary = "이미지 등록 API")
+    @PostMapping(value = "/{projectId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<?> insertImage(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                             @Parameter(description = "등록할 project id", required = true) @PathVariable Long projectId,
+                                             @Parameter(description = "등록할 이미지", required = true) @RequestPart("image") MultipartFile image) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        String res = null;
+        try{
+            res = projectsService.insertImage(image, projectId, userId);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res == null) return Response.notFound("이미지 등록 실패");
+        return Response.makeResponse(HttpStatus.OK, "이미지 등록 성공", 1, res);
+    }
+
     @Operation(summary = "프로젝트 썸네일 등록/수정 API")
-    @PostMapping(value = "/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{projectId}/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> updateProjectThumbnail(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                    @Parameter(description = "등록할 project id", required = true) @RequestParam("projectId") Long projectId,
+                                    @Parameter(description = "등록할 project id", required = true) @PathVariable Long projectId,
                                     @Parameter(description = "등록할 썸네일", required = true) @RequestPart("thumbnail") MultipartFile thumbnail) {
         Long userId = jwtTokenProvider.getId(accessToken);
 //        Long userId = 1L;
@@ -356,7 +375,7 @@ public class ProjectsController {
             return Response.badRequest(e.getMessage());
         }
 
-        if(res == 0) return Response.notFound("프로젝트 썸네일 등록 실패");
+        if(res <= 0) return Response.notFound("프로젝트 썸네일 등록 실패");
         return Response.ok("프로젝트 썸네일 등록 성공");
     }
 

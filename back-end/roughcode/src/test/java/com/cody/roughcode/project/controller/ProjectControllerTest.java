@@ -87,7 +87,7 @@ public class ProjectControllerTest {
             .notice("notice")
             .build();
 
-    private static MockMultipartFile getThumbnail() throws IOException {
+    private static MockMultipartFile getImage() throws IOException {
         File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
         byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
         MockMultipartFile thumbnail = new MockMultipartFile(
@@ -118,6 +118,58 @@ public class ProjectControllerTest {
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("이미지 등록 성공")
+    @Test
+    public void insertImageSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/image";
+        final Long projectId = 1L;
+        MockMultipartFile image = getImage();
+
+        doReturn("imageUrl").when(projectsService).insertImage(any(MultipartFile.class), any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.multipart(url, projectId)
+                        .file("image", image.getBytes())
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("이미지 등록 성공");
+    }
+
+    @DisplayName("이미지 등록 실패")
+    @Test
+    public void insertImageFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/image";
+        final Long projectId = 1L;
+        MockMultipartFile image = getImage();
+
+        doReturn(null).when(projectsService).insertImage(any(MultipartFile.class), any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.multipart(url, projectId)
+                        .file("image", image.getBytes())
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("이미지 등록 실패");
+    }
 
     @DisplayName("피드백 좋아요 또는 취소 성공")
     @Test
@@ -1035,18 +1087,17 @@ public class ProjectControllerTest {
     @Test
     public void updateProjectThumbnailSucceed() throws Exception {
         // given
-        final String url = "/api/v1/project/thumbnail";
+        final String url = "/api/v1/project/{projectId}/thumbnail";
         final Long projectId = 1L;
-        MockMultipartFile thumbnail = getThumbnail();
+        MockMultipartFile thumbnail = getImage();
 
         // ProjectsService updateProjectThumbnail 대한 stub 필요
         doReturn(1).when(projectsService).updateProjectThumbnail(any(MultipartFile.class), any(Long.class), any(Long.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.multipart(url)
+                MockMvcRequestBuilders.multipart(url, projectId)
                         .file(thumbnail)
-                        .param("projectId", String.valueOf(projectId))
                         .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
         );
 
@@ -1063,28 +1114,27 @@ public class ProjectControllerTest {
     @Test
     public void updateProjectThumbnailFail() throws Exception {
         // given
-        final String url = "/api/v1/project/thumbnail";
+        final String url = "/api/v1/project/{projectId}/thumbnail";
         final Long projectId = 1L;
-        MockMultipartFile thumbnail = getThumbnail();
+        MockMultipartFile thumbnail = getImage();
 
         // ProjectsService updateProjectThumbnail 대한 stub 필요
         doReturn(-1).when(projectsService).updateProjectThumbnail(any(MultipartFile.class), any(Long.class), any(Long.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.multipart(url)
+                MockMvcRequestBuilders.multipart(url, projectId)
                         .file(thumbnail)
-                        .param("projectId", String.valueOf(projectId))
                         .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
         );
 
         // then
         // HTTP Status가 OK인지 확인
-        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
         String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
-        assertThat(message).isEqualTo("프로젝트 썸네일 등록 성공");
+        assertThat(message).isEqualTo("프로젝트 썸네일 등록 실패");
     }
 
     @DisplayName("프로젝트 정보 등록 성공")

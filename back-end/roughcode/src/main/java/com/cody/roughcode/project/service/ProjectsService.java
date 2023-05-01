@@ -8,6 +8,7 @@ import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.List;
 public interface ProjectsService {
     Long insertProject(ProjectReq req, Long usersId);
     int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId);
+    String insertImage(MultipartFile image, Long projectsId, Long usersId);
     int updateProject(ProjectReq req, Long usersId);
     int connect(Long projectsId, Long usersId, List<Long> codesIdList);
     int deleteProject(Long projectsId, Long usersId);

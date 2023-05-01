@@ -119,7 +119,7 @@ public class ProjectServiceTest {
             .content("content")
             .build();
 
-    private static MockMultipartFile getThumbnail() throws IOException {
+    private static MockMultipartFile getImage() throws IOException {
         File imageFile = new File("src/test/java/com/cody/roughcode/resources/image/A306_ERD (2).png");
         byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
         return new MockMultipartFile(
@@ -184,6 +184,95 @@ public class ProjectServiceTest {
         return codeList;
     }
 
+    @DisplayName("이미지 등록 성공")
+    @Test
+    void insertImageSucceed() throws IOException {
+        // given
+        MockMultipartFile image = getImage();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn("imageUrl").when(s3FileService).upload(any(MultipartFile.class), any(String.class), any(String.class));
+
+        // when
+        String imageUrl = projectsService.insertImage(image, 1L, 1L);
+
+        // then
+        assertThat(imageUrl).isEqualTo("imageUrl");
+    }
+
+    @DisplayName("이미지 등록 실패 - 존재하지 않는 유저 아이디")
+    @Test
+    void insertImageFailNoUser() throws IOException {
+        // given
+        MockMultipartFile thumbnail = getImage();
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.insertImage(thumbnail, 1L, 1L)
+        );
+
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("이미지 등록 실패 - 이미지가 등록되어있지 않음")
+    @Test
+    void insertImageFailNoThumbnail() throws IOException {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.insertImage(null, 1L, 1L)
+        );
+
+        assertEquals("이미지가 등록되어있지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("이미지 등록 실패 - 일치하는 프로젝트가 없음")
+    @Test
+    void insertImageFailNoProject() throws IOException {
+        MockMultipartFile image = getImage();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.insertImage(image, 1L, 1L)
+        );
+
+        assertEquals("일치하는 프로젝트가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("이미지 등록 실패 - 등록하려는 유저와 프로젝트의 유저가 일치하지 않음")
+    @Test
+    void insertImageFailUserDiffer() throws IOException {
+
+        MockMultipartFile image = getImage();
+        Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .projectsCodes(new ArrayList<>())
+                .build();
+
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.insertImage(image, 1L, 1L)
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+    
     @DisplayName("피드백 좋아요 등록 성공")
     @Test
     void feedbackLikeSucceed(){
@@ -1767,7 +1856,7 @@ public class ProjectServiceTest {
     @Test
     void updateProjectThumbnailSucceed() throws IOException {
         // given
-        MockMultipartFile thumbnail = getThumbnail();
+        MockMultipartFile thumbnail = getImage();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
@@ -1785,7 +1874,7 @@ public class ProjectServiceTest {
     @Test
     void updateProjectThumbnailFailNoUser() throws IOException {
         // given
-        MockMultipartFile thumbnail = getThumbnail();
+        MockMultipartFile thumbnail = getImage();
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
 
         // when & then
@@ -1813,7 +1902,7 @@ public class ProjectServiceTest {
     @DisplayName("프로젝트 썸네일 등록 실패 - 일치하는 프로젝트가 없음")
     @Test
     void updateProjectThumbnailFailNoProject() throws IOException {
-        MockMultipartFile thumbnail = getThumbnail();
+        MockMultipartFile thumbnail = getImage();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
@@ -1830,7 +1919,7 @@ public class ProjectServiceTest {
     @Test
     void updateProjectThumbnailFailUserDiffer() throws IOException {
 
-        MockMultipartFile thumbnail = getThumbnail();
+        MockMultipartFile thumbnail = getImage();
         Projects project = Projects.builder()
                 .projectsId(1L)
                 .num(1L)
