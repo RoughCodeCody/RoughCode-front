@@ -1,11 +1,10 @@
 package com.cody.roughcode.user.service;
 
-import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.S3FailedException;
 import com.cody.roughcode.user.dto.req.UserReq;
 import com.cody.roughcode.user.dto.res.UserResp;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
-import com.cody.roughcode.util.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,7 @@ public class UsersServiceImpl implements UsersService{
             }
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new SaveFailedException(e.getMessage());
+            throw new S3FailedException(e.getMessage());
         }
     }
 

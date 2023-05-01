@@ -84,7 +84,7 @@ public class ProjectServiceTest {
     final Users users = Users.builder()
             .usersId(1L)
             .email("kosy1782@gmail.com")
-            .name("고수")
+            .name("kosy318")
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
 
@@ -182,6 +182,65 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("이미지 삭제 성공")
+    @Test
+    void deleteImageSucceed(){
+        // given
+        String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_1_2023-05-01%2014%3A29%3A07";
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when
+        int res = projectsService.deleteImage(imgUrl, project.getProjectsId(), users.getUsersId());
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("이미지 삭제 실패 - 일치하는 유저 없음")
+    @Test
+    void deleteImageFailNoUser(){
+        // given
+        String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_1_2023-05-01%2014%3A29%3A07";
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.deleteImage(imgUrl, project.getProjectsId(), users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @DisplayName("이미지 삭제 실패 - 일치하는 프로젝트 없음")
+    @Test
+    void deleteImageFailNoProject(){
+        // given
+        String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_1_2023-05-01%2014%3A29%3A07";
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.deleteImage(imgUrl, project.getProjectsId(), users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 프로젝트가 존재하지 않습니다");
+    }
+
+    @DisplayName("이미지 삭제 실패 - 이미지가 프로젝트 정보와 일치하지 않음")
+    @Test
+    void deleteImageFail(){
+        // given
+        String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_2_2023-05-01%2014%3A29%3A07";
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> projectsService.deleteImage(imgUrl, project.getProjectsId(), users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("접근 권한이 없습니다");
     }
 
     @DisplayName("이미지 등록 성공")

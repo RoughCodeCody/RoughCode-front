@@ -5,7 +5,7 @@ import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.S3FailedException;
 import com.cody.roughcode.project.entity.CodeFavorites;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
@@ -15,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,7 +180,7 @@ public class CodesServiceImpl implements CodesService {
 
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new SaveFailedException(e.getMessage());
+            throw new S3FailedException(e.getMessage());
         }
 
         return codeId;

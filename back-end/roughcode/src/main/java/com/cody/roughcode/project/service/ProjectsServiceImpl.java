@@ -6,7 +6,7 @@ import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
-import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.S3FailedException;
 import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.dto.req.FeedbackReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -178,7 +180,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectsInfoRepository.save(info);
         } catch(Exception e){
             log.error(e.getMessage());
-            throw new SaveFailedException(e.getMessage());
+            throw new S3FailedException(e.getMessage());
         }
 
         // 알람들 저장
@@ -228,7 +230,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectsRepository.save(project);
         } catch(Exception e){
             log.error(e.getMessage());
-            throw new SaveFailedException(e.getMessage());
+            throw new S3FailedException(e.getMessage());
         }
 
         return 1;
@@ -258,7 +260,39 @@ public class ProjectsServiceImpl implements ProjectsService{
             return s3FileService.upload(image, "project/content", fileName);
         } catch(Exception e){
             log.error(e.getMessage());
-            throw new SaveFailedException(e.getMessage());
+            throw new S3FailedException(e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public int deleteImage(String imgUrl, Long projectsId, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        Projects project = projectsRepository.findByProjectsId(projectsId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
+
+        String pattern = "(_[0-9]{4}-[0-9]{2}-[0-9]{2}(\\s|%20)[0-9]{2}(%3A|:)[0-9]{2}(%3A|:)[0-9]{2})";
+
+        Pattern regex = Pattern.compile(pattern);
+        List<String> fileName = List.of(imgUrl.split("/"));
+        Matcher matcher = regex.matcher(fileName.get(fileName.size() - 1));
+
+        if (matcher.find()) {
+            String projectString = (fileName.get(fileName.size() - 1)).replace(matcher.group(1), "");
+            Long projectNum = project.getNum();
+            int projectVersion = project.getVersion();
+
+            if(!projectString.equals(user.getName() + "_" + projectNum + "_" + projectVersion)) throw new NotMatchException();
+        }
+        try{
+            s3FileService.delete(imgUrl);
+            return 1;
+        } catch(Exception e){
+            log.error(e.getMessage());
+            throw new S3FailedException(e.getMessage());
         }
     }
 
@@ -386,6 +420,9 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(originalInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         projectsInfoRepository.delete(originalInfo);
 
+        Long projectNum = target.getNum();
+        int projectVersion = target.getVersion();
+
         if(target.getProjectsCodes() != null)
             for (Codes code : target.getProjectsCodes()) {
                 code.setProject(null);
@@ -417,6 +454,8 @@ public class ProjectsServiceImpl implements ProjectsService{
         else log.info("기존에 선택하였던 feedback이 없습니다");
 
         projectsRepository.delete(target);
+
+        s3FileService.deleteAll("project/content/" + user.getName() + "_" + projectNum + "_" + projectVersion);
 
         return 1;
     }
