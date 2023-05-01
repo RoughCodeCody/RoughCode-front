@@ -510,7 +510,37 @@ public class ProjectsServiceImpl implements ProjectsService{
 
             project.likeCntUp();
             projectsRepository.save(project);
+            return 1;
+        }
+    }
 
+    @Override
+    public int favoriteProject(Long projectsId, String content, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Projects project = projectsRepository.findByProjectsId(projectsId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
+        if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        // 이미 즐겨찾기 한 프로젝트인지 확인
+        ProjectFavorites projectFavorites = projectFavoritesRepository.findByProjectsAndUsers(project, users);
+        if(projectFavorites != null) { // 즐겨찾기 취소
+            projectFavoritesRepository.delete(projectFavorites);
+
+            projectsInfo.favoriteCntDown();
+            projectsInfoRepository.save(projectsInfo);
+            return 0;
+        }
+        else{ // 프로젝트 즐겨찾기
+            projectFavoritesRepository.save(ProjectFavorites.builder()
+                    .projects(project)
+                    .users(users)
+                    .content((content == null)? "" : content)
+                    .build());
+
+            projectsInfo.favoriteCntUp();
+            projectsInfoRepository.save(projectsInfo);
             return 1;
         }
     }
