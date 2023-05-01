@@ -128,4 +128,25 @@ public class CodesController {
         return Response.makeResponse(HttpStatus.OK, "코드 정보 수정 성공", 1, res);
 
     }
+
+    @Operation(summary = "코드 정보 삭제 API")
+    @DeleteMapping("/{codeId}")
+    ResponseEntity<?> updateCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = codesService.deleteCode(codeId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res <= 0) {
+            return Response.notFound("코드 정보 삭제 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 정보 삭제 성공", 1, res);
+
+    }
 }
