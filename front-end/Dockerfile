@@ -31,7 +31,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN \
   if [ -f yarn.lock ]; then yarn build; \
   elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then pnpm build; \
+  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm build; \
   else yarn build; \
   fi
 

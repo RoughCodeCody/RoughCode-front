@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      # 어디에서 도커를 시작할 것인가
+      context: ./front-end
+      dockerfile: Dockerfile
+    image: frontend
+    restart: always
+    ports:
+      - 80:3000
