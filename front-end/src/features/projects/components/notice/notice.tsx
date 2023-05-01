@@ -1,30 +1,32 @@
+import dayjs from "dayjs";
+
 import { NoticeAlarmItem, Text } from "@/components/elements";
-import { VersionDropdown } from "./version-dropdown";
+
+import { Versions } from "../../types";
 import { NoticeContent, NoticeTimeWrapper } from "./style";
+import { VersionDropdown } from "./version-dropdown";
 
-export const Notice = () => {
-  //더미데이터
-  const noticeContent = "프로젝트 및 코드 즐겨찾기 기능이 추가되었습니다!";
-  const currentVersion = "V2";
-  const currentVersionCreatedAt = "23.03.02 13:00";
-  const versions = [
-    { version: "V2", createdAt: "23.03.02 13:00" },
-    { version: "V1", createdAt: "23.03.01 13:00" },
-  ];
+type NoticeProps = {
+  notice: string;
+  version: number;
+  date: Date;
+  versions: Versions;
+};
 
+export const Notice = ({ notice, version, date, versions }: NoticeProps) => {
   return (
     <NoticeAlarmItem>
-      <VersionDropdown currentVersion={currentVersion} versions={versions} />
+      <VersionDropdown currentVersion={version} versions={versions} />
 
       <NoticeContent>
         <Text size="1.2rem" bold={true}>
-          {noticeContent}
+          {notice}
         </Text>
       </NoticeContent>
 
       <NoticeTimeWrapper>
-        <Text size="0.8rem">{currentVersionCreatedAt.split(" ")[0]}</Text>
-        <Text size="0.8rem">{currentVersionCreatedAt.split(" ")[1]}</Text>
+        <Text size="0.8rem">{dayjs(date).format("YY.MM.DD")}</Text>
+        <Text size="0.8rem">{dayjs(date).format("HH:MM")}</Text>
       </NoticeTimeWrapper>
     </NoticeAlarmItem>
   );

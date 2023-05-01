@@ -89,8 +89,8 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
 
       <WhiteBoxNoshad width="65%" padding="2.25rem">
         <ProjectInfo data={data.result} />
-        <VersionsInfo />
-        <ProjectDescription />
+        <VersionsInfo versions={versions} curVersionId={projectId} />
+        <ProjectDescription content={content} />
         <RelatedCodes />
       </WhiteBoxNoshad>
 
