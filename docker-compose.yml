@@ -1,6 +1,6 @@
 version: "3.8"
 
-
+services:
   frontend:
     build:
       # 어디에서 도커를 시작할 것인가
@@ -13,14 +13,16 @@ version: "3.8"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
-  services:
-    nginx:
-      restart: always
-      container_name: nginx
-      build:
-        context: ./nginx
-        dockerfile: Dockerfile
-      ports:
-        - "3000:80"
-      networks:
-        - frontend
+  nginx:
+    restart: always
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - frontend
+
+networks:
+  frontend:
