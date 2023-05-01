@@ -38,8 +38,27 @@ public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
 
+    @Operation(summary = "프로젝트 즐겨찾기 등록 또는 취소 API")
+    @PostMapping("/{projectId}/favorite")
+    ResponseEntity<?> favoriteProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                      @Parameter(description = "즐겨찾기 내용") @RequestBody String content,
+                                      @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+
+        int res = -1;
+        try {
+            res = projectsService.favoriteProject(projectId, content, usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res < 0) return Response.notFound("프로젝트 즐겨찾기 등록 또는 취소 실패");
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 즐겨찾기 등록 또는 취소 성공", 1, res);
+    }
+
     @Operation(summary = "프로젝트 좋아요 또는 취소 API")
-    @PutMapping("/{projectId}/like")
+    @PostMapping("/{projectId}/like")
     ResponseEntity<?> likeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                   @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
