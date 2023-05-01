@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   FlexDiv,
   Nickname,
@@ -6,24 +7,38 @@ import {
   Text,
   Count,
 } from "@/components/elements";
+
 import { UrlApkBtn } from "./style";
 
-export const ProjectInfo = () => {
-  // 더미데이터
-  const title = "개발새발";
-  const url = "https://rough-code.com";
-  const nickname = "닉네임";
-  const defaultLikeCnt = 1;
-  const defaultIsLiked = true;
-  const defaultBMCnt = 0;
-  const defaultIsBookmarked = false;
-  const tagList = ["next.js", "spring boot"];
+type ProjectInfoProps = {
+  data: {
+    title: string;
+    url: string;
+    liked: boolean;
+    likeCnt: number;
+    favorite: boolean;
+    favoriteCnt: number;
+    tags: string[];
+  };
+};
 
-  const [isLiked, setisLiked] = useState<boolean>(defaultIsLiked);
-  const [likeCnt, setLikeCnt] = useState<number>(defaultLikeCnt);
-  const [isBookmarked, setIsBookmarked] =
-    useState<boolean>(defaultIsBookmarked);
-  const [bookmarkCnt, setBookmarkCnt] = useState<number>(defaultBMCnt);
+export const ProjectInfo = ({
+  data: { title, url, liked, likeCnt, favorite, favoriteCnt, tags },
+}: ProjectInfoProps) => {
+  // 더미데이터
+  // const title = "개발새발";
+  // const url = "https://rough-code.com";
+  const nickname = "닉네임";
+  // const defaultLikeCnt = 1;
+  // const defaultIsLiked = true;
+  // const defaultBMCnt = 0;
+  // const defaultIsBookmarked = false;
+  // const tagList = ["next.js", "spring boot"];
+
+  const [isLiked, setisLiked] = useState(liked);
+  const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
+  const [isBookmarked, setIsBookmarked] = useState(favorite);
+  const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
 
   return (
     <>
@@ -38,8 +53,8 @@ export const ProjectInfo = () => {
           <FlexDiv>
             <Count
               type="like"
-              cnt={likeCnt}
-              setCnt={setLikeCnt}
+              cnt={newLikeCnt}
+              setCnt={setNewLikeCnt}
               isChecked={isLiked}
               setIsChecked={setisLiked}
             />
@@ -53,7 +68,7 @@ export const ProjectInfo = () => {
           </FlexDiv>
         </FlexDiv>
         <FlexDiv width="100%" justify="start">
-          {tagList.map((val, idx) => (
+          {tags.map((val, idx) => (
             <TagChipSub tag={val} key={idx} />
           ))}
         </FlexDiv>

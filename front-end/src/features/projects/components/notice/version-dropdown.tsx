@@ -1,5 +1,9 @@
+import dayjs from "dayjs";
 import { useState } from "react";
+
 import { DropdownArrow, FlexDiv, Text } from "@/components/elements";
+
+import { Versions } from "../../types";
 import {
   VersionDropdownWrapper,
   DropdownContentWrapper,
@@ -10,8 +14,8 @@ import {
 } from "./style";
 
 type VersionDropdownProps = {
-  currentVersion: string;
-  versions: { version: string; createdAt: string }[];
+  currentVersion: number;
+  versions: Versions;
 };
 
 export const VersionDropdown = ({
@@ -24,7 +28,7 @@ export const VersionDropdown = ({
     <VersionDropdownWrapper>
       <FlexDiv gap="1.5rem">
         <Text color="main" size="1.5rem">
-          {currentVersion}
+          {`V${currentVersion}`}
         </Text>
         <DropdownArrow
           onClick={() => setVersionsOpen((prev) => !prev)}
@@ -36,14 +40,14 @@ export const VersionDropdown = ({
       {versionsOpen && (
         <DropdownContentWrapper>
           <DropdownContent data-isOpen={versionsOpen}>
-            {versions.map(({ version, createdAt }, idx) => (
-              <DropdownItem key={idx}>
+            {versions.map(({ version, date, projectId }) => (
+              <DropdownItem key={projectId}>
                 <Text size="1.5rem" pointer={true}>
-                  {version}
+                  {`V${version}`}
                 </Text>
                 <NoticeTimeWrapper>
-                  <NoticeTime>{createdAt.split(" ")[0]}</NoticeTime>
-                  <NoticeTime>{createdAt.split(" ")[1]}</NoticeTime>
+                  <NoticeTime>{dayjs(date).format("YY.MM.DD")}</NoticeTime>
+                  <NoticeTime>{dayjs(date).format("HH:MM")}</NoticeTime>
                 </NoticeTimeWrapper>
               </DropdownItem>
             ))}

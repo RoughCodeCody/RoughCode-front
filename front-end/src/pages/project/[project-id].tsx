@@ -1,8 +1,17 @@
-import { NextPage } from "next";
+import { NextPage, GetServerSideProps } from "next";
 import { ProjectDetail } from "@/features/projects";
 
-const ProjectDetailPage: NextPage = () => {
-  return <ProjectDetail />;
+const ProjectDetailPage: NextPage<{ projectId: string }> = ({ projectId }) => {
+  return <ProjectDetail projectId={projectId} />;
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  // console.log("serverside", params);
+  return {
+    props: {
+      projectId: params?.["project-id"],
+    },
+  };
 };
 
 // // This function gets called at build time
