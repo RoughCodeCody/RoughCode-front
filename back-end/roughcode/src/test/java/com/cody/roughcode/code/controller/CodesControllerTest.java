@@ -67,12 +67,19 @@ class CodesControllerTest {
             .projectId(1L)
             .build();
 
-    // given
     Users users = Users.builder()
             .usersId(1L)
             .email("cody306@gmail.com")
             .name("코디")
             .roles(List.of(String.valueOf(ROLE_USER)))
+            .build();
+
+    CodeReq req2 = CodeReq.builder()
+            .title("개발새발 코드2")
+            .selectedTagsId(List.of(1L, 2L))
+            .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
+            .content("시간초과 뜹니다!!!!")
+            .projectId(3L)
             .build();
 
     @DisplayName("코드 목록 조회 성공")
@@ -227,5 +234,61 @@ class CodesControllerTest {
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
         assertThat(message).isEqualTo("코드 상세 조회 실패");
+    }
+
+    @DisplayName("코드 정보 수정 성공")
+    @Test
+    public void updateCodeSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}";
+
+        // CodeService updateCode 대한 stub 필요
+        doReturn(1).when(codesService)
+                .updateCode(any(CodeReq.class), any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req2))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 정보 수정 성공");
+    }
+
+    @DisplayName("코드 정보 수정 실패")
+    @Test
+    public void updateCodeFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}";
+
+        // CodeService insertCode 대한 stub 필요
+        doReturn(0).when(codesService)
+                .updateCode(any(CodeReq.class), any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 NotFound인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 정보 수정 실패");
     }
 }

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -315,4 +316,83 @@ class CodesServiceTest {
         assertThat(success.getVersions().size()).isEqualTo(2);
     }
 
+    @DisplayName("코드 수정 성공")
+    @Test
+    void updateCodeSucceed() {
+        // given
+        List<CodeTags> tagsList = tagsInit();
+        CodeReq req = CodeReq.builder()
+                .codeId(1L)
+                .title("개발새발 코드")
+                .selectedTagsId(List.of(1L))
+                .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
+                .content("시간초과 뜹니다")
+                .projectId(1L)
+                .selectedTagsId(List.of(1L, 2L))
+                .selectedReviewsId(List.of(1L, 2L))
+                .build();
+        CodeSelectedTags selectedTags = CodeSelectedTags.builder()
+                .tags(tagsList.get(0))
+                .codes(code)
+                .build();
+        Reviews review = Reviews.builder()
+                .reviewsId(1L)
+                .users(user)
+                .codes(code)
+                .lineNumbers("1,3,4,5")
+                .codeContent("리뷰리뷰")
+                .content("최소힙을 사용해보세요.")
+                .build();
+        SelectedReviews selectedReviews = SelectedReviews.builder()
+                .selectedReviewsId(1L)
+                .reviews(review)
+                .codes(code)
+                .build();
+
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
+        doReturn(tagsList).when(codeTagsRepository).findByTagsIdIn(Mockito.<Long>anyList());
+        doReturn(List.of(review)).when(reviewsRepository).findByReviewsIdIn(Mockito.<Long>anyList());
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+
+        // when
+        int res = codesService.updateCode(req, 1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("코드 수정 실패 - 코드 작성자와 수정을 시도하는 사용자가 다름")
+    @Test
+    void updateCodeFailUserDiffer() {
+        // given
+        CodeReq req2 = CodeReq.builder()
+                .codeId(1L)
+                .title("개발새발 코드2")
+                .selectedTagsId(List.of(1L, 2L))
+                .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
+                .content("시간초과 뜹니다 22")
+                .projectId(1L)
+                .selectedTagsId(List.of(1L, 3L))
+                .selectedReviewsId(List.of(3L, 4L))
+                .build();
+        Codes original = Codes.builder()
+                .codesId(1L)
+                .num(1L)
+                .version(1)
+                .title("개발새발 코드")
+                .codeWriter(user2)
+                .build();
+
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(original).when(codesRepository).findLatestByCodesId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> codesService.updateCode(req2, 1L, 1L)
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
 }
