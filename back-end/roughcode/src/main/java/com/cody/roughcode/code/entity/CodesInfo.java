@@ -1,9 +1,6 @@
 package com.cody.roughcode.code.entity;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
-import com.cody.roughcode.project.entity.CodeFavorites;
-import com.cody.roughcode.project.entity.Projects;
-import com.cody.roughcode.project.entity.SelectedFeedbacks;
 import lombok.*;
 
 import javax.persistence.*;
