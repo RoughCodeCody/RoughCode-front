@@ -9,6 +9,10 @@ import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -100,6 +104,28 @@ public class CodesController {
             return Response.notFound("코드 상세 조회 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드 상세 조회 성공", 1, res);
+
+    }
+
+    @Operation(summary = "코드 정보 수정 API")
+    @PutMapping("/{codeId}")
+    ResponseEntity<?> updateCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId,
+                                 @Parameter(description = "코드 정보 값", required = true) @RequestBody CodeReq codeReq) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = codesService.updateCode(codeReq, codeId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res <= 0) {
+            return Response.notFound("코드 정보 수정 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 정보 수정 성공", 1, res);
 
     }
 }

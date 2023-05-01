@@ -16,4 +16,6 @@ public interface CodesService {
 
     CodeDetailRes getCode(Long codeId, Long userId);
 
+    int updateCode(CodeReq req, Long codeId, Long userId);
+
 }
