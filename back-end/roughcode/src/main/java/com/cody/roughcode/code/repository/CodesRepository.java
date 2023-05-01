@@ -2,7 +2,7 @@ package com.cody.roughcode.code.repository;
 
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.user.entity.Users;
-import org.aspectj.apache.bcel.classfile.Code;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +26,7 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
 
     List<Codes> findByNumAndCodeWriter(Long num, Users codeWriter);
 
+    @Query("SELECT c FROM Codes c WHERE c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter)) " +
+            "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%)")
+    Page<Codes> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }
