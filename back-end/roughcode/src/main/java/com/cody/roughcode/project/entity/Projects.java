@@ -106,4 +106,12 @@ public class Projects extends BaseTimeEntity {
     public void feedbackCntUp() {
         this.feedbackCnt += 1;
     }
+
+    public void likeCntUp() {
+        this.likeCnt += 1;
+    }
+
+    public void likeCntDown() {
+        this.likeCnt -= 1;
+    }
 }

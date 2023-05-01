@@ -487,6 +487,36 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
+    public int likeProject(Long projectsId, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Projects project = projectsRepository.findByProjectsId(projectsId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        // 이미 좋아요 한 프로젝트인지 확인
+        ProjectLikes projectLikes = projectLikesRepository.findByProjectsAndUsers(project, users);
+        if(projectLikes != null) { // 좋아요 취소
+            projectLikesRepository.delete(projectLikes);
+
+            project.likeCntDown();
+            projectsRepository.save(project);
+            return 0;
+        }
+        else{ // 프로젝트 좋아요
+            projectLikesRepository.save(ProjectLikes.builder()
+                    .projects(project)
+                    .users(users)
+                    .build());
+
+            project.likeCntUp();
+            projectsRepository.save(project);
+
+            return 1;
+        }
+    }
+
+    @Override
+    @Transactional
     public int insertFeedback(FeedbackReq req, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         Projects project = projectsRepository.findByProjectsId(req.getProjectId());
