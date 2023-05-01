@@ -76,6 +76,8 @@ public class ProjectServiceTest {
     private SelectedFeedbacksRepository selectedFeedbacksRepository;
     @Mock
     private ProjectFavoritesRepository projectFavoritesRepository;
+    @Mock
+    private ProjectLikesRepository projectLikesRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -172,6 +174,68 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("프로젝트 좋아요 등록 성공")
+    @Test
+    void projectLikeSucceed(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsId(1L);
+        doReturn(null).when(projectLikesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
+
+        // when
+        int likes = projectsService.likeProject(project.getProjectsId(), users.getUsersId());
+
+        // then
+        assertThat(likes).isEqualTo(1);
+    }
+
+    @DisplayName("프로젝트 좋아요 취소 성공")
+    @Test
+    void projectLikeCancelSucceed(){
+        // given
+        ProjectLikes projectLikes = ProjectLikes.builder()
+                .projects(project)
+                .users(users)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsId(1L);
+        doReturn(projectLikes).when(projectLikesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
+
+        // when
+        int likes = projectsService.likeProject(project.getProjectsId(), users.getUsersId());
+
+        // then
+        assertThat(likes).isEqualTo(0);
+    }
+
+    @DisplayName("프로젝트 좋아요 실패 - 존재하지 않는 유저")
+    @Test
+    void projectLikeFailNoUser(){
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(1L);
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.likeProject(project.getProjectsId(), users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @DisplayName("프로젝트 좋아요 실패 - 존재하지 않는 프로젝트")
+    @Test
+    void projectLikeFailNoProject(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(null).when(projectsRepository).findByProjectsId(1L);
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.likeProject(project.getProjectsId(), users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 프로젝트가 존재하지 않습니다");
     }
 
     @DisplayName("프로젝트 닫힘 확인 성공 - 열려있음")
