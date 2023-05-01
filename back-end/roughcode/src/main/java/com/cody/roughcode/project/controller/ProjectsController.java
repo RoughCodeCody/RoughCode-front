@@ -15,11 +15,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +39,42 @@ import java.util.Map;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
+
+    @Operation(summary = "프로젝트 열기 API")
+    @PutMapping("/{projectId}/open")
+    ResponseEntity<?> openProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                            @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = projectsService.openProject(projectId, usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("프로젝트 열기 실패");
+        return Response.ok("프로젝트 열기 성공");
+    }
+
+    @Operation(summary = "프로젝트 닫기 API")
+    @PutMapping("/{projectId}/close")
+    ResponseEntity<?> closeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                  @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = projectsService.closeProject(projectId, usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("프로젝트 닫기 실패");
+        return Response.ok("프로젝트 닫기 성공");
+    }
 
     @Operation(summary = "피드백 좋아요 또는 취소 API")
     @PostMapping("/feedback/{feedbackId}/like")
@@ -219,7 +257,7 @@ public class ProjectsController {
 
     @Operation(summary = "프로젝트 상세 조회 API")
     @GetMapping("/{projectId}")
-    ResponseEntity<?> getProjectList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+    ResponseEntity<?> getProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                      @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId) {
         Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
 
@@ -269,19 +307,21 @@ public class ProjectsController {
             return Response.badRequest("잘못된 요청입니다");
         }
 
-        List<ProjectInfoRes> res = new ArrayList<>();
+        Pair<List<ProjectInfoRes>, Boolean> res;
+        List<ProjectInfoRes> projectRes = new ArrayList<>();
         try{
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sort));
             res = projectsService.getProjectList(sort, pageRequest, keyword, tagIdList, closed);
+            projectRes = res.getLeft();
         } catch (Exception e){
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
         }
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("nextPage", page + 1);
-        resultMap.put("list", res);
-        return Response.makeResponse(HttpStatus.OK, "프로젝트 목록 조회 성공", res.size(), resultMap);
+        resultMap.put("nextPage", (res.getRight())? page + 1 : -1);
+        resultMap.put("list", projectRes);
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 목록 조회 성공", projectRes.size(), resultMap);
     }
 
     @Operation(summary = "프로젝트 삭제 API")

@@ -114,4 +114,8 @@ public class Projects extends BaseTimeEntity {
     public void likeCntDown() {
         this.likeCnt -= 1;
     }
+
+    public void setStatus(boolean status) {
+        this.closed = status;
+    }
 }

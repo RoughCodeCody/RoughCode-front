@@ -19,6 +19,7 @@ import java.util.List;
 @ToString
 public class ProjectDetailRes {
     private Long projectId;
+    private String userName;
     private String title;
     private int version;
     private LocalDateTime date;
@@ -40,6 +41,7 @@ public class ProjectDetailRes {
     public ProjectDetailRes(Projects project, ProjectsInfo projectsInfo, List<String> tagList,
                             Boolean liked, Boolean favorite) {
         this.projectId = project.getProjectsId();
+        this.userName = project.getProjectWriter().getName();
         this.title = project.getTitle();
         this.version = project.getVersion();
         this.date = project.getModifiedDate();
