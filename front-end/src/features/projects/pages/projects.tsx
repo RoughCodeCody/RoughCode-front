@@ -5,6 +5,8 @@ import { Title } from "@/components/elements/title";
 import { ProjectList } from "../components/lists";
 import { DropLabel } from "@/features/search/components/drop-label";
 import { SwitchDemo } from "@/features/search/components/switch";
+import { WriteFloatBtn } from "@/components/elements";
+import { BackToTop } from "@/components/elements";
 
 export const Projects = () => {
   const sortOptions = ["최신순", "좋아요순", "리뷰순"];
@@ -45,6 +47,8 @@ export const Projects = () => {
         </FlexDiv>
         <ProjectList />
       </FlexDiv>
+      <WriteFloatBtn navTo="/project/register" />
+      <BackToTop />
     </FlexDiv>
   );
 };
