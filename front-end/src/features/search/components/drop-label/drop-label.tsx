@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { DropLabelBox, DropOptionContainer, DropOption } from "./style";
-import { FlexDiv, Text } from "../elements";
-import { DropdownArrow } from "../elements";
+import { FlexDiv, Text } from "@/components/elements";
+import { DropdownArrow } from "@/components/elements";
 
 import { useSearchCriteriaStore } from "@/stores";
 

@@ -1,10 +1,9 @@
 import Head from "next/head";
 import { Projects } from "@/features/projects";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 export default function Project() {
-  const queryClient = new QueryClient();
   return (
     <>
       <Head>
@@ -14,9 +13,7 @@ export default function Project() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <QueryClientProvider client={queryClient}>
-        <Projects />
-      </QueryClientProvider>
+      <Projects />
     </>
   );
 }

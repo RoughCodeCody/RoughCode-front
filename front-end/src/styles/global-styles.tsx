@@ -1,11 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
-  /* http://meyerweb.com/eric/tools/css/reset/ 
-    v2.0 | 20110126
-    License: none (public domain)
-  */
-
   html, body, div, span, applet, object, iframe,
   h1, h2, h3, h4, h5, h6, p, blockquote, pre,
   a, abbr, acronym, address, big, cite, code,
@@ -25,13 +20,15 @@ const GlobalStyles = createGlobalStyle`
     font-size: 100%;
     font: inherit;
     vertical-align: baseline;
+    color: var(--font-color);
   }
-  /* HTML5 display-role reset for older browsers */
+
   article, aside, details, figcaption, figure, 
   footer, header, hgroup, menu, nav, section {
     display: block;
   }
   body {
+    background-color: var(--bg-color);
     line-height: 1;
   }
   ol, ul {
@@ -49,30 +46,36 @@ const GlobalStyles = createGlobalStyle`
     border-collapse: collapse;
     border-spacing: 0;
   }
+  a {
+  text-decoration: none;
+  }
+  button {
+  border: none;
+  }
 
-  // CSS 초기값 정의
   @font-face {
-    font-family: "Pretendard-Regular";
-    src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-      format("woff");
+    font-family: 'Pretendard-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
   }
   
   :root {
     /* Color */
-    --bg-color: #f8f9fa;
+    --bg-color: #F8F9FA;
     --main-color: #319795;
-    --font-color: #45474f;
-    --white-color: #ffffff;
+    --font-color: #45474F;
+    --white-color: #FFFFFF;
     --black-color: #000000;
-    --sub-one-color: #eff8ff;
-    --sub-two-color: #e2e8f0;
-    --sub-three-color: #e9fbef;
-    --red-color: #ef0000;
-    --orange-color: #f95a00;
-    --shad-color: #d9d9d9;
-    --banner-color: #68482f;
+    --sub-one-color: #EFF8FF;
+    --sub-two-color: #E2E8F0;
+    --sub-three-color: #E9FBEF;
+    --red-color: #EF0000;
+    --orange-color: #F95A00;
+    --shad-color: #D9D9D9;
+    --banner-color: #68482F;
+    --placeholder-color: #8E8E8E;
+    --switch-color: #C1C1C1;
 
     /* Navigation bar height */
     --nav-height: 65px;
@@ -154,9 +157,7 @@ const GlobalStyles = createGlobalStyle`
     --nav-height: 65px;
   }
 
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     box-sizing: border-box;
   }
 `;

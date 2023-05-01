@@ -1023,5 +1023,102 @@
       "introduction": "개발새발 프로젝트 입니다 하하",
       "closed": false
     }
+  ],
+  "tag": [
+    {
+      "tagId": 1,
+      "tagName": "java",
+      "cnt": 19
+    },
+    {
+      "tagId": 2,
+      "tagName": "spring",
+      "cnt": 29
+    },
+    {
+      "tagId": 3,
+      "tagName": "javascript",
+      "cnt": 2339
+    },
+    {
+      "tagId": 4,
+      "tagName": "python",
+      "cnt": 49
+    },
+    {
+      "tagId": 1,
+      "tagName": "aws",
+      "cnt": 59
+    },
+    {
+      "tagId": 6,
+      "tagName": "docker",
+      "cnt": 69
+    },
+    {
+      "tagId": 7,
+      "tagName": "jenkins",
+      "cnt": 9
+    },
+    {
+      "tagId": 8,
+      "tagName": "c",
+      "cnt": 9
+    },
+    {
+      "tagId": 9,
+      "tagName": "c++",
+      "cnt": 19
+    },
+    {
+      "tagId": 10,
+      "tagName": "c#",
+      "cnt": 19
+    },
+    {
+      "tagId": 11,
+      "tagName": "kotlin",
+      "cnt": 119
+    },
+    {
+      "tagId": 12,
+      "tagName": "flutter",
+      "cnt": 19
+    },
+    {
+      "tagId": 13,
+      "tagName": "react",
+      "cnt": 19
+    },
+    {
+      "tagId": 14,
+      "tagName": "next",
+      "cnt": 19
+    },
+    {
+      "tagId": 15,
+      "tagName": "query",
+      "cnt": 19
+    },
+    {
+      "tagId": 16,
+      "tagName": "star",
+      "cnt": 19
+    },
+    {
+      "tagId": 17,
+      "tagName": "moon",
+      "cnt": 19
+    },
+    {
+      "tagId": 18,
+      "tagName": "sun",
+      "cnt": 19
+    },
+    {
+      "tagId": 19,
+      "tagName": "java",
+      "cnt": 19
+    }
   ]
 }

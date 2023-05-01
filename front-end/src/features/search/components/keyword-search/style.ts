@@ -33,6 +33,7 @@ export const SearchInput = styled.input`
   }
 `;
 export const SearchButton = styled.button`
+  border: none;
   background-color: var(--main-color);
   color: var(--white-color);
   font-size: 1rem;
