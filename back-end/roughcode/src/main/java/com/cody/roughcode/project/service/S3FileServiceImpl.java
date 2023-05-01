@@ -1,5 +1,6 @@
 package com.cody.roughcode.project.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -100,5 +101,4 @@ public class S3FileServiceImpl implements S3FileService {
 
         return true;
     }
-
 }
