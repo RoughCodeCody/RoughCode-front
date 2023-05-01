@@ -270,6 +270,13 @@ public class CodesServiceImpl implements CodesService {
                     }
                 }));
 
+        Long resUserId = null;
+        String resUserName = null;
+        if(user!= null){
+            resUserId = user.getUsersId();
+            resUserName = user.getName();
+        }
+
         // 코드 상세 정보 response dto
         return CodeDetailRes.builder()
                 .codeId(code.getCodesId())
@@ -281,8 +288,8 @@ public class CodesServiceImpl implements CodesService {
                 .favoriteCnt(codesInfo.getFavoriteCnt())
                 .githubUrl(codesInfo.getGithubUrl())
                 .tags(tagList)
-                .userId(user.getUsersId())
-                .userName(user.getName())
+                .userId(resUserId)
+                .userName(resUserName)
                 .projectId(connectedProjectId)
                 .projectTitle(connectedProjectTitle)
                 .content(codesInfo.getContent())

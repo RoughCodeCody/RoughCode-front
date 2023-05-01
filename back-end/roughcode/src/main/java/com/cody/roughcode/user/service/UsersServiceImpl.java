@@ -2,10 +2,9 @@ package com.cody.roughcode.user.service;
 
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.user.dto.req.UserReq;
-import com.cody.roughcode.user.dto.res.UserResp;
+import com.cody.roughcode.user.dto.res.UserRes;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
-import com.cody.roughcode.util.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class UsersServiceImpl implements UsersService{
     private final UsersRepository usersRepository;
 
     @Override
-    public UserResp selectOneUser(Long userId) {
+    public UserRes selectOneUser(Long userId) {
         Users user = usersRepository.findByUsersId(userId);
 
         if(user == null) {

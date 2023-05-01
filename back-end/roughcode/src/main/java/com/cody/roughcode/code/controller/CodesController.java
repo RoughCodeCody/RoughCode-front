@@ -9,6 +9,7 @@ import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +36,15 @@ public class CodesController {
     private final CodesService codesService;
 
     @Operation(summary = "코드 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 목록 조회 성공", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CodeInfoRes.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다"),
+            @ApiResponse(responseCode = "404", description = "코드 목록 조회 실패")
+    })
     @GetMapping()
     ResponseEntity<?> getCodeList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                   @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "modifiedDate") String sort,
@@ -46,13 +55,14 @@ public class CodesController {
         Long userId = accessToken!= null? jwtTokenProvider.getId(accessToken): -1L;
 
         List<String> sortList = List.of("modifiedDate", "likeCnt", "feedbackCnt");
+        log.info("요청 받음!!" + sort, page, size);
         if(!sortList.contains(sort) || page < 0 || size < 0){
             return Response.badRequest("잘못된 요청입니다");
         }
 
         List<CodeInfoRes> res = null;
         try{
-            PageRequest pageRequest = PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, sort));
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sort));
             res = codesService.getCodeList(sort, pageRequest, keyword, tagIdList, userId);
         } catch(Exception e){
             log.error(e.getMessage());
@@ -66,6 +76,11 @@ public class CodesController {
     }
 
     @Operation(summary = "코드 정보 등록 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 정보 등록 성공"),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "404", description = "코드 정보 등록 실패")
+    })
     @PostMapping()
     ResponseEntity<?> insertCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                  @Parameter(description = "코드 정보 값", required = true) @RequestBody CodeReq codeReq) {
@@ -87,6 +102,11 @@ public class CodesController {
     }
 
     @Operation(summary = "코드 상세 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 상세 조회 성공", content = @Content(schema = @Schema(implementation = CodeDetailRes.class))),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "404", description = "코드 상세 조회 실패")
+    })
     @GetMapping("/{codeId}")
     ResponseEntity<?> getCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                  @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
@@ -108,6 +128,11 @@ public class CodesController {
     }
 
     @Operation(summary = "코드 정보 수정 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 정보 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "404", description = "코드 정보 수정 실패")
+    })
     @PutMapping("/{codeId}")
     ResponseEntity<?> updateCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                  @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId,
@@ -130,6 +155,11 @@ public class CodesController {
     }
 
     @Operation(summary = "코드 정보 삭제 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 정보 삭제 성공"),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "404", description = "코드 정보 삭제 실패")
+    })
     @DeleteMapping("/{codeId}")
     ResponseEntity<?> updateCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                  @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
