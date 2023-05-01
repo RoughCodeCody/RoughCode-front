@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -130,7 +131,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             Projects project = Projects.builder()
                     .num(projectNum)
                     .version(projectVersion)
-                    .img("temp")
+                    .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/no+image.jpeg")
                     .introduction(req.getIntroduction())
                     .title(req.getTitle())
                     .projectWriter(user)
@@ -231,6 +232,34 @@ public class ProjectsServiceImpl implements ProjectsService{
         }
 
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public String insertImage(MultipartFile image, Long projectsId, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        if(image == null) throw new NullPointerException("이미지가 등록되어있지 않습니다");
+
+        Projects project = projectsRepository.findByProjectsId(projectsId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
+
+        Long projectNum = project.getNum();
+        int projectVersion = project.getVersion();
+
+        try{
+            LocalDateTime dateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedDateTime = dateTime.format(formatter);
+            String fileName = user.getName() + "_" + projectNum + "_" + projectVersion + "_" + formattedDateTime;
+
+            return s3FileService.upload(image, "project/content", fileName);
+        } catch(Exception e){
+            log.error(e.getMessage());
+            throw new SaveFailedException(e.getMessage());
+        }
     }
 
     @Override

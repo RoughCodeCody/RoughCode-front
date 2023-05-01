@@ -40,7 +40,4 @@ public class ProjectReq {
 
     @Schema(description = "선택한 feedback id", example = "[1, 2, 3]")
     private List<Long> selectedFeedbacksId;
-
-    @Schema(description = "썸네일")
-    private MultipartFile thumbnail;
 }
