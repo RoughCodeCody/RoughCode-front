@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,14 +44,14 @@ public class CodesServiceImpl implements CodesService {
 
     @Override
     @Transactional
-    public List<CodeInfoRes> getCodeList(String sort, org.springframework.data.domain.PageRequest pageRequest,
+    public List<CodeInfoRes> getCodeList(String sort, PageRequest pageRequest,
                                          String keyword, String tagIds, Long userId) {
         Users user = usersRepository.findByUsersId(userId);
         if(user==null) {
             user = Users.builder().usersId(0L).build(); // 익명
         }
         List<Long> tagIdList = null;
-        if(tagIds.length()>0){
+        if(tagIds != null && tagIds.length()>0){
             tagIdList = Arrays.stream(tagIds.split(","))
                     .map(Long::valueOf)
                     .collect(Collectors.toList());

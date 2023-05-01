@@ -47,15 +47,15 @@ public class CodesController {
     })
     @GetMapping()
     ResponseEntity<?> getCodeList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                  @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "modifiedDate") String sort,
-                                  @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                  @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size,
-                                  @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
-                                  @Parameter(description = "태그 아이디 리스트") @RequestParam(defaultValue = "") String tagIdList){
+                                  @Parameter(description = "정렬 기준 ('modifiedDate':최신순, 'likeCnt':좋아요수 많은순, 'reviewCnt':리뷰수 많은순)", example = "modifiedDate") @RequestParam(defaultValue = "modifiedDate") String sort,
+                                  @Parameter(description = "페이지 수", example = "0") @RequestParam(defaultValue = "0") int page,
+                                  @Parameter(description = "한 페이지에 담기는 개수", example = "10") @RequestParam(defaultValue = "10") int size,
+                                  @Parameter(description = "검색어", example = "개발새발") @RequestParam(defaultValue = "") String keyword,
+                                  @Parameter(description = "태그 아이디 리스트", example = "1,2,3,4") @RequestParam(defaultValue = "") String tagIdList){
         Long userId = accessToken!= null? jwtTokenProvider.getId(accessToken): -1L;
 
         List<String> sortList = List.of("modifiedDate", "likeCnt", "feedbackCnt");
-        log.info("요청 받음!!" + sort, page, size);
+
         if(!sortList.contains(sort) || page < 0 || size < 0){
             return Response.badRequest("잘못된 요청입니다");
         }
