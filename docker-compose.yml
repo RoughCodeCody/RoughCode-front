@@ -13,6 +13,7 @@ services:
       - frontend
 
   frontend:
+    driver: bridge
     build:
       # 어디에서 도커를 시작할 것인가
       context: ./front-end
