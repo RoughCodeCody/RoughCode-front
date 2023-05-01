@@ -38,6 +38,24 @@ public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
 
+    @Operation(summary = "프로젝트 좋아요 또는 취소 API")
+    @PutMapping("/{projectId}/like")
+    ResponseEntity<?> likeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                  @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+
+        int res = -1;
+        try {
+            res = projectsService.likeProject(projectId, usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res < 0) return Response.notFound("프로젝트 좋아요 또는 취소 실패");
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 좋아요 또는 취소 성공", 1, res);
+    }
+
     @Operation(summary = "프로젝트 태그 목록 조회 API")
     @GetMapping("/tag")
     ResponseEntity<?> searchTags(@Parameter(description = "검색 키워드") @RequestParam String keyword) {

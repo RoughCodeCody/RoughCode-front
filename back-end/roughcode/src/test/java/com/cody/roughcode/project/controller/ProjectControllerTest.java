@@ -119,6 +119,52 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("프로젝트 좋아요 또는 취소 성공")
+    @Test
+    public void likeProjectSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/like";
+
+        doReturn(1).when(projectsService)
+                .likeProject(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 좋아요 또는 취소 성공");
+    }
+
+    @DisplayName("프로젝트 좋아요 또는 취소 실패")
+    @Test
+    public void likeProjectFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/like";
+
+        doReturn(-1).when(projectsService)
+                .likeProject(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 좋아요 또는 취소 실패");
+    }
+
     @DisplayName("프로젝트 열림 확인 성공")
     @Test
     public void isProjectOpenSucceed() throws Exception {
