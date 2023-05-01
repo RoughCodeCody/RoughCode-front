@@ -526,6 +526,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .notice(p.getRight().getNotice())
                     .projectId(p.getLeft().getProjectsId())
                     .version(p.getLeft().getVersion())
+                    .date(p.getLeft().getModifiedDate())
                     .build());
         }
         projectDetailRes.setVersions(versionResList);
