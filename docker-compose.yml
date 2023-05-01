@@ -16,17 +16,17 @@ services:
       - app-network
 
   nginx:
-    restart: always
     container_name: nginx
     build:
       context: ./nginx
       dockerfile: Dockerfile
 
+    restart: unless-stopped # 개발자가 stop 하는 경우를 제외하고 꺼지면 자동으로 다시 실행하겠다.
     volumes:
-      - /app/node_modules
-      - ./frontend:/app
-      - ../certbot/conf:/etc/letsencrypt # 추가
-      - ../certbot/www:/var/www/certbot # 추가
+      - ./data/nginx:/etc/nginx/conf.d # Nginx 설정 파일 위치 공유 : 로컬에 미리 작성해준 설정을 Nginx 폴더와 공유
+		  - ./app/build:/usr/share/nginx/html # React App을 npm run build로 만든 build된 파일들이 있는 위치 맵핑
+      - ./data/certbot/conf:/etc/letsencrypt # Certbot 설정 공유 
+      - ./data/certbot/www:/var/www/certbot # Certbot과 볼륨 공유
 
     ports:
       - "80:80"
@@ -41,11 +41,14 @@ services:
   certbot: # certbot 서비스 추가
     image: certbot/certbot
     container_name: certbot_service
+    command: certonly --webroot --webroot-path=/var/www/certbot --email dongsu712@naver.com --agree-tos --no-eff-email -d rough-code.com -d www.rough-code.com
     depends_on:
       - nginx
+    # restart: unless-stopped
     volumes:
-      - ../certbot/conf:/etc/letsencrypt
-      - ../certbot/www:/var/www/certbot
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+      - ./data/certbot/logs:/var/log/letsencrypt
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 networks:
