@@ -395,4 +395,34 @@ class CodesServiceTest {
 
         assertEquals("접근 권한이 없습니다", exception.getMessage());
     }
+
+    @DisplayName("코드 삭제 성공")
+    @Test
+    void deleteCodeSucceed() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
+
+        // when
+        int res = codesService.deleteCode(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("코드 삭제 실패 - 코드 작성자와 삭제를 시도하는 사용자가 다름")
+    @Test
+    void deleteCodeFailUserDiffer() {
+        // given
+        doReturn(user2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findLatestByCodesId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> codesService.deleteCode(1L, 1L)
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
 }
