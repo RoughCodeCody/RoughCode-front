@@ -1,7 +1,7 @@
 import { TagSelectContainer } from "./style";
 import { TagSelectItem } from "./tag-select-item";
 
-import { useTags } from "../../api/getTagList";
+import { useTags } from "../../api";
 
 type TagListProps = {
   tagKeyword: string;

@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { useInView } from "react-intersection-observer";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 import { ProjectCard } from "../project-card";
 import { ProjectCardGrid } from "./style";
-import { FlexDiv } from "@/components/elements";
 
+import { FlexDiv } from "@/components/elements";
 import { useSearchCriteriaStore } from "@/stores";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProjectCardProps {
   projectId: number;

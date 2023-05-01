@@ -1,5 +1,4 @@
 import { FlexDiv, TagChip } from "@/components/elements";
-
 import { useSearchCriteriaStore } from "@/stores";
 
 export const SeletectTags = () => {

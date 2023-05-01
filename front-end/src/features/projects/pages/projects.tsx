@@ -1,12 +1,13 @@
+import { ProjectList } from "../components/lists";
+
 import { FlexDiv } from "@/components/elements";
 import { BottomHeader } from "@/components/elements";
-import { Search } from "@/features/search/search";
-import { Title } from "@/components/elements/title";
-import { ProjectList } from "../components/lists";
-import { DropLabel } from "@/features/search/components/drop-label";
-import { SwitchDemo } from "@/features/search/components/switch";
 import { WriteFloatBtn } from "@/components/elements";
 import { BackToTop } from "@/components/elements";
+import { Title } from "@/components/elements/title";
+import { Search } from "@/features/search/search";
+import { DropLabel } from "@/features/search/components/drop-label";
+import { SwitchDemo } from "@/features/search/components/switch";
 
 export const Projects = () => {
   const sortOptions = ["최신순", "좋아요순", "리뷰순"];

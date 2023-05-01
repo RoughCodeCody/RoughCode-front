@@ -1,10 +1,9 @@
 import { useState } from "react";
-
-import { FlexDiv } from "@/components/elements";
-import { SearchBarForm, SearchInput, SearchButton } from "./style";
-
 import { BiSearchAlt } from "react-icons/bi";
 
+import { SearchBarForm, SearchInput, SearchButton } from "./style";
+
+import { FlexDiv } from "@/components/elements";
 import { useSearchCriteriaStore } from "@/stores";
 
 export const KeywordSearch = () => {

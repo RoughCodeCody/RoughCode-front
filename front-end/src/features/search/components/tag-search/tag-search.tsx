@@ -1,7 +1,7 @@
-import { FlexDiv } from "@/components/elements";
-
 import { TagSearchBox } from "./tag-search-box";
 import { SeletectTags } from "./selected-tags";
+
+import { FlexDiv } from "@/components/elements";
 
 export const TagSearch = () => {
   return (

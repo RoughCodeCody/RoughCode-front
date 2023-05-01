@@ -1,11 +1,10 @@
 import { useState } from "react";
 
+import { SearchInput } from "./style";
+import { TagList } from "./tag-list";
+
 import { DropdownArrow } from "@/components/elements";
 import { FlexDiv } from "@/components/elements";
-
-import { SearchInput } from "./style";
-
-import { TagList } from "./tag-list";
 
 export const TagSearchBox = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
