@@ -24,9 +24,17 @@ export type CodesList = {
   liked: boolean;
 };
 
-export type Tag = {
-  result: object;
+type tagResult = {
   tagId: number;
-  name: String;
+  name: string;
   cnt: number;
+};
+
+export type Tag = {
+  count: number;
+  message: string;
+  result: tagResult[];
+  // tagId: number;
+  // name: String;
+  // cnt: number;
 };

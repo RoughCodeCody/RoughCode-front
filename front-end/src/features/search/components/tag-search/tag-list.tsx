@@ -6,9 +6,15 @@ import { useTags } from "../../api/getTagList";
 type TagListProps = {
   tagKeyword: string;
 };
+type tagResult = {
+  tagId: number;
+  name: string;
+  cnt: number;
+};
 
 export const TagList = ({ tagKeyword }: TagListProps) => {
   const tagsQuery = useTags({ tagKeyword });
+  console.log(tagsQuery);
 
   if (tagsQuery.isLoading) {
     return <div></div>;
@@ -21,7 +27,7 @@ export const TagList = ({ tagKeyword }: TagListProps) => {
     );
   return (
     <TagSelectContainer>
-      {tagsQuery?.data?.result.map(({ tagId, name, cnt }) => (
+      {tagsQuery?.data?.result.map(({ tagId, name, cnt }: tagResult) => (
         <TagSelectItem key={tagId} tagId={tagId} name={name} cnt={cnt} />
       ))}
     </TagSelectContainer>

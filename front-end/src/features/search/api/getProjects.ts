@@ -64,7 +64,7 @@ export const useProjects = ({
       : undefined;
 
   return useInfiniteQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ["projects", sort, page, size, keyword, tagIdList, closed],
+    queryKey: ["projects", sort, page, size, keyword, stringTagIdList, closed],
     queryFn: () =>
       getProjects({ sort, page, size, keyword, stringTagIdList, closed }),
     // ...config,

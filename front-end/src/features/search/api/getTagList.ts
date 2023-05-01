@@ -9,7 +9,7 @@ export const getTags = ({
   tagKeyword,
 }: {
   tagKeyword: string;
-}): Promise<Tag[]> => {
+}): Promise<Tag> => {
   return axios.get(`/project/tag`, {
     params: {
       keyword: tagKeyword,
