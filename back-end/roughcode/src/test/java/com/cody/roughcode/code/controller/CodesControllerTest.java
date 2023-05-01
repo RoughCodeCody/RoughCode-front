@@ -1,5 +1,8 @@
 package com.cody.roughcode.code.controller;
 
+import com.cody.roughcode.user.entity.Users;
+import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.service.CodesService;
@@ -21,12 +24,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import org.springframework.data.domain.PageRequest;
 import javax.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.cody.roughcode.user.enums.Role.ROLE_USER;import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -63,6 +66,68 @@ class CodesControllerTest {
             .content("시간초과 뜹니다")
             .projectId(1L)
             .build();
+
+    // given
+    Users users = Users.builder()
+            .usersId(1L)
+            .email("cody306@gmail.com")
+            .name("코디")
+            .roles(List.of(String.valueOf(ROLE_USER)))
+            .build();
+
+    @DisplayName("코드 목록 조회 성공")
+    @Test
+    public void getCodeListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code";
+
+        int page = 10;
+
+        final Codes code = Codes.builder()
+                .codesId(1L)
+                .num(1L)
+                .version(1)
+                .title("title")
+                .codeWriter(users)
+                .build();
+
+        List<CodeInfoRes> codeInfoRes = List.of(
+                CodeInfoRes.builder()
+                        .codeId(code.getCodesId())
+                        .version(code.getVersion())
+                        .title(code.getTitle())
+                        .date(code.getModifiedDate())
+                        .likeCnt(code.getLikeCnt())
+                        .reviewCnt(code.getReviewCnt())
+                        .tags(List.of("java", "javascript"))
+                        .userName(users.getName())
+                        .liked(true)
+                        .build()
+        );
+        doReturn(codeInfoRes).when(codesService)
+                .getCodeList(any(String.class), any(org.springframework.data.domain.PageRequest.class), any(String.class), any(String.class), any(Long.class));
+
+        String keyword = "title";
+        String tagIds = "2";
+        int closed = 0;
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .param("sort", "modifiedDate")
+                        .param("page", String.valueOf(page))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 목록 조회 성공");
+    }
 
     @DisplayName("코드 정보 등록 성공")
     @Test

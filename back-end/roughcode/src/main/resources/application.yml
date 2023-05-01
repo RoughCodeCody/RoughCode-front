@@ -53,4 +53,4 @@ jwt:
 
 app:
   oauth2:
-    authorizedRedirectUri: http://localhost:3000/oauth2/redirect
+    authorizedRedirectUri: http://${HOST}:3000/oauth2/redirect
