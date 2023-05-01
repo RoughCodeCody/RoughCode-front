@@ -21,10 +21,30 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
+
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+      - ../certbot/conf:/etc/letsencrypt # 추가
+      - ../certbot/www:/var/www/certbot # 추가
+
     ports:
       - "80:80"
+      - "443:443"
+    expose:
+      - "80"
+      - "443"
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     networks:
       - app-network
+
+   certbot: # certbot 서비스 추가
+    image: certbot/certbot
+    container_name: certbot_service
+    volumes:
+        - ../certbot/conf:/etc/letsencrypt
+        - ../certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 networks:
   app-network:
