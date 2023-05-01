@@ -41,6 +41,8 @@ services:
   certbot: # certbot 서비스 추가
     image: certbot/certbot
     container_name: certbot_service
+    depends_on:
+      - nginx
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
