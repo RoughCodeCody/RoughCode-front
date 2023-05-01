@@ -68,4 +68,12 @@ public class ProjectsInfo {
     public void setClosedChecked(LocalDateTime now) {
         this.closedChecked = now;
     }
+
+    public void favoriteCntDown() {
+        this.favoriteCnt -= 1;
+    }
+
+    public void favoriteCntUp() {
+        this.favoriteCnt += 1;
+    }
 }

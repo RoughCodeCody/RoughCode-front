@@ -119,6 +119,56 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("프로젝트 즐겨찾기 등록 또는 취소 성공")
+    @Test
+    public void favoriteProjectSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/favorite";
+
+        doReturn(1).when(projectsService)
+                .favoriteProject(any(Long.class), any(String.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson("content"))
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 즐겨찾기 등록 또는 취소 성공");
+    }
+
+    @DisplayName("프로젝트 즐겨찾기 등록 또는 취소 실패")
+    @Test
+    public void favoriteProjectFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/favorite";
+
+        doReturn(-1).when(projectsService)
+                .favoriteProject(any(Long.class), any(String.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson("content"))
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("프로젝트 즐겨찾기 등록 또는 취소 실패");
+    }
+
     @DisplayName("프로젝트 좋아요 또는 취소 성공")
     @Test
     public void likeProjectSucceed() throws Exception {
@@ -130,7 +180,7 @@ public class ProjectControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.put(url, 1L)
+                MockMvcRequestBuilders.post(url, 1L)
                         .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
         );
 
@@ -153,7 +203,7 @@ public class ProjectControllerTest {
 
         // when
         final ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.put(url, 1L)
+                MockMvcRequestBuilders.post(url, 1L)
                         .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
         );
 

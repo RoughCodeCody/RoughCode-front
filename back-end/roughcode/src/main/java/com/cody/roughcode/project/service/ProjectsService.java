@@ -22,6 +22,7 @@ public interface ProjectsService {
     List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
     ProjectDetailRes getProject(Long projectId, Long usersId);
     int likeProject(Long projectsId, Long usersId);
+    int favoriteProject(Long projectsId, String content, Long usersId);
 
     int insertFeedback(FeedbackReq req, Long usersId);
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
