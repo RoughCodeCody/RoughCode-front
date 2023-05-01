@@ -70,4 +70,11 @@ public class Feedbacks extends BaseTimeEntity {
     public void setComplaint(List<String> complainList) {
         this.complaint = String.join(",", complainList);
     }
+
+    public void likeCntDown() {
+        this.likeCnt -= 1;
+    }
+    public void likeCntUp() {
+        this.likeCnt += 1;
+    }
 }

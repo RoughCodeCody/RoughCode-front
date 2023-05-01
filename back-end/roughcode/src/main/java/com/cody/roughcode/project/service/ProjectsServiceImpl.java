@@ -653,13 +653,14 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(feedbacks == null)
             throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
 
-        List<String> complainList = new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
+        List<String> complainList = (feedbacks.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
 
         if(feedbacks.getContent() == null || feedbacks.getContent().equals(""))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 피드백입니다");
         if(feedbacks.getComplaint().contains(String.valueOf(usersId)))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 피드백입니다");
 
+        log.info(complainList.size() + "번 신고된 피드백입니다");
         if(complainList.size() >= 10){
             feedbacks.deleteContent();
         }
@@ -668,6 +669,35 @@ public class ProjectsServiceImpl implements ProjectsService{
         feedbacksRepository.save(feedbacks);
 
         return 1;
+    }
+
+    @Override
+    public int likeProjectFeedback(Long feedbackId, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Feedbacks feedbacks = feedbacksRepository.findByFeedbacksId(feedbackId);
+        if(feedbacks == null)
+            throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
+
+        // 이미 좋아요 한 피드백인지 확인
+        FeedbacksLikes feedbacksLikes = feedbacksLikesRepository.findByFeedbacksAndUsers(feedbacks, users);
+        if(feedbacksLikes != null) { // 피드백 좋아요 취소
+            feedbacksLikesRepository.delete(feedbacksLikes);
+
+            feedbacks.likeCntDown();
+            feedbacksRepository.save(feedbacks);
+            return 0;
+        }
+        else{ // 프로젝트 좋아요
+            feedbacksLikesRepository.save(FeedbacksLikes.builder()
+                    .feedbacks(feedbacks)
+                    .users(users)
+                    .build());
+
+            feedbacks.likeCntUp();
+            feedbacksRepository.save(feedbacks);
+            return 1;
+        }
     }
 
     @Override
