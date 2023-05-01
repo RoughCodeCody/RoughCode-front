@@ -39,7 +39,7 @@ services:
       - app-network
 
   certbot: # certbot 서비스 추가
-    image: certbot/certbot:arm32v6-latest
+    image: certbot/certbot
     container_name: certbot_service
     volumes:
       - ../certbot/conf:/etc/letsencrypt
