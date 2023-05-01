@@ -78,6 +78,8 @@ public class ProjectServiceTest {
     private ProjectFavoritesRepository projectFavoritesRepository;
     @Mock
     private ProjectLikesRepository projectLikesRepository;
+    @Mock
+    private FeedbacksLikesRepository feedbacksLikesRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -109,6 +111,12 @@ public class ProjectServiceTest {
             .url("www.google.com")
             .notice("notice")
             .projects(project)
+            .build();
+
+    final Feedbacks feedbacks = Feedbacks.builder()
+            .feedbacksId(1L)
+            .projectsInfo(info)
+            .content("content")
             .build();
 
     private static MockMultipartFile getThumbnail() throws IOException {
@@ -174,6 +182,68 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("피드백 좋아요 등록 성공")
+    @Test
+    void feedbackLikeSucceed(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(feedbacks).when(feedbacksRepository).findByFeedbacksId(1L);
+        doReturn(null).when(feedbacksLikesRepository).findByFeedbacksAndUsers(any(Feedbacks.class), any(Users.class));
+
+        // when
+        int likes = projectsService.likeProjectFeedback(feedbacks.getFeedbacksId(), users.getUsersId());
+
+        // then
+        assertThat(likes).isEqualTo(1);
+    }
+
+    @DisplayName("피드백 좋아요 취소 성공")
+    @Test
+    void feedbackLikeCancelSucceed(){
+        // given
+        FeedbacksLikes feedbacksLikes = FeedbacksLikes.builder()
+                .feedbacks(feedbacks)
+                .users(users)
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(feedbacks).when(feedbacksRepository).findByFeedbacksId(1L);
+        doReturn(feedbacksLikes).when(feedbacksLikesRepository).findByFeedbacksAndUsers(any(Feedbacks.class), any(Users.class));
+
+        // when
+        int likes = projectsService.likeProjectFeedback(feedbacks.getFeedbacksId(), users.getUsersId());
+
+        // then
+        assertThat(likes).isEqualTo(0);
+    }
+
+    @DisplayName("피드백 좋아요 실패 - 존재하지 않는 유저")
+    @Test
+    void feedbackLikeFailNoUser(){
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(1L);
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.likeProjectFeedback(feedbacks.getFeedbacksId(), users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @DisplayName("피드백 좋아요 실패 - 존재하지 않는 피드백")
+    @Test
+    void feedbackLikeFailNoFeedback(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(null).when(feedbacksRepository).findByFeedbacksId(1L);
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> projectsService.likeProjectFeedback(feedbacks.getFeedbacksId(), users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 피드백이 존재하지 않습니다");
     }
 
     @DisplayName("프로젝트 즐겨찾기 성공")

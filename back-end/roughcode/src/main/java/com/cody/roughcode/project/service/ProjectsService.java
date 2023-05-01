@@ -29,6 +29,7 @@ public interface ProjectsService {
     List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId);
     int deleteFeedback(Long feedbackId, Long usersId);
     int feedbackComplain(Long feedbackId, Long usersId);
+    int likeProjectFeedback(Long feedbackId, Long usersId);
 
     int isProjectOpen(Long projectId);
     Boolean checkProject(String url, Long usersId) throws IOException;
