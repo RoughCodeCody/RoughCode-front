@@ -1,12 +1,14 @@
 import { FlexDiv, Text } from "@/components/elements";
-import { VersionInfoWrapper } from "./style";
+
 import { MiniFeedbackItem } from "../mini-feedback-item";
+import { VersionInfoWrapper } from "./style";
 
 type VersionInfoProps = {
-  version: string;
+  version: number;
   notice: string;
   current: boolean;
-  feedbacks: { user: string; content: string }[];
+  // feedbacks: { user: string; content: string }[];
+  feedbacks: number[];
 };
 
 export const VersionInfo = ({
@@ -19,7 +21,7 @@ export const VersionInfo = ({
     <VersionInfoWrapper bgColor={current ? "sub-one" : "white"}>
       <FlexDiv width="5%">
         <Text as="span" color={current ? "main" : "font"} bold={current}>
-          {version}
+          {`V${version}`}
         </Text>
       </FlexDiv>
       <FlexDiv width="90%" direction="column" gap="0.7rem">
