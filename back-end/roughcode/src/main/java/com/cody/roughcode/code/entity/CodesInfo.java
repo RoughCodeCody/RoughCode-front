@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.entity;
 
+import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.project.entity.CodeFavorites;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.SelectedFeedbacks;
@@ -48,4 +49,9 @@ public class CodesInfo {
 
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeLikes> codeLikes;
+
+    public void updateCode(CodeReq req) {
+        this.content = req.getContent();
+        this.githubUrl = req.getGithubUrl();
+    }
 }

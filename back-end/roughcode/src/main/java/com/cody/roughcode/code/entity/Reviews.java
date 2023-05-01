@@ -60,4 +60,8 @@ public class Reviews extends BaseTimeEntity {
     public void selectedUp() {
         this.selected += 1;
     }
+
+    public void selectedDown() {
+        this.selected -= 1;
+    }
 }
