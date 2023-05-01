@@ -340,6 +340,25 @@ public class ProjectsController {
         return Response.ok("프로젝트 정보 수정 성공");
     }
 
+    @Operation(summary = "이미지 삭제 API")
+    @DeleteMapping(value = "/{projectId}/image")
+    ResponseEntity<?> insertImage(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                  @Parameter(description = "삭제할 이미지의 project id", required = true) @PathVariable Long projectId,
+                                  @Parameter(description = "삭제할 이미지", required = true) @RequestBody String imgUrl) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try{
+            res = projectsService.deleteImage(imgUrl, projectId, userId);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("이미지 삭제 실패");
+        return Response.makeResponse(HttpStatus.OK, "이미지 삭제 성공", 1, res);
+    }
+
     @Operation(summary = "이미지 등록 API")
     @PostMapping(value = "/{projectId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> insertImage(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,

@@ -119,6 +119,60 @@ public class ProjectControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("이미지 삭제 성공")
+    @Test
+    public void deleteImageSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/image";
+        final Long projectId = 1L;
+        String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_2_2023-05-01%2014%3A29%3A07";
+
+        doReturn(1).when(projectsService).deleteImage(any(String.class), any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, projectId)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(imgUrl)
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("이미지 삭제 성공");
+    }
+
+    @DisplayName("이미지 삭제 실패")
+    @Test
+    public void deleteImageFail() throws Exception {
+        // given
+        final String url = "/api/v1/project/{projectId}/image";
+        final Long projectId = 1L;
+        String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_2_2023-05-01%2014%3A29%3A07";
+
+        doReturn(0).when(projectsService).deleteImage(any(String.class), any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, projectId)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(imgUrl)
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("이미지 삭제 실패");
+    }
+
     @DisplayName("이미지 등록 성공")
     @Test
     public void insertImageSucceed() throws Exception {

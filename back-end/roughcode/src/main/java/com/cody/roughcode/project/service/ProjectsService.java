@@ -18,6 +18,7 @@ public interface ProjectsService {
     Long insertProject(ProjectReq req, Long usersId);
     int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId);
     String insertImage(MultipartFile image, Long projectsId, Long usersId);
+    int deleteImage(String imgUrl, Long projectsId, Long usersId);
     int updateProject(ProjectReq req, Long usersId);
     int connect(Long projectsId, Long usersId, List<Long> codesIdList);
     int deleteProject(Long projectsId, Long usersId);
