@@ -2,8 +2,8 @@ package com.cody.roughcode.exception;
 
 import org.springframework.dao.DataAccessException;
 
-public class SaveFailedException extends DataAccessException {
-    public SaveFailedException(String message) {
+public class S3FailedException extends DataAccessException {
+    public S3FailedException(String message) {
         super(message);
     }
 }

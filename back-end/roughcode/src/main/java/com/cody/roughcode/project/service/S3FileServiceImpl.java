@@ -1,12 +1,8 @@
 package com.cody.roughcode.project.service;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
-import com.cody.roughcode.exception.DeletionFailException;
-import com.cody.roughcode.project.dto.req.ProjectReq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,18 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.nio.file.Paths;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -89,16 +78,44 @@ public class S3FileServiceImpl implements S3FileService {
     }
 
     // 이미지 삭제 method
-    public boolean delete(String imageUrlString) {
-        try {
-            URL imageUrl = new URL(imageUrlString);
-            String key = imageUrl.getPath().substring(1);
-            amazonS3Client.deleteObject(bucket, key);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new DeletionFailException("이미지");
+    @Override
+    public void delete(String imgUrl) {
+        // S3에서 삭제
+        final String dirName = "project/content";
+        log.info("삭제할 이미지 url : {}", imgUrl);
+        Pattern tokenPattern = Pattern.compile("(?<=project/content/).*");
+        Matcher matcher = tokenPattern.matcher(imgUrl);
+
+        String temp = null;
+        if (matcher.find()) {
+            temp = matcher.group();
         }
 
-        return true;
+        String originalName = URLDecoder.decode(temp);
+        String filePath = dirName + "/" + originalName;
+        log.info("originalName : {}", originalName);
+        try {
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, filePath));
+            log.info("deletion complete : {}", filePath);
+        } catch (SdkClientException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteAll(String prefix) {
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+                .withBucketName(bucket)
+                .withPrefix(prefix);
+        ObjectListing objectListing;
+        do {
+            objectListing = amazonS3Client.listObjects(listObjectsRequest);
+            List<S3ObjectSummary> objectSummaries = objectListing.getObjectSummaries();
+            for (S3ObjectSummary objectSummary : objectSummaries) {
+                String key = objectSummary.getKey();
+                amazonS3Client.deleteObject(bucket, key);
+            }
+            listObjectsRequest.setMarker(objectListing.getNextMarker());
+        } while (objectListing.isTruncated());
     }
 }
