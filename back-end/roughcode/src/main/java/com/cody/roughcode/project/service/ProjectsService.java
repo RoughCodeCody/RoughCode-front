@@ -7,6 +7,7 @@ import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectTagsRes;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +23,14 @@ public interface ProjectsService {
     int updateProject(ProjectReq req, Long usersId);
     int connect(Long projectsId, Long usersId, List<Long> codesIdList);
     int deleteProject(Long projectsId, Long usersId);
-    List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
+    Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
     ProjectDetailRes getProject(Long projectId, Long usersId);
     int likeProject(Long projectsId, Long usersId);
     int favoriteProject(Long projectsId, String content, Long usersId);
+    int openProject(Long projectsId, Long usersId);
+
+    @Transactional
+    int closeProject(Long projectsId, Long usersId);
 
     int insertFeedback(FeedbackReq req, Long usersId);
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);

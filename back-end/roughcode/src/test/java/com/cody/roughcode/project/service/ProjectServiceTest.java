@@ -16,6 +16,7 @@ import com.cody.roughcode.project.entity.*;
 import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -182,6 +183,36 @@ public class ProjectServiceTest {
         }
 
         return codeList;
+    }
+
+    @DisplayName("프로젝트 닫기 성공")
+    @Test
+    void projectCloseSucceed(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+
+        // when
+        int res = projectsService.openProject(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("프로젝트 열기 성공")
+    @Test
+    void projectOpenSucceed(){
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+
+        // when
+        int res = projectsService.openProject(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
     }
 
     @DisplayName("이미지 삭제 성공")
@@ -1193,11 +1224,12 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 포함, 좋아요순")
@@ -1249,12 +1281,13 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().size()).isEqualTo(1);
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 포함, 피드백순")
@@ -1306,12 +1339,13 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().size()).isEqualTo(1);
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 미포함, 최신순")
@@ -1363,12 +1397,13 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().size()).isEqualTo(1);
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 미포함, 좋아요순")
@@ -1420,12 +1455,13 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().size()).isEqualTo(1);
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 목록 조회 성공 - tag x, closed 미포함, 피드백순")
@@ -1477,12 +1513,13 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().size()).isEqualTo(1);
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 목록 조회 성공 - tag o, closed 포함, 최신순")
@@ -1535,12 +1572,13 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectSelectedTagsRepository).findAllByKeywordAndTag(keyword, List.of(2L), 1L, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().size()).isEqualTo(1);
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 목록 조회 성공 - tag o, closed 미포함, 최신순")
@@ -1593,12 +1631,13 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectSelectedTagsRepository).findAllOpenedByKeywordAndTag(keyword, List.of(2L), 1L, pageRequest);
 
         // when
-        List<ProjectInfoRes> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
 
         // then
-        assertThat(result.size()).isEqualTo(1);
-        assertThat(result.get(0).getProjectId()).isEqualTo(1L);
-        assertThat(result.get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getLeft().size()).isEqualTo(1);
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getLeft().get(0).getTags().get(0)).isEqualTo(projectInfoRes.get(0).getTags().get(0));
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("프로젝트 삭제 성공")

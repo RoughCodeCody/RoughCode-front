@@ -42,10 +42,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -462,8 +459,8 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public List<ProjectInfoRes> getProjectList(String sort, PageRequest pageRequest,
-                                               String keyword, String tagIds, int closed) {
+    public Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest,
+                                                             String keyword, String tagIds, int closed) {
         List<Long> tagIdList = null;
         if(tagIds.length() > 0)
              tagIdList = Arrays.stream(tagIds.split(","))
@@ -485,7 +482,9 @@ public class ProjectsServiceImpl implements ProjectsService{
                 projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
 
         }
-        return getProjectInfoRes(projectsPage);
+
+        Pair<List<ProjectInfoRes>, Boolean> res = Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+        return res;
     }
 
     @Override
@@ -584,6 +583,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public int favoriteProject(Long projectsId, String content, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -613,6 +613,39 @@ public class ProjectsServiceImpl implements ProjectsService{
             return 1;
         }
     }
+
+    @Override
+    @Transactional
+    public int openProject(Long projectsId, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Projects project = projectsRepository.findByProjectsId(projectsId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        Projects latestProject = projectsRepository.findLatestProject(project.getNum(), usersId);
+        if(!project.equals(latestProject)) throw new NotNewestVersionException();
+
+        project.setStatus(false);
+
+        return 1;
+    }
+
+    @Override
+    @Transactional
+    public int closeProject(Long projectsId, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Projects project = projectsRepository.findByProjectsId(projectsId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        Projects latestProject = projectsRepository.findLatestProject(project.getNum(), usersId);
+        if(!project.equals(latestProject)) throw new NotNewestVersionException();
+
+        project.setStatus(true);
+
+        return 1;
+    }
+
 
     @Override
     @Transactional
@@ -741,6 +774,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     }
 
     @Override
+    @Transactional
     public int likeProjectFeedback(Long feedbackId, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
