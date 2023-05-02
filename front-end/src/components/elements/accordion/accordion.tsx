@@ -51,7 +51,7 @@ export const Accordion = ({
           <Text size="0.9rem" padding="0 0.2rem" pointer={true}>
             {isOpen ? "접기" : "더보기"}
           </Text>
-          <DropdownArrow size={16} isOpen={isOpen} />
+          <DropdownArrow size={16} isopen={isOpen.toString()} />
         </FlexDiv>
       </AccordionHead>
 

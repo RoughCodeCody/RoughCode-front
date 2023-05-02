@@ -32,7 +32,7 @@ export const VersionDropdown = ({
         </Text>
         <DropdownArrow
           onClick={() => setVersionsOpen((prev) => !prev)}
-          isOpen={versionsOpen}
+          isopen={versionsOpen.toString()}
           size={22}
         />
       </FlexDiv>
