@@ -17,7 +17,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(
-                Arrays.asList("http://localhost:3000", "http://j8a306.p.ssafy.io", "http://j8a306.p.ssafy.io:3000"));
+                Arrays.asList("http://localhost:3000", "http://k8a306.p.ssafy.io", "http://k8a306.p.ssafy.io:3000"));
         config.addAllowedOriginPattern("*");
         config.setAllowedHeaders(Arrays.asList("*"));
         config.addAllowedMethod("*");
