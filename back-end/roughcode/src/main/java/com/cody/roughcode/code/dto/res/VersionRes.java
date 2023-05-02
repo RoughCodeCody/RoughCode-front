@@ -20,6 +20,6 @@ public class VersionRes {
     @Schema(description = "코드 버전", example = "2")
     private int version;
 
-    @Schema(description = "반영된 리뷰 목록", example = "[SelectedReviews]")
+    @Schema(description = "반영된 리뷰 목록")
     private List<SelectedReviewRes> selectedReviews;
 }

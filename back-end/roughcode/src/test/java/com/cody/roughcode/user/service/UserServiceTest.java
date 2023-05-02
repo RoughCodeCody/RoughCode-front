@@ -1,10 +1,9 @@
 package com.cody.roughcode.user.service;
 
 import com.cody.roughcode.user.dto.req.UserReq;
-import com.cody.roughcode.user.dto.res.UserResp;
+import com.cody.roughcode.user.dto.res.UserRes;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
-import org.apache.catalina.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +47,7 @@ public class UserServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
-        UserResp user = usersService.selectOneUser(id);
+        UserRes user = usersService.selectOneUser(id);
 
         // then
         assertThat(user.getEmail()).isEqualTo(email);
@@ -97,7 +96,7 @@ public class UserServiceTest {
         // when
         usersService.updateUser(users.getUsersId(), userReq);
 
-        UserResp updatedUser = usersService.selectOneUser(users.getUsersId());
+        UserRes updatedUser = usersService.selectOneUser(users.getUsersId());
 
         // then
         assertThat(updatedUser.getEmail()).isEqualTo(newEmail);

@@ -6,7 +6,8 @@ import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.S3FailedException;
-import com.cody.roughcode.project.entity.CodeFavorites;
+import com.cody.roughcode.exception.NotNewestVersionException;
+import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
@@ -15,13 +16,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,14 +44,14 @@ public class CodesServiceImpl implements CodesService {
 
     @Override
     @Transactional
-    public List<CodeInfoRes> getCodeList(String sort, org.springframework.data.domain.PageRequest pageRequest,
+    public List<CodeInfoRes> getCodeList(String sort, PageRequest pageRequest,
                                          String keyword, String tagIds, Long userId) {
         Users user = usersRepository.findByUsersId(userId);
         if(user==null) {
             user = Users.builder().usersId(0L).build(); // 익명
         }
         List<Long> tagIdList = null;
-        if(tagIds.length()>0){
+        if(tagIds != null && tagIds.length()>0){
             tagIdList = Arrays.stream(tagIds.split(","))
                     .map(Long::valueOf)
                     .collect(Collectors.toList());
@@ -272,8 +271,15 @@ public class CodesServiceImpl implements CodesService {
                     }
                 }));
 
+        Long resUserId = null;
+        String resUserName = null;
+        if(user!= null){
+            resUserId = user.getUsersId();
+            resUserName = user.getName();
+        }
+
         // 코드 상세 정보 response dto
-        CodeDetailRes codeDetailRes = CodeDetailRes.builder()
+        return CodeDetailRes.builder()
                 .codeId(code.getCodesId())
                 .title(code.getTitle())
                 .version(code.getVersion())
@@ -283,8 +289,8 @@ public class CodesServiceImpl implements CodesService {
                 .favoriteCnt(codesInfo.getFavoriteCnt())
                 .githubUrl(codesInfo.getGithubUrl())
                 .tags(tagList)
-                .userId(user.getUsersId())
-                .userName(user.getName())
+                .userId(resUserId)
+                .userName(resUserName)
                 .projectId(connectedProjectId)
                 .projectTitle(connectedProjectTitle)
                 .content(codesInfo.getContent())
@@ -293,8 +299,221 @@ public class CodesServiceImpl implements CodesService {
                 .versions(versionResList)
                 .reviews(reviewResList)
                 .build();
+    }
 
-        return codeDetailRes;
+    @Override
+    @Transactional
+    public int updateCode(CodeReq req, Long codeId, Long userId) {
+        Users user = usersRepository.findByUsersId(userId);
+
+        // 코드 작성자 확인
+        if(user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+
+        // 기존 코드 가져오기
+        Codes target = codesRepository.findLatestByCodesId(codeId);
+        if(target == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+        if (!target.getCodeWriter().equals(user)){
+            // 코드 작성자와 사용자가 일치하지 않는 경우
+            throw new NotMatchException();
+        }
+        if (!target.getCodesId().equals(codeId)){
+            throw new NotNewestVersionException();
+        }
+
+        CodesInfo targetInfo = codesInfoRepository.findByCodes(target);
+        if(targetInfo == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+
+        try {
+            // 기존 Tag 삭제
+            List<CodeSelectedTags> selectedTagsList = target.getSelectedTags();
+            if(selectedTagsList != null) {
+                for (CodeSelectedTags tag : selectedTagsList) {
+                    CodeTags codeTag = tag.getTags();
+                    codeTag.cntDown();
+                    codeTagsRepository.save(codeTag);
+
+                    codeSelectedTagsRepository.delete(tag);
+                }
+            } else {
+                log.info("기존에 선택하였던 태그가 없습니다");
+            }
+
+            // 업데이트한 Tag 등록
+            if(req.getSelectedTagsId() != null) {
+                List<CodeTags> codeTags = codeTagsRepository.findByTagsIdIn(req.getSelectedTagsId());
+                for(CodeTags codeTag: codeTags){
+                    codeSelectedTagsRepository.save(CodeSelectedTags.builder()
+                            .tags(codeTag)
+                            .codes(target)
+                            .build());
+                    codeTag.cntUp();
+                    codeTagsRepository.save(codeTag);
+                }
+            } else {
+                log.info("새로 선택한 태그가 없습니다");
+            }
+
+            // 기존에 선택한 review 삭제
+            List<SelectedReviews> selectedReviewsList = targetInfo.getSelectedReviews();
+            if(selectedReviewsList != null) {
+                for(SelectedReviews review: selectedReviewsList){
+                    Reviews reviews = review.getReviews();
+                    reviews.selectedDown();
+                    reviewsRepository.save(reviews);
+
+                    selectedReviewsRepository.delete(review);
+                }
+            } else {
+                log.info("기존에 선택하였던 리뷰가 없습니다");
+            }
+
+            // 새로 선택한 review 등록
+            if(req.getSelectedReviewsId() != null){
+                List<Reviews> reviews = reviewsRepository.findByReviewsIdIn(req.getSelectedReviewsId());
+                for(Reviews review: reviews){
+                    selectedReviewsRepository.save(SelectedReviews.builder()
+                            .codes(target)
+                            .reviews(review)
+                            .build());
+
+                    review.selectedUp();
+                    reviewsRepository.save(review);
+                }
+            } else {
+                log.info("새로 선택한 리뷰가 없습니다");
+            }
+
+            // 연결된 프로젝트
+            Projects connectedProject = null;
+            if(req.getProjectId()!= null) {
+                connectedProject = projectsRepository.findByProjectsId(req.getProjectId());
+
+                if(connectedProject == null){
+                    throw new NullPointerException("일치하는 프로젝트가 없습니다");
+                }
+            }
+
+            // 코드 정보 업데이트
+            target.updateCode(req); // 코드 제목 수정
+            targetInfo.updateCode(req); // 코드 불러올 github URL, 상세 설명 수정
+            target.setProject(connectedProject); // 코드와 연결된 프로젝트 수정
+
+        } catch (Exception e){
+            log.error(e.getMessage());
+            throw new UpdateFailedException(e.getMessage());
+        }
+
+        return 1;
+    }
+
+    @Override
+    @Transactional
+    public int deleteCode(Long codeId, Long userId){
+        Users user = usersRepository.findByUsersId(userId);
+
+        // 코드 작성자 확인
+        if(user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+
+        // 기존 코드 가져오기
+        Codes target = codesRepository.findLatestByCodesId(codeId);
+        if(target == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+        if (!target.getCodeWriter().equals(user)){
+            // 코드 작성자와 사용자가 일치하지 않는 경우
+            throw new NotMatchException();
+        }
+        if (!target.getCodesId().equals(codeId)){
+            throw new NotNewestVersionException();
+        }
+
+        log.info(target.getTitle());
+        CodesInfo targetInfo = codesInfoRepository.findByCodes(target);
+        if(targetInfo == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+        
+        // 연결된 프로젝트에서 코드 제거
+        if(target.getProjects() != null && target.getProjects().getProjectsCodes() != null){
+            Iterator<Codes> iterator = target.getProjects().getProjectsCodes().iterator();
+            while (iterator.hasNext()) {
+                Codes c = iterator.next();
+                if (c.getCodesId().equals(target.getCodesId())) {
+                    iterator.remove();
+                }
+            }
+        }
+
+        // 기존 태그 삭제
+        List<CodeSelectedTags> selectedTagsList = target.getSelectedTags();
+        if(selectedTagsList != null) {
+            for (CodeSelectedTags tag : selectedTagsList) {
+                CodeTags codeTag = tag.getTags();
+                codeTag.cntDown();
+                codeTagsRepository.save(codeTag);
+
+                codeSelectedTagsRepository.delete(tag);
+            }
+        } else {
+            log.info("기존에 선택하였던 태그가 없습니다");
+        }
+
+        // 기존에 선택한 리뷰 삭제
+        List<SelectedReviews> selectedReviewsList = targetInfo.getSelectedReviews();
+        if(selectedReviewsList != null) {
+            for(SelectedReviews review: selectedReviewsList){
+                Reviews reviews = review.getReviews();
+                reviews.selectedDown();
+                reviewsRepository.save(reviews);
+
+                selectedReviewsRepository.delete(review);
+            }
+        } else {
+            log.info("기존에 선택하였던 리뷰가 없습니다");
+        }
+
+        // 삭제할 코드 아이디
+        Long codesId = target.getCodesId();
+
+        // 코드에 등록된 리뷰에 대한 리뷰 좋아요 삭제
+        reReviewLikesRepository.deleteAllByCodesId(codesId);
+
+        // 코드에 등록된 리뷰에 대한 리뷰 목록 삭제
+        reReviewsRepository.deleteAllByCodesId(codesId);
+
+        // 코드에 등록된 리뷰 좋아요 목록 삭제
+        reviewLikesRepository.deleteAllByCodesId(codesId);
+
+        // 코드에 등록된 리뷰 삭제
+        reviewsRepository.deleteAllByCodesId(codesId);
+
+        // 코드 좋아요 목록 삭제
+        codeLikesRepository.deleteAllByCodesId(codesId);
+
+        // 코드 즐겨찾기 목록 삭제
+        codeFavoritesRepository.deleteAllByCodesId(codesId);
+
+        // 코드 정보 삭제
+        codesInfoRepository.delete(targetInfo);
+
+        // 코드 삭제
+        codesRepository.delete(target);
+
+        log.info("버전 : "+ target.getNum());
+        // 삭제하는 코드 버전이 1이라면 User의 codeCnt값 1 감소
+        if(target.getVersion() == 1) {
+            user.codesCntDown();
+        }
+
+        return 1;
     }
 
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
@@ -305,7 +524,7 @@ public class CodesServiceImpl implements CodesService {
 
             // 내가 좋아요 눌렀는지 여부
             CodeLikes codeLikes = codeLikesRepository.findByCodesAndUsers(c, user);
-            Boolean liked = codeLikes != null ? true: false;
+            Boolean liked = codeLikes != null;
 
             codeInfoRes.add(CodeInfoRes.builder()
                     .codeId(c.getCodesId())

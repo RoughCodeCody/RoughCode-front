@@ -1,17 +1,10 @@
 package com.cody.roughcode.user.entity;
 
-import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.entity.Reviews;
-import com.cody.roughcode.project.entity.CodeFavorites;
-import com.cody.roughcode.project.entity.Feedbacks;
-import com.cody.roughcode.project.entity.ProjectFavorites;
-import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,6 +51,10 @@ public class Users extends BaseTimeEntity{
             this.codesCnt = 0L;
         }
         this.codesCnt += 1;
+    }
+
+    public void codesCntDown(){
+        this.codesCnt -= 1;
     }
 
     public void updateName(String name){

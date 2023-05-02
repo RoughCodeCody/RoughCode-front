@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResp {
+public class UserRes {
 
     @Schema(description = "사용자 닉네임", example = "cody306")
     private String nickname;

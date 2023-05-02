@@ -37,10 +37,22 @@ public class ReReviewRes {
     private LocalDateTime modifiedDate;
 
     public static ReReviewRes toDto(ReReviews reReviews, Boolean liked) {
+
+        Long userId;
+        String userName;
+
+        if(reReviews.getUsers() != null) {
+            userId = reReviews.getUsers().getUsersId();
+            userName = reReviews.getUsers().getName();
+        } else { // 익명인 경우
+            userId = 0L;
+            userName = "";
+        }
+
         return ReReviewRes.builder()
                 .reReviewId(reReviews.getReReviewsId())
-                .userId(reReviews.getUsers().getUsersId())
-                .userName(reReviews.getUsers().getName())
+                .userId(userId)
+                .userName(userName)
                 .liked(liked)
                 .content(reReviews.getContent())
                 .createdDate(reReviews.getCreatedDate())

@@ -6,7 +6,7 @@ import com.cody.roughcode.security.auth.TokenInfo;
 import com.cody.roughcode.security.dto.TokenReq;
 import com.cody.roughcode.security.handler.CustomLogoutHandler;
 import com.cody.roughcode.user.dto.req.UserReq;
-import com.cody.roughcode.user.dto.res.UserResp;
+import com.cody.roughcode.user.dto.res.UserRes;
 import com.cody.roughcode.user.service.JwtServiceImpl;
 import com.cody.roughcode.user.service.UsersServiceImpl;
 import com.google.gson.Gson;
@@ -19,11 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -32,7 +30,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -67,7 +64,7 @@ class UsersControllerTest {
             .email("cody306@roughcode.com")
             .build();
 
-    UserResp userResp = UserResp.builder()
+    UserRes userRes = UserRes.builder()
             .nickname("코디")
             .email("cody306@gmail.com")
             .nickname("코디")
@@ -96,7 +93,7 @@ class UsersControllerTest {
     public void selectOneUserSucceed() throws Exception {
         // given
         final String url = "/api/v1/user";
-        doReturn(userResp).when(usersService).selectOneUser(any(Long.class));
+        doReturn(userRes).when(usersService).selectOneUser(any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
