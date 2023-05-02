@@ -8,11 +8,13 @@ import {
   Count,
 } from "@/components/elements";
 
+import { useCheckURLOpen } from "../../api";
 import { UrlApkBtn } from "./style";
 
 type ProjectInfoProps = {
   data: {
     title: string;
+    userName: string;
     url: string;
     liked: boolean;
     likeCnt: number;
@@ -20,25 +22,29 @@ type ProjectInfoProps = {
     favoriteCnt: number;
     tags: string[];
   };
+  projectId: string;
 };
 
 export const ProjectInfo = ({
-  data: { title, url, liked, likeCnt, favorite, favoriteCnt, tags },
+  data: { title, userName, url, liked, likeCnt, favorite, favoriteCnt, tags },
+  projectId,
 }: ProjectInfoProps) => {
-  // 더미데이터
-  // const title = "개발새발";
-  // const url = "https://rough-code.com";
-  const nickname = "닉네임";
-  // const defaultLikeCnt = 1;
-  // const defaultIsLiked = true;
-  // const defaultBMCnt = 0;
-  // const defaultIsBookmarked = false;
-  // const tagList = ["next.js", "spring boot"];
-
   const [isLiked, setisLiked] = useState(liked);
   const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
   const [isBookmarked, setIsBookmarked] = useState(favorite);
   const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
+
+  // URL 버튼 클릭시 서버 running 여부 확인한 후 연결
+  const checkURLQuery = useCheckURLOpen();
+  const handleURLAPKBtnClick = () => {
+    checkURLQuery.mutate(projectId, {
+      onSuccess: (data) => {
+        console.log("res", data);
+        if (data === 1) window.open(url, "_blank");
+        else alert("프로젝트 서버가 닫혀있어요");
+      },
+    });
+  };
 
   return (
     <>
@@ -48,7 +54,7 @@ export const ProjectInfo = ({
             <Text size="2.25rem" margin="0 1rem 0 0">
               {title}
             </Text>
-            <Nickname nickname={nickname} color="main" />
+            <Nickname nickname={userName} color="main" />
           </FlexDiv>
           <FlexDiv>
             <Count
@@ -72,7 +78,7 @@ export const ProjectInfo = ({
             <TagChipSub tag={val} key={idx} />
           ))}
         </FlexDiv>
-        <UrlApkBtn>{url}</UrlApkBtn>
+        <UrlApkBtn onClick={handleURLAPKBtnClick}>{url}</UrlApkBtn>
       </FlexDiv>
     </>
   );
