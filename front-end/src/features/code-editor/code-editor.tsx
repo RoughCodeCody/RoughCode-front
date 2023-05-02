@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { DiffEditor } from "@monaco-editor/react";
 import Editor from "@monaco-editor/react";
@@ -6,81 +6,35 @@ import Editor from "@monaco-editor/react";
 export const CodeEditor = () => {
   // 한글 포함된 Base64 문자열
   // 이 부분에 받아온 content 넣으면 됨
-  const base64String =
-    "IyDtm4Trs7TtgqQgCiMg7Jyg7J287ISxICYg7LWc7IaM7ISxIOunjOyhsQpmcm9tIGl0ZXJ0b29scyBpbXBvcnQgY29tYmluYXRpb25zCgpkZWYgc29sdXRpb24ocmVsYXRpb24pOgogICAgCiAgICByb3cgPSBsZW4ocmVsYXRpb24pCiAgICBjb2wgPSBsZW4ocmVsYXRpb25bMF0pCiAgICAKICAgICMg6rCA64ql7ZWcIOyGjeyEseydmCDrqqjrk6Ag7J24642x7IqkIOyhsO2VqQogICAgY2FzZSA9IFtdCiAgICBmb3IgaSBpbiByYW5nZSgxLCBjb2wrMSk6CiAgICAgICAgY2FzZS5leHRlbmQoY29tYmluYXRpb25zKHJhbmdlKGNvbCksIGkpKQo=";
-
-  const diffEditorRef = useRef(null);
-  const [lan, setLan] = useState("python");
+  const editorRef = useRef(null);
+  const [selectionStartLine, setSelectionStartLine] = useState(null);
+  const [selectionEndLine, setSelectionEndLine] = useState(null);
 
   function handleEditorDidMount(editor, monaco) {
-    diffEditorRef.current = editor;
+    editorRef.current = editor;
+    editor.onDidChangeCursorSelection(handleSelectionChange);
   }
 
-  // 받아온 코드 디코딩하는 함수
-  // 반환값 : 렌더링 시 에디터에 보여줄 코드
-  const decodeBase64ToUTF8 = (base64String) => {
-    // Base64 디코딩
-    const binaryString = atob(base64String);
-    // UTF-8 디코딩
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    const utf8String = new TextDecoder("utf-8").decode(bytes);
-    return utf8String;
-  };
-
-  // 수정한 코드 인코딩하는 함수
-  // 반환값 : 피드백 등록 시 서버에 보낼 코드
-  const encodeUTF8ToBase64 = (code) => {
-    // UTF-8 인코딩
-    const bytes = new TextEncoder().encode(code);
-    // Base64 인코딩
-    const base64String = btoa(String.fromCharCode.apply(null, bytes));
-    return base64String;
-  };
-
-  // 디코딩 결과를 에디터에 넣어주면 됨
-  const decodedString = decodeBase64ToUTF8(base64String);
-
-  const postFeedback = () => {
-    const modifiedCode = diffEditorRef?.current?.getModifiedEditor().getValue();
-    const encodedCode = encodeUTF8ToBase64(modifiedCode);
-    // 이후 encodedCode를 api요청 보내는 코드
-  };
+  function handleSelectionChange(event) {
+    const selection = event.selection;
+    const startLineNumber = selection.startLineNumber;
+    const endLineNumber = selection.endLineNumber;
+    console.log(startLineNumber);
+    console.log(endLineNumber);
+  }
 
   return (
     <>
       <Editor
         height="90vh"
-        keepCurrentModel={true}
         defaultLanguage="javascript"
-        defaultValue={decodedString}
-        options={{ domReadOnly: true }}
-      />
-      <button onClick={postFeedback}>postFeedback</button>
-      <button
-        onClick={() => {
-          setLan("python");
-          handleEditorDidMount;
-        }}
-      >
-        python
-      </button>
-      <button
-        onClick={() => {
-          setLan("typescript");
-          handleEditorDidMount;
-        }}
-      >
-        javascript
-      </button>
-      <DiffEditor
-        width="80vw"
-        height="80vh"
-        language={lan}
-        original={decodedString}
-        modified={decodedString}
+        defaultValue={`
+         a = [1,2,3,4,5,]
+
+         for i in range(a):
+             print(i)
+         a = [1,2,3,4,5,]
+         `}
         onMount={handleEditorDidMount}
       />
     </>
