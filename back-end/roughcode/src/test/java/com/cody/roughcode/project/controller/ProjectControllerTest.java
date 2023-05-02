@@ -15,6 +15,7 @@ import com.cody.roughcode.user.entity.Users;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -996,7 +997,7 @@ public class ProjectControllerTest {
                         .version(project.getVersion())
                         .build()
         );
-        doReturn(projectInfoRes).when(projectsService)
+        doReturn(Pair.of(projectInfoRes, false)).when(projectsService)
                 .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
         String keyword = "title";
@@ -1050,7 +1051,7 @@ public class ProjectControllerTest {
                         .version(project.getVersion())
                         .build()
         );
-        doReturn(projectInfoRes).when(projectsService)
+        doReturn(Pair.of(projectInfoRes, false)).when(projectsService)
                 .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
         // when

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,5 +36,14 @@ public class AlarmServiceImpl implements AlarmService {
         log.info("save to mongo : " + String.join(" ", req.getContent()));
         alarmRepository.save(new Alarm(req));
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public List<Alarm> getAlarmList(Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        return alarmRepository.findByUserId(usersId);
     }
 }
