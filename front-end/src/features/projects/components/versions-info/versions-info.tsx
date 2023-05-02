@@ -1,10 +1,10 @@
 import { Accordion, FlexDiv } from "@/components/elements";
 
-import { Versions } from "../../types";
+import { Version } from "../../types";
 import { VersionInfo } from "./version-info";
 
 type VersionsInfoProps = {
-  versions: Versions;
+  versions: Version[];
   curVersionId: string;
 };
 

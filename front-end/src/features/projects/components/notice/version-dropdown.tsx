@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { DropdownArrow, FlexDiv, Text } from "@/components/elements";
 
-import { Versions } from "../../types";
+import { Version } from "../../types";
 import {
   VersionDropdownWrapper,
   DropdownContentWrapper,
@@ -16,7 +16,7 @@ import {
 
 type VersionDropdownProps = {
   currentVersion: number;
-  versions: Versions;
+  versions: Version[];
 };
 
 export const VersionDropdown = ({

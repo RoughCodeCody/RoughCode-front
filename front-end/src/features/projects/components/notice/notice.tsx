@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 import { NoticeAlarmItem, Text } from "@/components/elements";
 
-import { Versions } from "../../types";
+import { Version } from "../../types";
 import { NoticeContent, NoticeTimeWrapper } from "./style";
 import { VersionDropdown } from "./version-dropdown";
 
@@ -10,7 +10,7 @@ type NoticeProps = {
   notice: string;
   version: number;
   date: Date;
-  versions: Versions;
+  versions: Version[];
 };
 
 export const Notice = ({ notice, version, date, versions }: NoticeProps) => {
