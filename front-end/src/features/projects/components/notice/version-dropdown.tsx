@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 import { DropdownArrow, FlexDiv, Text } from "@/components/elements";
@@ -22,7 +23,8 @@ export const VersionDropdown = ({
   currentVersion,
   versions,
 }: VersionDropdownProps) => {
-  const [versionsOpen, setVersionsOpen] = useState<boolean>(false);
+  const router = useRouter();
+  const [versionsOpen, setVersionsOpen] = useState(false);
 
   return (
     <VersionDropdownWrapper>
@@ -41,7 +43,15 @@ export const VersionDropdown = ({
         <DropdownContentWrapper>
           <DropdownContent data-isOpen={versionsOpen}>
             {versions.map(({ version, date, projectId }) => (
-              <DropdownItem key={projectId}>
+              <DropdownItem
+                key={projectId}
+                onClick={() => {
+                  if (version !== currentVersion) {
+                    router.push(`/project/${projectId}`);
+                    setVersionsOpen(false);
+                  }
+                }}
+              >
                 <Text size="1.5rem" pointer={true}>
                   {`V${version}`}
                 </Text>
