@@ -646,6 +646,100 @@ public class ProjectsServiceImpl implements ProjectsService{
         return 1;
     }
 
+    @Override
+    @Transactional
+    public int isProjectOpen(Long projectId) {
+        Projects project = projectsRepository.findByProjectsId(projectId);
+        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
+        if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+
+        if(isOpen(projectsInfo.getUrl())) {
+            projectsInfo.setClosedChecked(null);
+            return 1;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if (projectsInfo.getClosedChecked() == null) { // 처음 닫힌 것이 확인됨
+            // 무슨무슨 프로젝트 ver1 닫힘 확인 요청 -> [“”, “무슨무슨 프로젝트 ver1”, “닫힘 확인 요청”]
+            alarmService.insertAlarm(
+                    AlarmReq.builder()
+                            .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "닫힘 확인 요청"))
+                            .userId(project.getProjectWriter().getUsersId())
+                            .postId(project.getProjectsId())
+                            .section("project")
+                            .build()
+            );
+            projectsInfo.setClosedChecked(now);
+        } else { // 전에도 닫혀있음이 확인됐었음
+            if (now.isAfter(projectsInfo.getClosedChecked().plusMinutes(60))) { // 1시간 이상 지났으면
+                // 무슨무슨 프로젝트 ver1 확인 요청 후 1시간이 초과되어 닫힘 상태로 변경 -> [“”, “무슨무슨 프로젝트 ver1”, “확인 요청 후 1시간이 초과되어 닫힘 상태로 변경”]
+                alarmService.insertAlarm(
+                        AlarmReq.builder()
+                                .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "확인 요청 후 1시간이 초과되어 닫힘 상태로 변경"))
+                                .userId(project.getProjectWriter().getUsersId())
+                                .postId(project.getProjectsId())
+                                .section("project")
+                                .build()
+                );
+                project.close(true);
+                return -1;
+            }
+        }
+
+        return 0;
+    }
+
+    public boolean isOpen(String url) {
+        try {
+            URL u = new URL(url);
+            HttpURLConnection huc = (HttpURLConnection) u.openConnection();
+            huc.setRequestMethod("GET");
+            huc.connect();
+            int responseCode = huc.getResponseCode();
+            // 400 이상은 안전하지 않은 URL로 판단
+            return responseCode < 400;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public Boolean checkProject(String url, Long usersId) throws IOException {
+        String credentialsPath = "google-credentials.json"; // 인증 정보 파일 경로
+
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        if (!isOpen(url)) throw new IOException("서버 확인이 필요한 URL입니다");
+
+        SearchUrisResponse searchUrisResponse;
+        try {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsPath));
+
+            WebRiskServiceSettings settings =
+                    WebRiskServiceSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+
+            // create-webrisk-client
+            try (WebRiskServiceClient webRiskServiceClient = WebRiskServiceClient.create(settings)) {
+                // Query the url for a specific threat type
+                SearchUrisRequest searchUrisRequest =
+                        SearchUrisRequest.newBuilder().addThreatTypes(ThreatType.MALWARE).setUri(url).build();
+                searchUrisResponse = webRiskServiceClient.searchUris(searchUrisRequest);
+                webRiskServiceClient.shutdownNow();
+                if (!searchUrisResponse.getThreat().getThreatTypesList().isEmpty()) {
+                    log.info("The URL has the following threat : ");
+                    log.info(String.valueOf(searchUrisResponse));
+                } else {
+                    log.info("The URL is safe!");
+                }
+            }
+        } catch (Exception e) {
+            throw new IOException("서비스 검사 실패");
+        }
+
+        return searchUrisResponse.getThreat().getThreatTypesList().isEmpty();
+    }
 
     @Override
     @Transactional
@@ -801,83 +895,6 @@ public class ProjectsServiceImpl implements ProjectsService{
             feedbacksRepository.save(feedbacks);
             return 1;
         }
-    }
-
-    @Override
-    @Transactional
-    public int isProjectOpen(Long projectId) {
-        Projects project = projectsRepository.findByProjectsId(projectId);
-        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
-        ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
-        if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
-
-        if(isOpen(projectsInfo.getUrl())) {
-            projectsInfo.setClosedChecked(null);
-            return 1;
-        }
-        LocalDateTime now = LocalDateTime.now();
-        if(projectsInfo.getClosedChecked() == null) // 처음 닫힌 것이 확인됨
-            projectsInfo.setClosedChecked(now);
-        else { // 전에도 닫혀있음이 확인됐었음
-            if (now.isAfter(projectsInfo.getClosedChecked().plusMinutes(60))) { // 1시간 이상 지났으면
-                project.close(true);
-                return -1;
-            }
-        }
-
-        return 0;
-    }
-
-    public boolean isOpen(String url) {
-        try {
-            URL u = new URL(url);
-            HttpURLConnection huc = (HttpURLConnection) u.openConnection();
-            huc.setRequestMethod("GET");
-            huc.connect();
-            int responseCode = huc.getResponseCode();
-            // 400 이상은 안전하지 않은 URL로 판단
-            return responseCode < 400;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    @Transactional
-    public Boolean checkProject(String url, Long usersId) throws IOException {
-        String credentialsPath = "google-credentials.json"; // 인증 정보 파일 경로
-
-        Users users = usersRepository.findByUsersId(usersId);
-        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-
-        if (!isOpen(url)) throw new IOException("서버 확인이 필요한 URL입니다");
-
-        SearchUrisResponse searchUrisResponse;
-        try {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsPath));
-
-            WebRiskServiceSettings settings =
-                    WebRiskServiceSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
-
-            // create-webrisk-client
-            try (WebRiskServiceClient webRiskServiceClient = WebRiskServiceClient.create(settings)) {
-                // Query the url for a specific threat type
-                SearchUrisRequest searchUrisRequest =
-                        SearchUrisRequest.newBuilder().addThreatTypes(ThreatType.MALWARE).setUri(url).build();
-                searchUrisResponse = webRiskServiceClient.searchUris(searchUrisRequest);
-                webRiskServiceClient.shutdownNow();
-                if (!searchUrisResponse.getThreat().getThreatTypesList().isEmpty()) {
-                    log.info("The URL has the following threat : ");
-                    log.info(String.valueOf(searchUrisResponse));
-                } else {
-                    log.info("The URL is safe!");
-                }
-            }
-        } catch (Exception e) {
-            throw new IOException("서비스 검사 실패");
-        }
-
-        return searchUrisResponse.getThreat().getThreatTypesList().isEmpty();
     }
 
     @Override
