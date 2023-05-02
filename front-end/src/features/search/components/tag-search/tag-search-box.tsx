@@ -1,22 +1,12 @@
 import { useState } from "react";
 
+import { SearchInput } from "./style";
+import { TagList } from "./tag-list";
+
 import { DropdownArrow } from "@/components/elements";
 import { FlexDiv } from "@/components/elements";
 
-import { SearchInput } from "./style";
-
-import { TagList } from "./tag-list";
-
 export const TagSearchBox = () => {
-  type SelectedTags = string[];
-  // 더미데이터
-  const dummyTags: SelectedTags = [
-    "자바",
-    "리액트",
-    "파이썬",
-    "씨쁠쁠",
-    "스프링",
-  ];
   const [isOpen, setisOpen] = useState<boolean>(false);
   const [tagKeyword, setTagKeyword] = useState("");
 

@@ -1,17 +1,18 @@
 import Link from "next/link";
-
-import { useState, useRef, ReactNode } from "react";
 import Image from "next/image";
+import { useState, useRef } from "react";
+
 import { FlexDiv } from "@/components/elements";
 import { Text } from "@/components/elements";
+import { TagChipSub } from "@/components/elements";
+import { Count } from "@/components/elements/count";
+
 import {
   ThumbnailContainer,
   ImageContainer,
   ProjectCardDescription,
   TagContainer,
 } from "./style";
-import { TagChipSub } from "@/components/elements";
-import { Count } from "@/components/elements/count";
 
 interface ProjectCardProps {
   project: {
@@ -156,7 +157,6 @@ export const ProjectCard = ({
             onWheel={handleWheel}
           >
             {tags.map((tag, idx) => (
-              // 임시로 tag에 스트링 씌움
               <TagChipSub tag={tag} key={idx} />
             ))}
           </TagContainer>

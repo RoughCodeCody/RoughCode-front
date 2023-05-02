@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { DropLabelBox, DropOptionContainer, DropOption } from "./style";
 import { FlexDiv, Text } from "@/components/elements";
 import { DropdownArrow } from "@/components/elements";
-
 import { useSearchCriteriaStore } from "@/stores";
+
+import { DropLabelBox, DropOptionContainer, DropOption } from "./style";
 
 interface DropLabelProps {
   sortOptions: string[];

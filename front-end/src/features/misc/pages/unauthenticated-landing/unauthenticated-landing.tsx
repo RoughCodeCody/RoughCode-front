@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Title, Text } from "@/components/elements";
 import {
   UnauthHomeContainer,
   Banner,
@@ -12,6 +11,7 @@ import {
 } from "./unauthenticated-landing-style";
 import { HomeLinkCard } from "./components/home-link-card";
 
+import { Title, Text } from "@/components/elements";
 // import dogFoot from "@/assets/icons/dog-foot.png";
 import dogFoot from "@/assets/dog-foot.png";
 

@@ -20,6 +20,7 @@ type SearchCriteriaStore = {
   setSort: (sortOption: string) => void;
   addTagId: (Tag: Tag) => void;
   deleteTagId: (TagId: number) => void;
+  setKeyword: (keyword: string) => void;
 };
 
 export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
@@ -88,5 +89,14 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
         },
       };
     });
+  },
+  setKeyword: (keyword) => {
+    // 전체 프로젝트 보기, 열린 프로젝트만 보기
+    set((state) => ({
+      searchCriteria: {
+        ...state.searchCriteria,
+        keyword: keyword,
+      },
+    }));
   },
 }));

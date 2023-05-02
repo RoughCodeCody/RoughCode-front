@@ -1,10 +1,29 @@
-import { FlexDiv } from "@/components/elements";
-import { SearchBarForm, SearchInput, SearchButton } from "./style";
-import { Btn } from "@/components/elements/btn";
-
+import { useState } from "react";
 import { BiSearchAlt } from "react-icons/bi";
 
+import { SearchBarForm, SearchInput, SearchButton } from "./style";
+
+import { FlexDiv } from "@/components/elements";
+import { useSearchCriteriaStore } from "@/stores";
+
 export const KeywordSearch = () => {
+  const { setKeyword } = useSearchCriteriaStore();
+  const [word, setWord] = useState("");
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setWord(event.target.value);
+  };
+
+  const keywordSearch = () => {
+    setKeyword(word);
+  };
+
+  const enterListener = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    if (event.key === "Enter") {
+      keywordSearch();
+    }
+  };
   return (
     <FlexDiv width="100%" maxWidth="1280px">
       <FlexDiv
@@ -18,9 +37,13 @@ export const KeywordSearch = () => {
           <FlexDiv width="3.7rem" height="100%">
             <BiSearchAlt fontSize="2rem" color="var(--font-color)" />
           </FlexDiv>
-          <SearchInput placeholder="검색어를 입력해 주세요" />
+          <SearchInput
+            onChange={handleChange}
+            onKeyPress={enterListener}
+            placeholder="검색어를 입력해 주세요"
+          />
         </SearchBarForm>
-        <SearchButton>검색</SearchButton>
+        <SearchButton onClick={keywordSearch}>검색</SearchButton>
       </FlexDiv>
     </FlexDiv>
   );

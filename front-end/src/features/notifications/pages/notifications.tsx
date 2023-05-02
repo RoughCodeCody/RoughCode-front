@@ -1,4 +1,3 @@
-import { NoticeAlarmItem, Title } from "@/components/elements";
 import { NoticeContent } from "../components";
 import {
   HomeContainer,
@@ -6,8 +5,7 @@ import {
   NoticeContainer,
 } from "./notifications-style";
 
-// 피드 불러오기
-// 피드 삭제 시 서버에서도 지우나?
+import { NoticeAlarmItem, Title } from "@/components/elements";
 
 interface notice {
   writer: string;
