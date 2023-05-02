@@ -1,5 +1,7 @@
 package com.cody.roughcode.code.controller;
 
+import com.cody.roughcode.code.dto.req.CodeFavoriteReq;
+import com.cody.roughcode.code.entity.CodeFavorites;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
@@ -8,6 +10,7 @@ import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
+import com.cody.roughcode.user.service.UsersService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -350,7 +353,7 @@ class CodesControllerTest {
         // given
         final String url = "/api/v1/code/{codeId}/like";
 
-        // CodeService deleteCode 대한 stub 필요
+        // CodeService likeCode 대한 stub 필요
         doReturn(3).when(codesService)
                 .likeCode(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
@@ -376,7 +379,7 @@ class CodesControllerTest {
         // given
         final String url = "/api/v1/code/{codeId}/like";
 
-        // CodeService deleteCode 대한 stub 필요
+        // CodeService likeCode 대한 stub 필요
         doReturn(-1).when(codesService)
                 .likeCode(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
@@ -395,4 +398,69 @@ class CodesControllerTest {
         String message = jsonObject.get("message").getAsString();
         assertThat(message).isEqualTo("코드 좋아요 등록 또는 취소 실패");
     }
+
+    @DisplayName("코드 즐겨찾기 등록 또는 취소 성공")
+    @Test
+    public void favoriteCodeSucceed() throws Exception {
+        // given
+        CodeFavoriteReq codeFavoriteReq = CodeFavoriteReq.builder()
+                .content("오.. 효율적인 코드")
+                .build();
+
+        final String url = "/api/v1/code/{codeId}/favorite";
+
+        // CodeService favoriteCode 대한 stub 필요
+        doReturn(3).when(codesService)
+                .favoriteCode(any(Long.class), any(String.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(codeFavoriteReq))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 즐겨찾기 등록 또는 취소 성공");
+    }
+
+    @DisplayName("코드 즐겨찾기 등록 또는 취소 실패")
+    @Test
+    public void favoriteCodeFail() throws Exception {
+        // given
+        CodeFavoriteReq codeFavoriteReq = CodeFavoriteReq.builder()
+                .content("오.. 효율적인 코드")
+                .build();
+
+        final String url = "/api/v1/code/{codeId}/favorite";
+
+        // CodeService favoriteCode 대한 stub 필요
+        doReturn(-1).when(codesService)
+                .favoriteCode(any(Long.class), any(String.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(codeFavoriteReq))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 즐겨찾기 등록 또는 취소 실패");
+    }
+
 }

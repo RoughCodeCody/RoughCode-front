@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.controller;
 
+import com.cody.roughcode.code.dto.req.CodeFavoriteReq;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
@@ -51,26 +52,26 @@ public class CodesController {
                                   @Parameter(description = "페이지 수", example = "0") @RequestParam(defaultValue = "0") int page,
                                   @Parameter(description = "한 페이지에 담기는 개수", example = "10") @RequestParam(defaultValue = "10") int size,
                                   @Parameter(description = "검색어", example = "개발새발") @RequestParam(defaultValue = "") String keyword,
-                                  @Parameter(description = "태그 아이디 리스트", example = "1,2,3,4") @RequestParam(defaultValue = "") String tagIdList){
-        Long userId = accessToken!= null? jwtTokenProvider.getId(accessToken): -1L;
+                                  @Parameter(description = "태그 아이디 리스트", example = "1,2,3,4") @RequestParam(defaultValue = "") String tagIdList) {
+        Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
         List<String> sortList = List.of("modifiedDate", "likeCnt", "feedbackCnt");
 
-        if(!sortList.contains(sort) || page < 0 || size < 0){
+        if (!sortList.contains(sort) || page < 0 || size < 0) {
             return Response.badRequest("잘못된 요청입니다");
         }
 
         List<CodeInfoRes> res = null;
-        try{
+        try {
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sort));
             res = codesService.getCodeList(sort, pageRequest, keyword, tagIdList, userId);
-        } catch(Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
         }
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("nextPage", page+1);
+        resultMap.put("nextPage", page + 1);
         resultMap.put("list", res);
         return Response.makeResponse(HttpStatus.OK, "코드 목록 조회 성공", res.size(), resultMap);
     }
@@ -109,8 +110,8 @@ public class CodesController {
     })
     @GetMapping("/{codeId}")
     ResponseEntity<?> getCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
-        Long userId = accessToken!= null? jwtTokenProvider.getId(accessToken): -1L;
+                              @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+        Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
         CodeDetailRes res = null;
         try {
@@ -188,7 +189,7 @@ public class CodesController {
     })
     @PostMapping("/{codeId}/like")
     ResponseEntity<?> likeCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+                               @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         int res = 0;
@@ -206,6 +207,38 @@ public class CodesController {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("like", res);
         return Response.makeResponse(HttpStatus.OK, "코드 좋아요 등록 또는 취소 성공", 0, resultMap);
+
+    }
+
+    @Operation(summary = "코드 즐겨찾기(등록, 취소) API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 즐겨찾기 등록 또는 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "404", description = "코드 즐겨찾기 등록 또는 취소 실패")
+    })
+    @PostMapping("/{codeId}/favorite")
+    ResponseEntity<?> favoriteCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                   @Parameter(description = "즐겨찾기 내용") @RequestBody(required = false) CodeFavoriteReq codeFavoriteReq,
+                                   @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        String content = codeFavoriteReq != null ? codeFavoriteReq.getContent() : null;
+
+        int res = -1;
+        try {
+            res = codesService.favoriteCode(codeId, content, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res < 0) {
+            return Response.notFound("코드 즐겨찾기 등록 또는 취소 실패");
+        }
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("favorite", res);
+        return Response.makeResponse(HttpStatus.OK, "코드 즐겨찾기 등록 또는 취소 성공", 0, resultMap);
 
     }
 }

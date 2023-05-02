@@ -555,6 +555,46 @@ public class CodesServiceImpl implements CodesService {
         return target.getLikeCnt();
     }
 
+    @Override
+    @Transactional
+    public int favoriteCode(Long codeId, String content, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 없습니다");
+        }
+
+        CodesInfo target = codesInfoRepository.findByCodesId(codeId);
+        if (target == null) {
+            throw new NullPointerException("일치하는 코드가 없습니다");
+        }
+
+        // 즐겨찾기를 누른 여부 확인 (눌려있다면 취소 처리, 새로 누른 경우 등록 처리)
+        CodeFavorites codeFavorites = codeFavoritesRepository.findByCodesIdAndUsersId(codeId, userId);
+
+        // 즐겨찾기가 눌려있다면 취소 처리
+        if (codeFavorites != null) {
+            // CodeFavorites 데이터 삭제
+            codeFavoritesRepository.delete(codeFavorites);
+            // 코드 즐겨찾기 수 감소
+            target.favoriteCntDown();
+        } else { // 새로 누른 경우 등록 처리
+            // CodeFavorites 데이터 추가
+            codeFavoritesRepository.save(
+                    CodeFavorites.builder()
+                            .content(content)
+                            .codes(target.getCodes())
+                            .users(user)
+                            .build());
+            // 코드 즐겨찾기 수 증가
+            target.favoriteCntUp();
+        }
+
+        // 즐겨찾기 수 반환
+        return target.getFavoriteCnt();
+    }
+
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
         List<Codes> codeList = codesPage.getContent();
         List<CodeInfoRes> codeInfoRes = new ArrayList<>();

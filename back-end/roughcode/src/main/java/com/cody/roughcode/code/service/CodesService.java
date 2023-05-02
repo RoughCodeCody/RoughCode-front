@@ -21,4 +21,6 @@ public interface CodesService {
     int deleteCode(Long codeId, Long userId);
 
     int likeCode(Long codeId, Long userId);
+
+    int favoriteCode(Long codeId, String content, Long userId);
 }
