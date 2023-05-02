@@ -17,7 +17,7 @@ public class CodeReq {
     @Schema(description = "코드 제목", example = "개발새발 코드")
     private String title;
 
-    @Schema(description = "코드 내용을 담은 github URL", example = "")
+    @Schema(description = "코드 내용을 담은 github URL", example = "https://api.github.com/repos/cody/hello-world/contents/src/main.py?ref=594e05aee256df9e4e826ff56ea2a8c38e9e7972")
     private String githubUrl;
 
     @Schema(description = "코드 설명", example = "시간 초과가 뜹니다. 더 효율적인 방법이 궁금합니다!")
