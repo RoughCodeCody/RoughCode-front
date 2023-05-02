@@ -2,11 +2,16 @@ package com.cody.roughcode.mypage.controller;
 
 import com.cody.roughcode.alarm.entity.Alarm;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
+import com.cody.roughcode.mypage.service.MypageServiceImpl;
+import com.cody.roughcode.project.dto.res.ProjectInfoRes;
+import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
+import com.cody.roughcode.user.entity.Users;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -52,6 +60,13 @@ public class MypageControllerTest {
     }
 
     final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTEyM0BnbWFpbC5jb20iLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjc0NzEyMDg2fQ.fMjhTvyLoCBzAXZ4gtJCAMS98j9DNsC7w2utcB-Uho";
+
+    final Users users = Users.builder()
+            .usersId(1L)
+            .email("kosy1782@gmail.com")
+            .name("kosy318")
+            .roles(List.of(String.valueOf(ROLE_USER)))
+            .build();
 
     final Alarm alarm1 = Alarm.builder()
             .createdDate(LocalDateTime.now())
@@ -79,7 +94,60 @@ public class MypageControllerTest {
     @Mock
     private AlarmServiceImpl alarmService;
     @Mock
+    private MypageServiceImpl mypageService;
+    @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+
+    @DisplayName("프로젝트 목록 조회 성공")
+    @Test
+    public void getProjectListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/project";
+
+        int page = 10;
+
+        final Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .build();
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(project.getModifiedDate())
+                        .img(project.getImg())
+                        .projectId(project.getProjectsId())
+                        .feedbackCnt(project.getFeedbackCnt())
+                        .introduction(project.getIntroduction())
+                        .likeCnt(project.getLikeCnt())
+                        .tags(List.of("springboot"))
+                        .title(project.getTitle())
+                        .version(project.getVersion())
+                        .build()
+        );
+        doReturn(Pair.of(projectInfoRes, false)).when(mypageService)
+                .getProjectList(any(PageRequest.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("sort", "modifiedDate")
+                        .param("size", "10")
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("내 프로젝트 목록 조회 성공");
+    }
 
     @DisplayName("알람 삭제 성공")
     @Test
