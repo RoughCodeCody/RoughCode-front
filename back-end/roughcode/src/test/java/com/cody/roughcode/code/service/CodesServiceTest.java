@@ -5,12 +5,10 @@ import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.project.entity.CodeFavorites;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,6 +74,7 @@ class CodesServiceTest {
             .version(1)
             .title("개발새발 코드")
             .codeWriter(user)
+            .likeCnt(3)
             .build();
 
     final CodesInfo info = CodesInfo.builder()
@@ -424,5 +423,74 @@ class CodesServiceTest {
         );
 
         assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 좋아요 등록 성공")
+    @Test
+    void likeCodeSucceed() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(null).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
+
+        int likeCnt = code.getLikeCnt();
+
+        // when
+        int res = codesService.likeCode(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(code.getLikeCnt());
+        assertThat(res).isEqualTo(likeCnt + 1);
+    }
+
+    @DisplayName("코드 좋아요 취소 성공")
+    @Test
+    void likeCodeCancelSucceed() {
+        CodeLikes codeLikes = CodeLikes.builder()
+                .codes(code)
+                .users(user).build();
+
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(codeLikes).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
+
+        int likeCnt = code.getLikeCnt();
+
+        // when
+        int res = codesService.likeCode(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(code.getLikeCnt());
+        assertThat(res).isEqualTo(likeCnt - 1);
+    }
+
+    @DisplayName("코드 좋아요 등록 또는 취소 실패 - 일치하는 유저가 없음")
+    @Test
+    void likeCodeFailNotFoundUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> codesService.likeCode(1L, 0L)
+        );
+
+        assertEquals("일치하는 유저가 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 좋아요 등록 또는 취소 실패 - 일치하는 코드가 없음")
+    @Test
+    void likeCodeFailNotFoundCode() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(codesRepository).findByCodesId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> codesService.likeCode(0L, 1L)
+        );
+
+        assertEquals("일치하는 코드가 없습니다", exception.getMessage());
     }
 }
