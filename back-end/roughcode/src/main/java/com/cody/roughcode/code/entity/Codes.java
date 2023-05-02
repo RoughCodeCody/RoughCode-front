@@ -66,4 +66,12 @@ public class Codes extends BaseTimeEntity {
     public void likeCntDown() {
         this.likeCnt -= 1;
     }
+
+    public void reviewCntUp() {
+        this.reviewCnt += 1;
+    }
+
+    public void reviewCntDown() {
+        this.reviewCnt -= 1;
+    }
 }

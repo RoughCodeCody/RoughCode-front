@@ -51,6 +51,9 @@ public class ReviewsServiceImpl implements ReviewsService{
             Reviews savedReviews = reviewsRepository.save(reviews);
             reviewId = savedReviews.getReviewsId();
 
+            // 리뷰를 등록하는 코드의 reviewCnt 값 +1
+            code.reviewCntUp();
+
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new SaveFailedException(e.getMessage());
