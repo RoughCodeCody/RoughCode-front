@@ -5,7 +5,6 @@ import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.project.entity.CodeFavorites;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;

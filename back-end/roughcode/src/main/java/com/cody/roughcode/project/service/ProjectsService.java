@@ -28,9 +28,9 @@ public interface ProjectsService {
     int likeProject(Long projectsId, Long usersId);
     int favoriteProject(Long projectsId, String content, Long usersId);
     int openProject(Long projectsId, Long usersId);
-
-    @Transactional
     int closeProject(Long projectsId, Long usersId);
+    int isProjectOpen(Long projectId);
+    Boolean checkProject(String url, Long usersId) throws IOException;
 
     int insertFeedback(FeedbackReq req, Long usersId);
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
@@ -38,9 +38,6 @@ public interface ProjectsService {
     int deleteFeedback(Long feedbackId, Long usersId);
     int feedbackComplain(Long feedbackId, Long usersId);
     int likeProjectFeedback(Long feedbackId, Long usersId);
-
-    int isProjectOpen(Long projectId);
-    Boolean checkProject(String url, Long usersId) throws IOException;
 
     List<ProjectTagsRes> searchTags(String s);
 }

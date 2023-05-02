@@ -3,16 +3,20 @@ package com.cody.roughcode.alarm.service;
 
 import com.cody.roughcode.alarm.dto.req.AlarmReq;
 import com.cody.roughcode.alarm.entity.Alarm;
+import com.cody.roughcode.alarm.entity.AlarmRes;
 import com.cody.roughcode.alarm.repository.AlarmRepository;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -35,5 +39,35 @@ public class AlarmServiceImpl implements AlarmService {
         log.info("save to mongo : " + String.join(" ", req.getContent()));
         alarmRepository.save(new Alarm(req));
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public List<AlarmRes> getAlarmList(Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        return getAlarmRes(alarmRepository.findByUserIdOrderByCreatedDateDesc(usersId));
+    }
+
+    private List<AlarmRes> getAlarmRes(List<Alarm> alarmList) {
+        List<AlarmRes> res = new ArrayList<>();
+        for (Alarm alarm : alarmList) {
+            res.add(new AlarmRes(alarm));
+        }
+        return res;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAlarm(String alarmId, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        Alarm alarm = alarmRepository.findById(new ObjectId(alarmId));
+        if(alarm == null) throw new NullPointerException("일치하는 알림이 없습니다");
+        if(!Objects.equals(alarm.getUserId(), user.getUsersId())) throw new NotMatchException();
+
+        alarmRepository.deleteById(new ObjectId(alarmId));
     }
 }
