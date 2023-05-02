@@ -12,7 +12,9 @@ export const SwitchDemo = () => {
       <div style={{ display: "flex", alignItems: "center" }}>
         <Label className="Label" style={{ paddingRight: 15 }}>
           <Text size="1.1rem" color="font">
-            {searchCriteria.closed === 1 ? "전체 게시물" : "열린 게시물"}
+            {searchCriteria.closed === 1
+              ? "닫힌 프로젝트 포함"
+              : "열린 프로젝트만"}
           </Text>
         </Label>
         <SwitchRoot

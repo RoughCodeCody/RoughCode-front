@@ -1,7 +1,9 @@
 import * as Switch from "@radix-ui/react-switch";
 import styled from "styled-components";
 
-export const SwitchRoot = styled(Switch.Root)`
+export const SwitchRoot = styled(Switch.Root).attrs(() => ({
+  defaultChecked: true, // 스위치를 켜진 상태로 초기화합니다.
+}))`
   border: none;
   padding: 0;
   width: 42px;
