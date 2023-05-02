@@ -3,32 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 
-type ProjectInfoResult = {
-  closed: boolean;
-  codeId: number[];
-  content: string;
-  date: Date;
-  favorite: boolean;
-  favoriteCnt: number;
-  feedbackCnt: number;
-  feedbacks: [];
-  img: string;
-  likeCnt: number;
-  liked: boolean;
-  notice: string;
-  tags: string[];
-  title: string;
-  url: string;
-  userName: string;
-  version: number;
-  versions: {
-    date: Date;
-    notice: string;
-    projectId: number;
-    selectedFeedbacks: [];
-    version: number;
-  }[];
-};
+import { ProjectInfoResult } from "../types";
 
 export const getProjectInfo = (
   projectId: string
