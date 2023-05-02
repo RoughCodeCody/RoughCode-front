@@ -4,6 +4,7 @@ import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.entity.Feedbacks;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
+import com.cody.roughcode.user.entity.Users;
 import lombok.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.aspectj.apache.bcel.classfile.Code;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ProjectDetailRes {
     private Long projectId;
     private String userName;
+    private Boolean mine;
     private String title;
     private int version;
     private LocalDateTime date;
@@ -39,9 +41,10 @@ public class ProjectDetailRes {
     private String notice;
 
     public ProjectDetailRes(Projects project, ProjectsInfo projectsInfo, List<String> tagList,
-                            Boolean liked, Boolean favorite) {
+                            Boolean liked, Boolean favorite, Users user) {
         this.projectId = project.getProjectsId();
         this.userName = project.getProjectWriter().getName();
+        this.mine = (project.getProjectWriter().equals(user));
         this.title = project.getTitle();
         this.version = project.getVersion();
         this.date = project.getModifiedDate();
