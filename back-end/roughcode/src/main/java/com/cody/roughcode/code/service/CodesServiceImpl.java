@@ -4,10 +4,7 @@ import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
-import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.exception.NotNewestVersionException;
-import com.cody.roughcode.exception.S3FailedException;
-import com.cody.roughcode.exception.UpdateFailedException;
+import com.cody.roughcode.exception.*;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
@@ -179,7 +176,7 @@ public class CodesServiceImpl implements CodesService {
 
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new S3FailedException(e.getMessage());
+            throw new SaveFailedException(e.getMessage());
         }
 
         return codeId;
