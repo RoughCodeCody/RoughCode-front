@@ -18,6 +18,12 @@ export const KeywordSearch = () => {
     setKeyword(word);
   };
 
+  const enterListener = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    if (event.key === "Enter") {
+      keywordSearch();
+    }
+  };
   return (
     <FlexDiv width="100%" maxWidth="1280px">
       <FlexDiv
@@ -33,6 +39,7 @@ export const KeywordSearch = () => {
           </FlexDiv>
           <SearchInput
             onChange={handleChange}
+            onKeyPress={enterListener}
             placeholder="검색어를 입력해 주세요"
           />
         </SearchBarForm>
