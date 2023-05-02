@@ -1,7 +1,5 @@
 package com.cody.roughcode.mypage.service;
 
-import com.cody.roughcode.code.entity.CodeSelectedTags;
-import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.Projects;
@@ -14,11 +12,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,14 +25,28 @@ public class MypageServiceImpl implements MypageService{
     private final UsersRepository usersRepository;
 
     @Override
+    @Transactional
     public Pair<List<ProjectInfoRes>, Boolean> getProjectList(PageRequest pageRequest, Long usersId) {
-        Users user = usersRepository.findByUsersId(usersId);
-        if(user == null) throw new NullPointerException("일치하는 유저가 없습니다");
+        findUser(usersId);
 
         Page<Projects> projectsPage = projectsRepository.findAllByProjectWriter(usersId, pageRequest);
 
-        Pair<List<ProjectInfoRes>, Boolean> res = Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
-        return res;
+        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+    }
+
+    @Override
+    @Transactional
+    public Pair<List<ProjectInfoRes>, Boolean> getFavoriteProjectList(PageRequest pageRequest, Long usersId) {
+        findUser(usersId);
+
+        Page<Projects> projectsPage = projectsRepository.findAllMyFavorite(usersId, pageRequest);
+
+        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+    }
+
+    private void findUser(Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {

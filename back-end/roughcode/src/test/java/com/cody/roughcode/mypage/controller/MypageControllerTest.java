@@ -99,6 +99,56 @@ public class MypageControllerTest {
     private JwtTokenProvider jwtTokenProvider;
 
 
+    @DisplayName("내 즐겨찾기 프로젝트 목록 조회 성공")
+    @Test
+    public void getFavoriteProjectListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/project/favorite";
+
+        int page = 10;
+
+        final Projects project = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                .introduction("intro")
+                .title("title")
+                .projectWriter(users)
+                .build();
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(project.getModifiedDate())
+                        .img(project.getImg())
+                        .projectId(project.getProjectsId())
+                        .feedbackCnt(project.getFeedbackCnt())
+                        .introduction(project.getIntroduction())
+                        .likeCnt(project.getLikeCnt())
+                        .tags(List.of("springboot"))
+                        .title(project.getTitle())
+                        .version(project.getVersion())
+                        .build()
+        );
+        doReturn(Pair.of(projectInfoRes, false)).when(mypageService)
+                .getFavoriteProjectList(any(PageRequest.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("page", String.valueOf(page))
+                        .param("size", "10")
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("내 즐겨찾기 프로젝트 목록 조회 성공");
+    }
+
     @DisplayName("프로젝트 목록 조회 성공")
     @Test
     public void getProjectListSucceed() throws Exception {
@@ -136,7 +186,7 @@ public class MypageControllerTest {
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
                         .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
-                        .param("sort", "modifiedDate")
+                        .param("page", String.valueOf(page))
                         .param("size", "10")
         );
 

@@ -36,6 +36,33 @@ public class MypageController {
     private final AlarmServiceImpl alarmService;
     private final MypageServiceImpl mypageService;
 
+    @Operation(summary = "내가 즐겨찾기한 프로젝트 목록 조회 API")
+    @GetMapping("/project/favorite")
+    ResponseEntity<?> getFavoriteProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
+                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size) {
+        if(page < 0 || size < 0){
+            return Response.badRequest("잘못된 요청입니다");
+        }
+        Long usersId = jwtTokenProvider.getId(accessToken);
+
+        Pair<List<ProjectInfoRes>, Boolean> res;
+        List<ProjectInfoRes> projectRes = new ArrayList<>();
+        try{
+            PageRequest pageRequest = PageRequest.of(page, size);
+            res = mypageService.getFavoriteProjectList(pageRequest, usersId);
+            projectRes = res.getLeft();
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("nextPage", (res.getRight())? page + 1 : -1);
+        resultMap.put("list", projectRes);
+        return Response.makeResponse(HttpStatus.OK, "내 즐겨찾기 프로젝트 목록 조회 성공", projectRes.size(), resultMap);
+    }
+
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping("/project")
     ResponseEntity<?> getProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
