@@ -50,7 +50,7 @@ export const ProjectList = () => {
         },
       }
     );
-    return res.data;
+    return res.data.result;
   };
   useEffect(() => {
     queryClient.removeQueries(["projects"]);
@@ -65,9 +65,7 @@ export const ProjectList = () => {
     fetchProjects,
     {
       getNextPageParam: (lastPage) => {
-        return lastPage.result.nextPage === -1
-          ? undefined
-          : lastPage.result.nextPage;
+        return lastPage.nextPage === -1 ? undefined : lastPage.nextPage;
       },
     }
   );
@@ -87,26 +85,21 @@ export const ProjectList = () => {
   }, [keyword]);
 
   return (
-    <FlexDiv height="100%" width="100%" direction="column">
-      <>{console.log(data)}</>
+    <FlexDiv height="100%" width="100%" direction="column" gap="3rem">
       {status === "loading" && <p>Loading...</p>}
       {status === "success" && (
         <>
           {data.pages.map((page, idx) => (
             <ProjectCardGrid key={idx}>
-              {page.result.list.map(
-                (project: ProjectCardProps, index: number) => (
-                  <FlexDiv
-                    key={project.projectId}
-                    ref={
-                      index === page.result.list.length - 1 ? ref : undefined
-                    }
-                    justify="center"
-                  >
-                    <ProjectCard key={project.projectId} project={project} />
-                  </FlexDiv>
-                )
-              )}
+              {page.list.map((project: ProjectCardProps, index: number) => (
+                <FlexDiv
+                  key={project.projectId}
+                  ref={index === page.list.length - 1 ? ref : undefined}
+                  justify="center"
+                >
+                  <ProjectCard key={project.projectId} project={project} />
+                </FlexDiv>
+              ))}
             </ProjectCardGrid>
           ))}
         </>
