@@ -51,4 +51,12 @@ public class CodesInfo {
         this.content = req.getContent();
         this.githubUrl = req.getGithubUrl();
     }
+
+    public void favoriteCntUp() {
+        this.favoriteCnt += 1;
+    }
+
+    public void favoriteCntDown() {
+        this.favoriteCnt -= 1;
+    }
 }
