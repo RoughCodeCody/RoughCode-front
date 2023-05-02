@@ -502,7 +502,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         Boolean liked = myLike != null;
         Boolean favorite = myFavorite != null;
 
-        ProjectDetailRes projectDetailRes = new ProjectDetailRes(project, projectsInfo, tagList, liked, favorite);
+        ProjectDetailRes projectDetailRes = new ProjectDetailRes(project, projectsInfo, tagList, liked, favorite, user);
 
         List<Pair<Projects, ProjectsInfo>> otherVersions = new ArrayList<>();
         List<Projects> projectList = projectsRepository.findByNumAndProjectWriter(project.getNum(), project.getProjectWriter());
