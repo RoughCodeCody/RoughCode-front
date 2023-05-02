@@ -696,8 +696,9 @@ public class ProjectsServiceImpl implements ProjectsService{
             huc.setRequestMethod("GET");
             huc.connect();
             int responseCode = huc.getResponseCode();
+            log.info(url + " responseCode : " + responseCode);
             // 400 이상은 안전하지 않은 URL로 판단
-            return responseCode < 400;
+            return responseCode < 300;
         } catch (Exception e) {
             return false;
         }
