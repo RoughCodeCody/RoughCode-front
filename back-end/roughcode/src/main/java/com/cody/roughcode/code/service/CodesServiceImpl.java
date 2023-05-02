@@ -5,8 +5,8 @@ import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.exception.S3FailedException;
 import com.cody.roughcode.exception.NotNewestVersionException;
+import com.cody.roughcode.exception.S3FailedException;
 import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
@@ -47,22 +47,22 @@ public class CodesServiceImpl implements CodesService {
     public List<CodeInfoRes> getCodeList(String sort, PageRequest pageRequest,
                                          String keyword, String tagIds, Long userId) {
         Users user = usersRepository.findByUsersId(userId);
-        if(user==null) {
+        if (user == null) {
             user = Users.builder().usersId(0L).build(); // 익명
         }
         List<Long> tagIdList = null;
-        if(tagIds != null && tagIds.length()>0){
+        if (tagIds != null && tagIds.length() > 0) {
             tagIdList = Arrays.stream(tagIds.split(","))
                     .map(Long::valueOf)
                     .collect(Collectors.toList());
         }
 
-        if(keyword == null) {
+        if (keyword == null) {
             keyword = "";
         }
 
         Page<Codes> codesPage = null;
-        if(tagIdList == null || tagIdList.size() == 0) {
+        if (tagIdList == null || tagIdList.size() == 0) {
             codesPage = codesRepository.findAllByKeyword(keyword, pageRequest);
         } else {
             codesPage = codeSelectedTagsRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
@@ -228,7 +228,7 @@ public class CodesServiceImpl implements CodesService {
         List<VersionRes> versionResList = new ArrayList<>();
         for (Pair<Codes, CodesInfo> c : otherVersions) {
             List<SelectedReviewRes> selectedReviewResList = new ArrayList<>();
-            if(c.getRight().getSelectedReviews() != null)
+            if (c.getRight().getSelectedReviews() != null)
                 for (var selectedReview : c.getRight().getSelectedReviews()) {
                     selectedReviewResList.add(SelectedReviewRes.builder()
                             .reviewId(selectedReview.getReviews().getReviewsId())
@@ -246,14 +246,14 @@ public class CodesServiceImpl implements CodesService {
         // 리뷰 목록
         // - 순서 : 1.반영된 리뷰, 2.내가 쓴 리뷰, 3.나머지
         List<ReviewRes> reviewResList = new ArrayList<>();
-        if(codesInfo.getReviews() != null) {
-            for(Reviews review : codesInfo.getReviews()){
-                ReviewLikes reviewLike =  (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user): null;
+        if (codesInfo.getReviews() != null) {
+            for (Reviews review : codesInfo.getReviews()) {
+                ReviewLikes reviewLike = (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user) : null;
                 Boolean reviewLiked = reviewLike != null;
 
                 List<ReReviewRes> reReviewResList = new ArrayList<>();
-                for(ReReviews reReview: review.getReReviews()){
-                    ReReviewLikes reReviewLike =  (user != null) ? reReviewLikesRepository.findByReReviewsAndUsers(reReview, user): null;
+                for (ReReviews reReview : review.getReReviews()) {
+                    ReReviewLikes reReviewLike = (user != null) ? reReviewLikesRepository.findByReReviewsAndUsers(reReview, user) : null;
                     Boolean reReviewLiked = reReviewLike != null;
                     reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
                 }
@@ -273,7 +273,7 @@ public class CodesServiceImpl implements CodesService {
 
         Long resUserId = null;
         String resUserName = null;
-        if(user!= null){
+        if (user != null) {
             resUserId = user.getUsersId();
             resUserName = user.getName();
         }
@@ -307,32 +307,32 @@ public class CodesServiceImpl implements CodesService {
         Users user = usersRepository.findByUsersId(userId);
 
         // 코드 작성자 확인
-        if(user == null) {
+        if (user == null) {
             throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         }
 
         // 기존 코드 가져오기
         Codes target = codesRepository.findLatestByCodesId(codeId);
-        if(target == null) {
+        if (target == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
-        if (!target.getCodeWriter().equals(user)){
+        if (!target.getCodeWriter().equals(user)) {
             // 코드 작성자와 사용자가 일치하지 않는 경우
             throw new NotMatchException();
         }
-        if (!target.getCodesId().equals(codeId)){
+        if (!target.getCodesId().equals(codeId)) {
             throw new NotNewestVersionException();
         }
 
         CodesInfo targetInfo = codesInfoRepository.findByCodes(target);
-        if(targetInfo == null) {
+        if (targetInfo == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
 
         try {
             // 기존 Tag 삭제
             List<CodeSelectedTags> selectedTagsList = target.getSelectedTags();
-            if(selectedTagsList != null) {
+            if (selectedTagsList != null) {
                 for (CodeSelectedTags tag : selectedTagsList) {
                     CodeTags codeTag = tag.getTags();
                     codeTag.cntDown();
@@ -345,9 +345,9 @@ public class CodesServiceImpl implements CodesService {
             }
 
             // 업데이트한 Tag 등록
-            if(req.getSelectedTagsId() != null) {
+            if (req.getSelectedTagsId() != null) {
                 List<CodeTags> codeTags = codeTagsRepository.findByTagsIdIn(req.getSelectedTagsId());
-                for(CodeTags codeTag: codeTags){
+                for (CodeTags codeTag : codeTags) {
                     codeSelectedTagsRepository.save(CodeSelectedTags.builder()
                             .tags(codeTag)
                             .codes(target)
@@ -361,8 +361,8 @@ public class CodesServiceImpl implements CodesService {
 
             // 기존에 선택한 review 삭제
             List<SelectedReviews> selectedReviewsList = targetInfo.getSelectedReviews();
-            if(selectedReviewsList != null) {
-                for(SelectedReviews review: selectedReviewsList){
+            if (selectedReviewsList != null) {
+                for (SelectedReviews review : selectedReviewsList) {
                     Reviews reviews = review.getReviews();
                     reviews.selectedDown();
                     reviewsRepository.save(reviews);
@@ -374,9 +374,9 @@ public class CodesServiceImpl implements CodesService {
             }
 
             // 새로 선택한 review 등록
-            if(req.getSelectedReviewsId() != null){
+            if (req.getSelectedReviewsId() != null) {
                 List<Reviews> reviews = reviewsRepository.findByReviewsIdIn(req.getSelectedReviewsId());
-                for(Reviews review: reviews){
+                for (Reviews review : reviews) {
                     selectedReviewsRepository.save(SelectedReviews.builder()
                             .codes(target)
                             .reviews(review)
@@ -391,10 +391,10 @@ public class CodesServiceImpl implements CodesService {
 
             // 연결된 프로젝트
             Projects connectedProject = null;
-            if(req.getProjectId()!= null) {
+            if (req.getProjectId() != null) {
                 connectedProject = projectsRepository.findByProjectsId(req.getProjectId());
 
-                if(connectedProject == null){
+                if (connectedProject == null) {
                     throw new NullPointerException("일치하는 프로젝트가 없습니다");
                 }
             }
@@ -404,7 +404,7 @@ public class CodesServiceImpl implements CodesService {
             targetInfo.updateCode(req); // 코드 불러올 github URL, 상세 설명 수정
             target.setProject(connectedProject); // 코드와 연결된 프로젝트 수정
 
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new UpdateFailedException(e.getMessage());
         }
@@ -414,35 +414,35 @@ public class CodesServiceImpl implements CodesService {
 
     @Override
     @Transactional
-    public int deleteCode(Long codeId, Long userId){
+    public int deleteCode(Long codeId, Long userId) {
         Users user = usersRepository.findByUsersId(userId);
 
         // 코드 작성자 확인
-        if(user == null) {
+        if (user == null) {
             throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         }
 
         // 기존 코드 가져오기
         Codes target = codesRepository.findLatestByCodesId(codeId);
-        if(target == null) {
+        if (target == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
-        if (!target.getCodeWriter().equals(user)){
+        if (!target.getCodeWriter().equals(user)) {
             // 코드 작성자와 사용자가 일치하지 않는 경우
             throw new NotMatchException();
         }
-        if (!target.getCodesId().equals(codeId)){
+        if (!target.getCodesId().equals(codeId)) {
             throw new NotNewestVersionException();
         }
 
         log.info(target.getTitle());
         CodesInfo targetInfo = codesInfoRepository.findByCodes(target);
-        if(targetInfo == null) {
+        if (targetInfo == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
-        
+
         // 연결된 프로젝트에서 코드 제거
-        if(target.getProjects() != null && target.getProjects().getProjectsCodes() != null){
+        if (target.getProjects() != null && target.getProjects().getProjectsCodes() != null) {
             Iterator<Codes> iterator = target.getProjects().getProjectsCodes().iterator();
             while (iterator.hasNext()) {
                 Codes c = iterator.next();
@@ -454,7 +454,7 @@ public class CodesServiceImpl implements CodesService {
 
         // 기존 태그 삭제
         List<CodeSelectedTags> selectedTagsList = target.getSelectedTags();
-        if(selectedTagsList != null) {
+        if (selectedTagsList != null) {
             for (CodeSelectedTags tag : selectedTagsList) {
                 CodeTags codeTag = tag.getTags();
                 codeTag.cntDown();
@@ -468,8 +468,8 @@ public class CodesServiceImpl implements CodesService {
 
         // 기존에 선택한 리뷰 삭제
         List<SelectedReviews> selectedReviewsList = targetInfo.getSelectedReviews();
-        if(selectedReviewsList != null) {
-            for(SelectedReviews review: selectedReviewsList){
+        if (selectedReviewsList != null) {
+            for (SelectedReviews review : selectedReviewsList) {
                 Reviews reviews = review.getReviews();
                 reviews.selectedDown();
                 reviewsRepository.save(reviews);
@@ -507,13 +507,52 @@ public class CodesServiceImpl implements CodesService {
         // 코드 삭제
         codesRepository.delete(target);
 
-        log.info("버전 : "+ target.getNum());
+        log.info("버전 : " + target.getNum());
         // 삭제하는 코드 버전이 1이라면 User의 codeCnt값 1 감소
-        if(target.getVersion() == 1) {
+        if (target.getVersion() == 1) {
             user.codesCntDown();
         }
 
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public int likeCode(Long codeId, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 없습니다");
+        }
+
+        Codes target = codesRepository.findByCodesId(codeId);
+        if (target == null) {
+            throw new NullPointerException("일치하는 코드가 없습니다");
+        }
+
+        // 좋아요를 누른 여부 확인 (눌려있다면 취소 처리, 새로 누른 경우 등록 처리)
+        CodeLikes codeLikes = codeLikesRepository.findByCodesAndUsers(target, user);
+
+        // 좋아요가 눌려있다면 취소 처리
+        if (codeLikes != null) {
+            // CodeLikes 데이터 삭제
+            codeLikesRepository.delete(codeLikes);
+            // 코드 좋아요 수 감소
+            target.likeCntDown();
+        } else { // 새로 누른 경우 등록 처리
+            // CodeLikes 데이터 추가
+            codeLikesRepository.save(
+                    CodeLikes.builder()
+                            .codes(target)
+                            .users(user)
+                            .build());
+            // 코드 좋아요 수 증가
+            target.likeCntUp();
+        }
+
+        // 좋아요 수 반환
+        return target.getLikeCnt();
     }
 
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {

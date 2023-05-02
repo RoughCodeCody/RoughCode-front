@@ -179,4 +179,33 @@ public class CodesController {
         return Response.makeResponse(HttpStatus.OK, "코드 정보 삭제 성공", 1, res);
 
     }
+
+    @Operation(summary = "코드 좋아요(등록, 취소) API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 좋아요 등록 또는 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "404", description = "코드 좋아요 등록 또는 취소 실패")
+    })
+    @PostMapping("/{codeId}/like")
+    ResponseEntity<?> likeCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = codesService.likeCode(codeId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res < 0) {
+            return Response.notFound("코드 좋아요 등록 또는 취소 실패");
+        }
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("like", res);
+        return Response.makeResponse(HttpStatus.OK, "코드 좋아요 등록 또는 취소 성공", 0, resultMap);
+
+    }
 }

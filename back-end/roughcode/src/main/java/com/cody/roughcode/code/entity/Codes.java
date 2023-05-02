@@ -58,4 +58,12 @@ public class Codes extends BaseTimeEntity {
     public void updateCode(CodeReq req) {
         this.title = req.getTitle();
     }
+
+    public void likeCntUp() {
+        this.likeCnt += 1;
+    }
+
+    public void likeCntDown() {
+        this.likeCnt -= 1;
+    }
 }
