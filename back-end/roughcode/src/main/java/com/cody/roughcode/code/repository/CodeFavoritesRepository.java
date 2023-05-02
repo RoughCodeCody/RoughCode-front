@@ -13,6 +13,9 @@ public interface CodeFavoritesRepository extends JpaRepository<CodeFavorites, Lo
 
     CodeFavorites findByCodesAndUsers(Codes code, Users user);
 
+    @Query("select c from CodeFavorites c where c.codes.codesId = :codesId and c.users.usersId = :usersId")
+    CodeFavorites findByCodesIdAndUsersId(@Param("codesId") Long codesId, @Param("usersId") Long usersId);
+
     @Modifying
     @Transactional
     @Query("delete from CodeFavorites c where c.codes.codesId = :codesId")

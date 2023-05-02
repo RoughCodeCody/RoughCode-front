@@ -19,4 +19,8 @@ public interface CodesService {
     int updateCode(CodeReq req, Long codeId, Long userId);
 
     int deleteCode(Long codeId, Long userId);
+
+    int likeCode(Long codeId, Long userId);
+
+    int favoriteCode(Long codeId, String content, Long userId);
 }
