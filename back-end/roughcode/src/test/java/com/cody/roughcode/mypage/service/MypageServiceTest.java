@@ -75,20 +75,58 @@ public class MypageServiceTest {
         return tagsList;
     }
 
-    @DisplayName("내 즐겨찾기 프로젝트 목록 조회 실패 - 일치하는 유저 없음")
+    @DisplayName("피드백 남긴 프로젝트 목록 조회 성공")
     @Test
-    void getFavoriteProjectListFailNoUser(){
+    void getFeedbackProjectListSucceed(){
         // given
+        List<ProjectTags> tagsList = tagsInit();
+        List<ProjectSelectedTags> selectedTagsList = List.of(ProjectSelectedTags.builder()
+                .selectedTagsId(2L)
+                .tags(tagsList.get(1))
+                .projects(project)
+                .build());
+        List<Projects> projectsList = List.of(
+                Projects.builder()
+                        .projectsId(1L)
+                        .num(1L)
+                        .version(1)
+                        .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+                        .introduction("intro")
+                        .title("title")
+                        .projectWriter(users)
+                        .selectedTags(selectedTagsList)
+                        .build()
+        );
+
         int page = 0;
 
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "modifiedDate"));
-        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
-
-        // when & then
-        NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> mypageService.getFavoriteProjectList(pageRequest, users.getUsersId())
+        List<ProjectInfoRes> projectInfoRes = List.of(
+                ProjectInfoRes.builder()
+                        .date(projectsList.get(0).getModifiedDate())
+                        .img(projectsList.get(0).getImg())
+                        .projectId(projectsList.get(0).getProjectsId())
+                        .feedbackCnt(projectsList.get(0).getFeedbackCnt())
+                        .introduction(projectsList.get(0).getIntroduction())
+                        .likeCnt(projectsList.get(0).getLikeCnt())
+                        .tags(List.of(tagsList.get(1).getName()))
+                        .title(projectsList.get(0).getTitle())
+                        .version(projectsList.get(0).getVersion())
+                        .build()
         );
-        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
+        final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(projectsPage).when(projectsRepository).findAllMyFeedbacks(users.getUsersId(), pageRequest);
+
+        // when
+        Pair<List<ProjectInfoRes>, Boolean> result = mypageService.getFeedbackProjectList(pageRequest, users.getUsersId());
+
+        // then
+        assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
+        assertThat(result.getRight()).isFalse();
     }
 
     @DisplayName("내 즐겨찾기 프로젝트 목록 조회 성공")
@@ -143,6 +181,22 @@ public class MypageServiceTest {
         // then
         assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
         assertThat(result.getRight()).isFalse();
+    }
+
+    @DisplayName("내 즐겨찾기 프로젝트 목록 조회 실패 - 일치하는 유저 없음")
+    @Test
+    void getFavoriteProjectListFailNoUser(){
+        // given
+        int page = 0;
+
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> mypageService.getFavoriteProjectList(pageRequest, users.getUsersId())
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
     }
 
     @DisplayName("내 프로젝트 목록 조회 성공")
