@@ -32,6 +32,7 @@ export type ProjectInfoResult = {
   img: string;
   likeCnt: number;
   liked: boolean;
+  mine: boolean;
   notice: string;
   tags: string[];
   title: string;

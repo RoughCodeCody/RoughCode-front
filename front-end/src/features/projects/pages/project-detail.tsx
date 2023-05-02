@@ -30,6 +30,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
     img,
     likeCnt,
     liked,
+    mine,
     notice,
     tags,
     title,
@@ -55,7 +56,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
         <RelatedCodes />
       </WhiteBoxNoshad>
 
-      <FeedbackRegister type="feedback" />
+      <FeedbackRegister type="feedback" id={projectId} />
       <Feedbacks feedbacks={feedbacks} />
     </FlexDiv>
   );
