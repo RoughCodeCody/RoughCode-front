@@ -44,6 +44,15 @@ public class MypageServiceImpl implements MypageService{
         return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
     }
 
+    @Override
+    public Pair<List<ProjectInfoRes>, Boolean> getFeedbackProjectList(PageRequest pageRequest, Long usersId) {
+        findUser(usersId);
+
+        Page<Projects> projectsPage = projectsRepository.findAllMyFeedbacks(usersId, pageRequest);
+
+        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+    }
+
     private void findUser(Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
