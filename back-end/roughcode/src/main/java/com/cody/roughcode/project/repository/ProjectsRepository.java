@@ -27,4 +27,7 @@ public interface ProjectsRepository extends JpaRepository<Projects, Long> {
     Page<Projects> findAllOpenedByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     List<Projects> findByNumAndProjectWriter(Long num, Users projectWriter);
+
+    @Query("SELECT p FROM Projects p WHERE p.projectWriter.usersId = :userId AND p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter))")
+    Page<Projects> findAllByProjectWriter(@Param("userId") Long userId, Pageable pageable);
 }
