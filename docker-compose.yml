@@ -23,8 +23,8 @@ services:
     volumes:
       - ./conf.d/nginx:/etc/nginx/conf.d # Nginx 설정 파일 위치 공유 : 로컬에 미리 작성해준 설정을 Nginx 폴더와 공유
       - ./app/build:/usr/share/nginx/html # React App을 npm run build로 만든 build된 파일들이 있는 위치 맵핑
-      - work dir/certbot/conf:/etc/nginx/ssl
-      - work dir/certbot/data:/var/www/certbot
+      - ./data/certbot/conf:/etc/nginx/ssl
+      - ./data/certbot/data:/var/www/certbot
 
     ports:
       - "80:80"
