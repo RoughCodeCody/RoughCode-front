@@ -48,7 +48,7 @@ public class ReviewRes {
     @Schema(description = "리뷰 정보 작성(수정) 시간", example = "2023-04-13T12:00:00")
     private LocalDateTime date;
 
-    @Schema(description = "리뷰에 대한 리뷰 목록", example = "[ReReview]")
+    @Schema(description = "리뷰에 대한 리뷰 목록")
     private List<ReReviewRes> reReviews;
 
     public ReviewRes(Reviews r, Boolean reviewLiked, List<ReReviewRes> reReviews) {

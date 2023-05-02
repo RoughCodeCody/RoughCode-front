@@ -1,6 +1,5 @@
 package com.cody.roughcode.code.entity;
 
-import com.cody.roughcode.project.entity.ProjectTags;
 import lombok.*;
 
 import javax.persistence.*;

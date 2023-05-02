@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.entity;
 
+import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
@@ -52,5 +53,9 @@ public class Codes extends BaseTimeEntity {
 
     public void setProject(Projects project) {
         this.projects = project;
+    }
+
+    public void updateCode(CodeReq req) {
+        this.title = req.getTitle();
     }
 }

@@ -63,10 +63,10 @@ public class CodeDetailRes {
     @Schema(description = "내가 즐겨찾기 눌렀는지 여부", example = "true")
     private Boolean favorite;
 
-    @Schema(description = "버전 정보", example = "[Version]")
+    @Schema(description = "버전 정보")
     private List<VersionRes> versions;
 
-    @Schema(description = "코드에 달린 리뷰 목록 정보", example = "[Review]")
+    @Schema(description = "코드에 달린 리뷰 목록 정보")
     private List<ReviewRes> reviews;
 
 }

@@ -1,6 +1,5 @@
-package com.cody.roughcode.project.entity;
+package com.cody.roughcode.code.entity;
 
-import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.user.entity.Users;
 import lombok.*;
 
@@ -18,7 +17,6 @@ public class CodeFavorites {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT")
     private Long favoritesId;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_id", nullable = false)
