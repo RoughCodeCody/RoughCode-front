@@ -81,6 +81,26 @@ public class MypageControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("알람 삭제 성공")
+    @Test
+    public void deleteAlarmSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/alarm/{alarmId}";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, "60a957bcf77ec21e1aa72c93")
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("알림 삭제 성공");
+    }
+
     @DisplayName("알람 목록 조회 성공")
     @Test
     public void getAlarmListSucceed() throws Exception {

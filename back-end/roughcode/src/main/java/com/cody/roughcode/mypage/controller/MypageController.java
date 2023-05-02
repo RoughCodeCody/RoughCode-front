@@ -1,6 +1,7 @@
 package com.cody.roughcode.mypage.controller;
 
 import com.cody.roughcode.alarm.entity.Alarm;
+import com.cody.roughcode.alarm.entity.AlarmRes;
 import com.cody.roughcode.alarm.service.AlarmService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -30,7 +31,7 @@ public class MypageController {
     ResponseEntity<?> getAlarmList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
         Long usersId = jwtTokenProvider.getId(accessToken);
 
-        List<Alarm> res = new ArrayList<>();
+        List<AlarmRes> res = new ArrayList<>();
         try {
             res = alarmService.getAlarmList(usersId);
         } catch (Exception e) {
@@ -38,5 +39,20 @@ public class MypageController {
             return Response.badRequest(e.getMessage());
         }
         return Response.makeResponse(HttpStatus.OK, "알림 조회 성공", res.size(), res);
+    }
+
+    @Operation(summary = "알림 삭제 API")
+    @DeleteMapping("/alarm/{alarmId}")
+    ResponseEntity<?> deleteAlarm(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                   @Parameter(description = "알람 아이디") @PathVariable String alarmId){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+
+        try {
+            alarmService.deleteAlarm(alarmId, usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+        return Response.ok("알림 삭제 성공");
     }
 }
