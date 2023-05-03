@@ -1,40 +1,51 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
+import Editor, { OnMount } from "@monaco-editor/react";
 
-import { DiffEditor } from "@monaco-editor/react";
-import Editor from "@monaco-editor/react";
-// 어떤 것을 prop 받을 지 정해야 합니다.
-export const CodeEditor = () => {
-  // 한글 포함된 Base64 문자열
-  // 이 부분에 받아온 content 넣으면 됨
-  const editorRef = useRef(null);
-  const [selectionStartLine, setSelectionStartLine] = useState(null);
-  const [selectionEndLine, setSelectionEndLine] = useState(null);
+export const CodeEditor: React.FC = () => {
+  const editorRef = useRef<any>(null);
+  const [monaco, setMonaco] = useState<any>(null);
+  const [selectionStartLine, setSelectionStartLine] = useState<number | null>(
+    null
+  );
+  const [selectionEndLine, setSelectionEndLine] = useState<number | null>(null);
 
-  function handleEditorDidMount(editor, monaco) {
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
-    editor.onDidChangeCursorSelection(handleSelectionChange);
-  }
+    setMonaco(monaco);
+    editor.onDidChangeCursorSelection((e) => handleSelectionChange(e));
+  };
 
-  function handleSelectionChange(event) {
-    const selection = event.selection;
+  const handleSelectionChange = (e: any) => {
+    const selection = e.selection;
     const startLineNumber = selection.startLineNumber;
     const endLineNumber = selection.endLineNumber;
-    console.log(startLineNumber);
-    console.log(endLineNumber);
-  }
+    setSelectionStartLine(startLineNumber);
+    setSelectionEndLine(endLineNumber);
+  };
+
+  const selectedLine = () => {
+    if (monaco && selectionStartLine !== null && selectionEndLine !== null) {
+      const deltaDecorations = [
+        {
+          range: new monaco.Range(selectionStartLine, 1, selectionEndLine, 1),
+          options: { isWholeLine: true, className: "selected-line" },
+        },
+      ];
+      editorRef.current?.deltaDecorations([], deltaDecorations);
+    }
+  };
 
   return (
     <>
+      <button onClick={selectedLine}>색칠</button>
       <Editor
         height="90vh"
         defaultLanguage="javascript"
-        defaultValue={`
-         a = [1,2,3,4,5,]
+        defaultValue={`a = [1,2,3,4,5,]
 
-         for i in range(a):
-             print(i)
-         a = [1,2,3,4,5,]
-         `}
+for i in range(a):
+    print(i)
+a = [1,2,3,4,5,]`}
         onMount={handleEditorDidMount}
       />
     </>
