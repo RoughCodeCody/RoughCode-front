@@ -20,7 +20,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
 
   const {
     closed,
-    codeId,
+    code,
     content,
     date,
     favorite,
@@ -53,7 +53,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
         <ProjectInfo data={data} projectId={projectId} />
         <VersionsInfo versions={versions} curVersionId={projectId} />
         <ProjectDescription content={content} />
-        <RelatedCodes />
+        <RelatedCodes codes={code} />
       </WhiteBoxNoshad>
 
       <FeedbackRegister type="feedback" id={projectId} />

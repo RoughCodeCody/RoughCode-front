@@ -20,9 +20,15 @@ export type Feedback = {
   date: Date;
 };
 
+export type Code = {
+  codeId: number;
+  title: string;
+  tags: string[]; // 태그 이름들
+};
+
 export type ProjectInfoResult = {
   closed: boolean;
-  codeId: number[];
+  code: Code[];
   content: string;
   date: Date;
   favorite: boolean;
