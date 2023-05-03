@@ -52,6 +52,16 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
       <WhiteBoxNoshad width="65%" padding="2.25rem">
         <ProjectInfo data={data} projectId={projectId} />
         <VersionsInfo versions={versions} curVersionId={projectId} />
+        <img
+          src={img}
+          alt="project"
+          style={{
+            width: "100%",
+            aspectRatio: "3 / 2",
+            objectFit: "cover",
+            marginTop: "2.5rem",
+          }}
+        />
         <ProjectDescription content={content} />
         <RelatedCodes codes={code} />
       </WhiteBoxNoshad>
