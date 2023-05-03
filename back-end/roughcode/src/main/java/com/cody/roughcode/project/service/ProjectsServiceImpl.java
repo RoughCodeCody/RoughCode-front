@@ -390,6 +390,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         for(Long id : codesIdList) {
             Codes codes = codesRepository.findByCodesId(id);
             if(codes == null) throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+            if(!codes.getCodeWriter().equals(user)) throw new NotMatchException();
 
             codesList.add(codes);
 
