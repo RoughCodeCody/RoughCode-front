@@ -49,15 +49,15 @@ public class MypageServiceImpl implements MypageService{
         return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
     }
 
-//    @Override
-//    @Transactional
-//    public Pair<List<CodeInfoRes>, Boolean> getLikeCodeList(PageRequest pageRequest, Long usersId) {
-//        findUser(usersId);
-//
-//        Page<Projects> projectsPage = projectsRepository.findAllMyFavorite(usersId, pageRequest);
-//
-//        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
-//    }
+    @Override
+    @Transactional
+    public Pair<List<CodeInfoRes>, Boolean> getFavoriteCodeList(PageRequest pageRequest, Long usersId) {
+        findUser(usersId);
+
+        Page<Codes> codesPage = codesRepository.findAllMyFavorite(usersId, pageRequest);
+
+        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+    }
 
     @Override
     @Transactional

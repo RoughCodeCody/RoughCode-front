@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class CodeSelectedTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT")
+    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long selectedTagsId;
 
     @ManyToOne(fetch = FetchType.LAZY)

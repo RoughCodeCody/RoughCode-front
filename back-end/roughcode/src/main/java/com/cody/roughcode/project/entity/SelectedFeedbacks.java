@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class SelectedFeedbacks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "selected_feedbacks_id", nullable = false, columnDefinition = "BIGINT")
+    @Column(name = "selected_feedbacks_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long selectedTagsId;
 
     @ManyToOne(fetch = FetchType.LAZY)
