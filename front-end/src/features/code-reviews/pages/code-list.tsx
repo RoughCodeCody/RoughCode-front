@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 import {
   BackToTop,
   BottomHeader,
@@ -5,8 +7,9 @@ import {
   Title,
   WriteFloatBtn,
 } from "@/components/elements";
+import { Search } from "@/features/search";
+
 import { CodeListItem } from "../components/code-list-item";
-import { useEffect, useRef, useState } from "react";
 
 export const CodeList = () => {
   // 더미데이터
@@ -259,16 +262,21 @@ export const CodeList = () => {
 
   return (
     <>
-      <FlexDiv direction="column" width="100%">
+      <FlexDiv direction="column" width="100%" gap="4rem">
         <BottomHeader locations={["코드 리뷰"]} />
-        <FlexDiv direction="column" width="70%" gap="1rem">
+        <FlexDiv direction="column" width="70%" gap="3rem">
           <Title title="코드 리뷰" description="코드를 보고 리뷰해보세요" />
-          {infiniteScrollState.currentCodelist?.map((codeListItem, idx) => (
-            <CodeListItem codeListItem={codeListItem} key={idx} />
-          ))}
-          <div ref={infiniteScrollTarget}>
-            {isLoading && <div>Loading...</div>}
-          </div>
+
+          <Search />
+
+          <FlexDiv direction="column" width="100%" gap="1rem">
+            {infiniteScrollState.currentCodelist?.map((codeListItem, idx) => (
+              <CodeListItem codeListItem={codeListItem} key={idx} />
+            ))}
+            <div ref={infiniteScrollTarget}>
+              {isLoading && <div>Loading...</div>}
+            </div>
+          </FlexDiv>
         </FlexDiv>
       </FlexDiv>
       <WriteFloatBtn navTo="/code-reviews/create" />
