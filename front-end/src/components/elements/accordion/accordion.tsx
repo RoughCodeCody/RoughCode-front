@@ -25,8 +25,9 @@ export const Accordion = ({
 }: AccordionProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setisOpen] = useState<boolean>(false);
+  const [isOpen, setisOpen] = useState<boolean>(true);
 
+  // 아코디언 접기/펼치기 핸들러 함수
   const handleOpenState = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if (!parentRef.current || !childRef.current) return;
