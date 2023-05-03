@@ -2,7 +2,7 @@ package com.cody.roughcode.alarm.repository;
 
 import com.cody.roughcode.alarm.entity.Alarm;
 import org.bson.types.ObjectId;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.mongodb.repository.DeleteQuery;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +18,6 @@ public interface AlarmRepository extends MongoRepository<Alarm, String> {
     Alarm findById(ObjectId alarmId);
     void deleteById(ObjectId alarmId);
 
-    @Modifying
-    @Query("delete from Alarm a where a.createdDate <= :date")
-    void deleteOlderThan(@Param("date") LocalDateTime date);
+    @DeleteQuery("{ 'createdDate' : { $lte: ?0 } }")
+    void deleteOlderThan(LocalDateTime date);
 }

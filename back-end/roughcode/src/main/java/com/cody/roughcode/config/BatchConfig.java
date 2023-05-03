@@ -41,11 +41,9 @@ public class BatchConfig {
         return stepBuilderFactory.get("step")
                 .tasklet((contribution, chunkContext) -> {
                     log.info("Step!");
-                    LocalDateTime tenDaysAgo = LocalDateTime.now().minusDays(10);
-                    alarmRepository.deleteOlderThan(tenDaysAgo);
+                    alarmService.deleteLimited();
                     return RepeatStatus.FINISHED;
                 })
                 .build();
     }
-
 }

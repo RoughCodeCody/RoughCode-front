@@ -20,8 +20,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BatchScheduler {
 
-    private JobLauncher jobLauncher;
-    private BatchConfig batchConfig;
+    private final JobLauncher jobLauncher;
+    private final BatchConfig batchConfig;
 
     @Scheduled(cron = "0 0 4 * * *") // 새벽 4시마다 실행
     public void runJob() {
