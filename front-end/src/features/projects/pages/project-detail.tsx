@@ -1,5 +1,5 @@
 import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
-import { FeedbackRegister, Feedbacks } from "@/components/feedback";
+import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
 
 import { useProjectInfo } from "../api";
 import { Notice } from "../components/notice";

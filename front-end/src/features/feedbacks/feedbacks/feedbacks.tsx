@@ -1,16 +1,10 @@
 import { FlexDiv } from "@/components/elements";
+import { Feedback } from "@/features/projects/types";
+
 import { FeedbackItem } from "./feedback-item";
 
 interface FeedbacksProps {
-  feedbacks: {
-    user: string;
-    isApplied: boolean;
-    content: string;
-    isMine: boolean;
-    isLiked: boolean;
-    likeCnt: number;
-    createdAt: string;
-  }[];
+  feedbacks: Feedback[];
 }
 
 export const Feedbacks = ({ feedbacks }: FeedbacksProps) => {

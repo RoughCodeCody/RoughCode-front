@@ -23,6 +23,7 @@ export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
       },
       {
         onSuccess: () => {},
+        onSettled: () => setContent(""),
       }
     );
   };
