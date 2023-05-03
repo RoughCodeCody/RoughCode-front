@@ -1,6 +1,7 @@
 package com.cody.roughcode.security.auth;
 
 import com.cody.roughcode.exception.NoTokenException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -10,6 +11,8 @@ import org.springframework.http.MediaType;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JwtExceptionFilter extends GenericFilter {
 
@@ -38,8 +41,23 @@ public class JwtExceptionFilter extends GenericFilter {
     }
 
     private void setErrorResponse(ServletResponse response, String error) throws IOException {
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, error);
+//        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//        response.setCharacterEncoding("UTF-8");
+//        ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, error);
+
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        final Map<String, Object> body = new HashMap<>();
+//        body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+//        body.put("error", "Unauthorized");
+        body.put("message", error);
+        body.put("count", 0);
+        body.put("result", null);
+
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(httpServletResponse.getOutputStream(), body);
     }
 }
