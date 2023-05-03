@@ -1,5 +1,12 @@
 package com.cody.roughcode.mypage.service;
 
+import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.entity.CodeLikes;
+import com.cody.roughcode.code.entity.CodeSelectedTags;
+import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.code.repository.CodeLikesRepository;
+import com.cody.roughcode.code.repository.CodeSelectedTagsRepository;
+import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.Projects;
@@ -22,7 +29,80 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MypageServiceImpl implements MypageService{
     private final ProjectsRepository projectsRepository;
+    private final CodesRepository codesRepository;
+    private final CodeSelectedTagsRepository codeSelectedTagsRepository;
+    private final CodeLikesRepository codeLikesRepository;
     private final UsersRepository usersRepository;
+
+    private void findUser(Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @Override
+    @Transactional
+    public Pair<List<CodeInfoRes>, Boolean> getCodeList(PageRequest pageRequest, Long usersId) {
+        findUser(usersId);
+
+        Page<Codes> codesPage = codesRepository.findAllByCodeWriter(usersId, pageRequest);
+
+        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+    }
+
+    @Override
+    @Transactional
+    public Pair<List<CodeInfoRes>, Boolean> getFavoriteCodeList(PageRequest pageRequest, Long usersId) {
+        findUser(usersId);
+
+        Page<Codes> codesPage = codesRepository.findAllMyFavorite(usersId, pageRequest);
+
+        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+    }
+
+    @Override
+    @Transactional
+    public Pair<List<CodeInfoRes>, Boolean> getReviewCodeList(PageRequest pageRequest, Long usersId) {
+        findUser(usersId);
+
+        Page<Codes> codesPage = codesRepository.findAllMyReviews(usersId, pageRequest);
+
+        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+    }
+
+    private static List<String> getTagNames(Codes code) {
+        List<String> tagList = new ArrayList<>();
+        if (code.getSelectedTags() != null)
+            for (CodeSelectedTags selected : code.getSelectedTags()) {
+                tagList.add(selected.getTags().getName());
+            }
+        return tagList;
+    }
+
+    private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
+        List<Codes> codeList = codesPage.getContent();
+        List<CodeInfoRes> codeInfoRes = new ArrayList<>();
+        for (Codes c : codeList) {
+            List<String> tagList = getTagNames(c);
+
+            // 내가 좋아요 눌렀는지 여부
+            CodeLikes codeLikes = codeLikesRepository.findByCodesAndUsers(c, user);
+            Boolean liked = codeLikes != null;
+
+            codeInfoRes.add(CodeInfoRes.builder()
+                    .codeId(c.getCodesId())
+                    .version(c.getVersion())
+                    .title(c.getTitle())
+                    .date(c.getModifiedDate())
+                    .likeCnt(c.getLikeCnt())
+                    .reviewCnt(c.getReviewCnt())
+                    .tags(tagList)
+                    .userName(c.getCodeWriter().getName())
+                    .liked(liked)
+                    .build()
+            );
+        }
+        return codeInfoRes;
+    }
 
     @Override
     @Transactional
@@ -45,17 +125,13 @@ public class MypageServiceImpl implements MypageService{
     }
 
     @Override
+    @Transactional
     public Pair<List<ProjectInfoRes>, Boolean> getFeedbackProjectList(PageRequest pageRequest, Long usersId) {
         findUser(usersId);
 
         Page<Projects> projectsPage = projectsRepository.findAllMyFeedbacks(usersId, pageRequest);
 
         return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
-    }
-
-    private void findUser(Long usersId) {
-        Users user = usersRepository.findByUsersId(usersId);
-        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
     }
 
     private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {

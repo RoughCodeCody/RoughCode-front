@@ -2,6 +2,8 @@ package com.cody.roughcode.mypage.controller;
 
 import com.cody.roughcode.alarm.entity.Alarm;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
+import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.mypage.service.MypageServiceImpl;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.Projects;
@@ -98,6 +100,133 @@ public class MypageControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    final Codes code = Codes.builder()
+            .codesId(1L)
+            .num(1L)
+            .version(1)
+            .codeWriter(users)
+            .title("title")
+            .reviewCnt(1)
+            .build();
+
+    @DisplayName("즐겨찾기한 코드 목록 조회 성공")
+    @Test
+    public void getFavoriteCodeListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/code/favorite";
+
+        int page = 10;
+
+        List<CodeInfoRes> codeInfoRes = List.of(
+                CodeInfoRes.builder()
+                        .codeId(code.getCodesId())
+                        .version(code.getVersion())
+                        .title(code.getTitle())
+                        .date(code.getModifiedDate())
+                        .likeCnt(code.getLikeCnt())
+                        .reviewCnt(code.getReviewCnt())
+                        .userName(code.getCodeWriter().getName())
+                        .build()
+        );
+
+        doReturn(Pair.of(codeInfoRes, false)).when(mypageService)
+                .getFavoriteCodeList(any(PageRequest.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("page", String.valueOf(page))
+                        .param("size", "10")
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("내 즐겨찾기 코드 목록 조회 성공");
+    }
+
+    @DisplayName("리뷰한 코드 목록 조회 성공")
+    @Test
+    public void getReviewCodeListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/code/review";
+
+        int page = 10;
+
+        List<CodeInfoRes> codeInfoRes = List.of(
+                CodeInfoRes.builder()
+                        .codeId(code.getCodesId())
+                        .version(code.getVersion())
+                        .title(code.getTitle())
+                        .date(code.getModifiedDate())
+                        .likeCnt(code.getLikeCnt())
+                        .reviewCnt(code.getReviewCnt())
+                        .userName(code.getCodeWriter().getName())
+                        .build()
+        );
+
+        doReturn(Pair.of(codeInfoRes, false)).when(mypageService)
+                .getReviewCodeList(any(PageRequest.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("page", String.valueOf(page))
+                        .param("size", "10")
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("리뷰한 코드 목록 조회 성공");
+    }
+
+    @DisplayName("코드 목록 조회 성공")
+    @Test
+    public void getCodeListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/code";
+
+        int page = 10;
+
+        List<CodeInfoRes> codeInfoRes = List.of(
+                CodeInfoRes.builder()
+                        .codeId(code.getCodesId())
+                        .version(code.getVersion())
+                        .title(code.getTitle())
+                        .date(code.getModifiedDate())
+                        .likeCnt(code.getLikeCnt())
+                        .reviewCnt(code.getReviewCnt())
+                        .userName(code.getCodeWriter().getName())
+                        .build()
+        );
+        doReturn(Pair.of(codeInfoRes, false)).when(mypageService)
+                .getCodeList(any(PageRequest.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("page", String.valueOf(page))
+                        .param("size", "10")
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("내 코드 목록 조회 성공");
+    }
 
     @DisplayName("피드백한 프로젝트 목록 조회 성공")
     @Test

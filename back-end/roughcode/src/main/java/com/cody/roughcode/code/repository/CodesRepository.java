@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.repository;
 
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.user.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,4 +30,14 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
     @Query("SELECT c FROM Codes c WHERE c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter)) " +
             "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%)")
     Page<Codes> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+
+    @Query("SELECT c FROM Codes c WHERE c.codeWriter.usersId = :userId AND c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter))")
+    Page<Codes> findAllByCodeWriter(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT cf.codes FROM CodeFavorites cf JOIN cf.codes c WHERE cf.users.usersId = :userId ORDER BY c.modifiedDate DESC")
+    Page<Codes> findAllMyFavorite(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT distinct r.codes FROM Reviews r JOIN r.codes c WHERE r.users.usersId = :userId ORDER BY r.codes.modifiedDate DESC")
+    Page<Codes> findAllMyReviews(@Param("userId") Long userId, Pageable pageable);
 }
