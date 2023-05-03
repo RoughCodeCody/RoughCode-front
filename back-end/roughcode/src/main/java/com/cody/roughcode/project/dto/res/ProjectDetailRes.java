@@ -1,13 +1,10 @@
 package com.cody.roughcode.project.dto.res;
 
 import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.project.entity.Feedbacks;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.user.entity.Users;
 import lombok.*;
-import org.apache.commons.lang3.tuple.Pair;
-import org.aspectj.apache.bcel.classfile.Code;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +28,7 @@ public class ProjectDetailRes {
     private String img;
     private Boolean closed;
     private String url;
-    private List<CodeInfoRes> codeId;
+    private List<CodeInfoRes> code;
     private List<String> tags;
     private Boolean liked;
     private Boolean favorite;
@@ -61,7 +58,7 @@ public class ProjectDetailRes {
                 CodeInfoRes codeInfoRes = new CodeInfoRes(code);
                 codeInfoResList.add(codeInfoRes);
             }
-        this.codeId = codeInfoResList;
+        this.code = codeInfoResList;
         this.tags = tagList;
         this.liked = liked;
         this.favorite = favorite;
