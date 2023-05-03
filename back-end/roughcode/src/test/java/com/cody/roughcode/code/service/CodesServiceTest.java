@@ -50,6 +50,12 @@ class CodesServiceTest {
     @Mock
     private ReviewsRepository reviewsRepository;
     @Mock
+    private ReviewLikesRepository reviewLikesRepository;
+    @Mock
+    private ReReviewsRepository reReviewsRepository;
+    @Mock
+    private ReReviewLikesRepository reReviewLikesRepository;
+    @Mock
     private SelectedReviewsRepository selectedReviewsRepository;
     @Mock
     private UsersRepository usersRepository;
@@ -194,7 +200,7 @@ class CodesServiceTest {
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
 //        doReturn(user).when(usersRepository).save(any(Users.class));
         doReturn(updatedCode).when(codesRepository).save(any(Codes.class));
-        doReturn(code).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
         doReturn(tagsList.get(0)).when(codeTagsRepository).findByTagsId(any(Long.class));
         doReturn(selectedTags).when(codeSelectedTagsRepository).save(any(CodeSelectedTags.class));
         doReturn(selectedReviews).when(selectedReviewsRepository).save(any(SelectedReviews.class));
@@ -254,7 +260,7 @@ class CodesServiceTest {
                 .build();
 
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(original).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(original).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -350,7 +356,7 @@ class CodesServiceTest {
                 .build();
 
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
         doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
         doReturn(tagsList).when(codeTagsRepository).findByTagsIdIn(Mockito.<Long>anyList());
         doReturn(List.of(review)).when(reviewsRepository).findByReviewsIdIn(Mockito.<Long>anyList());
@@ -386,7 +392,7 @@ class CodesServiceTest {
                 .build();
 
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(original).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(original).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -399,10 +405,30 @@ class CodesServiceTest {
     @DisplayName("코드 삭제 성공")
     @Test
     void deleteCodeSucceed() {
+        Reviews reviews = Reviews.builder()
+                .reviewsId(1L)
+                .codeContent("!212")
+                .content("설명설명")
+                .build();
+        ReReviews reReviews = ReReviews.builder()
+                .reviews(reviews)
+                .content("리리뷰")
+                .build();
+        ReReviewLikes reReviewLikes = ReReviewLikes.builder()
+                .likesId(1L)
+                .reReviews(reReviews)
+                .users(user).build();
+
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
         doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
+        reReviewsRepository.deleteAllByCodesId(any(Long.class));
+        reviewsRepository.deleteAllByCodesId(any(Long.class));
+        reviewLikesRepository.deleteAllByCodesId(any(Long.class));
+        reviewsRepository.deleteAllByCodesId(any(Long.class));
+        codeLikesRepository.deleteAllByCodesId(any(Long.class));
+        codeFavoritesRepository.deleteAllByCodesId(any(Long.class));
 
         // when
         int res = codesService.deleteCode(1L, 1L);
@@ -416,7 +442,7 @@ class CodesServiceTest {
     void deleteCodeFailUserDiffer() {
         // given
         doReturn(user2).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findLatestByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -533,7 +559,7 @@ class CodesServiceTest {
         int favoriteCnt = info.getFavoriteCnt();
 
         // when
-        int res = codesService.favoriteCode(1L, null,1L);
+        int res = codesService.favoriteCode(1L, null, 1L);
 
         // then
         assertThat(res).isEqualTo(info.getFavoriteCnt());
@@ -563,7 +589,7 @@ class CodesServiceTest {
 
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(codesRepository).findByCodesId(any(Long.class));
+//        doReturn(null).when(codesRepository).findByCodesId(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(

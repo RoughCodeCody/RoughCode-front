@@ -15,14 +15,28 @@ import java.util.List;
 public interface CodesRepository extends JpaRepository<Codes, Long> {
     Codes findByCodesId(Long id);
 
-    // @Query 어노테이션은 LIMIT 설정 불가능 > Pageable 사용하여 가장 최신 버전의 프로젝트 불러오기 수행
-    @Query("SELECT c FROM Codes c WHERE c.num =" +
-            "(SELECT c2.num FROM Codes c2 WHERE c2.codesId = :id) ORDER BY c.version DESC")
-    List<Codes> findLatestCodesByCodesId(@Param("id") Long id, Pageable pageable);
+//    // @Query 어노테이션은 LIMIT 설정 불가능 > Pageable 사용하여 가장 최신 버전의 프로젝트 불러오기 수행
+//    @Query("SELECT c FROM Codes c WHERE c.num =" +
+//            "(SELECT c2.num FROM Codes c2 WHERE c2.codesId = :id) ORDER BY c.version DESC")
+//    List<Codes> findLatestCodesByCodesId(@Param("id") Long id, Pageable pageable);
+//
+//    default Codes findLatestByCodesId(Long codeId)
+//    {
+//        return findLatestCodesByCodesId(codeId, PageRequest.of(0, 1)).get(0);
+//    }
 
-    default Codes findLatestByCodesId(Long codeId)
+    // @Query 어노테이션은 LIMIT 설정 불가능 > Pageable 사용하여 가장 최신 버전의 프로젝트 불러오기 수행
+    @Query("SELECT c FROM Codes c WHERE c.num = " +
+            "(SELECT c2.num FROM Codes c2 WHERE c2.codesId = :codeId and c2.codeWriter.usersId = :userId) and c.codeWriter.usersId = :userId ORDER BY c.version DESC")
+    List<Codes> findLatestCodesByCodesIdAndUsersId(@Param("codeId") Long codeId, @Param("userId") Long userId, Pageable pageable);
+
+    default Codes findLatestByCodesIdAndUsersId(Long codeId, Long userId)
     {
-        return findLatestCodesByCodesId(codeId, PageRequest.of(0, 1)).get(0);
+        // codeId, userId가 일치하는 코드가 없다면 null 반환
+        if(findLatestCodesByCodesIdAndUsersId(codeId, userId, PageRequest.of(0, 1))== null || findLatestCodesByCodesIdAndUsersId(codeId, userId, PageRequest.of(0, 1)).size()==0){
+            return null;
+        }
+        return findLatestCodesByCodesIdAndUsersId(codeId, userId, PageRequest.of(0, 1)).get(0);
     }
 
     List<Codes> findByNumAndCodeWriter(Long num, Users codeWriter);

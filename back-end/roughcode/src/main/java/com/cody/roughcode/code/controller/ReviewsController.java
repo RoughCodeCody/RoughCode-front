@@ -25,7 +25,7 @@ public class ReviewsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ReviewsService reviewsService;
 
-    @Operation(summary = "코드 정보 등록 API")
+    @Operation(summary = "코드 리뷰 등록 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 리뷰 등록 성공"),
             @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
