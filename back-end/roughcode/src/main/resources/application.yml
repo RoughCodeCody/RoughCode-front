@@ -54,3 +54,12 @@ jwt:
 app:
   oauth2:
     authorizedRedirectUri: http://${HOST}:3000/oauth2/redirect
+
+---
+#spring boot batch + scheduler
+spring:
+  batch:
+    job:
+      enabled: false			# 시작과 동시에 실행되는건 방지
+    jdbc:
+      initialize-schema: always # batch 스키마 자동 생성

@@ -57,6 +57,11 @@ dependencies {
     // web risk
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.16.0'
     implementation 'com.google.cloud:google-cloud-webrisk:2.14.0'
+
+    // spring batch
+    implementation("org.springframework.boot:spring-boot-starter-batch")
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
+    testImplementation 'org.springframework.batch:spring-batch-test'
 }
 
 tasks.named('test') {
