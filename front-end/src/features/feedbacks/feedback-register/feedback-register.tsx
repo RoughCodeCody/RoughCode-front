@@ -1,8 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+
 import { FlexDiv, Text, WhiteBoxShad, Btn } from "@/components/elements";
+import { usePostProjectFeedback } from "@/features/projects/api";
 
 import { FeedbackRegisterTextarea } from "./style";
-import { usePostProjectFeedback } from "@/features/projects/api";
-import { useState } from "react";
 
 type FeedbackRegisterProps = {
   type: "feedback" | "review";
@@ -10,19 +12,25 @@ type FeedbackRegisterProps = {
 };
 
 export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
+  const queryClient = useQueryClient();
   const [content, setContent] = useState("");
   const postProjectFeedbackQuery = usePostProjectFeedback();
 
   console.log(content);
   // 프로젝트 피드백 등록
   const postProjectFeedback = () => {
+    if (!content.length) return;
+
     postProjectFeedbackQuery.mutate(
       {
         projectId: id,
         content,
       },
       {
-        onSuccess: () => {},
+        onSuccess: (_, newFeedback) =>
+          queryClient.invalidateQueries({
+            queryKey: ["projectInfo", newFeedback.projectId],
+          }),
         onSettled: () => setContent(""),
       }
     );
