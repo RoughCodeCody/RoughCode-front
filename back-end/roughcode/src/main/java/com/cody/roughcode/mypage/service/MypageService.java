@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface MypageService {
     Pair<List<CodeInfoRes>, Boolean> getCodeList(PageRequest pageRequest, Long usersId);
+    Pair<List<CodeInfoRes>, Boolean> getReviewCodeList(PageRequest pageRequest, Long usersId);
 
     Pair<List<ProjectInfoRes>, Boolean> getProjectList(PageRequest pageRequest, Long usersId);
     Pair<List<ProjectInfoRes>, Boolean> getFavoriteProjectList(PageRequest pageRequest, Long usersId);

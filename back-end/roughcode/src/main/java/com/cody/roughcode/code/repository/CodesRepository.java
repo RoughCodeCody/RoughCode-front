@@ -37,7 +37,7 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
 
 //    @Query("SELECT pf.projects FROM ProjectFavorites pf JOIN pf.projects p WHERE pf.users.usersId = :userId ORDER BY p.modifiedDate DESC")
 //    Page<Projects> findAllMyFavorite(@Param("userId") Long userId, Pageable pageable);
-//
-//    @Query("SELECT distinct f.projectsInfo.projects FROM Feedbacks f JOIN f.projectsInfo.projects p WHERE f.users.usersId = :userId ORDER BY f.projectsInfo.projects.modifiedDate DESC")
-//    Page<Projects> findAllMyFeedbacks(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT distinct r.codes FROM Reviews r JOIN r.codes c WHERE r.users.usersId = :userId ORDER BY r.codes.modifiedDate DESC")
+    Page<Codes> findAllMyReviews(@Param("userId") Long userId, Pageable pageable);
 }

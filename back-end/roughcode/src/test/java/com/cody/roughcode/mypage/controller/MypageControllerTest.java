@@ -109,6 +109,46 @@ public class MypageControllerTest {
             .reviewCnt(1)
             .build();
 
+    @DisplayName("리뷰한 코드 목록 조회 성공")
+    @Test
+    public void getReviewCodeListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/code/review";
+
+        int page = 10;
+
+        List<CodeInfoRes> codeInfoRes = List.of(
+                CodeInfoRes.builder()
+                        .codeId(code.getCodesId())
+                        .version(code.getVersion())
+                        .title(code.getTitle())
+                        .date(code.getModifiedDate())
+                        .likeCnt(code.getLikeCnt())
+                        .reviewCnt(code.getReviewCnt())
+                        .userName(code.getCodeWriter().getName())
+                        .build()
+        );
+
+        doReturn(Pair.of(codeInfoRes, false)).when(mypageService)
+                .getReviewCodeList(any(PageRequest.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("page", String.valueOf(page))
+                        .param("size", "10")
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("리뷰한 코드 목록 조회 성공");
+    }
+
     @DisplayName("코드 목록 조회 성공")
     @Test
     public void getCodeListSucceed() throws Exception {
