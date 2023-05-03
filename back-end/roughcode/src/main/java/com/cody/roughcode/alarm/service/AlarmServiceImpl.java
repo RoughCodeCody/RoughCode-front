@@ -14,6 +14,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public int insertAlarm(AlarmReq req) {
+    public void insertAlarm(AlarmReq req) {
         Users user = usersRepository.findByUsersId(req.getUserId());
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
@@ -38,7 +39,6 @@ public class AlarmServiceImpl implements AlarmService {
 
         log.info("save to mongo : " + String.join(" ", req.getContent()));
         alarmRepository.save(new Alarm(req));
-        return 1;
     }
 
     @Override
@@ -69,5 +69,12 @@ public class AlarmServiceImpl implements AlarmService {
         if(!Objects.equals(alarm.getUserId(), user.getUsersId())) throw new NotMatchException();
 
         alarmRepository.deleteById(new ObjectId(alarmId));
+    }
+
+    @Override
+    @Transactional
+    public void deleteLimited() {
+        LocalDateTime tenDaysAgo = LocalDateTime.now().minusDays(10);
+        alarmRepository.deleteOlderThan(tenDaysAgo);
     }
 }
