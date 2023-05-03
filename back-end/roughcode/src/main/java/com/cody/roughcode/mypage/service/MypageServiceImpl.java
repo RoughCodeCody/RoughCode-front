@@ -22,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,6 +45,26 @@ public class MypageServiceImpl implements MypageService{
         findUser(usersId);
 
         Page<Codes> codesPage = codesRepository.findAllByCodeWriter(usersId, pageRequest);
+
+        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+    }
+
+//    @Override
+//    @Transactional
+//    public Pair<List<CodeInfoRes>, Boolean> getLikeCodeList(PageRequest pageRequest, Long usersId) {
+//        findUser(usersId);
+//
+//        Page<Projects> projectsPage = projectsRepository.findAllMyFavorite(usersId, pageRequest);
+//
+//        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+//    }
+
+    @Override
+    @Transactional
+    public Pair<List<CodeInfoRes>, Boolean> getReviewCodeList(PageRequest pageRequest, Long usersId) {
+        findUser(usersId);
+
+        Page<Codes> codesPage = codesRepository.findAllMyReviews(usersId, pageRequest);
 
         return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
     }
