@@ -27,7 +27,7 @@ export const DropLabel = ({ sortOptions }: DropLabelProps) => {
         onClick={() => setIsOpened(!isOpened)}
       >
         <Text pointer={true}>{selectedOption}</Text>
-        <DropdownArrow isOpen={isOpened} size={20} />
+        <DropdownArrow isopen={isOpened.toString()} size={20} />
       </FlexDiv>
 
       {isOpened ? (

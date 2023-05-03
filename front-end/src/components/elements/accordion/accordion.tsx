@@ -25,8 +25,9 @@ export const Accordion = ({
 }: AccordionProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setisOpen] = useState<boolean>(false);
+  const [isOpen, setisOpen] = useState<boolean>(true);
 
+  // 아코디언 접기/펼치기 핸들러 함수
   const handleOpenState = (e: MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if (!parentRef.current || !childRef.current) return;
@@ -51,7 +52,7 @@ export const Accordion = ({
           <Text size="0.9rem" padding="0 0.2rem" pointer={true}>
             {isOpen ? "접기" : "더보기"}
           </Text>
-          <DropdownArrow size={16} isOpen={isOpen} />
+          <DropdownArrow size={16} isopen={isOpen.toString()} />
         </FlexDiv>
       </AccordionHead>
 

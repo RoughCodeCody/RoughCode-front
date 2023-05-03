@@ -14,7 +14,7 @@ const AccordionHead = styled.div`
 `;
 
 const AccordionContentWrapper = styled.div`
-  height: 0;
+  height: 100%;
   width: 100%;
   overflow: hidden;
   transition: height 0.3s ease;

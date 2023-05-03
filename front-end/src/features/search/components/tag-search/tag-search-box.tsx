@@ -35,7 +35,7 @@ export const TagSearchBox = () => {
       />
 
       <DropdownArrow
-        isOpen={isOpen}
+        isopen={isOpen.toString()}
         size={30}
         onClick={() => setisOpen(!isOpen)}
       />

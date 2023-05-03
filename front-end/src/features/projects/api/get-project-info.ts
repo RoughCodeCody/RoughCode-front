@@ -3,13 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 
-type ProjectInfoParams = {
-  projectId: string;
-};
+import { ProjectInfoResult } from "../types";
 
-export const getProjectInfo = ({
-  projectId,
-}: ProjectInfoParams): Promise<ProjectInfoParams> => {
+export const getProjectInfo = (
+  projectId: string
+): Promise<ProjectInfoResult> => {
   return axios.get(`/project/${projectId}`);
 };
 
@@ -27,6 +25,6 @@ export const useProjectInfo = ({
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
     queryKey: ["projectInfo", projectId],
-    queryFn: () => getProjectInfo({ projectId }),
+    queryFn: () => getProjectInfo(projectId),
   });
 };
