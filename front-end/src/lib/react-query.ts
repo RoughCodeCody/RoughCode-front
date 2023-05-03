@@ -8,7 +8,11 @@ import {
 
 const queryConfig: DefaultOptions = {
   queries: {
-    useErrorBoundary: true,
+    useErrorBoundary: (error) => {
+      if (error instanceof AxiosError)
+        return error.response?.status ? error.response?.status >= 500 : true;
+      else return true;
+    },
     refetchOnWindowFocus: false,
     retry: false,
   },
