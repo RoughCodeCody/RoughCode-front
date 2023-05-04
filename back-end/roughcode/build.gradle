@@ -74,25 +74,25 @@ tasks.named('test') {
 }
 
 
-sonarqube {
-    properties {
-        property "sonar.projectKey", "sonar"
-        property "sonar.projectName", "sonar"
-        property 'sonar.host.url', 'http://k8a306.p.ssafy.io:8000/'
-        property 'sonar.login', 'squ_befdf245a27681f3b88ede9e061123599de353bf'
+// sonarqube {
+//     properties {
+//         property "sonar.projectKey", "sonar"
+//         property "sonar.projectName", "sonar"
+//         property 'sonar.host.url', 'http://k8a306.p.ssafy.io:8000/'
+//         property 'sonar.login', 'squ_befdf245a27681f3b88ede9e061123599de353bf'
 
-        property 'sonar.sources', 'src'
+//         property 'sonar.sources', 'src'
 
-        // property "sonar.java.binaries", "${buildDir}/classes"
-        // property "sonar.sourceEncoding", "UTF-8"
-        // property "sonar.sources", "src/main/java"
-        // property "sonar.exclusions", "**/util/**, **/support/**, **/dto/**"
+//         // property "sonar.java.binaries", "${buildDir}/classes"
+//         // property "sonar.sourceEncoding", "UTF-8"
+//         // property "sonar.sources", "src/main/java"
+//         // property "sonar.exclusions", "**/util/**, **/support/**, **/dto/**"
 
-        // property "sonar.tests", "src/test/java"
-        // property "sonar.test.inclusions", "**/*Test.java"
-        // property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    }
-}
+//         // property "sonar.tests", "src/test/java"
+//         // property "sonar.test.inclusions", "**/*Test.java"
+//         // property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+//     }
+// }
 
 // subprojects {
 //     apply plugin: 'org.sonarqube'
@@ -115,12 +115,12 @@ sonarqube {
 //     }
 // }
 
-// sonar {
-//   properties {
-//     property "sonar.projectKey", "sonar"
-//     property "sonar.projectName", "sonar"
-//   }
-// }
+sonar {
+  properties {
+    property "sonar.projectKey", "sonar"
+    property "sonar.projectName", "sonar"
+  }
+}
 
 
 // jacoco {
