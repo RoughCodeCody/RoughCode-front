@@ -70,20 +70,17 @@ export const CodeList = () => {
           <Title title="코드 리뷰" description="코드를 보고 리뷰해보세요" />
 
           <Search />
-          <DropLabel
-            sortOptions={["최신순", "좋아요순", "리뷰순"]}
-            type="codeReview"
-          />
 
-          <FlexDiv direction="column" width="100%" gap="1rem">
+          <FlexDiv direction="column" width="100%" align="end" gap="1rem">
+            <DropLabel
+              sortOptions={["최신순", "좋아요순", "리뷰순"]}
+              type="codeReview"
+            />
             {status === "loading" && <p>Loading...</p>}
-            {console.log(status)}
-            {console.log(data?.pages)}
             {status === "success" &&
-              data.pages?.list?.map((codeListItem, idx) => {
-                console.log(codeListItem);
-                return <CodeListItem codeListItem={codeListItem} key={idx} />;
-              })}
+              data?.pages[0].list.map((codeListItem, idx) => (
+                <CodeListItem codeListItem={codeListItem} key={idx} />
+              ))}
           </FlexDiv>
         </FlexDiv>
       </FlexDiv>

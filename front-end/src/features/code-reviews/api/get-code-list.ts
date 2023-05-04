@@ -3,8 +3,8 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType, InfiniteQueryConfig } from "@/lib/react-query";
 
-type CodeListResult = {
-  nextPage: number; // 다음 페이지
+interface CodeListResult {
+  nextPage: number | undefined; // 다음 페이지
   list: {
     codeId: number; // 코드 ID
     version: number; // 코드 버전
@@ -16,7 +16,7 @@ type CodeListResult = {
     userName: string; // 코드 작성자 닉네임
     liked: boolean; // 좋아요 여부
   }[];
-};
+}
 
 type SortOption = "modifiedDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
 
