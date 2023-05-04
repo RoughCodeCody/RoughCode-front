@@ -12,50 +12,51 @@ import { CodeListItemWrapper } from "./style";
 
 type CodeListItemProps = {
   codeListItem: {
-    codesId: number;
-    title: string;
-    createdDate: Date;
-    modifiedDate: Date;
-    like: number;
-    isLiked: boolean;
-    reviewCnt: number;
-    tag: string[];
-    userName: string;
+    codeId: number; // 코드 ID
+    version: number; // 코드 버전
+    title: string; // 코드 제목
+    date: Date; // 수정날짜
+    likeCnt: number; // 좋아요 수
+    reviewCnt: number; // 리뷰 수
+    tags: string[]; // 태그 이름 목록
+    userName: string; // 코드 작성자 닉네임
+    liked: boolean; // 좋아요 여부
   };
 };
 
 export const CodeListItem = ({
   codeListItem: {
-    codesId,
+    codeId,
+    version,
     title,
-    createdDate,
-    modifiedDate,
-    like,
-    isLiked,
+    date,
+    likeCnt,
     reviewCnt,
-    tag,
+    tags,
     userName,
+    liked,
   },
 }: CodeListItemProps) => {
   const router = useRouter();
 
   return (
-    <CodeListItemWrapper
-      onClick={() => router.push(`/code-reviews/${codesId}`)}
-    >
+    <CodeListItemWrapper onClick={() => router.push(`/code-reviews/${codeId}`)}>
       <FlexDiv width="100%" justify="space-between" pointer={true}>
         <FlexDiv>
-          <Text bold={true} padding="0 1rem 0 0" pointer={true}>
+          <Text bold={true} color="main">{`V${version}`}</Text>
+          <Text bold={true} padding="0 1rem 0 0.3rem" pointer={true}>
             {title}
           </Text>
-          <TagChipSub tag={tag[0]} />
+          {tags.map((tag, idx) => (
+            <TagChipSub tag={tag} key={idx} />
+          ))}
         </FlexDiv>
         <FlexDiv>
           <Count
             type="like"
-            isChecked={isLiked}
+            isChecked={liked}
             setIsChecked={null}
-            cnt={like}
+            cnt={likeCnt}
             setCnt={null}
           />
           <Count
@@ -68,11 +69,10 @@ export const CodeListItem = ({
         </FlexDiv>
       </FlexDiv>
 
-      <FlexDiv width="100%" justify="start" pointer={true}>
+      <FlexDiv width="100%" justify="start" pointer={true} align="end">
         <Nickname nickname={userName} />
-        <Text padding="0 1.5rem">
-          {dayjs(modifiedDate).format("YY.MM.DD") ||
-            dayjs(createdDate).format("YY.MM.DD")}
+        <Text padding="0 1.5rem" size="0.8rem">
+          {dayjs(date).format("YY.MM.DD")}
         </Text>
       </FlexDiv>
     </CodeListItemWrapper>

@@ -10,7 +10,7 @@ export const axios = Axios.create({
 axios.interceptors.response.use(
   (response) => {
     console.log("res msg: ", response.data.message);
-    return response.data.result;
+    return response.data?.result;
   },
   (error) => {
     return Promise.reject(error);

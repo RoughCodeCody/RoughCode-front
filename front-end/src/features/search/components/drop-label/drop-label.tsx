@@ -8,9 +8,10 @@ import { DropLabelBox, DropOptionContainer, DropOption } from "./style";
 
 interface DropLabelProps {
   sortOptions: string[];
+  type: "project" | "codeReview";
 }
 
-export const DropLabel = ({ sortOptions }: DropLabelProps) => {
+export const DropLabel = ({ sortOptions, type }: DropLabelProps) => {
   const { searchCriteria, setSort } = useSearchCriteriaStore();
 
   const [selectedOption, setSelectedOption] = useState("최신순");
@@ -36,7 +37,7 @@ export const DropLabel = ({ sortOptions }: DropLabelProps) => {
             <DropOption
               key={sortOption}
               onClick={() => {
-                setSort(sortOption);
+                setSort(sortOption, type);
                 setSelectedOption(sortOption);
                 setIsOpened(false);
               }}

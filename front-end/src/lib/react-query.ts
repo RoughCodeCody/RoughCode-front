@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import {
   QueryClient,
   UseQueryOptions,
+  UseInfiniteQueryOptions,
   UseMutationOptions,
   DefaultOptions,
 } from "@tanstack/react-query";
@@ -34,4 +35,10 @@ export type MutationConfig<MutationFnType extends (...args: any) => any> =
     ExtractFnReturnType<MutationFnType>,
     AxiosError,
     Parameters<MutationFnType>[0]
+  >;
+
+export type InfiniteQueryConfig<QueryFnType extends (...args: any) => any> =
+  Omit<
+    UseInfiniteQueryOptions<ExtractFnReturnType<QueryFnType>>,
+    "queryKey" | "queryFn"
   >;
