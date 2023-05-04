@@ -12,6 +12,7 @@ import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
+import com.cody.roughcode.validation.ObjectId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +22,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/mypage")
 @RequiredArgsConstructor
-@Slf4j
 public class MypageController {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -41,12 +45,15 @@ public class MypageController {
     @Operation(summary = "즐겨찾기한 코드 목록 조회 API")
     @GetMapping("/code/favorite")
     ResponseEntity<?> getFavoriteCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
-                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size) {
-        if(page < 0 || size < 0){
-            return Response.badRequest("잘못된 요청입니다");
-        }
+                                          @Parameter(description = "페이지 수")
+                                          @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @Parameter(description = "한 페이지에 담기는 개수")
+                                          @Min(value = 1, message = "size값은 1이상이어야 합니다")
+                                          @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -68,12 +75,15 @@ public class MypageController {
     @Operation(summary = "리뷰한 코드 목록 조회 API")
     @GetMapping("/code/review")
     ResponseEntity<?> getReviewCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
-                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size) {
-        if(page < 0 || size < 0){
-            return Response.badRequest("잘못된 요청입니다");
-        }
+                                        @Parameter(description = "페이지 수")
+                                        @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @Parameter(description = "한 페이지에 담기는 개수")
+                                        @Min(value = 1, message = "size값은 1이상이어야 합니다")
+                                        @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -95,12 +105,15 @@ public class MypageController {
     @Operation(summary = "코드 목록 조회 API")
     @GetMapping("/code")
     ResponseEntity<?> getCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
-                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size) {
-        if(page < 0 || size < 0){
-            return Response.badRequest("잘못된 요청입니다");
-        }
+                                  @Parameter(description = "페이지 수")
+                                  @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @Parameter(description = "한 페이지에 담기는 개수")
+                                  @Min(value = 1, message = "size값은 1이상이어야 합니다")
+                                  @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -122,12 +135,15 @@ public class MypageController {
     @Operation(summary = "피드백한 프로젝트 목록 조회 API")
     @GetMapping("/project/feedback")
     ResponseEntity<?> getFeedbackProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
-                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size) {
-        if(page < 0 || size < 0){
-            return Response.badRequest("잘못된 요청입니다");
-        }
+                                             @Parameter(description = "페이지 수")
+                                             @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @Parameter(description = "한 페이지에 담기는 개수")
+                                             @Min(value = 1, message = "size값은 1이상이어야 합니다")
+                                             @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
@@ -149,12 +165,15 @@ public class MypageController {
     @Operation(summary = "내가 즐겨찾기한 프로젝트 목록 조회 API")
     @GetMapping("/project/favorite")
     ResponseEntity<?> getFavoriteProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
-                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size) {
-        if(page < 0 || size < 0){
-            return Response.badRequest("잘못된 요청입니다");
-        }
+                                     @Parameter(description = "페이지 수")
+                                     @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @Parameter(description = "한 페이지에 담기는 개수")
+                                     @Min(value = 1, message = "size값은 1이상이어야 합니다")
+                                     @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
@@ -176,12 +195,16 @@ public class MypageController {
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping("/project")
     ResponseEntity<?> getProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
-                                     @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size) {
-        if(page < 0 || size < 0){
-            return Response.badRequest("잘못된 요청입니다");
-        }
+                                     @Parameter(description = "페이지 수")
+                                     @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @Parameter(description = "한 페이지에 담기는 개수")
+                                     @Min(value = 1, message = "size값은 1이상이어야 합니다")
+                                     @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
@@ -204,6 +227,8 @@ public class MypageController {
     @GetMapping("/alarm")
     ResponseEntity<?> getAlarmList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         List<AlarmRes> res = new ArrayList<>();
         try {
@@ -218,8 +243,12 @@ public class MypageController {
     @Operation(summary = "알림 삭제 API")
     @DeleteMapping("/alarm/{alarmId}")
     ResponseEntity<?> deleteAlarm(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                   @Parameter(description = "알람 아이디") @PathVariable String alarmId){
+                                   @Parameter(description = "알람 아이디")
+                                   @ObjectId(message = "alarmId 형식이 일치하지 않습니다")
+                                   @PathVariable String alarmId){
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         try {
             alarmService.deleteAlarm(alarmId, usersId);
