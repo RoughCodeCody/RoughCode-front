@@ -79,7 +79,7 @@ public class CodesController {
     @Operation(summary = "코드 정보 등록 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 정보 등록 성공"),
-            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or Github URL or 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 정보 등록 실패")
     })
     @PostMapping()
@@ -105,7 +105,7 @@ public class CodesController {
     @Operation(summary = "코드 상세 조회 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 상세 조회 성공", content = @Content(schema = @Schema(implementation = CodeDetailRes.class))),
-            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "일치하는 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 상세 조회 실패")
     })
     @GetMapping("/{codeId}")
@@ -131,7 +131,7 @@ public class CodesController {
     @Operation(summary = "코드 정보 수정 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 정보 수정 성공"),
-            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드 or 연결된 프로젝트가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 정보 수정 실패")
     })
     @PutMapping("/{codeId}")
@@ -158,7 +158,7 @@ public class CodesController {
     @Operation(summary = "코드 정보 삭제 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 정보 삭제 성공"),
-            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 정보 삭제 실패")
     })
     @DeleteMapping("/{codeId}")
@@ -184,7 +184,7 @@ public class CodesController {
     @Operation(summary = "코드 좋아요(등록, 취소) API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 좋아요 등록 또는 취소 성공"),
-            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 좋아요 등록 또는 취소 실패")
     })
     @PostMapping("/{codeId}/like")
@@ -213,7 +213,7 @@ public class CodesController {
     @Operation(summary = "코드 즐겨찾기(등록, 취소) API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 즐겨찾기 등록 또는 취소 성공"),
-            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 즐겨찾기 등록 또는 취소 실패")
     })
     @PostMapping("/{codeId}/favorite")
