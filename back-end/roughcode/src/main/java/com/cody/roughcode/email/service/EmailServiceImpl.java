@@ -35,7 +35,6 @@ public class EmailServiceImpl extends EmailService {
         helper.setText(createCertificationEmail(), true); // true를 전달하여 HTML을 사용하도록 지정합니다.
 
         mailSender.send(message);
-
         return code;
     }
 

@@ -56,7 +56,7 @@ public class MypageController {
             return Response.makeResponse(HttpStatus.OK, "이메일 전송 성공", 1, code);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return Response.serverError("서버 에러");
+            return Response.notFound(e.getMessage());
         }
     }
 
