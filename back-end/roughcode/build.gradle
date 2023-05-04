@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.sonarqube' version '3.0'
+    // id 'jacoco'
 }
 
 group = 'com.cody'
@@ -62,8 +64,40 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-batch")
     implementation("org.springframework.boot:spring-boot-starter-quartz")
     testImplementation 'org.springframework.batch:spring-batch-test'
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+subprojects {
+    apply plugin: 'org.sonarqube'
+
+    sonarqube {
+        properties {
+            property 'sonar.host.url', 'http://k8a306.p.ssafy.io:8000/'
+            property 'sonar.login', 'squ_befdf245a27681f3b88ede9e061123599de353bf'
+            property 'sonar.sources', 'src'
+            property 'sonar.language', 'java'
+            property 'sonar.projectVersion', '1.1.0-SNAPSHOT'
+            property 'sonar.sourceEncoding', 'UTF-8'
+            property 'sonar.coverage.jacoco.xmlReportPaths', '${buildDir}/reports/jacoco/test/jacocoTestReport.xml'
+            property 'sonar.java.binaries', '${buildDir}/classes'
+            property 'sonar.test.inclusions', '**/*Test.java'
+            property 'sonar.exclusions', '**/test/**, **/Q*.java, **/*Doc*.java, **/resources/**'
+        }
+    }
+}
+
+
+// jacoco {
+//   // JaCoCo 버전
+//   toolVersion = '0.8.5'
+
+// //  테스트결과 리포트를 저장할 경로 변경
+// //  default는 "$/jacoco"
+// //  reportsDir = file("$buildDir/customJacocoReportDir")
+// }

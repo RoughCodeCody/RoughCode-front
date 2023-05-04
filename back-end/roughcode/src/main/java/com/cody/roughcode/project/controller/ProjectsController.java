@@ -1,6 +1,6 @@
 package com.cody.roughcode.project.controller;
 
-import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackInsertReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
@@ -21,12 +21,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -219,7 +219,7 @@ public class ProjectsController {
     @Operation(summary = "피드백 수정 API")
     @PutMapping("/feedback")
     ResponseEntity<?> updateFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                     @Parameter(description = "피드백 정보") @RequestBody FeedbackUpdateReq req){
+                                     @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackUpdateReq req){
         Long userId = jwtTokenProvider.getId(accessToken);
 
         Boolean res = false;
@@ -240,7 +240,7 @@ public class ProjectsController {
     @Operation(summary = "피드백 등록 API")
     @PostMapping("/feedback")
     ResponseEntity<?> insertFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                     @Parameter(description = "피드백 정보") @RequestBody FeedbackReq req){
+                                     @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackInsertReq req){
         Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
 
         int res = 0;
@@ -364,7 +364,7 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 수정 API")
     @PutMapping("/content")
     ResponseEntity<?> updateProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                    @Parameter(description = "프로젝트 정보 값", required = true) @RequestBody ProjectReq req) {
+                                    @Parameter(description = "프로젝트 정보 값", required = true) @Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
 //        Long userId = 1L;
 
@@ -441,7 +441,7 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 정보 등록 API")
     @PostMapping("/content")
     ResponseEntity<?> insertProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                     @Parameter(description = "프로젝트 정보 값", required = true) @RequestBody ProjectReq req) {
+                                     @Parameter(description = "프로젝트 정보 값", required = true)@Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
 //        Long userId = 2L;
 

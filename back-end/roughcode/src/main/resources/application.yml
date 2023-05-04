@@ -53,8 +53,13 @@ jwt:
 
 app:
   oauth2:
-    authorizedRedirectUri: http://${HOST}:3000/oauth2/redirect
-
+    authorizedRedirectUri:
+      http://localhost:3000,
+      http://localhost:80,
+      http://${HOST}:3000,
+      http://${HOST}:80,
+      https://${HOST}:3000,
+      https://${HOST}:80
 ---
 #spring boot batch + scheduler
 spring:

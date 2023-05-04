@@ -1,6 +1,6 @@
 package com.cody.roughcode.project.service;
 
-import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackInsertReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
@@ -9,7 +9,6 @@ import com.cody.roughcode.project.dto.res.ProjectDetailRes;
 import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,7 +31,7 @@ public interface ProjectsService {
     int isProjectOpen(Long projectId);
     Boolean checkProject(String url, Long usersId) throws IOException;
 
-    int insertFeedback(FeedbackReq req, Long usersId);
+    int insertFeedback(FeedbackInsertReq req, Long usersId);
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
     List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId);
     int deleteFeedback(Long feedbackId, Long usersId);
