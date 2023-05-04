@@ -13,7 +13,7 @@ export const Nickname = ({ nickname, color }: NicknameProps) => {
       <BsPerson
         color={color ? "var(--" + color + "-color)" : "var(--font-color)"}
       />
-      <Text as="span" color={color}>
+      <Text as="span" color={color} padding="0 0 0 0.1rem">
         {nickname}
       </Text>
     </FlexDiv>
