@@ -89,8 +89,8 @@ public class SecurityConfig {
                 // 모든 request에서 JWT를 검사할 filter를 추가함
                 //      UsernamePasswordAuthenticationFilter에서 클라이언트가 요청한 리소스의 접근권한이 없을 때 막는 역할을 하기 때문에
                 //      이 필터 전에 jwtAuthenticationFilter 실행
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+//                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
         return http.build();
     }
 }

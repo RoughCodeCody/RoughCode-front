@@ -27,18 +27,6 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-//        // Cookie 에서 JWT Token 추출
-//        String token = jwtTokenProvider.getAccessToken(request);
-//        if (!((HttpServletRequest) request).getRequestURI().equals("/api/v1/user/token")) {
-//            //재발급 요청이 아니라면
-//            if (token != null && jwtTokenProvider.validateToken(token)) {
-//                Authentication authentication = jwtTokenProvider.getAuthentication(token);
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-//                log.debug(authentication.getName() + "의 인증정보 저장");
-//            } else {
-//                log.debug("유효한 JWT 토큰이 없습니다");
-//            }
-//        }
 
         // Cookie 에서 JWT Token 추출
         TokenReq tokenReq = jwtTokenProvider.getToken((HttpServletRequest) request);
@@ -48,13 +36,16 @@ public class JwtAuthenticationFilter extends GenericFilter {
         if (accessToken != null) {
             // accessToken 값이 유효하다면 getAuthentication 통해 security context에 인증 정보 저장
             if (jwtTokenProvider.validateToken(accessToken)) {
+                log.info("accessToken 값이 유효함 -> getAuthentication 통해 security context에 인증 정보 저장");
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug(authentication.getName() + "의 인증정보 저장");
+
+                chain.doFilter(request, response);
             }
             // accessToken 값 만료됨 && refreshToken 존재
             else if (refreshToken != null) {
-                log.info("refreshToken 유효함 && Redis에 저장된 토큰과 비교해서 똑같다면");
+                log.info("accessToken 값 만료됨 && refreshToken 존재");
 
                 // 받은 토큰에서 유저 정보 가져오기
                 Long userId = jwtTokenProvider.getId(accessToken);
@@ -75,6 +66,13 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
                     // Security content에 인증 정보 넣기
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    // 업데이트된 쿠키값 response 해줌
+                    HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
+                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
+
+                    chain.doFilter(request, httpServletResponse);
                 }
                 // refreshToken 만료 || Redis에 저장된 토큰과 비교해서 똑같지 않다면
                 else {
@@ -86,14 +84,13 @@ public class JwtAuthenticationFilter extends GenericFilter {
                             .codesCnt(-1L)
                             .build();
                     if (((HttpServletRequest) request).getRequestURI().equals("/api/v1/user")) {
-                        log.info("회원정보 조회 성공!! 로그아웃 됨");
                         jwtExceptionHandler((HttpServletResponse) response, "회원 정보 조회 성공(로그아웃된 상태)", userRes, HttpServletResponse.SC_OK );
                     } else {
-                        jwtExceptionHandler((HttpServletResponse) response, "유효한 JWT 토큰 없음(로그아웃된 상태)", userRes, HttpServletResponse.SC_OK);
-
+                        jwtExceptionHandler((HttpServletResponse) response, "유효한 JWT 토큰 없음(로그아웃된 상태)", null, HttpServletResponse.SC_UNAUTHORIZED);
                     }
                 }
             }
+
         } else { // accessToken 없음
             log.info("accessToken 없음");
             UserRes userRes = UserRes.builder()
@@ -103,15 +100,13 @@ public class JwtAuthenticationFilter extends GenericFilter {
                     .codesCnt(-1L)
                     .build();
             if (((HttpServletRequest) request).getRequestURI().equals("/api/v1/user")) {
-                log.info("회원정보 조회 성공!! 로그아웃 됨");
                 jwtExceptionHandler((HttpServletResponse) response, "회원 정보 조회 성공(로그아웃된 상태)", userRes, HttpServletResponse.SC_OK );
             } else {
-                jwtExceptionHandler((HttpServletResponse) response, "유효한 JWT 토큰 없음(로그아웃된 상태)", userRes, HttpServletResponse.SC_OK);
+                jwtExceptionHandler((HttpServletResponse) response, "유효한 JWT 토큰이 없음(로그아웃된 상태)", null, HttpServletResponse.SC_UNAUTHORIZED);
 
             }
         }
 
-//        chain.doFilter(request, response);
     }
 
     // refresh 토큰 정보를 검증하는 메서드
@@ -121,9 +116,12 @@ public class JwtAuthenticationFilter extends GenericFilter {
         if(!jwtTokenProvider.validateToken(token)) {
             return false;
         }
+        log.info("1차 토큰 검증");
 
         // Redis에서 User 정보를 기반으로 저장된 RefreshToken 가져오기
         String saveRefreshToken = (String) redisTemplate.opsForValue().get(userId.toString());
+        log.info("Redis에서 User 정보를 기반으로 저장된 RefreshToken 가져오기 + userId["+ userId+"] :"+ saveRefreshToken);
+        log.info("클라이언트가 보낸 refreshToken: "+ token);
 
         // Redis에 저장한 토큰 비교
         return saveRefreshToken!= null && saveRefreshToken.equals(token);
