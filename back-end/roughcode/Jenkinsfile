@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    stages {
+        stage('SCM') {
+            steps {
+                git 'https://github.com/foo/bar.git'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir('backend') {
+                    sh './gradlew test'
+                }
+            }
+        }
+
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    dir('backend') {
+                        sh './gradlew sonarqube'
+                    }
+                }
+            }
+        }
+    }
+}

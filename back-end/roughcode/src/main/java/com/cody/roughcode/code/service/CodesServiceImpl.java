@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -309,16 +310,13 @@ public class CodesServiceImpl implements CodesService {
         }
 
         // 기존 코드 가져오기
-        Codes target = codesRepository.findLatestByCodesIdAndUsersId(req.getCodeId(), userId);
+        Codes target = codesRepository.findByCodesId(codeId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
         if (!target.getCodeWriter().equals(user)) {
             // 코드 작성자와 사용자가 일치하지 않는 경우
             throw new NotMatchException();
-        }
-        if (!target.getCodesId().equals(codeId)) {
-            throw new NotNewestVersionException();
         }
 
         CodesInfo targetInfo = codesInfoRepository.findByCodes(target);
@@ -397,8 +395,21 @@ public class CodesServiceImpl implements CodesService {
             }
 
             // 코드 정보 업데이트
-            target.updateCode(req); // 코드 제목 수정
-            targetInfo.updateCode(req); // 코드 불러올 github URL, 상세 설명 수정
+            if(StringUtils.hasText(req.getTitle())){
+                log.info("코드 정보 수정(제목): "+ req.getTitle());
+                target.updateTitle(req.getTitle());
+            }
+
+            if(StringUtils.hasText(req.getContent())){
+                log.info("코드 정보 수정(상세설명): "+ req.getContent());
+                targetInfo.updateContent(req.getContent());
+            }
+
+            if(StringUtils.hasText(req.getGithubUrl())){
+                log.info("코드 정보 수정(github URL): "+ req.getGithubUrl());
+                targetInfo.updateGithubUrl(req.getGithubUrl());
+            }
+
             target.setProject(connectedProject); // 코드와 연결된 프로젝트 수정
 
         } catch (Exception e) {

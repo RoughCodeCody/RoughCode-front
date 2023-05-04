@@ -74,4 +74,8 @@ public class Codes extends BaseTimeEntity {
     public void reviewCntDown() {
         this.reviewCnt -= 1;
     }
+
+    public void updateTitle(String title){
+        this.title = title;
+    }
 }

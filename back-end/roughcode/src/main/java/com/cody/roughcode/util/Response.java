@@ -60,6 +60,11 @@ public class Response {
         return makeResponse(HttpStatus.NOT_FOUND, message, 0, null);
     }
 
+    // 409
+    public static ResponseEntity<?> conflict(String message) {
+        return makeResponse(HttpStatus.CONFLICT, message, 0, null);
+    }
+
     // 500
     public static ResponseEntity<?> serverError(String message) {
         return makeResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, 0, null);

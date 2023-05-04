@@ -11,31 +11,38 @@ import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
+import com.cody.roughcode.validation.EachPositive;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/project")
 @RequiredArgsConstructor
-@Slf4j
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
@@ -43,8 +50,12 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 열기 API")
     @PutMapping("/{projectId}/open")
     ResponseEntity<?> openProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                            @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+                            @Parameter(description = "프로젝트 아이디")
+                            @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                            @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try {
@@ -61,8 +72,12 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 닫기 API")
     @PutMapping("/{projectId}/close")
     ResponseEntity<?> closeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                  @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+                                  @Parameter(description = "프로젝트 아이디")
+                                  @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                  @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try {
@@ -79,8 +94,12 @@ public class ProjectsController {
     @Operation(summary = "피드백 좋아요 또는 취소 API")
     @PostMapping("/feedback/{feedbackId}/like")
     ResponseEntity<?> likeProjectFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                          @Parameter(description = "피드백 아이디") @PathVariable Long feedbackId){   
+                                          @Parameter(description = "피드백 아이디")
+                                          @Range(min = 1, max = Long.MAX_VALUE, message = "feedbackId 값이 범위를 벗어납니다")
+                                          @PathVariable Long feedbackId){
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = -1;
         try {
@@ -97,9 +116,15 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 즐겨찾기 등록 또는 취소 API")
     @PostMapping("/{projectId}/favorite")
     ResponseEntity<?> favoriteProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                      @Parameter(description = "즐겨찾기 내용") @RequestBody String content,
-                                      @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+                                      @Parameter(description = "즐겨찾기 내용")
+                                      @Size(max = 500, message = "즐겨찾기 내용은 500자를 넘을 수 없습니다")
+                                      @RequestBody String content,
+                                      @Parameter(description = "프로젝트 아이디")
+                                      @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                      @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = -1;
         try {
@@ -116,8 +141,12 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 좋아요 또는 취소 API")
     @PostMapping("/{projectId}/like")
     ResponseEntity<?> likeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                  @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+                                  @Parameter(description = "프로젝트 아이디")
+                                  @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                  @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = -1;
         try {
@@ -147,7 +176,9 @@ public class ProjectsController {
 
     @Operation(summary = "프로젝트 열림 확인 API")
     @PutMapping("/check/{projectId}")
-    ResponseEntity<?> isProjectOpen(@Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+    ResponseEntity<?> isProjectOpen(@Parameter(description = "프로젝트 아이디")
+                                    @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                    @PathVariable Long projectId){
         int res = -2;
         try{
             res = projectsService.isProjectOpen(projectId);
@@ -163,8 +194,12 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 URL 검사 API")
     @GetMapping("/check")
     ResponseEntity<?> projectURLCheck(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                      @Parameter(description = "프로젝트 url") @RequestParam String url){
+                                      @Parameter(description = "프로젝트 url")
+                                      @Pattern(regexp = "^https?://.*", message = "url 값은 http 또는 https로 시작해야 합니다")
+                                      @RequestParam String url){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Boolean res = false;
         try{
@@ -180,8 +215,12 @@ public class ProjectsController {
     @Operation(summary = "피드백 삭제 API")
     @DeleteMapping("/feedback/{feedbackId}")
     ResponseEntity<?> deleteFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                      @Parameter(description = "피드백 아이디") @PathVariable Long feedbackId){
+                                      @Parameter(description = "피드백 아이디")
+                                      @Range(min = 1, max = Long.MAX_VALUE, message = "feedbackId 값이 범위를 벗어납니다")
+                                      @PathVariable Long feedbackId){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try {
@@ -201,8 +240,12 @@ public class ProjectsController {
     @Operation(summary = "피드백 목록 조회 API")
     @GetMapping("/{projectId}/feedback")
     ResponseEntity<?> getFeedbackList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                     @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+                                     @Parameter(description = "프로젝트 아이디")
+                                     @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                     @PathVariable Long projectId){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         List<FeedbackInfoRes> res = null;
         try {
@@ -221,6 +264,8 @@ public class ProjectsController {
     ResponseEntity<?> updateFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                      @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackUpdateReq req){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Boolean res = false;
         try {
@@ -258,7 +303,9 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 상세 조회 API")
     @GetMapping("/{projectId}")
     ResponseEntity<?> getProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                     @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId) {
+                                     @Parameter(description = "프로젝트 아이디")
+                                     @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                     @PathVariable Long projectId) {
         Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
 
         ProjectDetailRes res = null;
@@ -276,8 +323,12 @@ public class ProjectsController {
     @Operation(summary = "피드백 신고 API")
     @PutMapping("/feedback/{feedbackId}/complaint")
     ResponseEntity<?> feedbackComplain(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                       @Parameter(description = "피드백 아이디") @PathVariable Long feedbackId){
+                                       @Parameter(description = "피드백 아이디")
+                                       @Range(min = 1, max = Long.MAX_VALUE, message = "feedbackId 값이 범위를 벗어납니다")
+                                       @PathVariable Long feedbackId){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try {
@@ -296,17 +347,20 @@ public class ProjectsController {
 
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping
-    ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준") @RequestParam(defaultValue = "modifiedDate") String sort,
-                                    @Parameter(description = "페이지 수") @RequestParam(defaultValue = "0") int page,
-                                     @Parameter(description = "한 페이지에 담기는 개수") @RequestParam(defaultValue = "10") int size,
+    ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준")
+                                     @Pattern(regexp = "modifiedDate|likeCnt|feedbackCnt", message = "sort 값은 modifiedDate, likeCnt, feedbackCnt 중 하나여야 합니다")
+                                     @RequestParam(defaultValue = "modifiedDate") String sort,
+                                     @Parameter(description = "페이지 수")
+                                     @Min(value = 0, message = "page값은 0이상이어야 합니다")
+                                     @RequestParam(defaultValue = "0") int page,
+                                     @Parameter(description = "한 페이지에 담기는 개수")
+                                     @Positive(message = "size값은 1이상이어야 합니다")
+                                     @RequestParam(defaultValue = "10") int size,
                                      @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
                                      @Parameter(description = "태그 아이디 리스트") @RequestParam(defaultValue = "") String tagIdList,
-                                     @Parameter(description = "닫힘 포함 여부(0: 닫힘 미포함, 1: 닫힘 포함)") @RequestParam(defaultValue = "0") int closed) {
-        List<String> sortList = List.of("modifiedDate", "likeCnt", "feedbackCnt");
-        if(!sortList.contains(sort) || page < 0 || size < 0){
-            return Response.badRequest("잘못된 요청입니다");
-        }
-
+                                     @Parameter(description = "닫힘 포함 여부(0: 닫힘 미포함, 1: 닫힘 포함)")
+                                     @Range(min = 0, max = 1, message = "closed 값은 0 또는 1이어야합니다")
+                                     @RequestParam(defaultValue = "0") int closed) {
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
         try{
@@ -327,8 +381,12 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 삭제 API")
     @DeleteMapping("/{projectId}")
     ResponseEntity<?> deleteProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                    @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId){
+                                    @Parameter(description = "프로젝트 아이디")
+                                    @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                    @PathVariable Long projectId){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try{
@@ -345,9 +403,16 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 코드 연결 API")
     @PutMapping("/{projectId}/connect")
     ResponseEntity<?> connectProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                     @Parameter(description = "프로젝트 아이디") @PathVariable Long projectId,
-                                     @Parameter(description = "연결할 코드 아이디 리스트", required = true) @RequestBody List<Long> req){
+                                     @Parameter(description = "프로젝트 아이디")
+                                     @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                     @PathVariable Long projectId,
+                                     @Parameter(description = "연결할 코드 아이디 리스트", required = true)
+                                     @EachPositive(message = "코드 아이디 리스트 안의 값은 1 이상이어야 합니다")
+                                     @Size(min = 1, message = "연결할 코드가 입력되지 않았습니다")
+                                     @RequestBody List<Long> req){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try {
@@ -383,9 +448,15 @@ public class ProjectsController {
     @Operation(summary = "이미지 삭제 API")
     @DeleteMapping(value = "/{projectId}/image")
     ResponseEntity<?> insertImage(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                  @Parameter(description = "삭제할 이미지의 project id", required = true) @PathVariable Long projectId,
-                                  @Parameter(description = "삭제할 이미지", required = true) @RequestBody String imgUrl) {
+                                  @Parameter(description = "삭제할 이미지의 project id", required = true)
+                                  @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                  @PathVariable Long projectId,
+                                  @Parameter(description = "삭제할 이미지", required = true)
+                                  @Pattern(regexp = "^https://roughcode.s3.ap-northeast-2.amazonaws.com/.*", message = "url 형식이 유효하지 않습니다")
+                                  @RequestBody String imgUrl) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try{
@@ -402,9 +473,15 @@ public class ProjectsController {
     @Operation(summary = "이미지 등록 API")
     @PostMapping(value = "/{projectId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> insertImage(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                             @Parameter(description = "등록할 project id", required = true) @PathVariable Long projectId,
-                                             @Parameter(description = "등록할 이미지", required = true) @RequestPart("image") MultipartFile image) {
+                                             @Parameter(description = "등록할 project id", required = true)
+                                             @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                             @PathVariable Long projectId,
+                                             @Parameter(description = "등록할 이미지", required = true)
+                                             @NotNull(message = "이미지가 등록되어있지 않습니다")
+                                             @RequestPart("image") MultipartFile image) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         String res = null;
         try{
@@ -421,10 +498,17 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 썸네일 등록/수정 API")
     @PostMapping(value = "/{projectId}/thumbnail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> updateProjectThumbnail(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                    @Parameter(description = "등록할 project id", required = true) @PathVariable Long projectId,
-                                    @Parameter(description = "등록할 썸네일", required = true) @RequestPart("thumbnail") MultipartFile thumbnail) {
+                                             @Parameter(description = "등록할 project id", required = true)
+                                             @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                             @PathVariable Long projectId,
+                                             @Parameter(description = "등록할 썸네일", required = true)
+                                             @NotNull(message = "썸네일이 등록되어있지 않습니다")
+                                             @RequestPart("thumbnail") MultipartFile thumbnail) {
+
         Long userId = jwtTokenProvider.getId(accessToken);
-//        Long userId = 1L;
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
 
         int res = 0;
         try{
@@ -443,7 +527,8 @@ public class ProjectsController {
     ResponseEntity<?> insertProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                      @Parameter(description = "프로젝트 정보 값", required = true)@Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
-//        Long userId = 2L;
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         Long res = 0L;
         try{
