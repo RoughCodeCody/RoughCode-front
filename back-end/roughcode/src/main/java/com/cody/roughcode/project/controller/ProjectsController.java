@@ -241,7 +241,7 @@ public class ProjectsController {
     @Operation(summary = "피드백 등록 API")
     @PostMapping("/feedback")
     ResponseEntity<?> insertFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                     @Parameter(description = "피드백 정보") @RequestBody FeedbackReq req){
+                                     @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackReq req){
         Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
 
         int res = 0;
