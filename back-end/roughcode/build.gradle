@@ -94,6 +94,13 @@ subprojects {
     }
 }
 
+sonar {
+  properties {
+    property "sonar.projectKey", "sonar"
+    property "sonar.projectName", "sonar"
+  }
+}
+
 
 // jacoco {
 //   // JaCoCo 버전
