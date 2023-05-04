@@ -1,6 +1,6 @@
 package com.cody.roughcode.project.controller;
 
-import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackInsertReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
@@ -872,13 +872,13 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback";
 
-        FeedbackReq req = FeedbackReq.builder()
+        FeedbackInsertReq req = FeedbackInsertReq.builder()
                 .content("개발새발 최고")
                 .projectId(1L)
                 .build();
 
         doReturn(1).when(projectsService)
-                .insertFeedback(any(FeedbackReq.class), any(Long.class));
+                .insertFeedback(any(FeedbackInsertReq.class), any(Long.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -903,7 +903,13 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/feedback";
 
         doReturn(0).when(projectsService)
-                .insertFeedback(any(FeedbackReq.class), any(Long.class));
+                .insertFeedback(any(FeedbackInsertReq.class), any(Long.class));
+
+
+        FeedbackInsertReq req = FeedbackInsertReq.builder()
+                .content("개발새발 최고")
+                .projectId(1L)
+                .build();
 
         // when
         final ResultActions resultActions = mockMvc.perform(

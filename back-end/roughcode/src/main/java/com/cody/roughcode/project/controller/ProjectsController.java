@@ -1,6 +1,6 @@
 package com.cody.roughcode.project.controller;
 
-import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackInsertReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectDetailRes;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -220,7 +219,7 @@ public class ProjectsController {
     @Operation(summary = "피드백 수정 API")
     @PutMapping("/feedback")
     ResponseEntity<?> updateFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                     @Parameter(description = "피드백 정보") @RequestBody FeedbackUpdateReq req){
+                                     @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackUpdateReq req){
         Long userId = jwtTokenProvider.getId(accessToken);
 
         Boolean res = false;
@@ -241,7 +240,7 @@ public class ProjectsController {
     @Operation(summary = "피드백 등록 API")
     @PostMapping("/feedback")
     ResponseEntity<?> insertFeedback(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                     @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackReq req){
+                                     @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackInsertReq req){
         Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
 
         int res = 0;

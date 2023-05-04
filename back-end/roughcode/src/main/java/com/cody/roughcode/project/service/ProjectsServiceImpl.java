@@ -8,7 +8,7 @@ import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.S3FailedException;
 import com.cody.roughcode.exception.UpdateFailedException;
-import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackInsertReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.*;
 import com.cody.roughcode.project.dto.req.ProjectReq;
@@ -745,7 +745,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public int insertFeedback(FeedbackReq req, Long usersId) {
+    public int insertFeedback(FeedbackInsertReq req, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         Projects project = projectsRepository.findByProjectsId(req.getProjectId());
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
