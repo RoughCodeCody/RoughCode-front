@@ -20,13 +20,16 @@ type CodeListResult = {
 
 type SortOption = "modifiedDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
 
-type CodeListDTO = {
+type CodeListParams = {
   sort: SortOption;
-  page: number;
   size: number;
   keyword: string;
   tagIdList: string;
 };
+
+type CodeListDTO = {
+  page: number;
+} & CodeListParams;
 
 export const getCodeList = (params: CodeListDTO): Promise<CodeListResult> => {
   return axios.get("/code", { params });
@@ -35,7 +38,7 @@ export const getCodeList = (params: CodeListDTO): Promise<CodeListResult> => {
 type QueryFnType = typeof getCodeList;
 
 type UseCodeListOptions = {
-  params: CodeListDTO;
+  params: CodeListParams;
   config?: InfiniteQueryConfig<QueryFnType>;
 };
 
@@ -43,6 +46,6 @@ export const useCodeList = ({ params, config }: UseCodeListOptions) => {
   return useInfiniteQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
     queryKey: ["codeList", params],
-    queryFn: () => getCodeList(params),
+    queryFn: ({ pageParam = 0 }) => getCodeList({ ...params, page: pageParam }),
   });
 };

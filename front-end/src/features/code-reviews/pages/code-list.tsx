@@ -28,7 +28,6 @@ export const CodeList = () => {
 
   const { status, data, fetchNextPage } = useCodeList({
     params: {
-      page: pageParam || 0,
       sort: sort,
       size: size,
       keyword: usingKeyword,
