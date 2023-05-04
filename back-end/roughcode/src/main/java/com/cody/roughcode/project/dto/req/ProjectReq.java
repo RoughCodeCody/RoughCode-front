@@ -22,12 +22,12 @@ import java.util.List;
 public class ProjectReq {
 
     @Schema(description = "프로젝트 이름", example = "개발새발")
-    @NotEmpty
+    @NotEmpty(message = "프로젝트 이름은 비어있을 수 없습니다")
     @Size(max = 15, message = "프로젝트 이름은 15자를 넘을 수 없습니다")
     private String title;
 
     @Schema(description = "프로젝트 한 줄 정보", example = "토이 프로젝트를 공유할 수 있는 사이트입니다")
-    @NotEmpty
+    @NotEmpty(message = "프로젝트 한 줄 소개는 비어있을 수 없습니다")
     @Size(max = 50, message = "프로젝트 한 줄 소개는 50자를 넘을 수 없습니다")
     private String introduction;
 
@@ -35,17 +35,17 @@ public class ProjectReq {
     private String content;
 
     @Schema(description = "프로젝트 url", example = "https://www.google.com")
-    @NotEmpty
-    @Pattern(regexp = "^https?://.*", message = "Url 값은 http 또는 https로 시작해야 합니다")
+    @NotEmpty(message = "url 값은 비어있을 수 없습니다")
+    @Pattern(regexp = "^https?://.*", message = "url 값은 http 또는 https로 시작해야 합니다")
     private String url;
 
     @Schema(description = "프로젝트 공지사항", example = "방금 막 완성했습니다")
-    @NotEmpty
+    @NotEmpty(message = "공지사항은 비어있을 수 없습니다")
     @Size(max = 50, message = "공지사항은 50자를 넘을 수 없습니다")
     private String notice;
 
     @Schema(description = "프로젝트 id(버전 업데이트가 아니면 -1)", example = "-1")
-    @Range(min = -1, max = Integer.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+    @Range(min = -1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
     @NotZero(message = "projectId 값이 범위를 벗어납니다")
     private Long projectId;
 

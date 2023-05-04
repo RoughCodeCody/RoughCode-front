@@ -207,8 +207,6 @@ public class ProjectsServiceImpl implements ProjectsService{
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
-        if(thumbnail == null) throw new NullPointerException("썸네일이 등록되어있지 않습니다");
-
         Projects project = projectsRepository.findByProjectsId(projectsId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
@@ -238,8 +236,6 @@ public class ProjectsServiceImpl implements ProjectsService{
     public String insertImage(MultipartFile image, Long projectsId, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-
-        if(image == null) throw new NullPointerException("이미지가 등록되어있지 않습니다");
 
         Projects project = projectsRepository.findByProjectsId(projectsId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
@@ -375,9 +371,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     @Transactional
     public int connect(Long projectsId, Long usersId, List<Long> codesIdList) {
         Users user = usersRepository.findByUsersId(usersId);
-        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-
-        if(codesIdList == null || codesIdList.size() == 0) throw new NullPointerException("연결할 코드가 입력되지 않았습니다");
+            if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
         Projects project = projectsRepository.findByProjectsId(projectsId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
@@ -651,7 +645,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     @Transactional
     public int isProjectOpen(Long projectId) {
         Projects project = projectsRepository.findByProjectsId(projectId);
-        if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+            if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
         if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
 
@@ -751,7 +745,6 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
         if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
-        if(req.getContent() == null || req.getContent().equals("")) throw new NullPointerException("내용을 입력해주세요");
 
         Feedbacks savedFeedback = feedbacksRepository.save(
                 Feedbacks.builder()
