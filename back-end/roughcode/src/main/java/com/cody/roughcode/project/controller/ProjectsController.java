@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -364,7 +365,7 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 수정 API")
     @PutMapping("/content")
     ResponseEntity<?> updateProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                    @Parameter(description = "프로젝트 정보 값", required = true) @RequestBody ProjectReq req) {
+                                    @Parameter(description = "프로젝트 정보 값", required = true) @Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
 //        Long userId = 1L;
 
@@ -441,7 +442,7 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 정보 등록 API")
     @PostMapping("/content")
     ResponseEntity<?> insertProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                     @Parameter(description = "프로젝트 정보 값", required = true) @RequestBody ProjectReq req) {
+                                     @Parameter(description = "프로젝트 정보 값", required = true)@Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
 //        Long userId = 2L;
 
