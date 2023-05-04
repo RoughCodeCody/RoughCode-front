@@ -59,4 +59,12 @@ public class CodesInfo {
     public void favoriteCntDown() {
         this.favoriteCnt -= 1;
     }
+
+    public void updateContent(String content){
+        this.content = content;
+    }
+
+    public void updateGithubUrl(String githubUrl){
+        this.githubUrl = githubUrl;
+    }
 }

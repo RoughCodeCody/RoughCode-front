@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.entity;
 
+import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
@@ -63,5 +64,17 @@ public class Reviews extends BaseTimeEntity {
 
     public void selectedDown() {
         this.selected -= 1;
+    }
+
+    public void updateLineNumbers(List<List<Integer>> selectedRange) {
+        this.lineNumbers = selectedRange.toString();
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateCodeContent(String codeContent) {
+        this.codeContent = codeContent;
     }
 }
