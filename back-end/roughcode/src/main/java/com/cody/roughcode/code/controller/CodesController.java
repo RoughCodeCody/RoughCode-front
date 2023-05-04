@@ -55,7 +55,7 @@ public class CodesController {
                                   @Parameter(description = "태그 아이디 리스트", example = "1,2,3,4") @RequestParam(defaultValue = "") String tagIdList) {
         Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
-        List<String> sortList = List.of("modifiedDate", "likeCnt", "feedbackCnt");
+        List<String> sortList = List.of("modifiedDate", "likeCnt", "reviewCnt");
 
         if (!sortList.contains(sort) || page < 0 || size < 0) {
             return Response.badRequest("잘못된 요청입니다");
