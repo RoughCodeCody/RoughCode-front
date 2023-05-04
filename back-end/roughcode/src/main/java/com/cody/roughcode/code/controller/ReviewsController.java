@@ -50,4 +50,30 @@ public class ReviewsController {
         }
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 등록 성공", 1, res);
     }
+
+    @Operation(summary = "코드 리뷰 수정 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 수정 실패")
+    })
+    @PutMapping("/{reviewId}")
+    ResponseEntity<?> updateReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                   @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId,
+                                   @Parameter(description = "코드 리뷰 정보 값", required = true) @RequestBody ReviewReq reviewReq) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = reviewsService.updateReview(reviewReq, reviewId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res <= 0) {
+            return Response.notFound("코드 리뷰 수정 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 리뷰 수정 성공", 1, res);
+    }
 }

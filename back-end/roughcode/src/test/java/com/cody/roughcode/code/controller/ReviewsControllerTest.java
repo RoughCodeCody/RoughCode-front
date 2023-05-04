@@ -71,6 +71,13 @@ public class ReviewsControllerTest {
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
 
+    ReviewReq req2 = ReviewReq.builder()
+            .codeId(1L)
+            .selectedRange(List.of(List.of(3,5), List.of(6, 9)))
+            .codeContent("hello world(modified)")
+            .content("설명설명 수정")
+            .build();
+
     @DisplayName("코드 리뷰 등록 성공")
     @Test
     public void insertReviewSucceed() throws Exception {
@@ -126,4 +133,61 @@ public class ReviewsControllerTest {
         String message = jsonObject.get("message").getAsString();
         assertThat(message).isEqualTo("코드 리뷰 등록 실패");
     }
+
+    @DisplayName("코드 정보 수정 성공")
+    @Test
+    public void updateReviewSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{reviewId}";
+
+        // ReviewService updateReview 대한 stub 필요
+        doReturn(1).when(reviewsService)
+                .updateReview(any(ReviewReq.class), any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req2))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 수정 성공");
+    }
+
+    @DisplayName("코드 정보 수정 실패")
+    @Test
+    public void updateCodeFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{reviewId}";
+
+        // ReviewService updateReview 대한 stub 필요
+        doReturn(0).when(reviewsService)
+                .updateReview(any(ReviewReq.class), any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 NotFound인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 수정 실패");
+    }
+
 }
