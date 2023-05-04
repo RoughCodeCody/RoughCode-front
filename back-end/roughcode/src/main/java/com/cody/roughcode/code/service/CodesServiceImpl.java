@@ -395,19 +395,18 @@ public class CodesServiceImpl implements CodesService {
             }
 
             // 코드 정보 업데이트
-
             if(StringUtils.hasText(req.getTitle())){
-                System.out.println("코드 정보 수정(제목): "+ req.getTitle());
+                log.info("코드 정보 수정(제목): "+ req.getTitle());
                 target.updateTitle(req.getTitle());
             }
 
             if(StringUtils.hasText(req.getContent())){
-                System.out.println("코드 정보 수정(상세설명): "+ req.getContent());
+                log.info("코드 정보 수정(상세설명): "+ req.getContent());
                 targetInfo.updateContent(req.getContent());
             }
 
             if(StringUtils.hasText(req.getGithubUrl())){
-                System.out.println("코드 정보 수정(github URL): "+ req.getGithubUrl());
+                log.info("코드 정보 수정(github URL): "+ req.getGithubUrl());
                 targetInfo.updateGithubUrl(req.getGithubUrl());
             }
 

@@ -87,15 +87,15 @@ public class ReviewsServiceImpl implements ReviewsService{
         try {
             // 코드 리뷰 정보 업데이트
             if(StringUtils.hasText(req.getContent())){
-                System.out.println("코드 리뷰 정보 수정(상세설명): "+ req.getContent());
+                log.info("코드 리뷰 정보 수정(상세설명): "+ req.getContent());
                 target.updateContent(req.getContent());
             }
             if(StringUtils.hasText(req.getCodeContent())){
-                System.out.println("코드 리뷰 정보 수정(코드내용): "+ req.getCodeContent());
+                log.info("코드 리뷰 정보 수정(코드내용): "+ req.getCodeContent());
                 target.updateCodeContent(req.getCodeContent());
             }
             if(req.getSelectedRange().size()>0){
-                System.out.println("코드 리뷰 정보 수정(선택구간): "+ req.getSelectedRange());
+                log.info("코드 리뷰 정보 수정(선택구간): "+ req.getSelectedRange());
                 target.updateLineNumbers(req.getSelectedRange());
             }
         } catch (Exception e) {
