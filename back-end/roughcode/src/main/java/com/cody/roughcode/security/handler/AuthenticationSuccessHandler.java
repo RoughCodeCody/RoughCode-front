@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.cody.roughcode.security.oauth2.CookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
@@ -32,7 +32,7 @@ import static com.cody.roughcode.security.oauth2.CookieOAuth2AuthorizationReques
 public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${app.oauth2.authorizedRedirectUri}")
-    private String redirectUri;
+    private List<String> redirectUris;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
     private final CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
@@ -80,10 +80,32 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
     private boolean isAuthorizedRedirectUri(String uri) {
         URI clientRedirectUri = URI.create(uri);
-        URI authorizedUri = URI.create(redirectUri);
 
-        if (authorizedUri.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
-                && authorizedUri.getPort() == clientRedirectUri.getPort()) {
+        Set<URI> authorizedUris = new HashSet<>();
+        for(String redirectUri: redirectUris){
+            authorizedUris.add(URI.create(redirectUri));
+        }
+        Set<String> authorizedHosts = new HashSet<>();
+        Set<Integer> authorizedPorts = new HashSet<>();
+        for (URI authorizedUri : authorizedUris) {
+            String host = authorizedUri.getHost();
+            if (host != null) { // 호스트가 null이 아니면 리스트에 추가
+                authorizedHosts.add(host);
+            }
+
+            Integer port = authorizedUri.getPort();
+            if (port != null) { // 포트번호가 null이 아니면 리스트에 추가
+                authorizedPorts.add(port);
+            }
+        }
+
+        boolean hostCheck = authorizedHosts.stream()
+                .map(String::toLowerCase) // 모든 문자열 소문자로 변환
+                .anyMatch(s -> s.contains(clientRedirectUri.getHost().toLowerCase())); // 대소문자 구분없이 포함여부 확인
+
+        boolean portCheck = clientRedirectUri.getPort() == -1 || authorizedPorts.contains(clientRedirectUri.getPort());
+
+        if (hostCheck && portCheck) {
             return true;
         }
         return false;

@@ -4,7 +4,7 @@ import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
-import com.cody.roughcode.project.dto.req.FeedbackReq;
+import com.cody.roughcode.project.dto.req.FeedbackInsertReq;
 import com.cody.roughcode.project.dto.req.FeedbackUpdateReq;
 import com.cody.roughcode.project.dto.res.FeedbackInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
@@ -620,7 +620,7 @@ public class ProjectServiceTest {
     @Test
     void isProjectClosedSucceedCloseProject(){
         // given
-        String url = "https://rough-code.com";
+        String url = "http://rough-code.com";
         final Projects project = Projects.builder()
                 .projectsId(1L)
                 .num(1L)
@@ -1052,7 +1052,7 @@ public class ProjectServiceTest {
     @Test
     void insertFeedbackSucceedWithLogin() {
         // given
-        FeedbackReq req = FeedbackReq.builder()
+        FeedbackInsertReq req = FeedbackInsertReq.builder()
                 .content("개발새발 최고")
                 .projectId(1L)
                 .build();
@@ -1078,7 +1078,7 @@ public class ProjectServiceTest {
     @Test
     void insertFeedbackSucceedWithoutLogin() {
         // given
-        FeedbackReq req = FeedbackReq.builder()
+        FeedbackInsertReq req = FeedbackInsertReq.builder()
                 .content("개발새발 최고")
                 .projectId(1L)
                 .build();
@@ -1104,7 +1104,7 @@ public class ProjectServiceTest {
     @Test
     void insertFeedbackFailNoProject() {
         // given
-        FeedbackReq req = FeedbackReq.builder()
+        FeedbackInsertReq req = FeedbackInsertReq.builder()
                 .content("개발새발 최고")
                 .projectId(1L)
                 .build();

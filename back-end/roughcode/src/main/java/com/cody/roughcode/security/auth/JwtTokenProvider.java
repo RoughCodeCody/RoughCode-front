@@ -90,8 +90,13 @@ public class JwtTokenProvider {
 
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String token) {
-        Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-        return true;
+        try{
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception ex){
+            log.error(ex.getMessage());
+            return false;
+        }
     }
 
     // Access Token 만료시 갱신 때 사용할 정보를 얻기 위해 Claim 리턴함
@@ -109,6 +114,11 @@ public class JwtTokenProvider {
 
     public TokenReq getToken(HttpServletRequest request) {
         TokenReq tokenReq = new TokenReq();
+
+        if(request.getCookies()== null){
+            return tokenReq;
+        }
+
         for (Cookie cookie : request.getCookies()) {
             String name = cookie.getName();
             if (name.equals("accessToken")) {
