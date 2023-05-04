@@ -23,7 +23,7 @@ public class ProjectReq {
 
     @Schema(description = "프로젝트 이름", example = "개발새발")
     @NotEmpty(message = "프로젝트 이름은 비어있을 수 없습니다")
-    @Size(max = 15, message = "프로젝트 이름은 15자를 넘을 수 없습니다")
+    @Size(max = 20, message = "프로젝트 이름은 20자를 넘을 수 없습니다")
     private String title;
 
     @Schema(description = "프로젝트 한 줄 정보", example = "토이 프로젝트를 공유할 수 있는 사이트입니다")

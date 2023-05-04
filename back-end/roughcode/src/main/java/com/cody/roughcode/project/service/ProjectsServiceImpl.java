@@ -140,36 +140,44 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectId = savedProject.getProjectsId();
 
             // tag 등록
-            if(req.getSelectedTagsId() != null)
-                for(Long id : req.getSelectedTagsId()){
+            if(req.getSelectedTagsId() != null) {
+                List<ProjectSelectedTags> selectedTagssList = new ArrayList<>();
+                List<ProjectTags> tagsList = new ArrayList<>();
+                for (Long id : req.getSelectedTagsId()) {
                     ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
-                    projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
+                    selectedTagssList.add(ProjectSelectedTags.builder()
                             .tags(projectTag)
                             .projects(project)
                             .build());
 
                     projectTag.cntUp();
-                    projectTagsRepository.save(projectTag);
+                    tagsList.add(projectTag);
                 }
-            else log.info("등록한 태그가 없습니다");
+                projectSelectedTagsRepository.saveAll(selectedTagssList);
+                projectTagsRepository.saveAll(tagsList);
+            }else log.info("등록한 태그가 없습니다");
 
             // feedback 선택
             if(req.getSelectedFeedbacksId() != null) {
+                List<Feedbacks> feedbacksList = new ArrayList<>();
+                List<SelectedFeedbacks> selectedFeedbacksList = new ArrayList<>();
                 for (Long id : req.getSelectedFeedbacksId()) {
                     Feedbacks feedback = feedbacksRepository.findByFeedbacksId(id);
                     if (feedback == null) throw new NullPointerException("일치하는 피드백이 없습니다");
                     if (!feedback.getProjectsInfo().getProjects().getNum().equals(projectNum))
                         throw new NullPointerException("피드백과 프로젝트가 일치하지 않습니다");
                     feedback.selectedUp();
-                    feedbacksRepository.save(feedback);
+                    feedbacksList.add(feedback);
 
                     SelectedFeedbacks selectedFeedback = SelectedFeedbacks.builder()
                             .feedbacks(feedback)
                             .projects(savedProject)
                             .build();
-                    selectedFeedbacksRepository.save(selectedFeedback);
-                    feedbackAlarm.add(feedback.getUsers().getUsersId());
+                    selectedFeedbacksList.add(selectedFeedback);
+                    if(feedback.getUsers() != null) feedbackAlarm.add(feedback.getUsers().getUsersId());
                 }
+                feedbacksRepository.saveAll(feedbacksList);
+                selectedFeedbacksRepository.saveAll(selectedFeedbacksList);
             }
             else log.info("선택한 피드백이 없습니다");
 
@@ -307,55 +315,65 @@ public class ProjectsServiceImpl implements ProjectsService{
         try {
             // tag 삭제
             List<ProjectSelectedTags> selectedTagsList = target.getSelectedTags();
-            if(selectedTagsList != null)
+            if(selectedTagsList != null) {
+                List<ProjectTags> tagsList = new ArrayList<>();
                 for (ProjectSelectedTags tag : selectedTagsList) {
                     ProjectTags projectTag = tag.getTags();
                     projectTag.cntDown();
-                    projectTagsRepository.save(projectTag);
-
-                    projectSelectedTagsRepository.delete(tag);
+                    tagsList.add(projectTag);
                 }
-            else log.info("기존에 선택하였던 tag가 없습니다");
+                projectTagsRepository.saveAll(tagsList);
+                projectSelectedTagsRepository.deleteAll(selectedTagsList);
+            }else log.info("기존에 선택하였던 tag가 없습니다");
 
             // tag 등록
-            if(req.getSelectedTagsId() != null)
-                for(Long id : req.getSelectedTagsId()){
+            if(req.getSelectedTagsId() != null) {
+                List<ProjectSelectedTags> selectedTagssList = new ArrayList<>();
+                List<ProjectTags> tagsList = new ArrayList<>();
+                for (Long id : req.getSelectedTagsId()) {
                     ProjectTags projectTag = projectTagsRepository.findByTagsId(id);
-                    projectSelectedTagsRepository.save(ProjectSelectedTags.builder()
+                    selectedTagssList.add(ProjectSelectedTags.builder()
                             .tags(projectTag)
                             .projects(target)
                             .build());
 
                     projectTag.cntUp();
-                    projectTagsRepository.save(projectTag);
+                    tagsList.add(projectTag);
                 }
-            else log.info("새로 선택한 tag가 없습니다");
+                projectSelectedTagsRepository.saveAll(selectedTagssList);
+                projectTagsRepository.saveAll(tagsList);
+            }else log.info("새로 선택한 tag가 없습니다");
 
             // feedback 삭제
             List<SelectedFeedbacks> selectedFeedbacksList = target.getSelectedFeedbacks();
-            if(selectedFeedbacksList != null)
+            if(selectedFeedbacksList != null) {
+                List<Feedbacks> feedbacksList = new ArrayList<>();
                 for (SelectedFeedbacks feedback : selectedFeedbacksList) {
                     Feedbacks feedbacks = feedback.getFeedbacks();
                     feedbacks.selectedDown();
-                    feedbacksRepository.save(feedbacks);
-
-                    selectedFeedbacksRepository.delete(feedback);
+                    feedbacksList.add(feedbacks);
                 }
-            else log.info("기존에 선택하였던 feedback이 없습니다");
+                feedbacksRepository.saveAll(feedbacksList);
+                selectedFeedbacksRepository.deleteAll(selectedFeedbacksList);
+            }else log.info("기존에 선택하였던 feedback이 없습니다");
 
             // feedback 등록
-            if(req.getSelectedFeedbacksId() != null)
-                for(Long id : req.getSelectedFeedbacksId()){
+            if(req.getSelectedFeedbacksId() != null) {
+                List<Feedbacks> feedbacksList = new ArrayList<>();
+                List<SelectedFeedbacks> selectedFeedbacksListTemp = new ArrayList<>();
+                for (Long id : req.getSelectedFeedbacksId()) {
                     Feedbacks feedbacks = feedbacksRepository.findByFeedbacksId(id);
-                    selectedFeedbacksRepository.save(SelectedFeedbacks.builder()
+                    selectedFeedbacksListTemp.add(SelectedFeedbacks.builder()
                             .projects(target)
                             .feedbacks(feedbacks)
                             .build());
 
                     feedbacks.selectedUp();
-                    feedbacksRepository.save(feedbacks);
+                    feedbacksList.add(feedbacks);
                 }
-            else log.info("새로 선택한 feedback이 없습니다");
+                selectedFeedbacksRepository.saveAll(selectedFeedbacksListTemp);
+                feedbacksRepository.saveAll(feedbacksList);
+            }else log.info("새로 선택한 feedback이 없습니다");
 
             target.updateProject(req); // title, introduction 업데이트
             originalInfo.updateProject(req);
@@ -386,12 +404,13 @@ public class ProjectsServiceImpl implements ProjectsService{
             if(codes == null) throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
             if(!codes.getCodeWriter().equals(user)) throw new NotMatchException();
 
-            codesList.add(codes);
-
             codes.setProject(project);
-            codesRepository.save(codes);
+            codesList.add(codes);
         }
+        codesRepository.saveAll(codesList);
+
         project.setCodes(codesList);
+        projectsRepository.save(project);
 
         return codesList.size();
     }
@@ -415,35 +434,42 @@ public class ProjectsServiceImpl implements ProjectsService{
         Long projectNum = target.getNum();
         int projectVersion = target.getVersion();
 
-        if(target.getProjectsCodes() != null)
+        if(target.getProjectsCodes() != null) {
+            List<Codes> codesList = new ArrayList<>();
             for (Codes code : target.getProjectsCodes()) {
                 code.setProject(null);
-                codesRepository.save(code);
+                codesList.add(code);
             }
-        else log.info("연결된 코드가 없습니다");
+            codesRepository.saveAll(codesList);
+        }else log.info("연결된 코드가 없습니다");
         target.setCodes(null);
         projectsRepository.save(target);
 
-        if(target.getSelectedTags() != null)
+        if(target.getSelectedTags() != null) {
+            List<ProjectTags> projectTagsList = new ArrayList<>();
+            List<ProjectSelectedTags> projectSelectedTags = new ArrayList<>();
             for (ProjectSelectedTags selectedTag : target.getSelectedTags()) {
                 ProjectTags projectTag = selectedTag.getTags();
                 projectTag.cntDown();
-                projectTagsRepository.save(projectTag);
-                projectSelectedTagsRepository.delete(selectedTag);
+                projectTagsList.add(projectTag);
+                projectSelectedTags.add(selectedTag);
             }
-        else log.info("연결된 태그가 없습니다");
+            projectTagsRepository.saveAll(projectTagsList);
+            projectSelectedTagsRepository.deleteAll(projectSelectedTags);
+        }else log.info("연결된 태그가 없습니다");
 
         // feedback 삭제
         List<SelectedFeedbacks> selectedFeedbacksList = target.getSelectedFeedbacks();
-        if(selectedFeedbacksList != null)
+        if(selectedFeedbacksList != null) {
+            List<Feedbacks> feedbacksList = new ArrayList<>();
             for (SelectedFeedbacks feedback : selectedFeedbacksList) {
                 Feedbacks feedbacks = feedback.getFeedbacks();
                 feedbacks.selectedDown();
-                feedbacksRepository.save(feedbacks);
-
-                selectedFeedbacksRepository.delete(feedback);
+                feedbacksList.add(feedbacks);
             }
-        else log.info("기존에 선택하였던 feedback이 없습니다");
+            feedbacksRepository.saveAll(feedbacksList);
+            selectedFeedbacksRepository.deleteAll(selectedFeedbacksList);
+        }else log.info("기존에 선택하였던 feedback이 없습니다");
 
         projectsRepository.delete(target);
 
