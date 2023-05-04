@@ -38,7 +38,7 @@ export const ProjectList = () => {
 
   const fetchProjects = async ({ pageParam = 0 }) => {
     const res = await axios.get(
-      "http://k8a306.p.ssafy.io:8081/api/v1/project",
+      "http://k8a306.p.ssafy.io:8080/api/v1/project",
       {
         params: {
           page: pageParam,

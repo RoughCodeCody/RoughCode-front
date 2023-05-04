@@ -14,12 +14,11 @@ type tagResult = {
 
 export const TagList = ({ tagKeyword }: TagListProps) => {
   const tagsQuery = useTags({ tagKeyword });
-  console.log(tagsQuery);
-
+  console.log(tagsQuery.data);
   if (tagsQuery.isLoading) {
     return <div></div>;
   }
-  if (!tagsQuery?.data?.result.length)
+  if (!tagsQuery?.data?.length)
     return (
       <TagSelectContainer>
         <TagSelectItem name={"Not Found"} />
@@ -27,7 +26,7 @@ export const TagList = ({ tagKeyword }: TagListProps) => {
     );
   return (
     <TagSelectContainer>
-      {tagsQuery?.data?.result.map(({ tagId, name, cnt }: tagResult) => (
+      {tagsQuery?.data?.map(({ tagId, name, cnt }: tagResult) => (
         <TagSelectItem key={tagId} tagId={tagId} name={name} cnt={cnt} />
       ))}
     </TagSelectContainer>
