@@ -6,6 +6,7 @@ import com.cody.roughcode.alarm.service.AlarmService;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.entity.CodesInfo;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.mypage.service.MypageServiceImpl;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +43,22 @@ public class MypageController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AlarmServiceImpl alarmService;
     private final MypageServiceImpl mypageService;
+    private final EmailServiceImpl emailService;
+
+    // 이메일 인증 API
+    @Operation(summary = "이메일 인증 API")
+    @GetMapping
+    public ResponseEntity<?> verifyEmail(@Parameter(description = "이메일", required = true)
+                                         @Email(message = "이메일 형식이 아닙니다")
+                                         @RequestParam String email) {
+        try {
+            String code = emailService.sendCertificationEmail(email);
+            return Response.makeResponse(HttpStatus.OK, "이메일 전송 성공", 1, code);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.serverError("서버 에러");
+        }
+    }
 
     @Operation(summary = "즐겨찾기한 코드 목록 조회 API")
     @GetMapping("/code/favorite")
