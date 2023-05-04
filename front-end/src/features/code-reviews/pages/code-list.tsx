@@ -9,7 +9,7 @@ import {
   Title,
   WriteFloatBtn,
 } from "@/components/elements";
-import { Search } from "@/features/search";
+import { DropLabel, Search } from "@/features/search";
 import { useSearchCriteriaStore } from "@/stores";
 
 import { useCodeList } from "../api";
@@ -22,11 +22,9 @@ export const CodeList = () => {
   const { searchCriteria } = useSearchCriteriaStore();
   const { sort, size, keyword, tagIdList } = searchCriteria;
 
-  const usingKeyword = keyword.length === 0 ? undefined : keyword;
+  const usingKeyword = keyword.length === 0 ? "" : keyword;
   const stringTagIdList =
-    tagIdList.length === 0
-      ? undefined
-      : tagIdList.map((tag) => tag.tagId).join(",");
+    tagIdList.length === 0 ? "" : tagIdList.map((tag) => tag.tagId).join(",");
 
   const { status, data, fetchNextPage } = useCodeList({
     params: {
@@ -35,7 +33,6 @@ export const CodeList = () => {
       size: size,
       keyword: usingKeyword,
       tagIdList: stringTagIdList,
-      closed: closed,
     },
     config: {
       getNextPageParam: (lastPage) =>
@@ -74,6 +71,10 @@ export const CodeList = () => {
           <Title title="코드 리뷰" description="코드를 보고 리뷰해보세요" />
 
           <Search />
+          <DropLabel
+            sortOptions={["최신순", "좋아요순", "리뷰순"]}
+            type="codeReview"
+          />
 
           <FlexDiv direction="column" width="100%" gap="1rem">
             {status === "loading" && <p>Loading...</p>}

@@ -5,11 +5,13 @@ type Tag = {
   name: string;
 };
 
+type SortOption = "modifiedDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
+
 type SearchCriteria = {
   keyword: string;
   tagIdList: Tag[];
   closed: 0 | 1;
-  sort: "modifiedDate" | "likeCnt" | "feedbackCnt";
+  sort: SortOption;
   page: number;
   size: number;
 };
@@ -17,7 +19,7 @@ type SearchCriteria = {
 type SearchCriteriaStore = {
   searchCriteria: SearchCriteria;
   setClosedValue: (closed: 0 | 1) => void;
-  setSort: (sortOption: string) => void;
+  setSort: (sortOption: string, type: "project" | "codeReview") => void;
   addTagId: (Tag: Tag) => void;
   deleteTagId: (TagId: number) => void;
   setKeyword: (keyword: string) => void;
@@ -42,15 +44,16 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
       },
     }));
   },
-  setSort: (sortOption) => {
+  setSort: (sortOption, type) => {
     // 최신순, 좋아요순, 리뷰순 정렬
-    let mappedSortOption: "modifiedDate" | "likeCnt" | "feedbackCnt";
+    let mappedSortOption: SortOption;
+
     if (sortOption === "최신순") {
       mappedSortOption = "modifiedDate";
     } else if (sortOption === "좋아요순") {
       mappedSortOption = "likeCnt";
     } else if (sortOption === "리뷰순") {
-      mappedSortOption = "feedbackCnt";
+      mappedSortOption = type === "project" ? "feedbackCnt" : "reviewCnt";
     }
     set((state) => ({
       searchCriteria: {

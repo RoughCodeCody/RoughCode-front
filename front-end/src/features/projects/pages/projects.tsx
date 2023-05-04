@@ -44,7 +44,7 @@ export const Projects = () => {
       >
         <FlexDiv width="100%" justify="end" gap="2rem" paddingX="5rem">
           <SwitchDemo />
-          <DropLabel sortOptions={sortOptions} />
+          <DropLabel sortOptions={sortOptions} type="project" />
         </FlexDiv>
         <ProjectList />
       </FlexDiv>

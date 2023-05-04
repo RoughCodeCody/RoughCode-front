@@ -18,8 +18,10 @@ type CodeListResult = {
   }[];
 };
 
+type SortOption = "modifiedDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
+
 type CodeListDTO = {
-  sort: "modifiedDate" | "likeCnt" | "reviewCnt";
+  sort: SortOption;
   page: number;
   size: number;
   keyword: string;
