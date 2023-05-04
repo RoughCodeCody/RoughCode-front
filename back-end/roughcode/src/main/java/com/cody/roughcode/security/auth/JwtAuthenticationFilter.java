@@ -41,7 +41,6 @@ public class JwtAuthenticationFilter extends GenericFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug(authentication.getName() + "의 인증정보 저장");
 
-                chain.doFilter(request, response);
             }
             // accessToken 값 만료됨 && refreshToken 존재
             else if (refreshToken != null) {
@@ -72,7 +71,6 @@ public class JwtAuthenticationFilter extends GenericFilter {
                     httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
                     httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
 
-                    chain.doFilter(request, httpServletResponse);
                 }
                 // refreshToken 만료 || Redis에 저장된 토큰과 비교해서 똑같지 않다면
                 else {
@@ -107,6 +105,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
             }
         }
 
+        chain.doFilter(request, response);
     }
 
     // refresh 토큰 정보를 검증하는 메서드
