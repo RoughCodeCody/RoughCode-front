@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
+import { Denk_One } from "next/font/google";
 
-function isOverlap(a, b, c, d) {
+function isOverlap(a: number, b: number, c: number, d: number) {
   // a와 b의 위치를 정렬합니다.
   if (a > b) {
     [a, b] = [b, a];
@@ -23,16 +24,16 @@ function isOverlap(a, b, c, d) {
 export const CodeEditor: React.FC = () => {
   const editorRef = useRef<any>(null);
   const [monaco, setMonaco] = useState<any>(null);
-  const [selectionStartLine, setSelectionStartLine] = useState<number | null>(
-    null
+
+  const [draggedLineNumber, setDraggedLineNumber] = useState<null[] | number[]>(
+    [null, null]
   );
-  const [selectionEndLine, setSelectionEndLine] = useState<number | null>(null);
-  const [selectedLines, setSelectedLines] = useState([]);
-  const [decorationsCollection, setDecorationsCollection] = useState([]);
+  const [decoIds, setDecoIds] = useState<string[]>([]);
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
     setMonaco(monaco);
+
     editor.onDidChangeCursorSelection((e) => handleSelectionChange(e));
   };
 
@@ -40,54 +41,72 @@ export const CodeEditor: React.FC = () => {
     const selection = e.selection;
     const startLineNumber = selection.startLineNumber;
     const endLineNumber = selection.endLineNumber;
-    setSelectionStartLine(startLineNumber);
-    setSelectionEndLine(endLineNumber);
+    setDraggedLineNumber([startLineNumber, endLineNumber]);
   };
 
   const colorizeSelectedLine = () => {
-    if (monaco && selectionStartLine !== null && selectionEndLine !== null) {
+    if (draggedLineNumber[0] !== null && draggedLineNumber[1] !== null) {
       let deltaDecorations = [
         {
-          range: new monaco.Range(selectionStartLine, 1, selectionEndLine, 1),
+          range: new monaco.Range(
+            draggedLineNumber[0],
+            1,
+            draggedLineNumber[1],
+            1
+          ),
           options: { isWholeLine: true, className: "selected-line" },
         },
       ];
-      let newSelectedLines = [];
-      selectedLines.map((line) => {
+
+      let newDecoIds = decoIds;
+      decoIds.map((deco) => {
+        const startLine = editorRef.current
+          ?.getModel()
+          ?.getDecorationRange(deco)?.startLineNumber;
+        const endLine = editorRef.current
+          ?.getModel()
+          ?.getDecorationRange(deco)?.endLineNumber;
+
         if (
-          !isOverlap(line[0], line[1], selectionStartLine, selectionEndLine)
+          draggedLineNumber[0] !== null &&
+          draggedLineNumber[1] !== null &&
+          isOverlap(
+            draggedLineNumber[0],
+            draggedLineNumber[1],
+            startLine,
+            endLine
+          )
         ) {
-          const deco = {
-            range: new monaco.Range(line[0], 1, line[1], 1),
-            options: { isWholeLine: true, className: "selected-line" },
-          };
-          deltaDecorations.push(deco);
-          newSelectedLines.push([line[0], line[1]]);
+          editorRef.current.removeDecorations(deco);
+          newDecoIds = newDecoIds.filter((id) => id !== deco);
         }
       });
-      newSelectedLines.push([selectionStartLine, selectionEndLine]);
-      editorRef.current?.deltaDecorations([], deltaDecorations);
-      setDecorationsCollection(deltaDecorations);
-      setSelectedLines(newSelectedLines);
+
+      const decoId = editorRef.current?.deltaDecorations([], deltaDecorations);
+      setDecoIds([...newDecoIds, decoId]);
     }
   };
 
   const erase = () => {
-    console.log(editorRef.current.getLineDecorations());
+    decoIds.map((deco) => {
+      editorRef.current.removeDecorations(deco);
+      setDecoIds([]);
+    });
   };
-
-  useEffect(() => {
-    console.log(selectedLines);
-  }, [selectedLines]);
 
   return (
     <>
-      <button onClick={erase}>지우기</button>
+      <button onClick={erase}>초기화</button>
       <button onClick={colorizeSelectedLine}>색칠</button>
       <Editor
-        height="60vh"
+        height="30rem"
         defaultLanguage="javascript"
         defaultValue={`a = [1,2,3,4,5,]
+
+for i in range(a):
+    print(i)
+a = [1,2,3,4,5,]
+a = [1,2,3,4,5,]
 
 for i in range(a):
     print(i)

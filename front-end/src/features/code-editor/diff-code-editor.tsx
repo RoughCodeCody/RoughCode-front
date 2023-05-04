@@ -107,8 +107,7 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   return (
     <>
       <DiffEditor
-        width="80vw"
-        height="80vh"
+        height="30rem"
         language={lan}
         original={decodedString}
         modified={decodedString}
