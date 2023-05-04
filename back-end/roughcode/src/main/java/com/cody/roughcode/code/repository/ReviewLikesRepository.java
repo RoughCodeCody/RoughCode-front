@@ -17,4 +17,9 @@ public interface ReviewLikesRepository extends JpaRepository<ReviewLikes, Long> 
     @Transactional
     @Query("DELETE FROM ReviewLikes re WHERE re.reviews IN (SELECT r FROM Reviews r WHERE r.codes.codesId = :codesId)")
     void deleteAllByCodesId(@Param("codesId") Long codesId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ReviewLikes re WHERE re.reviews.reviewsId = :reviewsId")
+    void deleteAllByReviewId(@Param("reviewsId") Long reviewsId);
 }

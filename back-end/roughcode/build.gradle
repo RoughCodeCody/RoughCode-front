@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id 'org.sonarqube' version '3.0'
+    id 'org.sonarqube' version '4.0.0.2929'
     // id 'jacoco'
 }
 
@@ -78,6 +78,8 @@ subprojects {
 
     sonarqube {
         properties {
+            property 'sonar.projectKey', 'sonar'
+            property 'sonar.projectName', 'sonar'
             property 'sonar.host.url', 'http://k8a306.p.ssafy.io:8000/'
             property 'sonar.login', 'squ_befdf245a27681f3b88ede9e061123599de353bf'
             property 'sonar.sources', 'src'
@@ -90,6 +92,13 @@ subprojects {
             property 'sonar.exclusions', '**/test/**, **/Q*.java, **/*Doc*.java, **/resources/**'
         }
     }
+}
+
+sonar {
+  properties {
+    property "sonar.projectKey", "sonar"
+    property "sonar.projectName", "sonar"
+  }
 }
 
 

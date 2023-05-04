@@ -20,7 +20,7 @@ public class FeedbackUpdateReq {
     Long feedbackId;
 
     @Schema(description = "피드백 내용", example = "개발새발 좋네요")
-    @NotEmpty
+    @NotEmpty(message = "피드백은 비어있을 수 없습니다")
     @Size(max = 500, message = "피드백은 500자를 넘을 수 없습니다")
     String content;
 }

@@ -22,4 +22,11 @@ public interface ReReviewLikesRepository extends JpaRepository<ReReviewLikes, Lo
             "(select rr.reReviewsId from ReReviews rr where rr.reviews.reviewsId in "+
             "(select rv.reviewsId from Reviews rv where rv.codes.codesId = :codesId))")
     void deleteAllByCodesId(@Param("codesId") Long codesId);
+
+    @Modifying
+    @Transactional
+    @Query("delete from ReReviewLikes r "+
+            "where r.reReviews.reReviewsId in "+
+            "(select rr.reReviewsId from ReReviews rr where rr.reviews.reviewsId = :reviewsId)")
+    void deleteAllByReviewId(@Param("reviewsId") Long reviewsId);
 }
