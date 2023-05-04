@@ -2,9 +2,11 @@ package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.code.entity.ReReviewLikes;
+import com.cody.roughcode.code.entity.ReReviews;
 import com.cody.roughcode.code.entity.Reviews;
-import com.cody.roughcode.code.repository.CodesRepository;
-import com.cody.roughcode.code.repository.ReviewsRepository;
+import com.cody.roughcode.code.repository.*;
+import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +34,13 @@ public class ReviewsServiceTest {
     @Mock
     private ReviewsRepository reviewsRepository;
     @Mock
+    private ReviewLikesRepository reviewLikesRepository;
+    @Mock
+    private ReReviewsRepository reReviewsRepository;
+    @Mock
+    private ReReviewLikesRepository reReviewLikesRepository;
+
+    @Mock
     private CodesRepository codesRepository;
     @Mock
     private UsersRepository usersRepository;
@@ -42,6 +51,14 @@ public class ReviewsServiceTest {
             .name("코디")
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
+
+    final Users user2 = Users.builder()
+            .usersId(2L)
+            .email("cody306@gmail.com")
+            .name("코디")
+            .roles(List.of(String.valueOf(ROLE_USER)))
+            .build();
+
 
     final Codes code = Codes.builder()
             .codesId(1L)
@@ -113,5 +130,120 @@ public class ReviewsServiceTest {
         );
 
         assertEquals("일치하는 코드가 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 수정 성공")
+    @Test
+    void updateReviewSucceed() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when
+        int res = reviewsService.updateReview(req, 1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("코드 리뷰 수정 실패 - 일치하는 사용자가 없음")
+    @Test
+    void updateReviewFailNotFoundUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reviewsService.updateReview(req, 1L, 1L)
+        );
+
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 수정 실패 - 일치하는 코드 리뷰가 없음")
+    @Test
+    void updateReviewFailNotFoundReview() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reviewsService.updateReview(req, 1L, 1L)
+        );
+
+        assertEquals("일치하는 코드 리뷰가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 수정 실패 - 코드 리뷰 작성자와 일치하지 않는 경우")
+    @Test
+    void updateReviewFailNotMatched() {
+        Users user2 = Users.builder()
+                .usersId(2L)
+                .build();
+
+        Reviews review2 = Reviews.builder()
+                .reviewsId(2L)
+                .users(user2)
+                .codes(code)
+                .codeContent("hihihi")
+                .build();
+
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review2).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> reviewsService.updateReview(req, 1L, 1L)
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 삭제 성공")
+    @Test
+    void deleteReviewSucceed() {
+        Reviews reviews = Reviews.builder()
+                .reviewsId(1L)
+                .codeContent("!212")
+                .content("설명설명")
+                .build();
+        ReReviews reReviews = ReReviews.builder()
+                .reviews(reviews)
+                .content("리리뷰")
+                .build();
+        ReReviewLikes reReviewLikes = ReReviewLikes.builder()
+                .likesId(1L)
+                .reReviews(reReviews)
+                .users(user).build();
+
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        reviewLikesRepository.deleteAllByReviewId(any(Long.class));
+        reReviewsRepository.deleteAllByReviews(any(Reviews.class));
+        reReviewLikesRepository.deleteAllByReviewId(any(Long.class));
+
+        // when
+        int res = reviewsService.deleteReview(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("코드 리뷰 삭제 실패 - 코드 리뷰 작성자와 삭제를 시도하는 사용자가 다름")
+    @Test
+    void deleteReviewFailUserDiffer() {
+        // given
+        doReturn(user2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> reviewsService.deleteReview(1L, 1L)
+        );
+
+        assertEquals("접근 권한이 없습니다", exception.getMessage());
     }
 }

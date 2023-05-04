@@ -3,6 +3,7 @@ package com.cody.roughcode.code.controller;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.service.ReviewsService;
+import com.cody.roughcode.exception.SelectedException;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
@@ -25,10 +26,10 @@ public class ReviewsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ReviewsService reviewsService;
 
-    @Operation(summary = "코드 정보 등록 API")
+    @Operation(summary = "코드 리뷰 등록 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 리뷰 등록 성공"),
-            @ApiResponse(responseCode = "400", description = "접근 권한이 없습니다."),
+            @ApiResponse(responseCode = "400", description = "일치하는 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 리뷰 등록 실패")
     })
     @PostMapping()
@@ -49,5 +50,62 @@ public class ReviewsController {
             return Response.notFound("코드 리뷰 등록 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 등록 성공", 1, res);
+    }
+
+    @Operation(summary = "코드 리뷰 수정 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드 리뷰가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 수정 실패"),
+            @ApiResponse(responseCode = "409", description = "채택된 코드 리뷰는 수정할 수 없습니다"),
+    })
+    @PutMapping("/{reviewId}")
+    ResponseEntity<?> updateReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                   @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId,
+                                   @Parameter(description = "코드 리뷰 정보 값", required = true) @RequestBody ReviewReq reviewReq) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = reviewsService.updateReview(reviewReq, reviewId, userId);
+        } catch(SelectedException e){
+            return Response.conflict(e.getMessage());
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res <= 0) {
+            return Response.notFound("코드 리뷰 수정 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 리뷰 수정 성공", 1, res);
+    }
+
+    @Operation(summary = "코드 리뷰 삭제 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 삭제 성공"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드 리뷰가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 삭제 실패"),
+            @ApiResponse(responseCode = "409", description = "채택된 코드 리뷰는 삭제할 수 없습니다"),
+    })
+    @DeleteMapping("/{reviewId}")
+    ResponseEntity<?> deleteReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                   @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = reviewsService.deleteReview(reviewId, userId);
+        } catch(SelectedException e){
+            return Response.conflict(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res <= 0) {
+            return Response.notFound("코드 리뷰 삭제 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 리뷰 삭제 성공", 1, res);
     }
 }

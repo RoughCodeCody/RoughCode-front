@@ -6,4 +6,7 @@ public interface ReviewsService {
 
     Long insertReview(ReviewReq req, Long userId);
 
+    int updateReview(ReviewReq reviewReq, Long reviewId, Long userId);
+
+    int deleteReview(Long reviewId, Long userId);
 }
