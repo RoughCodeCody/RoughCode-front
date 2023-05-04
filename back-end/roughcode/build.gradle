@@ -78,6 +78,8 @@ subprojects {
 
     sonarqube {
         properties {
+            property 'sonar.projectKey', 'sonar'
+            property 'sonar.projectName', 'sonar'
             property 'sonar.host.url', 'http://k8a306.p.ssafy.io:8000/'
             property 'sonar.login', 'squ_befdf245a27681f3b88ede9e061123599de353bf'
             property 'sonar.sources', 'src'
