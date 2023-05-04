@@ -134,7 +134,7 @@ public class ReviewsControllerTest {
         assertThat(message).isEqualTo("코드 리뷰 등록 실패");
     }
 
-    @DisplayName("코드 정보 수정 성공")
+    @DisplayName("코드 리뷰 정보 수정 성공")
     @Test
     public void updateReviewSucceed() throws Exception {
         // given
@@ -162,7 +162,7 @@ public class ReviewsControllerTest {
         assertThat(message).isEqualTo("코드 리뷰 수정 성공");
     }
 
-    @DisplayName("코드 정보 수정 실패")
+    @DisplayName("코드 리뷰 정보 수정 실패")
     @Test
     public void updateCodeFail() throws Exception {
         // given
@@ -190,4 +190,55 @@ public class ReviewsControllerTest {
         assertThat(message).isEqualTo("코드 리뷰 수정 실패");
     }
 
+    @DisplayName("코드 리뷰 정보 삭제 성공")
+    @Test
+    public void deleteCodeSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{reviewId}";
+
+        // ReviewService deleteReview 대한 stub 필요
+        doReturn(1).when(reviewsService)
+                .deleteReview(any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 삭제 성공");
+    }
+
+    @DisplayName("코드 정보 삭제 실패")
+    @Test
+    public void deleteCodeFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{reviewId}";
+
+        // ReviewService deleteReview 대한 stub 필요
+        doReturn(0).when(reviewsService)
+                .deleteReview(any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 NotFound인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 삭제 실패");
+    }
 }
