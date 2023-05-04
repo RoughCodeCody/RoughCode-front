@@ -3,6 +3,13 @@ node {
     checkout scm
   }
   stage('SonarQube Analysis') {
+    steps {
+      script {
+        withSonarQubeEnv('SonarQube') {
+          sh 'sonar-scanner'
+        }
+      }
+    }
     withSonarQubeEnv() {
       sh "./gradlew sonar"
     }
