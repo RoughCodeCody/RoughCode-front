@@ -94,8 +94,7 @@ public class CodesServiceImpl implements CodesService {
             codeNum = user.getCodesCnt();
             codeVersion = 1;
         } else { // 기존 코드 업데이트
-            Codes original = codesRepository.findLatestByCodesId(req.getCodeId());
-            log.info("기존 코드 최근 버전: " + original.getVersion());
+            Codes original = codesRepository.findLatestByCodesIdAndUsersId(req.getCodeId(), userId);
             if (original == null) {
                 throw new NullPointerException("일치하는 코드가 없습니다.");
             }
@@ -103,6 +102,7 @@ public class CodesServiceImpl implements CodesService {
                 throw new NotMatchException();
             }
 
+            log.info("기존 코드 최근 버전: " + original.getVersion());
             codeNum = original.getNum();
             codeVersion = original.getVersion() + 1;
         }
@@ -309,7 +309,7 @@ public class CodesServiceImpl implements CodesService {
         }
 
         // 기존 코드 가져오기
-        Codes target = codesRepository.findLatestByCodesId(codeId);
+        Codes target = codesRepository.findLatestByCodesIdAndUsersId(req.getCodeId(), userId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
@@ -420,7 +420,7 @@ public class CodesServiceImpl implements CodesService {
         }
 
         // 기존 코드 가져오기
-        Codes target = codesRepository.findLatestByCodesId(codeId);
+        Codes target = codesRepository.findLatestByCodesIdAndUsersId(codeId, userId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
