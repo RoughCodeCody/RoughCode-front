@@ -1,7 +1,7 @@
 package com.cody.roughcode.code.controller;
 
-import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.req.ReviewReq;
+import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.service.ReviewsService;
 import com.cody.roughcode.exception.SelectedException;
 import com.cody.roughcode.security.auth.JwtProperties;
@@ -9,6 +9,8 @@ import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,32 @@ public class ReviewsController {
             return Response.notFound("코드 리뷰 등록 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 등록 성공", 1, res);
+    }
+
+    @Operation(summary = "코드 리뷰 상세 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 상세 조회 성공", content = @Content(schema = @Schema(implementation = ReviewRes.class))),
+            @ApiResponse(responseCode = "400", description = "일치하는 코드 리뷰가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 상세 조회 실패")
+    })
+    @GetMapping("/{reviewId}")
+    ResponseEntity<?> getReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                              @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
+        Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
+
+        ReviewRes res = null;
+        try {
+            res = reviewsService.getReview(reviewId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res == null) {
+            return Response.notFound("코드 리뷰 상세 조회 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 리뷰 상세 조회 성공", 1, res);
+
     }
 
     @Operation(summary = "코드 리뷰 수정 API")
