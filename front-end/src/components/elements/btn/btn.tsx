@@ -10,6 +10,9 @@ interface BtnProps {
   fontSize?: string;
   width?: string;
   height?: string;
+  display?: string;
+  justify?: string;
+  align?: string;
   onClickFunc?: MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -22,6 +25,9 @@ export const Btn = ({
   fontSize,
   width,
   height,
+  display,
+  justify,
+  align,
   onClickFunc,
 }: BtnProps) => {
   return (
@@ -33,6 +39,9 @@ export const Btn = ({
       fontSize={fontSize}
       width={width}
       height={height}
+      display={display}
+      justify={justify}
+      align={align}
       onClick={onClickFunc}
     >
       {text}

@@ -41,7 +41,7 @@ const UserNavigation = () => {
   return (
     <FlexDiv direction="row" justify="center" align="center">
       {userQuery.isLoading && "Loading..."}
-      {userQuery.isError && (
+      {userQuery.data && userQuery.data.nickname.length === 0 && (
         <Link
           href={`${API_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
         >
