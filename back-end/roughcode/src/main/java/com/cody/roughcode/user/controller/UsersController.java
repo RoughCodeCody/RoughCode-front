@@ -99,24 +99,24 @@ public class UsersController {
         return Response.makeResponse(HttpStatus.OK, "사용 가능한 닉네임입니다.", 0, res);
     }
 
-    @Operation(summary = "토큰 재발급 API")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Token 재발급 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다"),
-            @ApiResponse(responseCode = "404", description = "회원 정보가 존재하지 않습니다.")
-    })
-    @PostMapping("/token")
-    public ResponseEntity<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            TokenInfo tokenInfo = jwtService.reissue(request);
-            response.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
-            response.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
-        } catch (NullPointerException e){
-            return Response.notFound("회원 정보가 존재하지 않습니다.");
-        } catch (Exception e){
-            return Response.badRequest("잘못된 요청입니다.");
-        }
-        return Response.ok("Token 재발급 성공");
-    }
+//    @Operation(summary = "토큰 재발급 API")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Token 재발급 성공"),
+//            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다"),
+//            @ApiResponse(responseCode = "404", description = "회원 정보가 존재하지 않습니다.")
+//    })
+//    @PostMapping("/token")
+//    public ResponseEntity<?> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+//        try {
+//            TokenInfo tokenInfo = jwtService.reissue(request);
+//            response.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
+//            response.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
+//        } catch (NullPointerException e){
+//            return Response.notFound("회원 정보가 존재하지 않습니다.");
+//        } catch (Exception e){
+//            return Response.badRequest("잘못된 요청입니다.");
+//        }
+//        return Response.ok("Token 재발급 성공");
+//    }
 
 }

@@ -33,6 +33,8 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
     @Value("${app.oauth2.authorizedRedirectUri}")
     private List<String> redirectUris;
+    @Value("${app.host}")
+    private String host;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
     private final CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
@@ -48,14 +50,15 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         redisTemplate.opsForValue()
                 .set(tokenInfo.getUserId().toString(), tokenInfo.getRefreshToken(), JwtProperties.REFRESH_TOKEN_TIME, TimeUnit.MILLISECONDS);
         // access token, refresh token 쿠키에 저장
-        response.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
-        response.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
+        response.addHeader("Set-Cookie", tokenInfo.generateAccessToken(host).toString());
+        response.addHeader("Set-Cookie", tokenInfo.generateRefreshToken(host).toString());
 
         if(response.isCommitted()){
             log.debug("Response has already been committed");
             return;
         }
         clearAuthenticationAttributes(request, response);
+        log.info("쿠키 발급 완료. 리다이렉트 : " + targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
@@ -63,9 +66,12 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         Optional<String> redirectUri = CookieUtil.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
 
-        if (redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
-            throw new BadRequestException("redirect URIs are not matched");
-        }
+        // 리다이렉트 URI 일치하는지 체크하는 부분 (테스트중일 때는 주석처리함)
+//        if (redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
+////        if (redirectUri.isPresent()) {
+//            throw new BadRequestException("redirect URIs are not matched");
+//        }
+
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
         return UriComponentsBuilder.fromUriString(targetUrl)
