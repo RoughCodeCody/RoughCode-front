@@ -5,4 +5,5 @@ export * from "./post-feedback-like";
 export * from "./post-project-fav";
 export * from "./post-project-feedback";
 export * from "./post-project-like";
+export * from "./put-feedback-complaint";
 export * from "./put-project-open-status";
