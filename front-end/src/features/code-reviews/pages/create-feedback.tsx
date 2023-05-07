@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 
+import { FlexDiv, Title } from "@/components/elements";
 import { CodeEditor } from "@/features/code-editor";
 import { DiffCodeEditor } from "@/features/code-editor";
-import { FlexDiv, Title } from "@/components/elements";
 
 type CreateFeedbackProps = {
   codeId: number;
