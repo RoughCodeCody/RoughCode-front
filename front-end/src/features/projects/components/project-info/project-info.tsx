@@ -8,7 +8,12 @@ import {
   Count,
 } from "@/components/elements";
 
-import { useCheckURLOpen, usePutProjectOpenStatus } from "../../api";
+import {
+  useCheckURLOpen,
+  usePutProjectOpenStatus,
+  usePostProjectLike,
+  usePostProjectFav,
+} from "../../api";
 import { ProjectInfoResult } from "../../types";
 import { UrlApkBtn } from "./style";
 
@@ -27,16 +32,23 @@ export const ProjectInfo = ({
     favorite,
     favoriteCnt,
     tags,
-    // mine,
+    mine,
   },
   projectId,
 }: ProjectInfoProps) => {
-  const [isLiked, setisLiked] = useState(liked);
-  const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
-  const [isBookmarked, setIsBookmarked] = useState(favorite);
-  const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
+  // const [isLiked, setisLiked] = useState(liked);
+  // const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
+  // const [isBookmarked, setIsBookmarked] = useState(favorite);
+  // const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
 
-  const mine = true;
+  // 더미데이터
+  // const mine = true;
+
+  // 프로젝트 좋아요/좋아요 취소
+  const postProjectLikeQuery = usePostProjectLike();
+
+  // 프로젝트 즐겨찾기/즐겨찾기 취소
+  const postProjectFavQuery = usePostProjectFav();
 
   // 프로젝트 열기/닫기
   const putProjectOpenStatusQuery = usePutProjectOpenStatus();
@@ -66,17 +78,19 @@ export const ProjectInfo = ({
           <FlexDiv>
             <Count
               type="like"
-              cnt={newLikeCnt}
-              setCnt={setNewLikeCnt}
-              isChecked={isLiked}
-              setIsChecked={setisLiked}
+              cnt={likeCnt}
+              // setCnt={setNewLikeCnt}
+              isChecked={liked}
+              // setIsChecked={setisLiked}
+              onClickFunc={() => postProjectLikeQuery.mutate(projectId)}
             />
             <Count
               type="bookmark"
-              cnt={bookmarkCnt}
-              setCnt={setBookmarkCnt}
-              isChecked={isBookmarked}
-              setIsChecked={setIsBookmarked}
+              cnt={favoriteCnt}
+              // setCnt={setBookmarkCnt}
+              isChecked={favorite}
+              // setIsChecked={setIsBookmarked}
+              onClickFunc={() => postProjectFavQuery.mutate(projectId)}
             />
           </FlexDiv>
         </FlexDiv>
