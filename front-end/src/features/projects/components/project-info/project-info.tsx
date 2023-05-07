@@ -8,31 +8,38 @@ import {
   Count,
 } from "@/components/elements";
 
-import { useCheckURLOpen } from "../../api";
+import { useCheckURLOpen, usePutProjectOpenStatus } from "../../api";
+import { ProjectInfoResult } from "../../types";
 import { UrlApkBtn } from "./style";
 
 type ProjectInfoProps = {
-  data: {
-    title: string;
-    userName: string;
-    url: string;
-    liked: boolean;
-    likeCnt: number;
-    favorite: boolean;
-    favoriteCnt: number;
-    tags: string[];
-  };
+  data: ProjectInfoResult;
   projectId: string;
 };
 
 export const ProjectInfo = ({
-  data: { title, userName, url, liked, likeCnt, favorite, favoriteCnt, tags },
+  data: {
+    title,
+    userName,
+    url,
+    liked,
+    likeCnt,
+    favorite,
+    favoriteCnt,
+    tags,
+    // mine,
+  },
   projectId,
 }: ProjectInfoProps) => {
   const [isLiked, setisLiked] = useState(liked);
   const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
   const [isBookmarked, setIsBookmarked] = useState(favorite);
   const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
+
+  const mine = true;
+
+  // 프로젝트 열기/닫기
+  const putProjectOpenStatusQuery = usePutProjectOpenStatus();
 
   // URL 버튼 클릭시 서버 running 여부 확인한 후 연결
   const checkURLQuery = useCheckURLOpen();
@@ -78,7 +85,27 @@ export const ProjectInfo = ({
             <TagChipSub tag={val} key={idx} />
           ))}
         </FlexDiv>
-        <UrlApkBtn onClick={handleURLAPKBtnClick}>{url}</UrlApkBtn>
+        <FlexDiv
+          width="100%"
+          direction="column"
+          align="end"
+          margin="1rem 0 0 0"
+        >
+          {mine && (
+            <Text
+              pointer={true}
+              onClick={() =>
+                putProjectOpenStatusQuery.mutate({
+                  projectId,
+                  status: closed ? "open" : "close",
+                })
+              }
+            >
+              {closed ? "프로젝트 열기" : "프로젝트 닫기"}
+            </Text>
+          )}
+          <UrlApkBtn onClick={handleURLAPKBtnClick}>{url}</UrlApkBtn>
+        </FlexDiv>
       </FlexDiv>
     </>
   );
