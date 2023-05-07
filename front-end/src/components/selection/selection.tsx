@@ -5,6 +5,7 @@ import { Text } from "../elements";
 
 type SelectionProps = {
   isMine: boolean;
+  handleModifyFunc?: () => void;
   handleDeleteFunc?: () => void;
   handleComplaintFunc?: () => void;
 };
@@ -14,6 +15,7 @@ type SelectionProps = {
 
 export const Selection = ({
   isMine,
+  handleModifyFunc,
   handleDeleteFunc,
   handleComplaintFunc,
 }: SelectionProps) => {
@@ -26,7 +28,14 @@ export const Selection = ({
         <SelectionList>
           {isMine ? (
             <>
-              <SelectionText>수정하기</SelectionText>
+              <SelectionText
+                onClick={() => {
+                  handleModifyFunc();
+                  setisOpen(false);
+                }}
+              >
+                수정하기
+              </SelectionText>
               <SelectionText
                 onClick={() => {
                   handleDeleteFunc();
