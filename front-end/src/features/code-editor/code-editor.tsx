@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
-import { Denk_One } from "next/font/google";
+
+import { FaRegLightbulb } from "react-icons/fa";
+
+import { EditorWrapper, EditorHeader, EditorBottom } from "./style";
+import { FlexDiv, Text } from "@/components/elements";
+import { Btn } from "@/components/elements";
 
 function isOverlap(a: number, b: number, c: number, d: number) {
   // a와 b의 위치를 정렬합니다.
@@ -21,7 +26,19 @@ function isOverlap(a: number, b: number, c: number, d: number) {
   }
 }
 
-export const CodeEditor: React.FC = () => {
+interface CodeEditorProps {
+  headerText: string;
+  originalCode: string;
+  height: string;
+  lineSelection: boolean;
+}
+
+export const CodeEditor: React.FC<CodeEditorProps> = ({
+  headerText,
+  originalCode,
+  height,
+  lineSelection,
+}) => {
   const editorRef = useRef<any>(null);
   const [monaco, setMonaco] = useState<any>(null);
 
@@ -30,11 +47,13 @@ export const CodeEditor: React.FC = () => {
   );
   const [decoIds, setDecoIds] = useState<string[]>([]);
 
-  const handleEditorDidMount: OnMount = (editor, monaco) => {
+  const handleEditorDidMount: OnMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
     setMonaco(monaco);
+    // 코드 수정 불가능(읽기 전용)
+    editor.updateOptions({ readOnly: true });
 
-    editor.onDidChangeCursorSelection((e) => handleSelectionChange(e));
+    editor.onDidChangeCursorSelection((e: any) => handleSelectionChange(e));
   };
 
   const handleSelectionChange = (e: any) => {
@@ -94,25 +113,57 @@ export const CodeEditor: React.FC = () => {
     });
   };
 
+  const { Buffer } = require("buffer");
+
+  const decodeBase64ToUTF8 = (originalCode: string) => {
+    const padding = "=".repeat((4 - (originalCode.length % 4)) % 4);
+    const base64 = (originalCode + padding)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const rawData = Buffer.from(base64, "base64");
+    const utf8Decoder = new TextDecoder("utf-8");
+    return utf8Decoder.decode(rawData);
+  };
+
+  const decodedString = decodeBase64ToUTF8(originalCode);
+
   return (
-    <>
-      <button onClick={erase}>초기화</button>
-      <button onClick={colorizeSelectedLine}>색칠</button>
+    <EditorWrapper>
+      <EditorHeader>
+        <FlexDiv>
+          <FaRegLightbulb />
+          <Text padding="0 0 0 0.5rem">{headerText}</Text>
+        </FlexDiv>
+        {lineSelection ? (
+          <FlexDiv gap="1rem">
+            <Btn
+              text="선택"
+              height="1.7rem"
+              display="flex"
+              align="center"
+              onClickFunc={colorizeSelectedLine}
+            />
+            <Btn
+              text="초기화"
+              height="1.7rem"
+              display="flex"
+              align="center"
+              onClickFunc={erase}
+            />
+          </FlexDiv>
+        ) : (
+          <></>
+        )}
+      </EditorHeader>
+
       <Editor
-        height="30rem"
-        defaultLanguage="javascript"
-        defaultValue={`a = [1,2,3,4,5,]
-
-for i in range(a):
-    print(i)
-a = [1,2,3,4,5,]
-a = [1,2,3,4,5,]
-
-for i in range(a):
-    print(i)
-a = [1,2,3,4,5,]`}
+        height={height}
+        defaultLanguage="python"
+        defaultValue={decodedString}
         onMount={handleEditorDidMount}
       />
-    </>
+
+      <EditorBottom />
+    </EditorWrapper>
   );
 };

@@ -1,8 +1,6 @@
 import Head from "next/head";
 import { Projects } from "@/features/projects";
 
-import { useRouter } from "next/router";
-
 export default function Project() {
   return (
     <>

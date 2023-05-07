@@ -1,24 +1,39 @@
 import React, { useRef, useState } from "react";
 import { DiffEditor } from "@monaco-editor/react";
 
+import { FlexDiv, Text } from "@/components/elements";
+
+import { FaRegLightbulb } from "react-icons/fa";
+
+import { EditorWrapper, EditorHeader, EditorBottom } from "./style";
+
 interface DiffCodeEditorProps {
-  base64String: string;
+  headerText: string;
+  originalCode: string;
+  height: string;
+  readOnly?: boolean;
 }
 
 type Lan = "python";
 
 export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
-  base64String,
+  headerText,
+  originalCode,
+  height,
+  readOnly = true,
 }) => {
   const diffEditorRef = useRef<any>(null);
   const [lan, setLan] = useState<Lan>("python");
 
   function handleEditorDidMount(editor: any, monaco: any) {
     diffEditorRef.current = editor;
+    if (readOnly) {
+      editor.updateOptions({ readOnly: true });
+    }
   }
 
-  // const decodeBase64ToUTF8 = (base64String: string): string => {
-  //   const binaryString = atob(base64String);
+  // const decodeBase64ToUTF8 = (originalCode: string): string => {
+  //   const binaryString = atob(originalCode);
   //   const bytes = new Uint8Array(binaryString.length);
   //   for (let i = 0; i < binaryString.length; i++) {
   //     bytes[i] = binaryString.charCodeAt(i);
@@ -29,15 +44,15 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
 
   // const encodeUTF8ToBase64 = (code: string): string => {
   //   const bytes = new TextEncoder().encode(code);
-  //   const base64String = btoa(String.fromCharCode(...bytes));
-  //   return base64String;
+  //   const originalCode = btoa(String.fromCharCode(...bytes));
+  //   return originalCode;
   // };
 
   const { Buffer } = require("buffer");
 
-  const decodeBase64ToUTF8 = (base64String: string) => {
-    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding)
+  const decodeBase64ToUTF8 = (originalCode: string) => {
+    const padding = "=".repeat((4 - (originalCode.length % 4)) % 4);
+    const base64 = (originalCode + padding)
       .replace(/-/g, "+")
       .replace(/_/g, "/");
     const rawData = Buffer.from(base64, "base64");
@@ -51,7 +66,7 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
     const base64 = Buffer.from(data).toString("base64");
     return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
   };
-  const decodedString = decodeBase64ToUTF8(base64String);
+  const decodedString = decodeBase64ToUTF8(originalCode);
 
   const postFeedback = () => {
     const modifiedCode = diffEditorRef?.current?.getModifiedEditor().getValue();
@@ -60,14 +75,21 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   };
 
   return (
-    <>
+    <EditorWrapper>
+      <EditorHeader>
+        <FlexDiv>
+          <FaRegLightbulb />
+          <Text padding="0 0 0 0.5rem">{headerText}</Text>
+        </FlexDiv>
+      </EditorHeader>
       <DiffEditor
-        height="30rem"
+        height={height}
         language={lan}
         original={decodedString}
         modified={decodedString}
         onMount={handleEditorDidMount}
       />
-    </>
+      <EditorBottom />
+    </EditorWrapper>
   );
 };

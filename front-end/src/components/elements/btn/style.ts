@@ -8,8 +8,22 @@ const BtnWrapper = styled.button<{
   fontSize?: string;
   width?: string;
   height?: string;
+  display?: string;
+  justify?: string;
+  align?: string;
 }>`
-  ${({ bgColor, color, padding, margin, fontSize, width, height }) => css`
+  ${({
+    bgColor,
+    color,
+    padding,
+    margin,
+    fontSize,
+    width,
+    height,
+    display,
+    justify,
+    align,
+  }) => css`
     background-color: ${bgColor
       ? "var(--" + bgColor + "-color)"
       : "var(--main-color)"};
@@ -20,6 +34,9 @@ const BtnWrapper = styled.button<{
     font-size: ${fontSize || "1rem"};
     width: ${width || "none"};
     height: ${height || "none"};
+    display: ${display || "none"};
+    justify-content: ${justify || "none"};
+    align-items: ${align || "none"};
     cursor: pointer;
   `}
 `;
