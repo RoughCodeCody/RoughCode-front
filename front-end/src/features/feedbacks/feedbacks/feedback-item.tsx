@@ -3,13 +3,16 @@ import { useState } from "react";
 
 import { Count, FlexDiv, Nickname, Text } from "@/components/elements";
 import { Selection } from "@/components/selection";
+import { useDeleteProjectFeedback } from "@/features/projects/api";
 import { Feedback } from "@/features/projects/types";
+import { queryClient } from "@/lib/react-query";
 
 import { FeedbackItemWrapper } from "./style";
 
 interface FeedbackItemProps {
   feedback: Feedback;
   type: "feedback" | "review";
+  projectId: string;
 }
 
 export const FeedbackItem = ({
@@ -24,12 +27,23 @@ export const FeedbackItem = ({
     date,
   },
   type,
+  projectId,
 }: FeedbackItemProps) => {
   // 더미데이터
   const isMine = false;
 
   const [newIsLiked, setNewIsLiked] = useState<boolean>(liked);
   const [newLikeCnt, setNewLikeCnt] = useState<number>(like);
+
+  // 피드백 삭제
+  const deleteFeedbackQuery = useDeleteProjectFeedback();
+  const handleDeleteFeedback = () =>
+    deleteFeedbackQuery.mutate(feedbackId, {
+      onSuccess: () =>
+        queryClient.invalidateQueries({
+          queryKey: ["projectInfo", projectId],
+        }),
+    });
 
   return (
     <FeedbackItemWrapper
@@ -53,7 +67,7 @@ export const FeedbackItem = ({
             cnt={newLikeCnt}
             setCnt={setNewLikeCnt}
           />
-          <Selection isMine={isMine} />
+          <Selection isMine={isMine} handleDeleteFunc={handleDeleteFeedback} />
         </FlexDiv>
       </FlexDiv>
 

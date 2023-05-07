@@ -5,9 +5,10 @@ import { Text } from "../elements";
 
 type SelectionProps = {
   isMine: boolean;
+  handleDeleteFunc?: () => void;
 };
 
-export const Selection = ({ isMine }: SelectionProps) => {
+export const Selection = ({ isMine, handleDeleteFunc }: SelectionProps) => {
   const [isOpen, setisOpen] = useState<boolean>(false);
 
   return (
@@ -18,7 +19,7 @@ export const Selection = ({ isMine }: SelectionProps) => {
           {isMine ? (
             <>
               <SelectionText>수정하기</SelectionText>
-              <SelectionText>삭제하기</SelectionText>
+              <SelectionText onClick={handleDeleteFunc}>삭제하기</SelectionText>
             </>
           ) : (
             <SelectionText color="red">신고하기</SelectionText>
