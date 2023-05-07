@@ -3,7 +3,10 @@ import { useState } from "react";
 
 import { Count, FlexDiv, Nickname, Text } from "@/components/elements";
 import { Selection } from "@/components/selection";
-import { useDeleteProjectFeedback } from "@/features/projects/api";
+import {
+  useDeleteProjectFeedback,
+  usePostFeedbackLike,
+} from "@/features/projects/api";
 import { Feedback } from "@/features/projects/types";
 import { queryClient } from "@/lib/react-query";
 
@@ -31,9 +34,20 @@ export const FeedbackItem = ({
 }: FeedbackItemProps) => {
   // 더미데이터
   const isMine = false;
+  // const [newIsLiked, setNewIsLiked] = useState<boolean>(liked);
+  // const [newLikeCnt, setNewLikeCnt] = useState<number>(like);
 
-  const [newIsLiked, setNewIsLiked] = useState<boolean>(liked);
-  const [newLikeCnt, setNewLikeCnt] = useState<number>(like);
+  // 피드백 좋아요/좋아요 취소
+  const postFeedbackLikeQuery = usePostFeedbackLike();
+  const handleFeedbackLike = () => {
+    postFeedbackLikeQuery.mutate(feedbackId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["projectInfo", projectId],
+        });
+      },
+    });
+  };
 
   // 피드백 삭제
   const deleteFeedbackQuery = useDeleteProjectFeedback();
@@ -62,10 +76,11 @@ export const FeedbackItem = ({
         <FlexDiv>
           <Count
             type="like"
-            isChecked={newIsLiked}
-            setIsChecked={setNewIsLiked}
-            cnt={newLikeCnt}
-            setCnt={setNewLikeCnt}
+            isChecked={liked}
+            // setIsChecked={setNewIsLiked}
+            cnt={like}
+            // setCnt={setNewLikeCnt}
+            onClickFunc={handleFeedbackLike}
           />
           <Selection isMine={isMine} handleDeleteFunc={handleDeleteFeedback} />
         </FlexDiv>
