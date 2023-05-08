@@ -23,5 +23,5 @@ public class SelectedReviews {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selected_codes_id", nullable = false)
-    private Codes codes;
+    private CodesInfo codesInfo;
 }

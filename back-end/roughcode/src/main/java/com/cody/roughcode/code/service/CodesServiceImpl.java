@@ -147,6 +147,15 @@ public class CodesServiceImpl implements CodesService {
                 log.info("등록한 태그가 없습니다.");
             }
 
+            // 코드 정보 저장
+            CodesInfo codesInfo = CodesInfo.builder()
+                    .codes(savedCode)
+                    .githubUrl(req.getGithubUrl())
+                    .content(req.getContent())
+                    .favoriteCnt(0)
+                    .language(req.getLanguage()).build();
+            codesInfoRepository.save(codesInfo);
+
             // 반영한 review 저장
             if (req.getSelectedReviewsId() != null) {
                 for (Long id : req.getSelectedReviewsId()) {
@@ -162,7 +171,7 @@ public class CodesServiceImpl implements CodesService {
 
                     SelectedReviews selectedReviews = SelectedReviews.builder()
                             .reviews(review)
-                            .codes(savedCode)
+                            .codesInfo(codesInfo)
                             .build();
                     selectedReviewsRepository.save(selectedReviews);
                 }
@@ -170,14 +179,6 @@ public class CodesServiceImpl implements CodesService {
                 log.info("반영한 리뷰가 없습니다.");
             }
 
-            // 코드 정보 저장
-            CodesInfo codesInfo = CodesInfo.builder()
-                    .codes(savedCode)
-                    .githubUrl(req.getGithubUrl())
-                    .content(req.getContent())
-                    .favoriteCnt(0)
-                    .language(req.getLanguage()).build();
-            codesInfoRepository.save(codesInfo);
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -241,6 +242,7 @@ public class CodesServiceImpl implements CodesService {
             versionResList.add(VersionRes.builder()
                     .selectedReviews(selectedReviewResList)
                     .codeId(c.getLeft().getCodesId())
+                    .title(c.getLeft().getTitle())
                     .version(c.getLeft().getVersion())
                     .build());
         }
@@ -384,7 +386,7 @@ public class CodesServiceImpl implements CodesService {
                 List<Reviews> reviews = reviewsRepository.findByReviewsIdIn(req.getSelectedReviewsId());
                 for (Reviews review : reviews) {
                     selectedReviewsRepository.save(SelectedReviews.builder()
-                            .codes(target)
+                            .codesInfo(targetInfo)
                             .reviews(review)
                             .build());
 
@@ -400,9 +402,9 @@ public class CodesServiceImpl implements CodesService {
             if (req.getProjectId() != null) {
                 connectedProject = projectsRepository.findByProjectsId(req.getProjectId());
 
-                if (connectedProject == null) {
-                    throw new NullPointerException("일치하는 프로젝트가 없습니다");
-                }
+//                if (connectedProject == null) {
+//                    throw new NullPointerException("일치하는 프로젝트가 없습니다");
+//                }
             }
 
             // 코드 정보 업데이트
