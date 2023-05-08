@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { AiOutlineLink } from "react-icons/ai";
 
 import {
@@ -10,8 +11,8 @@ import {
 } from "@/components/elements";
 import { Selection } from "@/components/selection";
 
+import { usePostCodeLike } from "../../api";
 import { Code } from "../../types";
-import { useRouter } from "next/router";
 
 interface CodeInfoProps {
   data: Code;
@@ -19,6 +20,7 @@ interface CodeInfoProps {
 
 export const CodeInfo = ({
   data: {
+    codeId,
     version,
     title,
     likeCnt,
@@ -32,6 +34,9 @@ export const CodeInfo = ({
   },
 }: CodeInfoProps) => {
   const router = useRouter();
+
+  // 코드 좋아요/좋아요 취소
+  const codeLikeQuery = usePostCodeLike();
 
   return (
     <>
@@ -56,7 +61,7 @@ export const CodeInfo = ({
                 // setCnt={setNewLikeCnt}
                 isChecked={liked}
                 // setIsChecked={setisLiked}
-                onClickFunc={() => {}}
+                onClickFunc={() => codeLikeQuery.mutate(codeId)}
               />
               <Count
                 type="bookmark"
