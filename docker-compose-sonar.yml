@@ -27,8 +27,8 @@ services:
   sonardb:
     image: postgres:12
     container_name: postgres_sonar
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5432:5432"
     # networks:
     #   - sonarnet
     environment:
