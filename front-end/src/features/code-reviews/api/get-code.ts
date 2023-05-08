@@ -25,7 +25,6 @@ export const useCode = ({ githubUrl, config }: UseCodeOptions) => {
     queryKey: ["code", githubUrl],
     queryFn: () => getCode({ githubUrl }),
     enabled: !!githubUrl,
-    onSuccess: () => {},
     ...config,
   });
 };
