@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,14 +47,40 @@ public class MypageController {
     private final MypageServiceImpl mypageService;
     private final EmailServiceImpl emailService;
 
-    // 이메일 인증 API
     @Operation(summary = "이메일 인증 API")
-    @GetMapping
-    public ResponseEntity<?> verifyEmail(@Parameter(description = "이메일", required = true)
+    @PutMapping("/email")
+    public ResponseEntity<?> checkEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                        @Parameter(description = "이메일", required = true)
                                          @Email(message = "이메일 형식이 아닙니다")
-                                         @RequestParam String email) {
+                                         @RequestParam String email,
+                                        @Parameter(description = "코드", required = true)
+                                        @Pattern(regexp = "^[a-zA-Z0-9]{8}$")
+                                        @RequestParam String code) {
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
         try {
-            emailService.sendCertificationEmail(email);
+            boolean checked = emailService.checkEmail(email, code, usersId);
+            return Response.makeResponse(HttpStatus.OK, "이메일 인증 성공", 1, (checked)? "1" : "0");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "이메일 인증 코드 보내기 API")
+    @PostMapping("/email")
+    public ResponseEntity<?> sendCertificationEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                                    @Parameter(description = "이메일", required = true)
+                                                     @Email(message = "이메일 형식이 아닙니다")
+                                                     @RequestParam String email) {
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        try {
+            emailService.sendCertificationEmail(email, usersId);
             return Response.ok("이메일 전송 성공");
         } catch (Exception e) {
             log.error(e.getMessage());

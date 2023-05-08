@@ -77,4 +77,8 @@ public class Users extends BaseTimeEntity{
     public int hashCode() {
         return Objects.hash(usersId, email, name);
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

@@ -3,5 +3,6 @@ package com.cody.roughcode.email.service;
 import javax.mail.MessagingException;
 
 public abstract class EmailService {
-    public abstract String sendCertificationEmail(String to) throws MessagingException;
+    public abstract void sendCertificationEmail(String to, Long usersId) throws MessagingException;
+    public abstract boolean checkEmail(String to, String code, Long usersId);
 }
