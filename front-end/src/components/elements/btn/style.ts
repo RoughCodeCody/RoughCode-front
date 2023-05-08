@@ -34,9 +34,9 @@ const BtnWrapper = styled.button<{
     font-size: ${fontSize || "1rem"};
     width: ${width || "none"};
     height: ${height || "none"};
-    display: ${display || "none"};
-    justify-content: ${justify || "none"};
-    align-items: ${align || "none"};
+    display: ${display || "inline"};
+    justify-content: ${justify || "center"};
+    align-items: ${align || "center"};
     cursor: pointer;
   `}
 `;
