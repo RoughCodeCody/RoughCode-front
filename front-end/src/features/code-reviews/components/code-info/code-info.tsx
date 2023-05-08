@@ -59,17 +59,13 @@ export const CodeInfo = ({
               <Count
                 type="like"
                 cnt={likeCnt}
-                // setCnt={setNewLikeCnt}
                 isChecked={liked}
-                // setIsChecked={setisLiked}
                 onClickFunc={() => codeLikeQuery.mutate(codeId)}
               />
               <Count
                 type="bookmark"
                 cnt={favoriteCnt}
-                // setCnt={setBookmarkCnt}
                 isChecked={favorite}
-                // setIsChecked={setIsBookmarked}
                 onClickFunc={() => {}}
               />
               <Selection isMine={isWriting ? false : true} />
