@@ -33,8 +33,6 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
     @Value("${app.oauth2.authorizedRedirectUri}")
     private List<String> redirectUris;
-    @Value("${app.host}")
-    private String host;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
     private final CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
