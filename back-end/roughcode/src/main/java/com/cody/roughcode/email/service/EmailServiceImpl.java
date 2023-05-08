@@ -1,9 +1,11 @@
 package com.cody.roughcode.email.service;
 
+import com.cody.roughcode.user.entity.Users;
+import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -11,12 +13,16 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.security.SecureRandom;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EmailServiceImpl extends EmailService {
 
+    private final UsersRepository usersRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    int CERTIFICATE_TIME = 3 * 1000 * 60; // 3분
     private final JavaMailSender mailSender;
     private static final int CODE_LENGTH = 8;
     static String code;
@@ -25,7 +31,10 @@ public class EmailServiceImpl extends EmailService {
     String from;
 
     @Override
-    public String sendCertificationEmail(String to) throws MessagingException {
+    public void sendCertificationEmail(String to, Long usersId) throws MessagingException {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -35,7 +44,25 @@ public class EmailServiceImpl extends EmailService {
         helper.setText(createCertificationEmail(), true); // true를 전달하여 HTML을 사용하도록 지정합니다.
 
         mailSender.send(message);
-        return code;
+
+        redisTemplate.opsForValue()
+                .set(to, code, CERTIFICATE_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public boolean checkEmail(String to, String code, Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        String value = (String) redisTemplate.opsForValue().get(to);
+        if(value == null) throw new NullPointerException("인증코드가 만료되었습니다");
+
+        boolean checked = value.equals(code);
+        if(checked) {
+            user.setEmail(to);
+            usersRepository.save(user);
+        };
+        return checked;
     }
 
     private String createCertificationEmail() {
@@ -47,7 +74,7 @@ public class EmailServiceImpl extends EmailService {
                 "            <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" border=\"0\" style=\"border-collapse: collapse;\">\n" +
                 "                <tbody><tr><td width=\"520\" height=\"50\" style=\"font-size: 0;line-height: 0;\"></td></tr> \n" +
                 "                <tr><td width=\"520\" style=\"font-size: 0;\"><div style=\"display: flex; align-items: center;\">\n" +
-                "                <img src=\"https://roughcode.s3.ap-northeast-2.amazonaws.com/foots-color.jpg\" alt=\"로고 이미지\" width=\"148\" border=\"0\" style=\"display: block; margin: 0;\" loading=\"lazy\">\n" +
+                "                <img src=\"https://roughcode.s3.ap-northeast-2.amazonaws.com/foots-color-mini.jpg\" alt=\"로고 이미지\" width=\"148\" border=\"0\" style=\"display: block; margin: 0;\" loading=\"lazy\">\n" +
                 "                <h1 style=\"font-family: 'Nanum Gothic','Malgun Gothic', 'dotum','AppleGothic', Helvetica, Arial, Sans-Serif;font-size: 22px;line-height: 1.3;letter-spacing: -1px; margin-left: 10px;\">인증메일</h1>\n" +
                 "                </div>\n" +
                 "                </td></tr> " +
