@@ -1,10 +1,9 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
-import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.entity.ReReviewLikes;
-import com.cody.roughcode.code.entity.ReReviews;
-import com.cody.roughcode.code.entity.Reviews;
+import com.cody.roughcode.code.dto.res.CodeDetailRes;
+import com.cody.roughcode.code.dto.res.ReviewRes;
+import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.user.entity.Users;
@@ -130,6 +129,44 @@ public class ReviewsServiceTest {
         );
 
         assertEquals("일치하는 코드가 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 상세 조회 성공")
+    @Test
+    void getReviewSucceed() {
+        // given
+        Long reviewId = 1L;
+        Codes code = Codes.builder()
+                .codesId(1L)
+                .num(1L)
+                .version(1)
+                .title("개발새발 코드1")
+                .codeWriter(user)
+                .build();
+        Reviews review = Reviews.builder()
+                .reviewsId(1L)
+                .codeContent("개발새발 리뷰")
+                .content("hihi")
+                .reReviews(List.of(new ReReviews()))
+                .users(user)
+                .codes(code)
+                .build();
+        ReviewLikes like = ReviewLikes.builder()
+                .likesId(1L)
+                .reviews(review)
+                .users(user)
+                .build();
+
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(like).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
+
+        // when
+        ReviewRes success = reviewsService.getReview(reviewId, 0L);
+
+        // then
+        assertThat(success.getReviewId()).isEqualTo(1L);
+        assertThat(success.getContent()).isEqualTo(review.getContent());
     }
 
     @DisplayName("코드 리뷰 수정 성공")

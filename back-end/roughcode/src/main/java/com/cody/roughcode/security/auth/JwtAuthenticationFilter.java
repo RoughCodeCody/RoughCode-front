@@ -5,6 +5,7 @@ import com.cody.roughcode.user.dto.res.UserRes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,8 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
+    @Value("${app.host}")
+    private String host;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -68,8 +71,8 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
                     // 업데이트된 쿠키값 response 해줌
                     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
-                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
+                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateAccessToken(host).toString());
+                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateRefreshToken(host).toString());
 
                 }
                 // refreshToken 만료 || Redis에 저장된 토큰과 비교해서 똑같지 않다면

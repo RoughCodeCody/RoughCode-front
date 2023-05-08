@@ -1,8 +1,7 @@
 package com.cody.roughcode.code.controller;
 
-import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.req.ReviewReq;
-import com.cody.roughcode.code.service.CodesService;
+import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.service.ReviewsService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -132,6 +131,50 @@ public class ReviewsControllerTest {
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
         assertThat(message).isEqualTo("코드 리뷰 등록 실패");
+    }
+
+    @DisplayName("코드 상세 조회 성공")
+    @Test
+    public void getReviewSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{reviewId}";
+
+        doReturn(new ReviewRes()).when(reviewsService).getReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+        );
+
+        // then
+        // HTTP Status가 OK 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 상세 조회 성공");
+    }
+
+    @DisplayName("코드 상세 조회 실패")
+    @Test
+    public void getReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{reviewId}";
+
+        doReturn(null).when(reviewsService).getReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+        );
+
+        // then
+        // HTTP Status가 NotFound 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 상세 조회 실패");
     }
 
     @DisplayName("코드 리뷰 정보 수정 성공")

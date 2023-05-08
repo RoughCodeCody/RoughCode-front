@@ -33,8 +33,8 @@ public class ReviewRes {
     @Schema(description = "리뷰 내용(상세설명)", example = "Rendering 디자인 패턴을 따르는 게 좋습니다.")
     private String content;
 
-    @Schema(description = "코드 선택 부분", example = "[1, 3, 4, 6]")
-    private List<Integer> lineNumbers;
+    @Schema(description = "코드 선택 부분", example = "[[1, 3], [4, 6]]")
+    private List<List<Integer>> lineNumbers;
 
     @Schema(description = "좋아요 수", example = "8")
     private int likeCnt;
@@ -51,27 +51,6 @@ public class ReviewRes {
     @Schema(description = "리뷰에 대한 리뷰 목록")
     private List<ReReviewRes> reReviews;
 
-    public ReviewRes(Reviews r, Boolean reviewLiked, List<ReReviewRes> reReviews) {
-        this.reviewId = r.getReviewsId();
-        if(r.getUsers() != null) {
-            this.userId = r.getUsers().getUsersId();
-            this.userName = r.getUsers().getName();
-        } else { // 익명인 경우
-            this.userId = 0L;
-            this.userName = "";
-        }
-        this.codeContent = r.getCodeContent();
-        this.content = r.getContent();
-        this.lineNumbers = Arrays.stream(r.getLineNumbers().replaceAll("\\[|\\]|\\s", "").split(","))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-        this.likeCnt = r.getLikeCnt();
-        this.selected = r.getSelected();
-        this.liked = reviewLiked;
-        this.date = r.getModifiedDate();
-        this.reReviews = reReviews;
-    }
-
     public static ReviewRes toDto(Reviews review, Boolean liked, List<ReReviewRes> reReviews) {
 
         Long userId;
@@ -85,8 +64,10 @@ public class ReviewRes {
         }
 
         // 선택한 코드 부분
-        List<Integer> lineNumbers = Arrays.stream(review.getLineNumbers().replaceAll("\\[|\\]|\\s", "").split(","))
-                .map(Integer::parseInt)
+        List<List<Integer>> lineNumbers = Arrays.stream(review.getLineNumbers().split("\\["))
+                .filter(s -> !s.trim().isEmpty())
+                .map(s -> s.replaceAll("\\[|\\]|\\s", ""))
+                .map(s -> Arrays.stream(s.split(",")).map(Integer::parseInt).collect(Collectors.toList()))
                 .collect(Collectors.toList());
 
         return ReviewRes.builder()

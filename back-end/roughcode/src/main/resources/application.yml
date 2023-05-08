@@ -60,6 +60,7 @@ app:
       http://${HOST}:80,
       https://${HOST}:3000,
       https://${HOST}:80
+  host: ${HOST}
 ---
 #spring boot batch + scheduler
 spring:
