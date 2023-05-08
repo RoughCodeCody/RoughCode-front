@@ -25,7 +25,7 @@ services:
       - sonarqube_logs:/opt/sonarqube/logs
 
   sonardb:
-    image: postgres:12
+    image: postgres:latest
     container_name: postgres_sonar
     ports:
       - "5432:5432"
