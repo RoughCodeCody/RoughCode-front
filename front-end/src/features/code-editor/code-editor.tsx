@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import * as monaco from "monaco-editor";
 import Editor, { OnMount } from "@monaco-editor/react";
 
 import { FaRegLightbulb } from "react-icons/fa";
@@ -31,6 +32,8 @@ interface CodeEditorProps {
   originalCode: string;
   height: string;
   lineSelection: boolean;
+  language: string;
+  selectedLines?: number[][];
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -38,6 +41,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   originalCode,
   height,
   lineSelection,
+  language,
+  selectedLines,
 }) => {
   const editorRef = useRef<any>(null);
   const [monaco, setMonaco] = useState<any>(null);
@@ -52,6 +57,17 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     setMonaco(monaco);
     // 코드 수정 불가능(읽기 전용)
     editor.updateOptions({ readOnly: true });
+
+    if (selectedLines?.length !== 0) {
+      let deltaDecorations: monaco.editor.IModelDeltaDecoration[] = [];
+      selectedLines?.forEach((line) => {
+        deltaDecorations.push({
+          range: new monaco.Range(line[0], 1, line[1], 1),
+          options: { isWholeLine: true, className: "selected-line" },
+        });
+      });
+      editorRef.current?.deltaDecorations([], deltaDecorations);
+    }
 
     editor.onDidChangeCursorSelection((e: any) => handleSelectionChange(e));
   };
@@ -103,6 +119,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       const decoId = editorRef.current?.deltaDecorations([], deltaDecorations);
       setDecoIds([...newDecoIds, decoId]);
+      console.log(decoIds);
     }
   };
 
@@ -126,6 +143,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   const decodedString = decodeBase64ToUTF8(originalCode);
+
+  useEffect(() => {}, [originalCode]);
 
   return (
     <EditorWrapper>
@@ -158,7 +177,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       <Editor
         height={height}
-        defaultLanguage="python"
+        defaultLanguage={language}
         defaultValue={decodedString}
         onMount={handleEditorDidMount}
       />

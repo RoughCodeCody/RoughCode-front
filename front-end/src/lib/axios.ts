@@ -16,3 +16,14 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const axiosExternal = Axios.create();
+
+axiosExternal.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DiffEditor } from "@monaco-editor/react";
 
 import { FlexDiv, Text } from "@/components/elements";
@@ -11,19 +11,18 @@ interface DiffCodeEditorProps {
   headerText: string;
   originalCode: string;
   height: string;
+  language: string;
   readOnly?: boolean;
 }
-
-type Lan = "python";
 
 export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   headerText,
   originalCode,
   height,
+  language,
   readOnly = true,
 }) => {
   const diffEditorRef = useRef<any>(null);
-  const [lan, setLan] = useState<Lan>("python");
 
   function handleEditorDidMount(editor: any, monaco: any) {
     diffEditorRef.current = editor;
@@ -74,6 +73,8 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
     // 이후 encodedCode를 api요청 보내는 코드
   };
 
+  useEffect(() => {}, [originalCode]);
+
   return (
     <EditorWrapper>
       <EditorHeader>
@@ -84,7 +85,7 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
       </EditorHeader>
       <DiffEditor
         height={height}
-        language={lan}
+        language={language}
         original={decodedString}
         modified={decodedString}
         onMount={handleEditorDidMount}
