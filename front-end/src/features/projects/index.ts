@@ -1,3 +1,3 @@
-export * from "./pages/projects";
 export * from "./pages/project-detail";
-export * from "./types";
+export * from "./pages/project-register";
+export * from "./pages/projects";
