@@ -3,7 +3,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     // 
-    id "org.sonarqube" version "4.0.0.2929"
+    id "org.sonarqube" version "3.3"
     id 'jacoco'
 }
 
@@ -73,7 +73,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // sonarqube
-    implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:4.0.0.2929'
+    implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3'
 }
 
 tasks.named('test') {
@@ -90,9 +90,9 @@ jacoco {
 
 jacocoTestReport { 
     reports {
-        xml.enabled true // sonarqube 분석에 필요한 xml파일만 생성
-        csv.enabled false
-        html.enabled false
+        xml.required true // sonarqube 분석에 필요한 xml파일만 생성
+        csv.required false
+        html.required false
     }
 
 }
