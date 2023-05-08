@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+    stages {
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "sonar-scanner -Dsonar.java.binaries=build/classes/java/main"
+                }
+            }
+        }
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "sonar-scanner -Dsonar.java.binaries=target/classes -X"
+                }
+            }
+        }
+    }
+}
