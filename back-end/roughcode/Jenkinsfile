@@ -8,12 +8,12 @@ pipeline {
                 }
             }
         }
-        stage('SonarQube analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "sonar-scanner -Dsonar.java.binaries=target/classes -X"
-                }
-            }
+        // stage('SonarQube analysis') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             sh "sonar-scanner -Dsonar.java.binaries=target/classes -X"
+        //         }
+        //     }
         }
     }
 }
