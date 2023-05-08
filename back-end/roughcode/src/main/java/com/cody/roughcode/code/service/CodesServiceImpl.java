@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -619,6 +620,17 @@ public class CodesServiceImpl implements CodesService {
 
         // 즐겨찾기 수 반환
         return target.getFavoriteCnt();
+    }
+
+    @Override
+    @Transactional
+    public List<CodeTagsRes> searchTags(String keyword) {
+        List<CodeTags> tags = codeTagsRepository.findAllByNameContaining(keyword, Sort.by(Sort.Direction.ASC, "name"));
+        List<CodeTagsRes> result = new ArrayList<>();
+        for(CodeTags tag: tags){
+            result.add(new CodeTagsRes(tag));
+        }
+        return result;
     }
 
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
