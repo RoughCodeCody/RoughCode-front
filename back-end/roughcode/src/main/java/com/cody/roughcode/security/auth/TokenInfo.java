@@ -16,10 +16,10 @@ public class TokenInfo {
         this.userId = userId;
     }
 
-    public ResponseCookie generateAccessToken(String host) {
+    public ResponseCookie generateAccessToken() {
         return ResponseCookie
                 .from(JwtProperties.ACCESS_TOKEN, this.accessToken)
-                .domain(host) // 서브도메인에서 쿠키에 접근할 수 있도록 도메인 지정
+//                .domain(host) // 서브도메인에서 쿠키에 접근할 수 있도록 도메인 지정
                 .path("/")
                 .maxAge(JwtProperties.ACCESS_TOKEN_TIME)
                 .httpOnly(true)
@@ -28,10 +28,10 @@ public class TokenInfo {
                 .build();
     }
 
-    public ResponseCookie generateRefreshToken(String host) {
+    public ResponseCookie generateRefreshToken() {
         return ResponseCookie
                 .from(JwtProperties.REFRESH_TOKEN, this.refreshToken)
-                .domain(host) // 서브도메인에서 쿠키에 접근할 수 있도록 도메인 지정
+//                .domain(host) // 서브도메인에서 쿠키에 접근할 수 있도록 도메인 지정
                 .path("/")
                 .maxAge(JwtProperties.REFRESH_TOKEN_TIME)
                 .httpOnly(true)

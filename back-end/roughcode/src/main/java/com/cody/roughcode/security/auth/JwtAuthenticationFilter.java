@@ -25,8 +25,6 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
-    @Value("${app.host}")
-    private String host;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -71,8 +69,8 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
                     // 업데이트된 쿠키값 response 해줌
                     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateAccessToken(host).toString());
-                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateRefreshToken(host).toString());
+                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
+                    httpServletResponse.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
 
                 }
                 // refreshToken 만료 || Redis에 저장된 토큰과 비교해서 똑같지 않다면
