@@ -11,6 +11,7 @@ const BtnWrapper = styled.button<{
   display?: string;
   justify?: string;
   align?: string;
+  disabled?: boolean;
 }>`
   ${({
     bgColor,
@@ -23,6 +24,7 @@ const BtnWrapper = styled.button<{
     display,
     justify,
     align,
+    disabled,
   }) => css`
     background-color: ${bgColor
       ? "var(--" + bgColor + "-color)"
@@ -38,6 +40,10 @@ const BtnWrapper = styled.button<{
     justify-content: ${justify || "center"};
     align-items: ${align || "center"};
     cursor: pointer;
+    ${disabled &&
+    `
+      cursor: default;
+    `}
   `}
 `;
 

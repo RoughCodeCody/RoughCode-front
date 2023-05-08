@@ -34,6 +34,7 @@ export const CodeInfo = ({
   },
 }: CodeInfoProps) => {
   const router = useRouter();
+  const isWriting = router.asPath.includes("create" || "modify");
 
   // 코드 좋아요/좋아요 취소
   const codeLikeQuery = usePostCodeLike();
@@ -67,7 +68,7 @@ export const CodeInfo = ({
                 isChecked={favorite}
                 onClickFunc={() => {}}
               />
-              <Selection isMine={true} />
+              <Selection isMine={isWriting ? false : true} />
             </FlexDiv>
           </FlexDiv>
           <FlexDiv width="100%" justify="start">
@@ -78,7 +79,17 @@ export const CodeInfo = ({
         </FlexDiv>
 
         <FlexDiv width="100%" direction="row-reverse" justify="space-between">
-          <Btn text="이 코드에 리뷰 작성하기" onClickFunc={() => {}} />
+          {isWriting ? (
+            <Btn
+              bgColor="orange"
+              color="bg"
+              text="이 코드에 리뷰 작성 중"
+              disabled={true}
+            />
+          ) : (
+            <Btn text="이 코드에 리뷰 작성하기" onClickFunc={() => {}} />
+          )}
+
           {projectId && (
             <FlexDiv justify="start">
               <AiOutlineLink fontSize={24} />
