@@ -4,4 +4,4 @@ COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose -f docker-compose-de
 
 docker rm -f $(docker ps -a -q --filter "status=exited") || true
 
-docker-compose docker-compose.yml up -d
+docker-compose -f docker-compose.yml up -d --build
