@@ -5,7 +5,7 @@ import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 
 import { User } from "../types";
 
-export const getUser = (): Promise<User[]> => {
+export const getUser = (): Promise<User> => {
   return axios.get(`/user`);
 };
 

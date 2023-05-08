@@ -14,14 +14,10 @@ export const KeywordSearch = () => {
     setWord(event.target.value);
   };
 
-  const keywordSearch = () => {
-    setKeyword(word);
-  };
-
   const enterListener = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
     if (event.key === "Enter") {
-      keywordSearch();
+      event.preventDefault();
+      setKeyword(word);
     }
   };
   return (
@@ -43,7 +39,7 @@ export const KeywordSearch = () => {
             placeholder="검색어를 입력해 주세요"
           />
         </SearchBarForm>
-        <SearchButton onClick={keywordSearch}>검색</SearchButton>
+        <SearchButton onClick={() => setKeyword(word)}>검색</SearchButton>
       </FlexDiv>
     </FlexDiv>
   );
