@@ -15,7 +15,7 @@ services:
     networks:
       - sonarnet
     environment:
-      - SONAR_JDBC_URL=jdbc:postgresql://db:5432/sonar
+      - SONAR_JDBC_URL=jdbc:postgresql://sonardb:5432/sonar
       - SONAR_JDBC_USERNAME=sonar
       - SONAR_JDBC_PASSWORD=sonar
     volumes:
