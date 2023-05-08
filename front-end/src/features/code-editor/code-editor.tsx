@@ -28,6 +28,8 @@ function isOverlap(a: number, b: number, c: number, d: number) {
 }
 
 interface CodeEditorProps {
+  coloredLines: number[][];
+  setColoredLines: React.Dispatch<React.SetStateAction<number[][]>>;
   headerText: string;
   originalCode: string;
   height: string;
@@ -37,6 +39,8 @@ interface CodeEditorProps {
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
+  coloredLines,
+  setColoredLines,
   headerText,
   originalCode,
   height,
@@ -114,10 +118,23 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         ) {
           editorRef.current.removeDecorations(deco);
           newDecoIds = newDecoIds.filter((id) => id !== deco);
+          setColoredLines(
+            coloredLines.filter((item) => {
+              console.log(item[0]);
+              console.log(item[1]);
+              console.log(startLine);
+              console.log(endLine);
+              item[0] !== parseInt(startLine) && item[1] !== parseInt(endLine);
+            })
+          );
         }
       });
 
       const decoId = editorRef.current?.deltaDecorations([], deltaDecorations);
+      setColoredLines([
+        ...coloredLines,
+        [draggedLineNumber[0], draggedLineNumber[1]],
+      ]);
       setDecoIds([...newDecoIds, decoId]);
       console.log(decoIds);
     }
