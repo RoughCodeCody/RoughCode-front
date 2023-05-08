@@ -51,6 +51,10 @@ public class ReviewRes {
     @Schema(description = "리뷰에 대한 리뷰 목록")
     private List<ReReviewRes> reReviews;
 
+    public void updateReReviews(List<ReReviewRes> reReviews){
+        this.reReviews = reReviews;
+    }
+
     public static ReviewRes toDto(Reviews review, Boolean liked, List<ReReviewRes> reReviews) {
 
         Long userId;
