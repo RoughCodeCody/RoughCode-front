@@ -36,7 +36,7 @@ type Reviews = {
   reReviews: ReReviews[];
 };
 
-export type CodeInfo = {
+export type CodeInfoResult = {
   codeId: number; // 코드 id
   title: string; // 코드 제목
   version: number; // 코드 버전
