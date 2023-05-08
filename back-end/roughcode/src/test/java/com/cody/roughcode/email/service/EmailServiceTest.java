@@ -58,6 +58,25 @@ class EmailServiceTest {
             .build();
 
     @Test
+    @DisplayName("알람전송 테스트")
+    void sendAlarmSucceed() throws MessagingException {
+        // given
+        emailService.from = "test@test.com";
+
+        MimeMessage message = mock(MimeMessage.class);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        when(usersRepository.findByUsersId(1L)).thenReturn(users);
+        when(mailSender.createMimeMessage()).thenReturn(message);
+
+        // when
+        emailService.sendAlarm("alarm 제목", "alarm 내용", 1L);
+
+        // then
+        verify(mailSender, times(1)).send(message);
+    }
+
+    @Test
     @DisplayName("이메일 인증 코드 전송 테스트")
     void sendCertificationEmail() throws MessagingException {
         // given

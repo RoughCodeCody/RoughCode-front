@@ -92,7 +92,7 @@ public class MypageController {
     @GetMapping("/code/favorite")
     ResponseEntity<?> getFavoriteCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                           @Parameter(description = "페이지 수")
-                                          @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                          @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                           @RequestParam(defaultValue = "0") int page,
                                           @Parameter(description = "한 페이지에 담기는 개수")
                                           @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -122,7 +122,7 @@ public class MypageController {
     @GetMapping("/code/review")
     ResponseEntity<?> getReviewCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                         @Parameter(description = "페이지 수")
-                                        @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                        @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                         @RequestParam(defaultValue = "0") int page,
                                         @Parameter(description = "한 페이지에 담기는 개수")
                                         @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -152,7 +152,7 @@ public class MypageController {
     @GetMapping("/code")
     ResponseEntity<?> getCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                   @Parameter(description = "페이지 수")
-                                  @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                  @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                   @RequestParam(defaultValue = "0") int page,
                                   @Parameter(description = "한 페이지에 담기는 개수")
                                   @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -182,7 +182,7 @@ public class MypageController {
     @GetMapping("/project/feedback")
     ResponseEntity<?> getFeedbackProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                              @Parameter(description = "페이지 수")
-                                             @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                             @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                              @RequestParam(defaultValue = "0") int page,
                                              @Parameter(description = "한 페이지에 담기는 개수")
                                              @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -212,7 +212,7 @@ public class MypageController {
     @GetMapping("/project/favorite")
     ResponseEntity<?> getFavoriteProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                      @Parameter(description = "페이지 수")
-                                     @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                     @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                      @RequestParam(defaultValue = "0") int page,
                                      @Parameter(description = "한 페이지에 담기는 개수")
                                      @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -242,7 +242,7 @@ public class MypageController {
     @GetMapping("/project")
     ResponseEntity<?> getProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                      @Parameter(description = "페이지 수")
-                                     @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                     @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                      @RequestParam(defaultValue = "0") int page,
                                      @Parameter(description = "한 페이지에 담기는 개수")
                                      @Min(value = 1, message = "size값은 1이상이어야 합니다")

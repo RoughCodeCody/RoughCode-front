@@ -11,11 +11,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
 
 public interface ProjectsService {
-    Long insertProject(ProjectReq req, Long usersId);
+    Long insertProject(ProjectReq req, Long usersId) throws MessagingException;
     int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId);
     String insertImage(MultipartFile image, Long projectsId, Long usersId);
     int deleteImage(String imgUrl, Long projectsId, Long usersId);
@@ -28,10 +29,10 @@ public interface ProjectsService {
     int favoriteProject(Long projectsId, String content, Long usersId);
     int openProject(Long projectsId, Long usersId);
     int closeProject(Long projectsId, Long usersId);
-    int isProjectOpen(Long projectId);
+    int isProjectOpen(Long projectId) throws MessagingException;
     Boolean checkProject(String url, Long usersId) throws IOException;
 
-    int insertFeedback(FeedbackInsertReq req, Long usersId);
+    int insertFeedback(FeedbackInsertReq req, Long usersId) throws MessagingException;
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
     List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId);
     int deleteFeedback(Long feedbackId, Long usersId);
