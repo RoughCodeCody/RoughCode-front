@@ -34,4 +34,7 @@ public class CodeReq {
 
     @Schema(description = "선택한 review의 id", example = "[1, 2, 3]")
     private List<Long> selectedReviewsId;
+
+    @Schema(description = "코드 언어", example = "Javascript")
+    private String language;
 }
