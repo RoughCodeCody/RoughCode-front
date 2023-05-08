@@ -4,7 +4,7 @@ pipeline {
         stage('SonarQube analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh "sonar-scanner -Dsonar.java.binaries=build/classes"
+                    sh "sonar-scanner -Dsonar.java.binaries=./app.jar"
                 }
             }
         }
