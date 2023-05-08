@@ -42,7 +42,7 @@ public class EmailServiceImpl extends EmailService {
         StringBuilder message = new StringBuilder();
         code = generateVerificationCode();
         message.append("<div style=\"display:flex; justify-content:center;\">\n" +
-                "    <table summary=\"인증 메일\" cellpadding=\"0\" cellspacing=\"0\" width=\"70%\" border=\"0\" style=\"border-collapse: collapse;\">\n" +
+                "    <table summary=\"인증 메일\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" border=\"0\" style=\"border-collapse: collapse;\">\n" +
                 "    <tbody><tr><td width=\"100%\" style=\"font-size: 0;line-height: 0;\">\n" +
                 "            <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" border=\"0\" style=\"border-collapse: collapse;\">\n" +
                 "                <tbody><tr><td width=\"520\" height=\"50\" style=\"font-size: 0;line-height: 0;\"></td></tr> \n" +
