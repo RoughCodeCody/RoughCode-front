@@ -4,7 +4,10 @@ import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
-import com.cody.roughcode.exception.*;
+import com.cody.roughcode.exception.NotMatchException;
+import com.cody.roughcode.exception.NotNewestVersionException;
+import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
@@ -144,6 +147,15 @@ public class CodesServiceImpl implements CodesService {
                 log.info("등록한 태그가 없습니다.");
             }
 
+            // 코드 정보 저장
+            CodesInfo codesInfo = CodesInfo.builder()
+                    .codes(savedCode)
+                    .githubUrl(req.getGithubUrl())
+                    .content(req.getContent())
+                    .favoriteCnt(0)
+                    .language(req.getLanguage()).build();
+            codesInfoRepository.save(codesInfo);
+
             // 반영한 review 저장
             if (req.getSelectedReviewsId() != null) {
                 for (Long id : req.getSelectedReviewsId()) {
@@ -159,7 +171,7 @@ public class CodesServiceImpl implements CodesService {
 
                     SelectedReviews selectedReviews = SelectedReviews.builder()
                             .reviews(review)
-                            .codes(savedCode)
+                            .codesInfo(codesInfo)
                             .build();
                     selectedReviewsRepository.save(selectedReviews);
                 }
@@ -167,13 +179,6 @@ public class CodesServiceImpl implements CodesService {
                 log.info("반영한 리뷰가 없습니다.");
             }
 
-            // 코드 정보 저장
-            CodesInfo codesInfo = CodesInfo.builder()
-                    .codes(savedCode)
-                    .githubUrl(req.getGithubUrl())
-                    .content(req.getContent())
-                    .favoriteCnt(0).build();
-            codesInfoRepository.save(codesInfo);
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -217,7 +222,7 @@ public class CodesServiceImpl implements CodesService {
 
         // 모든 버전 정보 미리보기
         List<Pair<Codes, CodesInfo>> otherVersions = new ArrayList<>();
-        List<Codes> codeList = codesRepository.findByNumAndCodeWriter(code.getNum(), code.getCodeWriter());
+        List<Codes> codeList = codesRepository.findByNumAndCodeWriterOrderByVersionDesc(code.getNum(), code.getCodeWriter());
 
         for (Codes c : codeList) {
             otherVersions.add(Pair.of(c, codesInfoRepository.findByCodes(c)));
@@ -237,6 +242,7 @@ public class CodesServiceImpl implements CodesService {
             versionResList.add(VersionRes.builder()
                     .selectedReviews(selectedReviewResList)
                     .codeId(c.getLeft().getCodesId())
+                    .title(c.getLeft().getTitle())
                     .version(c.getLeft().getVersion())
                     .build());
         }
@@ -249,13 +255,7 @@ public class CodesServiceImpl implements CodesService {
                 ReviewLikes reviewLike = (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user) : null;
                 Boolean reviewLiked = reviewLike != null;
 
-                List<ReReviewRes> reReviewResList = new ArrayList<>();
-                for (ReReviews reReview : review.getReReviews()) {
-                    ReReviewLikes reReviewLike = (user != null) ? reReviewLikesRepository.findByReReviewsAndUsers(reReview, user) : null;
-                    Boolean reReviewLiked = reReviewLike != null;
-                    reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
-                }
-                reviewResList.add(ReviewRes.toDto(review, reviewLiked, reReviewResList));
+                reviewResList.add(ReviewRes.toDto(review, reviewLiked, null));
             }
         }
         reviewResList.sort(Comparator.comparing(ReviewRes::getSelected).reversed()
@@ -269,11 +269,23 @@ public class CodesServiceImpl implements CodesService {
                     }
                 }));
 
-        Long resUserId = null;
-        String resUserName = null;
-        if (user != null) {
-            resUserId = user.getUsersId();
-            resUserName = user.getName();
+        // 첫번째 리뷰에 대한 리리뷰 정보 추가
+        if (reviewResList.size() > 0) {
+            List<ReReviewRes> reReviewResList = new ArrayList<>();
+            Long reviewId = reviewResList.get(0).getReviewId();
+            for (ReReviews reReview : reReviewsRepository.findAllByReviewsId(reviewId)) {
+                ReReviewLikes reReviewLike = (user != null) ? reReviewLikesRepository.findByReReviewsAndUsers(reReview, user) : null;
+                Boolean reReviewLiked = reReviewLike != null;
+                reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
+            }
+            reviewResList.get(0).updateReReviews(reReviewResList);
+        }
+
+        Long codeWriterId = null;
+        String codeWriterName = null;
+        if (code.getCodeWriter() != null) {
+            codeWriterId = code.getCodeWriter().getUsersId();
+            codeWriterName = code.getCodeWriter().getName();
         }
 
         // 코드 상세 정보 response dto
@@ -287,13 +299,14 @@ public class CodesServiceImpl implements CodesService {
                 .favoriteCnt(codesInfo.getFavoriteCnt())
                 .githubUrl(codesInfo.getGithubUrl())
                 .tags(tagList)
-                .userId(resUserId)
-                .userName(resUserName)
+                .userId(codeWriterId)
+                .userName(codeWriterName)
                 .projectId(connectedProjectId)
                 .projectTitle(connectedProjectTitle)
                 .content(codesInfo.getContent())
                 .liked(liked)
                 .favorite(favorite)
+                .language(codesInfo.getLanguage())
                 .versions(versionResList)
                 .reviews(reviewResList)
                 .build();
@@ -373,7 +386,7 @@ public class CodesServiceImpl implements CodesService {
                 List<Reviews> reviews = reviewsRepository.findByReviewsIdIn(req.getSelectedReviewsId());
                 for (Reviews review : reviews) {
                     selectedReviewsRepository.save(SelectedReviews.builder()
-                            .codes(target)
+                            .codesInfo(targetInfo)
                             .reviews(review)
                             .build());
 
@@ -389,25 +402,30 @@ public class CodesServiceImpl implements CodesService {
             if (req.getProjectId() != null) {
                 connectedProject = projectsRepository.findByProjectsId(req.getProjectId());
 
-                if (connectedProject == null) {
-                    throw new NullPointerException("일치하는 프로젝트가 없습니다");
-                }
+//                if (connectedProject == null) {
+//                    throw new NullPointerException("일치하는 프로젝트가 없습니다");
+//                }
             }
 
             // 코드 정보 업데이트
-            if(StringUtils.hasText(req.getTitle())){
-                log.info("코드 정보 수정(제목): "+ req.getTitle());
+            if (StringUtils.hasText(req.getTitle())) {
+                log.info("코드 정보 수정(제목): " + req.getTitle());
                 target.updateTitle(req.getTitle());
             }
 
-            if(StringUtils.hasText(req.getContent())){
-                log.info("코드 정보 수정(상세설명): "+ req.getContent());
+            if (StringUtils.hasText(req.getContent())) {
+                log.info("코드 정보 수정(상세설명): " + req.getContent());
                 targetInfo.updateContent(req.getContent());
             }
 
-            if(StringUtils.hasText(req.getGithubUrl())){
-                log.info("코드 정보 수정(github URL): "+ req.getGithubUrl());
+            if (StringUtils.hasText(req.getGithubUrl())) {
+                log.info("코드 정보 수정(github URL): " + req.getGithubUrl());
                 targetInfo.updateGithubUrl(req.getGithubUrl());
+            }
+
+            if (StringUtils.hasText(req.getLanguage())) {
+                log.info("코드 정보 수정(코드 언어): " + req.getLanguage());
+                targetInfo.updateLanguage(req.getLanguage());
             }
 
             target.setProject(connectedProject); // 코드와 연결된 프로젝트 수정

@@ -54,6 +54,8 @@ services:
       - OAUTH2_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - CREDENTIAL_PATH=${CREDENTIAL_PATH}
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
 
   # google-cloud-cli:
   #   image: google/cloud-sdk:latest

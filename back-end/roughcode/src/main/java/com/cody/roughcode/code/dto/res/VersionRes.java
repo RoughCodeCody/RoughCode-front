@@ -17,6 +17,9 @@ public class VersionRes {
     @Schema(description = "코드 id", example = "1")
     private Long codeId;
 
+    @Schema(description = "코드 제목", example = "이러이러하게 했는데 좀 봐주세요")
+    private String title;
+
     @Schema(description = "코드 버전", example = "2")
     private int version;
 

@@ -4,6 +4,7 @@ import com.cody.roughcode.alarm.dto.req.AlarmReq;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodesRepository;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.S3FailedException;
@@ -36,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import javax.mail.MessagingException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -66,10 +68,11 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectFavoritesRepository projectFavoritesRepository;
     private final ProjectLikesRepository projectLikesRepository;
     private final FeedbacksLikesRepository feedbacksLikesRepository;
+    private final EmailServiceImpl emailService;
 
     @Override
     @Transactional
-    public Long insertProject(ProjectReq req, Long usersId) {
+    public Long insertProject(ProjectReq req, Long usersId) throws MessagingException {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         ProjectsInfo info = ProjectsInfo.builder()
@@ -191,19 +194,25 @@ public class ProjectsServiceImpl implements ProjectsService{
         // 알람들 저장
         // 북마크한 무슨무슨 프로젝트 ver1의 새 버전 ver2 업데이트  -> [“북마크한”, “무슨무슨 프로젝트 ver1의 새 버전 ver2”, “업데이트”]
         for (Long id : bookmarkAlarm) {
-            alarmService.insertAlarm(AlarmReq.builder()
+            AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
                     .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
-                    .postId(projectId).build());
+                    .postId(projectId).build();
+            alarmService.insertAlarm(alarmContent);
+
+            emailService.sendAlarm("북마크한 프로젝트가 업데이트되었습니다", alarmContent);
         }
         // 작성한 피드백이 반영된 무슨무슨 프로젝트 ver1의 새 버전 ver2 업데이트 -> [“작성한 피드백이 반영된”, “무슨무슨 프로젝트 ver1의 새 버전 ver2”, “업데이트”]
         for (Long id : feedbackAlarm) {
-            alarmService.insertAlarm(AlarmReq.builder()
+            AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
                     .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
-                    .postId(projectId).build());
+                    .postId(projectId).build();
+            alarmService.insertAlarm(alarmContent);
+
+            emailService.sendAlarm("피드백이 반영되었습니다", alarmContent);
         }
 
         return projectId;
@@ -669,7 +678,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public int isProjectOpen(Long projectId) {
+    public int isProjectOpen(Long projectId) throws MessagingException {
         Projects project = projectsRepository.findByProjectsId(projectId);
             if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
@@ -681,28 +690,32 @@ public class ProjectsServiceImpl implements ProjectsService{
         }
         LocalDateTime now = LocalDateTime.now();
         if (projectsInfo.getClosedChecked() == null) { // 처음 닫힌 것이 확인됨
+            AlarmReq alarmContent = AlarmReq.builder()
+                    .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "닫힘 확인 요청"))
+                    .userId(project.getProjectWriter().getUsersId())
+                    .postId(project.getProjectsId())
+                    .section("project")
+                    .build();
             // 무슨무슨 프로젝트 ver1 닫힘 확인 요청 -> [“”, “무슨무슨 프로젝트 ver1”, “닫힘 확인 요청”]
-            alarmService.insertAlarm(
-                    AlarmReq.builder()
-                            .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "닫힘 확인 요청"))
-                            .userId(project.getProjectWriter().getUsersId())
-                            .postId(project.getProjectsId())
-                            .section("project")
-                            .build()
-            );
+            alarmService.insertAlarm(alarmContent);
             projectsInfo.setClosedChecked(now);
+            projectsInfoRepository.save(projectsInfo);
+
+            emailService.sendAlarm("프로젝트가 닫혀있나요?", alarmContent);
         } else { // 전에도 닫혀있음이 확인됐었음
             if (now.isAfter(projectsInfo.getClosedChecked().plusMinutes(60))) { // 1시간 이상 지났으면
+                AlarmReq alarmContent = AlarmReq.builder()
+                        .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "확인 요청 후 1시간이 초과되어 닫힘 상태로 변경"))
+                        .userId(project.getProjectWriter().getUsersId())
+                        .postId(project.getProjectsId())
+                        .section("project")
+                        .build();
                 // 무슨무슨 프로젝트 ver1 확인 요청 후 1시간이 초과되어 닫힘 상태로 변경 -> [“”, “무슨무슨 프로젝트 ver1”, “확인 요청 후 1시간이 초과되어 닫힘 상태로 변경”]
-                alarmService.insertAlarm(
-                        AlarmReq.builder()
-                                .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "확인 요청 후 1시간이 초과되어 닫힘 상태로 변경"))
-                                .userId(project.getProjectWriter().getUsersId())
-                                .postId(project.getProjectsId())
-                                .section("project")
-                                .build()
-                );
+                alarmService.insertAlarm(alarmContent);
                 project.close(true);
+                projectsRepository.save(project);
+
+                emailService.sendAlarm("프로젝트를 닫았습니다", alarmContent);
                 return -1;
             }
         }
@@ -765,7 +778,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public int insertFeedback(FeedbackInsertReq req, Long usersId) {
+    public int insertFeedback(FeedbackInsertReq req, Long usersId) throws MessagingException {
         Users users = usersRepository.findByUsersId(usersId);
         Projects project = projectsRepository.findByProjectsId(req.getProjectId());
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
@@ -785,15 +798,17 @@ public class ProjectsServiceImpl implements ProjectsService{
         project.feedbackCntUp();
         projectsRepository.save(project);
 
+        AlarmReq alarmContent = AlarmReq.builder()
+                .content(List.of("작성한", project.getTitle() + " ver" + project.getVersion(), "새 피드백 등록"))
+                .userId(project.getProjectWriter().getUsersId())
+                .postId(project.getProjectsId())
+                .section("project")
+                .build();
+
         // 작성한 무슨무슨 프로젝트 ver1에 새 피드백 등록 -> [“작성한”, “무슨무슨 프로젝트 ver1”, “새 피드백 등록”]
-        alarmService.insertAlarm(
-                AlarmReq.builder()
-                        .content(List.of("작성한", project.getTitle() + " ver" + project.getVersion(), "새 피드백 등록"))
-                        .userId(project.getProjectWriter().getUsersId())
-                        .postId(project.getProjectsId())
-                        .section("project")
-                        .build()
-        );
+        alarmService.insertAlarm(alarmContent);
+
+        emailService.sendAlarm("새 피드백이 등록되었습니다", alarmContent);
 
         return projectsInfo.getFeedbacks().size();
     }

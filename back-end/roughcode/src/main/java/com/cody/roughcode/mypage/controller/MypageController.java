@@ -6,6 +6,7 @@ import com.cody.roughcode.alarm.service.AlarmService;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.entity.CodesInfo;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.mypage.service.MypageServiceImpl;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
@@ -25,7 +26,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,12 +45,54 @@ public class MypageController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AlarmServiceImpl alarmService;
     private final MypageServiceImpl mypageService;
+    private final EmailServiceImpl emailService;
+
+    @Operation(summary = "이메일 인증 API")
+    @PutMapping("/email")
+    public ResponseEntity<?> checkEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                        @Parameter(description = "이메일", required = true)
+                                         @Email(message = "이메일 형식이 아닙니다")
+                                         @RequestParam String email,
+                                        @Parameter(description = "코드", required = true)
+                                        @Pattern(regexp = "^[a-zA-Z0-9]{8}$")
+                                        @RequestParam String code) {
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        try {
+            boolean checked = emailService.checkEmail(email, code, usersId);
+            return Response.makeResponse(HttpStatus.OK, "이메일 인증 성공", 1, (checked)? "1" : "0");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "이메일 인증 코드 보내기 API")
+    @PostMapping("/email")
+    public ResponseEntity<?> sendCertificationEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                                    @Parameter(description = "이메일", required = true)
+                                                     @Email(message = "이메일 형식이 아닙니다")
+                                                     @RequestParam String email) {
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        try {
+            emailService.sendCertificationEmail(email, usersId);
+            return Response.ok("이메일 전송 성공");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+    }
 
     @Operation(summary = "즐겨찾기한 코드 목록 조회 API")
     @GetMapping("/code/favorite")
     ResponseEntity<?> getFavoriteCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                           @Parameter(description = "페이지 수")
-                                          @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                          @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                           @RequestParam(defaultValue = "0") int page,
                                           @Parameter(description = "한 페이지에 담기는 개수")
                                           @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -76,7 +122,7 @@ public class MypageController {
     @GetMapping("/code/review")
     ResponseEntity<?> getReviewCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                         @Parameter(description = "페이지 수")
-                                        @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                        @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                         @RequestParam(defaultValue = "0") int page,
                                         @Parameter(description = "한 페이지에 담기는 개수")
                                         @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -106,7 +152,7 @@ public class MypageController {
     @GetMapping("/code")
     ResponseEntity<?> getCodeList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                   @Parameter(description = "페이지 수")
-                                  @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                  @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                   @RequestParam(defaultValue = "0") int page,
                                   @Parameter(description = "한 페이지에 담기는 개수")
                                   @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -136,7 +182,7 @@ public class MypageController {
     @GetMapping("/project/feedback")
     ResponseEntity<?> getFeedbackProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                              @Parameter(description = "페이지 수")
-                                             @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                             @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                              @RequestParam(defaultValue = "0") int page,
                                              @Parameter(description = "한 페이지에 담기는 개수")
                                              @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -166,7 +212,7 @@ public class MypageController {
     @GetMapping("/project/favorite")
     ResponseEntity<?> getFavoriteProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                      @Parameter(description = "페이지 수")
-                                     @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                     @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                      @RequestParam(defaultValue = "0") int page,
                                      @Parameter(description = "한 페이지에 담기는 개수")
                                      @Min(value = 1, message = "size값은 1이상이어야 합니다")
@@ -196,7 +242,7 @@ public class MypageController {
     @GetMapping("/project")
     ResponseEntity<?> getProjectList(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
                                      @Parameter(description = "페이지 수")
-                                     @Min(value = 1, message = "page값은 1이상이어야 합니다")
+                                     @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                      @RequestParam(defaultValue = "0") int page,
                                      @Parameter(description = "한 페이지에 담기는 개수")
                                      @Min(value = 1, message = "size값은 1이상이어야 합니다")

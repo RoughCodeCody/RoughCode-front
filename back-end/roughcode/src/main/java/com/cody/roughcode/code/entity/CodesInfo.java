@@ -31,6 +31,10 @@ public class CodesInfo {
     @Column(name = "favorite_cnt", nullable = true)
     private int favoriteCnt = 0;
 
+    @Builder.Default
+    @Column(name = "language", nullable = true)
+    private String language = "";
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_id", nullable = false)
     private Codes codes;
@@ -38,7 +42,7 @@ public class CodesInfo {
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<Reviews> reviews;
 
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "codesInfo", fetch = FetchType.LAZY)
     private List<SelectedReviews> selectedReviews;
 
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
@@ -66,5 +70,9 @@ public class CodesInfo {
 
     public void updateGithubUrl(String githubUrl){
         this.githubUrl = githubUrl;
+    }
+
+    public void updateLanguage(String language){
+        this.language = language;
     }
 }

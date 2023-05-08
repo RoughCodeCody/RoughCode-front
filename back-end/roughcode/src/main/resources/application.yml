@@ -60,7 +60,7 @@ app:
       http://${HOST}:80,
       https://${HOST}:3000,
       https://${HOST}:80
-  host: ${HOST}
+
 ---
 #spring boot batch + scheduler
 spring:
@@ -69,3 +69,18 @@ spring:
       enabled: false			# 시작과 동시에 실행되는건 방지
     jdbc:
       initialize-schema: always # batch 스키마 자동 생성
+
+---
+# Mail Sending
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

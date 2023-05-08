@@ -63,6 +63,9 @@ public class CodeDetailRes {
     @Schema(description = "내가 즐겨찾기 눌렀는지 여부", example = "true")
     private Boolean favorite;
 
+    @Schema(description = "코드 언어", example = "Javascript")
+    private String language;
+
     @Schema(description = "버전 정보")
     private List<VersionRes> versions;
 

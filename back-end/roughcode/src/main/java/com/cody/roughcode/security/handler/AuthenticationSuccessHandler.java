@@ -33,8 +33,6 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
     @Value("${app.oauth2.authorizedRedirectUri}")
     private List<String> redirectUris;
-    @Value("${app.host}")
-    private String host;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
     private final CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
@@ -50,8 +48,8 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         redisTemplate.opsForValue()
                 .set(tokenInfo.getUserId().toString(), tokenInfo.getRefreshToken(), JwtProperties.REFRESH_TOKEN_TIME, TimeUnit.MILLISECONDS);
         // access token, refresh token 쿠키에 저장
-        response.addHeader("Set-Cookie", tokenInfo.generateAccessToken(host).toString());
-        response.addHeader("Set-Cookie", tokenInfo.generateRefreshToken(host).toString());
+        response.addHeader("Set-Cookie", tokenInfo.generateAccessToken().toString());
+        response.addHeader("Set-Cookie", tokenInfo.generateRefreshToken().toString());
 
         if(response.isCommitted()){
             log.debug("Response has already been committed");

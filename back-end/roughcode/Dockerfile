@@ -8,7 +8,7 @@ COPY src src
 
 
 RUN chmod +x ./gradlew
-RUN ./gradlew bootJar
+RUN ./gradlew bootJar --warning-mode all
 
 FROM openjdk:11-jdk-slim
 COPY --from=builder build/libs/*.jar app.jar

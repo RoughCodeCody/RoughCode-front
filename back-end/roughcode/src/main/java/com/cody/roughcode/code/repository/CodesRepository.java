@@ -39,7 +39,7 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
         return findLatestCodesByCodesIdAndUsersId(codeId, userId, PageRequest.of(0, 1)).get(0);
     }
 
-    List<Codes> findByNumAndCodeWriter(Long num, Users codeWriter);
+    List<Codes> findByNumAndCodeWriterOrderByVersionDesc(Long num, Users codeWriter);
 
     @Query("SELECT c FROM Codes c WHERE c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter)) " +
             "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%)")

@@ -4,6 +4,7 @@ import com.cody.roughcode.alarm.entity.Alarm;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.mypage.service.MypageServiceImpl;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.Projects;
@@ -39,6 +40,7 @@ import java.util.List;
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,7 +63,7 @@ public class MypageControllerTest {
                 .build();
     }
 
-    final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTEyM0BnbWFpbC5jb20iLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjc0NzEyMDg2fQ.fMjhTvyLoCBzAXZ4gtJCAMS98j9DNsC7w2utcB-Uho";
+    final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwibmFtZSI6Imtvc3kzMTgiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjgzNTkzNzU0fQ.InDlkf3NHCoDcOGCnEaB8Wc7qtEPz0hCWulUkgQEtCY";
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -98,6 +100,8 @@ public class MypageControllerTest {
     @Mock
     private MypageServiceImpl mypageService;
     @Mock
+    private EmailServiceImpl emailService;
+    @Mock
     private JwtTokenProvider jwtTokenProvider;
 
     final Codes code = Codes.builder()
@@ -108,6 +112,57 @@ public class MypageControllerTest {
             .title("title")
             .reviewCnt(1)
             .build();
+
+    @DisplayName("이메일 인증 코드 성공")
+    @Test
+    public void checkEmailSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/email";
+        String code = "12345678";
+        doReturn(1L).when(jwtTokenProvider).getId(eq(accessToken));
+        doReturn(true).when(emailService).checkEmail(eq(users.getEmail()), eq(code), eq(users.getUsersId()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("email", users.getEmail())
+                        .param("code", code)
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        String result = jsonObject.get("result").getAsString();
+        assertThat(message).isEqualTo("이메일 인증 성공");
+        assertThat(result).isEqualTo("1");
+    }
+
+    @DisplayName("이메일 인증 코드 보내기 성공")
+    @Test
+    public void sendCertificationEmailSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/email";
+        doReturn(1L).when(jwtTokenProvider).getId(eq(accessToken));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .param("email", users.getEmail())
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("이메일 전송 성공");
+    }
 
     @DisplayName("즐겨찾기한 코드 목록 조회 성공")
     @Test
