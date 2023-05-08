@@ -13,14 +13,14 @@ services:
     networks:
       - sonarnet
     environment:
-      - sonar.jdbc.url=jdbc:postgresql://db:5432/sonar
+      - sonar.jdbc.url=jdbc:postgresql://sonardb:5432/sonar
     volumes:
       - sonarqube_conf:/opt/sonarqube/conf
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
       - sonarqube_logs:/opt/sonarqube/logs
 
-  db:
+  sonardb:
     image: postgres
     container_name: postgres_sonar
     ports:
