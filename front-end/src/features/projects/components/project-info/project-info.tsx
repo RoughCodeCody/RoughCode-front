@@ -53,11 +53,6 @@ export const ProjectInfo = ({
   // 프로젝트 열기/닫기
   const putProjectOpenStatusQuery = usePutProjectOpenStatus();
 
-  const mine = true;
-
-  // 프로젝트 열기/닫기
-  const putProjectOpenStatusQuery = usePutProjectOpenStatus();
-
   // URL 버튼 클릭시 서버 running 여부 확인한 후 연결
   const checkURLQuery = useCheckURLOpen();
   const handleURLAPKBtnClick = () => {
