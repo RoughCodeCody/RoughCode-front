@@ -42,7 +42,7 @@ public class CodesInfo {
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<Reviews> reviews;
 
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "codesInfo", fetch = FetchType.LAZY)
     private List<SelectedReviews> selectedReviews;
 
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
