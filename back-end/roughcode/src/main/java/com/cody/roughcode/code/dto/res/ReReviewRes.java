@@ -24,6 +24,9 @@ public class ReReviewRes {
     @Schema(description = "리리뷰 남긴 사람 닉네임(빈 문자열이면 익명)", example = "코디")
     private String userName;
 
+    @Schema(description = "코드 리리뷰 좋아요 수", example = "3")
+    private int likeCnt;
+
     @Schema(description = "내가 좋아요 눌렀는지 여부", example = "true")
     private Boolean liked;
 
@@ -53,6 +56,7 @@ public class ReReviewRes {
                 .reReviewId(reReviews.getReReviewsId())
                 .userId(userId)
                 .userName(userName)
+                .likeCnt(reReviews.getLikeCnt())
                 .liked(liked)
                 .content(reReviews.getContent())
                 .createdDate(reReviews.getCreatedDate())

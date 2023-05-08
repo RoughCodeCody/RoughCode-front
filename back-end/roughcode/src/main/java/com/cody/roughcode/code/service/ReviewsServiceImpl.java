@@ -1,8 +1,9 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
-import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.entity.Reviews;
+import com.cody.roughcode.code.dto.res.ReReviewRes;
+import com.cody.roughcode.code.dto.res.ReviewRes;
+import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.*;
 import com.cody.roughcode.user.entity.Users;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -63,6 +67,31 @@ public class ReviewsServiceImpl implements ReviewsService{
         }
 
         return reviewId;
+    }
+
+    @Override
+    public ReviewRes getReview(Long reviewId, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+        Reviews review = reviewsRepository.findByReviewsId(reviewId);
+
+        if (review == null) {
+            throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
+        }
+
+        // 내가 좋아요 눌렀는지 여부
+        ReviewLikes reviewLike = (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user) : null;
+        Boolean reviewLiked = reviewLike != null;
+
+        // 리리뷰 목록
+        List<ReReviewRes> reReviewResList = new ArrayList<>();
+        for (ReReviews reReview : review.getReReviews()) {
+            ReReviewLikes reReviewLike = (user != null) ? reReviewLikesRepository.findByReReviewsAndUsers(reReview, user) : null;
+            Boolean reReviewLiked = reReviewLike != null;
+            reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
+        }
+
+        return ReviewRes.toDto(review, reviewLiked, reReviewResList);
     }
 
     @Override
