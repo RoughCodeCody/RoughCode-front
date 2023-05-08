@@ -13,61 +13,46 @@ type ProjectDetailProps = {
 };
 
 export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
-  const { isLoading, data, isSuccess, isError } = useProjectInfo({ projectId });
+  // 프로젝트 정보 가져오기
+  const { isLoading, data } = useProjectInfo({ projectId });
   console.log(data);
 
   if (isLoading) return <>loading</>;
 
-  const {
-    closed,
-    code,
-    content,
-    date,
-    favorite,
-    favoriteCnt,
-    feedbackCnt,
-    feedbacks,
-    img,
-    likeCnt,
-    liked,
-    mine,
-    notice,
-    tags,
-    title,
-    url,
-    userName,
-    version,
-    versions,
-  } = data;
-
   return (
-    <FlexDiv direction="column" gap="3rem" padding="2rem 0">
-      <Notice
-        notice={notice}
-        version={version}
-        date={date}
-        versions={versions}
-      />
+    <>
+      <FlexDiv direction="column" gap="3rem" padding="2rem 0">
+        {data && (
+          <>
+            <Notice
+              notice={data.notice}
+              version={data.version}
+              date={data.date}
+              versions={data.versions}
+            />
 
-      <WhiteBoxNoshad width="65%" padding="2.25rem">
-        <ProjectInfo data={data} projectId={projectId} />
-        <VersionsInfo versions={versions} curVersionId={projectId} />
-        <img
-          src={img}
-          alt="project"
-          style={{
-            width: "100%",
-            aspectRatio: "3 / 2",
-            objectFit: "cover",
-            marginTop: "2.5rem",
-          }}
-        />
-        <ProjectDescription content={content} />
-        <RelatedCodes codes={code} />
-      </WhiteBoxNoshad>
+            <WhiteBoxNoshad width="65%" padding="2.25rem">
+              <ProjectInfo data={data} projectId={projectId} />
+              <VersionsInfo versions={data.versions} curVersionId={projectId} />
+              <img
+                src={data.img}
+                alt="project"
+                style={{
+                  width: "100%",
+                  aspectRatio: "3 / 2",
+                  objectFit: "cover",
+                  marginTop: "2.5rem",
+                }}
+              />
+              <ProjectDescription content={data.content} />
+              <RelatedCodes codes={data.code} />
+            </WhiteBoxNoshad>
 
-      <FeedbackRegister type="feedback" id={projectId} />
-      <Feedbacks type="feedback" feedbacks={feedbacks} />
-    </FlexDiv>
+            <FeedbackRegister type="feedback" id={projectId} />
+            <Feedbacks type="feedback" feedbacks={data.feedbacks} />
+          </>
+        )}
+      </FlexDiv>
+    </>
   );
 };
