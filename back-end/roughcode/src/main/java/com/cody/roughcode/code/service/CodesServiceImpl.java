@@ -222,7 +222,7 @@ public class CodesServiceImpl implements CodesService {
 
         // 모든 버전 정보 미리보기
         List<Pair<Codes, CodesInfo>> otherVersions = new ArrayList<>();
-        List<Codes> codeList = codesRepository.findByNumAndCodeWriter(code.getNum(), code.getCodeWriter());
+        List<Codes> codeList = codesRepository.findByNumAndCodeWriterOrderByVersionDesc(code.getNum(), code.getCodeWriter());
 
         for (Codes c : codeList) {
             otherVersions.add(Pair.of(c, codesInfoRepository.findByCodes(c)));
