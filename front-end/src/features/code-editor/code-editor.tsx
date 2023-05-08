@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { FaRegLightbulb } from "react-icons/fa";
+
 import * as monaco from "monaco-editor";
 import Editor, { OnMount } from "@monaco-editor/react";
-
-import { FaRegLightbulb } from "react-icons/fa";
 
 import { EditorWrapper, EditorHeader, EditorBottom } from "./style";
 import { FlexDiv, Text } from "@/components/elements";
 import { Btn } from "@/components/elements";
+import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 
 function isOverlap(a: number, b: number, c: number, d: number) {
   // a와 b의 위치를 정렬합니다.
@@ -28,8 +29,6 @@ function isOverlap(a: number, b: number, c: number, d: number) {
 }
 
 interface CodeEditorProps {
-  coloredLines: number[][];
-  setColoredLines: React.Dispatch<React.SetStateAction<number[][]>>;
   headerText: string;
   originalCode: string;
   height: string;
@@ -39,8 +38,6 @@ interface CodeEditorProps {
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
-  coloredLines,
-  setColoredLines,
   headerText,
   originalCode,
   height,
@@ -48,6 +45,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   language,
   selectedLines,
 }) => {
+  const { setSelectedLines } = useCodeReviewFeedbackDataStore();
+
   const editorRef = useRef<any>(null);
   const [monaco, setMonaco] = useState<any>(null);
 
@@ -118,25 +117,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         ) {
           editorRef.current.removeDecorations(deco);
           newDecoIds = newDecoIds.filter((id) => id !== deco);
-          setColoredLines(
-            coloredLines.filter((item) => {
-              console.log(item[0]);
-              console.log(item[1]);
-              console.log(startLine);
-              console.log(endLine);
-              item[0] !== parseInt(startLine) && item[1] !== parseInt(endLine);
-            })
-          );
         }
       });
 
       const decoId = editorRef.current?.deltaDecorations([], deltaDecorations);
-      setColoredLines([
-        ...coloredLines,
-        [draggedLineNumber[0], draggedLineNumber[1]],
-      ]);
       setDecoIds([...newDecoIds, decoId]);
-      console.log(decoIds);
     }
   };
 
@@ -161,7 +146,21 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
   const decodedString = decodeBase64ToUTF8(originalCode);
 
-  useEffect(() => {}, [originalCode]);
+  const saveSelectedLines = () => {
+    let selectedLines: number[][] = [];
+    decoIds.map((deco) => {
+      const startLine = editorRef.current
+        ?.getModel()
+        ?.getDecorationRange(deco)?.startLineNumber;
+      const endLine = editorRef.current
+        ?.getModel()
+        ?.getDecorationRange(deco)?.endLineNumber;
+
+      selectedLines.push([startLine, endLine]);
+    });
+
+    setSelectedLines(selectedLines);
+  };
 
   return (
     <EditorWrapper>
@@ -199,7 +198,20 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         onMount={handleEditorDidMount}
       />
 
-      <EditorBottom />
+      <EditorBottom>
+        {lineSelection ? (
+          <Btn
+            text="확정"
+            height="2rem"
+            display="flex"
+            align="center"
+            bgColor="orange"
+            onClickFunc={saveSelectedLines}
+          />
+        ) : (
+          <></>
+        )}
+      </EditorBottom>
     </EditorWrapper>
   );
 };
