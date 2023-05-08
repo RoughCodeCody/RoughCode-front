@@ -12,10 +12,10 @@ import {
 import { Selection } from "@/components/selection";
 
 import { usePostCodeLike } from "../../api";
-import { Code } from "../../types";
+import { CodeInfoResult } from "../../types";
 
 interface CodeInfoProps {
-  data: Code;
+  data: CodeInfoResult;
 }
 
 export const CodeInfo = ({
