@@ -90,9 +90,9 @@ jacoco {
 
 jacocoTestReport { 
     reports {
-        xml.required true // sonarqube 분석에 필요한 xml파일만 생성
-        csv.required false
-        html.required false
+        xml.enabled true // sonarqube 분석에 필요한 xml파일만 생성
+        csv.enabled false
+        html.enabled false
     }
 
 }
