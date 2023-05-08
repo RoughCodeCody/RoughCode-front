@@ -172,7 +172,8 @@ public class CodesServiceImpl implements CodesService {
                     .codes(savedCode)
                     .githubUrl(req.getGithubUrl())
                     .content(req.getContent())
-                    .favoriteCnt(0).build();
+                    .favoriteCnt(0)
+                    .language(req.getLanguage()).build();
             codesInfoRepository.save(codesInfo);
 
         } catch (Exception e) {
@@ -294,6 +295,7 @@ public class CodesServiceImpl implements CodesService {
                 .content(codesInfo.getContent())
                 .liked(liked)
                 .favorite(favorite)
+                .language(codesInfo.getLanguage())
                 .versions(versionResList)
                 .reviews(reviewResList)
                 .build();
@@ -408,6 +410,11 @@ public class CodesServiceImpl implements CodesService {
             if(StringUtils.hasText(req.getGithubUrl())){
                 log.info("코드 정보 수정(github URL): "+ req.getGithubUrl());
                 targetInfo.updateGithubUrl(req.getGithubUrl());
+            }
+
+            if(StringUtils.hasText(req.getLanguage())){
+                log.info("코드 정보 수정(코드 언어): "+ req.getLanguage());
+                targetInfo.updateGithubUrl(req.getLanguage());
             }
 
             target.setProject(connectedProject); // 코드와 연결된 프로젝트 수정
