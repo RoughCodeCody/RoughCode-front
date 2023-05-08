@@ -32,6 +32,7 @@ interface CodeEditorProps {
   originalCode: string;
   height: string;
   lineSelection: boolean;
+  language: string;
   selectedLines?: number[][];
 }
 
@@ -40,6 +41,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   originalCode,
   height,
   lineSelection,
+  language,
   selectedLines,
 }) => {
   const editorRef = useRef<any>(null);
@@ -142,6 +144,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
   const decodedString = decodeBase64ToUTF8(originalCode);
 
+  useEffect(() => {}, [originalCode]);
+
   return (
     <EditorWrapper>
       <EditorHeader>
@@ -173,7 +177,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       <Editor
         height={height}
-        defaultLanguage="python"
+        defaultLanguage={language}
         defaultValue={decodedString}
         onMount={handleEditorDidMount}
       />
