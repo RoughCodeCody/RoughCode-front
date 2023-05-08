@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class ProjectSelectedTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT")
     private Long selectedTagsId;
 
     @ManyToOne(fetch = FetchType.LAZY)

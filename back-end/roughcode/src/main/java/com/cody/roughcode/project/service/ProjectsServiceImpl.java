@@ -113,7 +113,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             likeCnt = original.getLikeCnt();
 
             // 이전 버전 프로젝트 전부 닫기
-            List<Projects> oldProjects = projectsRepository.findByNumAndProjectWriter(projectNum, user);
+            List<Projects> oldProjects = projectsRepository.findByNumAndProjectWriterOrderByVersionDesc(projectNum, user);
             for (Projects p : oldProjects) {
                 p.close(true);
                 projectsRepository.save(p);
@@ -535,7 +535,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         ProjectDetailRes projectDetailRes = new ProjectDetailRes(project, projectsInfo, tagList, liked, favorite, user);
 
         List<Pair<Projects, ProjectsInfo>> otherVersions = new ArrayList<>();
-        List<Projects> projectList = projectsRepository.findByNumAndProjectWriter(project.getNum(), project.getProjectWriter());
+        List<Projects> projectList = projectsRepository.findByNumAndProjectWriterOrderByVersionDesc(project.getNum(), project.getProjectWriter());
         for (Projects p : projectList) {
             otherVersions.add(Pair.of(p, projectsInfoRepository.findByProjects(p)));
         }
@@ -840,7 +840,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         Projects project = projectsRepository.findByProjectsId(projectId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
 
-        List<Projects> allVersion = projectsRepository.findByNumAndProjectWriter(project.getNum(), users);
+        List<Projects> allVersion = projectsRepository.findByNumAndProjectWriterOrderByVersionDesc(project.getNum(), users);
 
         List<FeedbackInfoRes> feedbackInfoResList = new ArrayList<>();
         for (Projects p : allVersion) {

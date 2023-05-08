@@ -6,12 +6,16 @@ import com.cody.roughcode.code.entity.CodeTags;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodeLikesRepository;
 import com.cody.roughcode.code.repository.CodesRepository;
+import com.cody.roughcode.code.repository.ReviewsRepository;
+import com.cody.roughcode.code.repository.SelectedReviewsRepository;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
+import com.cody.roughcode.project.repository.FeedbacksRepository;
 import com.cody.roughcode.project.repository.ProjectFavoritesRepository;
 import com.cody.roughcode.project.repository.ProjectsRepository;
+import com.cody.roughcode.project.repository.SelectedFeedbacksRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,6 +32,7 @@ import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -54,6 +59,14 @@ public class MypageServiceTest {
     private CodeLikesRepository codeLikesRepository;
     @Mock
     private UsersRepository usersRepository;
+    @Mock
+    private FeedbacksRepository feedbackRepository;
+    @Mock
+    private ReviewsRepository reviewsRepository;
+    @Mock
+    private SelectedFeedbacksRepository selectedFeedbacksRepository;
+    @Mock
+    private SelectedReviewsRepository selectedReviewsRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -106,6 +119,28 @@ public class MypageServiceTest {
         return tagsList;
     }
 
+    final String statCard = "<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">    <style>      .small {        font: italic 13px sans-serif;      }      .heavy {        font: bold 30px sans-serif;      }              .Rrrrr {        font: italic 40px serif;        fill: red;      }      .title {        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #319795;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }      .content {        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #45474F;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }    </style>    <rect        data-testid=\"card-bg\"        x=\"1%\"        y=\"0.5%\"        rx=\"25\"        height=\"99%\"        stroke=\"#319795\"        width=\"98%\"        fill=\"#ffffff\"      />      <rect      data-testid=\"card-bg\"      x=\"7%\"      y=\"20%\"      rx=\"5\"      height=\"70%\"      width=\"86%\"      fill=\"#EFF8FF\"    />       <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>    <text x=\"64%\" y=\"32%\" class=\"content\">${feedbackCnt}</text>    <text x=\"64%\" y=\"42%\" class=\"content\">${codeReviewCnt}</text>    <text x=\"64%\" y=\"52%\" class=\"content\">${includedFeedbackCnt}</text>    <text x=\"64%\" y=\"62%\" class=\"content\">${includedCodeReviewCnt}</text>    <text x=\"64%\" y=\"72%\" class=\"content\">${projectRefactorCnt}</text>    <text x=\"64%\" y=\"82%\" class=\"content\">${codeRefactorCnt}</text>  </svg>";
+
+    @DisplayName("스탯 카드에 정보 넣기 성공")
+    @Test
+    void makeStackCardSucceed(){
+        // given
+        doReturn(Optional.of(users)).when(usersRepository).findByName(any(String.class));
+        doReturn(1).when(feedbackRepository).countByUsers(any(Users.class));
+        doReturn(2).when(reviewsRepository).countByUsers(any(Users.class));
+        doReturn(3).when(selectedFeedbacksRepository).countByUsers(any(Users.class));
+        doReturn(4).when(selectedReviewsRepository).countByUsers(any(Users.class));
+        doReturn(10).when(projectsRepository).countByProjectWriter(any(Users.class));
+        doReturn(5).when(projectsRepository).countNumByProjectWriter(any(Users.class));
+        doReturn(11).when(codesRepository).countByCodeWriter(any(Users.class));
+        doReturn(5).when(codesRepository).countNumByCodeWriter(any(Users.class));
+
+        // when
+        String completeCard = mypageService.makeStatCard(users.getName());
+
+        // then
+        assertThat(completeCard).isEqualTo("<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">    <style>      .small {        font: italic 13px sans-serif;      }      .heavy {        font: bold 30px sans-serif;      }              .Rrrrr {        font: italic 40px serif;        fill: red;      }      .title {        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #319795;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }      .content {        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #45474F;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }    </style>    <rect        data-testid=\"card-bg\"        x=\"1%\"        y=\"0.5%\"        rx=\"25\"        height=\"99%\"        stroke=\"#319795\"        width=\"98%\"        fill=\"#ffffff\"      />      <rect      data-testid=\"card-bg\"      x=\"7%\"      y=\"20%\"      rx=\"5\"      height=\"70%\"      width=\"86%\"      fill=\"#EFF8FF\"    />       <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>    <text x=\"64%\" y=\"32%\" class=\"content\">1</text>    <text x=\"64%\" y=\"42%\" class=\"content\">2</text>    <text x=\"64%\" y=\"52%\" class=\"content\">3</text>    <text x=\"64%\" y=\"62%\" class=\"content\">4</text>    <text x=\"64%\" y=\"72%\" class=\"content\">5</text>    <text x=\"64%\" y=\"82%\" class=\"content\">6</text>  </svg>");
+    }
 
     @DisplayName("즐겨찾기한 코드 목록 조회 성공")
     @Test

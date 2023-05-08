@@ -4,13 +4,13 @@ import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.entity.CodeLikes;
 import com.cody.roughcode.code.entity.CodeSelectedTags;
 import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.repository.CodeLikesRepository;
-import com.cody.roughcode.code.repository.CodeSelectedTagsRepository;
-import com.cody.roughcode.code.repository.CodesRepository;
+import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.Projects;
+import com.cody.roughcode.project.repository.FeedbacksRepository;
 import com.cody.roughcode.project.repository.ProjectsRepository;
+import com.cody.roughcode.project.repository.SelectedFeedbacksRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -33,10 +35,62 @@ public class MypageServiceImpl implements MypageService{
     private final CodeSelectedTagsRepository codeSelectedTagsRepository;
     private final CodeLikesRepository codeLikesRepository;
     private final UsersRepository usersRepository;
+    private final FeedbacksRepository feedbackRepository;
+    private final ReviewsRepository reviewsRepository;
+    private final SelectedFeedbacksRepository selectedFeedbacksRepository;
+    private final SelectedReviewsRepository selectedReviewsRepository;
+
+    private final String statCard = "<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">    <style>      .small {        font: italic 13px sans-serif;      }      .heavy {        font: bold 30px sans-serif;      }              .Rrrrr {        font: italic 40px serif;        fill: red;      }      .title {        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #319795;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }      .content {        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #45474F;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }    </style>    <rect        data-testid=\"card-bg\"        x=\"1%\"        y=\"0.5%\"        rx=\"25\"        height=\"99%\"        stroke=\"#319795\"        width=\"98%\"        fill=\"#ffffff\"      />      <rect      data-testid=\"card-bg\"      x=\"7%\"      y=\"20%\"      rx=\"5\"      height=\"70%\"      width=\"86%\"      fill=\"#EFF8FF\"    />       <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>    <text x=\"64%\" y=\"32%\" class=\"content\">${feedbackCnt}</text>    <text x=\"64%\" y=\"42%\" class=\"content\">${codeReviewCnt}</text>    <text x=\"64%\" y=\"52%\" class=\"content\">${includedFeedbackCnt}</text>    <text x=\"64%\" y=\"62%\" class=\"content\">${includedCodeReviewCnt}</text>    <text x=\"64%\" y=\"72%\" class=\"content\">${projectRefactorCnt}</text>    <text x=\"64%\" y=\"82%\" class=\"content\">${codeRefactorCnt}</text>  </svg>";
+
+
 
     private void findUser(Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @Override
+    public String makeStatCard(String userName) {
+        Users user = usersRepository.findByName(userName).orElse(null);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        HashMap<String, Integer> stats = new HashMap<>();
+
+        int res = 0;
+
+        log.info(userName + "의 stat card ---------------");
+        // 프로젝트 피드백 횟수:     ${feedbackCnt}
+        res = feedbackRepository.countByUsers(user);
+        stats.put("feedbackCnt", res);
+
+        // 코드 리뷰 횟수:          ${codeReviewCnt}
+        res = reviewsRepository.countByUsers(user);
+        stats.put("codeReviewCnt", res);
+
+        // 반영된 프로젝트 피드백 수: ${includedFeedbackCnt}
+        res = selectedFeedbacksRepository.countByUsers(user);
+        stats.put("includedFeedbackCnt", res);
+
+        // 반영된 코드 리뷰 수:      ${includedCodeReviewCnt}
+        res = selectedReviewsRepository.countByUsers(user);
+        stats.put("includedCodeReviewCnt", res);
+
+        // 프로젝트 리팩토링 횟수:    ${projectRefactorCnt}
+        res = projectsRepository.countByProjectWriter(user) - projectsRepository.countNumByProjectWriter(user);
+        stats.put("projectRefactorCnt", res);
+
+        // 코드 리팩토링 횟수:       ${codeRefactorCnt}
+        res = codesRepository.countByCodeWriter(user) - codesRepository.countNumByCodeWriter(user);
+        stats.put("codeRefactorCnt", res);
+
+        String completeStatCard = statCard;
+        for (String key : stats.keySet()) {
+            completeStatCard = completeStatCard.replace("${" + key + "}", String.valueOf(stats.get(key)));
+            log.info(key + " : " + stats.get(key));
+        }
+        log.info("stat end ----------------------");
+
+        return completeStatCard;
     }
 
     @Override

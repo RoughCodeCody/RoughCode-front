@@ -1,5 +1,6 @@
 package com.cody.roughcode.email.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +50,12 @@ class EmailServiceTest {
 
     private String from = "from@from.email";
 
+    final AlarmReq alarmContent = AlarmReq.builder()
+            .section("project")
+            .userId(1L)
+            .content(List.of("북마크한", "무언가의 새 버전", "업데이트"))
+            .postId(1L).build();
+
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -70,7 +77,7 @@ class EmailServiceTest {
         when(mailSender.createMimeMessage()).thenReturn(message);
 
         // when
-        emailService.sendAlarm("alarm 제목", "alarm 내용", 1L);
+        emailService.sendAlarm("alarm 제목", alarmContent);
 
         // then
         verify(mailSender, times(1)).send(message);
