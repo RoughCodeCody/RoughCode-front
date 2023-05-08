@@ -8,31 +8,50 @@ import {
   Count,
 } from "@/components/elements";
 
-import { useCheckURLOpen } from "../../api";
+import {
+  useCheckURLOpen,
+  usePutProjectOpenStatus,
+  usePostProjectLike,
+  usePostProjectFav,
+} from "../../api";
+import { ProjectInfoResult } from "../../types";
 import { UrlApkBtn } from "./style";
 
 type ProjectInfoProps = {
-  data: {
-    title: string;
-    userName: string;
-    url: string;
-    liked: boolean;
-    likeCnt: number;
-    favorite: boolean;
-    favoriteCnt: number;
-    tags: string[];
-  };
+  data: ProjectInfoResult;
   projectId: string;
 };
 
 export const ProjectInfo = ({
-  data: { title, userName, url, liked, likeCnt, favorite, favoriteCnt, tags },
+  data: {
+    title,
+    userName,
+    url,
+    liked,
+    likeCnt,
+    favorite,
+    favoriteCnt,
+    tags,
+    mine,
+  },
   projectId,
 }: ProjectInfoProps) => {
-  const [isLiked, setisLiked] = useState(liked);
-  const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
-  const [isBookmarked, setIsBookmarked] = useState(favorite);
-  const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
+  // const [isLiked, setisLiked] = useState(liked);
+  // const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
+  // const [isBookmarked, setIsBookmarked] = useState(favorite);
+  // const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
+
+  // 더미데이터
+  // const mine = true;
+
+  // 프로젝트 좋아요/좋아요 취소
+  const postProjectLikeQuery = usePostProjectLike();
+
+  // 프로젝트 즐겨찾기/즐겨찾기 취소
+  const postProjectFavQuery = usePostProjectFav();
+
+  // 프로젝트 열기/닫기
+  const putProjectOpenStatusQuery = usePutProjectOpenStatus();
 
   // URL 버튼 클릭시 서버 running 여부 확인한 후 연결
   const checkURLQuery = useCheckURLOpen();
@@ -59,17 +78,19 @@ export const ProjectInfo = ({
           <FlexDiv>
             <Count
               type="like"
-              cnt={newLikeCnt}
-              setCnt={setNewLikeCnt}
-              isChecked={isLiked}
-              setIsChecked={setisLiked}
+              cnt={likeCnt}
+              // setCnt={setNewLikeCnt}
+              isChecked={liked}
+              // setIsChecked={setisLiked}
+              onClickFunc={() => postProjectLikeQuery.mutate(projectId)}
             />
             <Count
               type="bookmark"
-              cnt={bookmarkCnt}
-              setCnt={setBookmarkCnt}
-              isChecked={isBookmarked}
-              setIsChecked={setIsBookmarked}
+              cnt={favoriteCnt}
+              // setCnt={setBookmarkCnt}
+              isChecked={favorite}
+              // setIsChecked={setIsBookmarked}
+              onClickFunc={() => postProjectFavQuery.mutate(projectId)}
             />
           </FlexDiv>
         </FlexDiv>
@@ -78,7 +99,27 @@ export const ProjectInfo = ({
             <TagChipSub tag={val} key={idx} />
           ))}
         </FlexDiv>
-        <UrlApkBtn onClick={handleURLAPKBtnClick}>{url}</UrlApkBtn>
+        <FlexDiv
+          width="100%"
+          direction="column"
+          align="end"
+          margin="1rem 0 0 0"
+        >
+          {mine && (
+            <Text
+              pointer={true}
+              onClick={() =>
+                putProjectOpenStatusQuery.mutate({
+                  projectId,
+                  status: closed ? "open" : "close",
+                })
+              }
+            >
+              {closed ? "프로젝트 열기" : "프로젝트 닫기"}
+            </Text>
+          )}
+          <UrlApkBtn onClick={handleURLAPKBtnClick}>{url}</UrlApkBtn>
+        </FlexDiv>
       </FlexDiv>
     </>
   );

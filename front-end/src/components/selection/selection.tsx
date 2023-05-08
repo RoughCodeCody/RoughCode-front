@@ -5,9 +5,20 @@ import { Text } from "../elements";
 
 type SelectionProps = {
   isMine: boolean;
+  handleModifyFunc?: () => void;
+  handleDeleteFunc?: () => void;
+  handleComplaintFunc?: () => void;
 };
 
-export const Selection = ({ isMine }: SelectionProps) => {
+// 아예 props를 객체로 표시할 텍스트랑 클릭시 실행할 함수를 전달해서
+// 그 객체를 map 돌려서 표시하는 게 나을 듯
+
+export const Selection = ({
+  isMine,
+  handleModifyFunc,
+  handleDeleteFunc,
+  handleComplaintFunc,
+}: SelectionProps) => {
   const [isOpen, setisOpen] = useState<boolean>(false);
 
   return (
@@ -17,11 +28,33 @@ export const Selection = ({ isMine }: SelectionProps) => {
         <SelectionList>
           {isMine ? (
             <>
-              <SelectionText>수정하기</SelectionText>
-              <SelectionText>삭제하기</SelectionText>
+              <SelectionText
+                onClick={() => {
+                  handleModifyFunc();
+                  setisOpen(false);
+                }}
+              >
+                수정하기
+              </SelectionText>
+              <SelectionText
+                onClick={() => {
+                  handleDeleteFunc();
+                  setisOpen(false);
+                }}
+              >
+                삭제하기
+              </SelectionText>
             </>
           ) : (
-            <SelectionText color="red">신고하기</SelectionText>
+            <SelectionText
+              color="red"
+              onClick={() => {
+                handleComplaintFunc();
+                setisOpen(false);
+              }}
+            >
+              신고하기
+            </SelectionText>
           )}
         </SelectionList>
       )}

@@ -10,7 +10,7 @@ const UrlApkBtn = styled.button<{ isClosed?: boolean }>`
   color: var(--sub-one-color);
   font-size: 2rem;
   font-weight: 700;
-  margin-top: 1rem;
+  margin-top: 0.3rem;
   cursor: pointer;
 
   &:hover {
