@@ -15,15 +15,12 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
 
   return (
     <>
-      <FlexDiv direction="column" gap="3rem" padding="2rem 0">
+      <FlexDiv direction="column" gap="4rem" padding="2rem 0">
         {data && (
           <>
             <WhiteBoxNoshad width="65%" padding="2.25rem">
               <CodeInfo data={data} />
-              <VersionsInfo
-                versions={data.versions}
-                curVersionId={data.codeId}
-              />
+              <VersionsInfo versions={data.versions} curVersionId={codeId} />
             </WhiteBoxNoshad>
           </>
         )}
