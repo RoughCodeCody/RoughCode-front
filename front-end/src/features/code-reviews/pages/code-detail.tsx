@@ -7,16 +7,20 @@ interface CodeDetailProps {
 }
 
 export const CodeDetail = ({ codeId }: CodeDetailProps) => {
-  const codeInfoQuery = useCodeInfo(Number(codeId));
+  const { status, data } = useCodeInfo(Number(codeId));
 
-  console.log(codeInfoQuery.data);
+  console.log(data);
 
   return (
     <>
       <FlexDiv direction="column" gap="3rem" padding="2rem 0">
-        <WhiteBoxNoshad width="65%" padding="2.25rem">
-          {/* <CodeInfo /> */}
-        </WhiteBoxNoshad>
+        {data && (
+          <>
+            <WhiteBoxNoshad width="65%" padding="2.25rem">
+              <CodeInfo data={data} />
+            </WhiteBoxNoshad>
+          </>
+        )}
       </FlexDiv>
     </>
   );
