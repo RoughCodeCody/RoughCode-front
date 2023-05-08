@@ -1,8 +1,10 @@
 package com.cody.roughcode.email.service;
 
+import com.cody.roughcode.security.auth.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -11,12 +13,15 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.security.SecureRandom;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EmailServiceImpl extends EmailService {
 
+    private final RedisTemplate<String, Object> redisTemplate;
+    int CERTIFICATE_TIME = 3 * 1000 * 60; // 3분
     private final JavaMailSender mailSender;
     private static final int CODE_LENGTH = 8;
     static String code;
@@ -35,6 +40,10 @@ public class EmailServiceImpl extends EmailService {
         helper.setText(createCertificationEmail(), true); // true를 전달하여 HTML을 사용하도록 지정합니다.
 
         mailSender.send(message);
+
+        redisTemplate.opsForValue()
+                .set(to, code, CERTIFICATE_TIME, TimeUnit.MILLISECONDS);
+
         return code;
     }
 
@@ -47,7 +56,7 @@ public class EmailServiceImpl extends EmailService {
                 "            <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" border=\"0\" style=\"border-collapse: collapse;\">\n" +
                 "                <tbody><tr><td width=\"520\" height=\"50\" style=\"font-size: 0;line-height: 0;\"></td></tr> \n" +
                 "                <tr><td width=\"520\" style=\"font-size: 0;\"><div style=\"display: flex; align-items: center;\">\n" +
-                "                <img src=\"https://roughcode.s3.ap-northeast-2.amazonaws.com/foots-color.jpg\" alt=\"로고 이미지\" width=\"148\" border=\"0\" style=\"display: block; margin: 0;\" loading=\"lazy\">\n" +
+                "                <img src=\"https://roughcode.s3.ap-northeast-2.amazonaws.com/foots-color-mini.jpg\" alt=\"로고 이미지\" width=\"148\" border=\"0\" style=\"display: block; margin: 0;\" loading=\"lazy\">\n" +
                 "                <h1 style=\"font-family: 'Nanum Gothic','Malgun Gothic', 'dotum','AppleGothic', Helvetica, Arial, Sans-Serif;font-size: 22px;line-height: 1.3;letter-spacing: -1px; margin-left: 10px;\">인증메일</h1>\n" +
                 "                </div>\n" +
                 "                </td></tr> " +

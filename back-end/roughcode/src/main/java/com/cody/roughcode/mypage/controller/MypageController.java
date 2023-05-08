@@ -52,11 +52,11 @@ public class MypageController {
                                          @Email(message = "이메일 형식이 아닙니다")
                                          @RequestParam String email) {
         try {
-            String code = emailService.sendCertificationEmail(email);
-            return Response.makeResponse(HttpStatus.OK, "이메일 전송 성공", 1, code);
+            emailService.sendCertificationEmail(email);
+            return Response.ok("이메일 전송 성공");
         } catch (Exception e) {
             log.error(e.getMessage());
-            return Response.notFound(e.getMessage());
+            return Response.badRequest(e.getMessage());
         }
     }
 
