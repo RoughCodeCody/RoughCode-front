@@ -270,11 +270,11 @@ public class CodesServiceImpl implements CodesService {
                     }
                 }));
 
-        Long resUserId = null;
-        String resUserName = null;
-        if (user != null) {
-            resUserId = user.getUsersId();
-            resUserName = user.getName();
+        Long codeWriterId = null;
+        String codeWriterName = null;
+        if (code.getCodeWriter() != null) {
+            codeWriterId = code.getCodeWriter().getUsersId();
+            codeWriterName = code.getCodeWriter().getName();
         }
 
         // 코드 상세 정보 response dto
@@ -288,8 +288,8 @@ public class CodesServiceImpl implements CodesService {
                 .favoriteCnt(codesInfo.getFavoriteCnt())
                 .githubUrl(codesInfo.getGithubUrl())
                 .tags(tagList)
-                .userId(resUserId)
-                .userName(resUserName)
+                .userId(codeWriterId)
+                .userName(codeWriterName)
                 .projectId(connectedProjectId)
                 .projectTitle(connectedProjectTitle)
                 .content(codesInfo.getContent())
@@ -414,7 +414,7 @@ public class CodesServiceImpl implements CodesService {
 
             if(StringUtils.hasText(req.getLanguage())){
                 log.info("코드 정보 수정(코드 언어): "+ req.getLanguage());
-                targetInfo.updateGithubUrl(req.getLanguage());
+                targetInfo.updateLanguage(req.getLanguage());
             }
 
             target.setProject(connectedProject); // 코드와 연결된 프로젝트 수정
