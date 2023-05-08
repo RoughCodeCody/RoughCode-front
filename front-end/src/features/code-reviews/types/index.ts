@@ -4,7 +4,7 @@ type SelectedReviews = {
   content: string; // 작성 내용
 };
 
-type Versions = {
+export type CodeVersion = {
   codeId: number;
   version: number;
   selectedReviews: SelectedReviews[];
@@ -53,7 +53,7 @@ export type CodeInfoResult = {
   content: string; // 코드 상세 설명
   liked: boolean; // 내가 좋아요 눌렀는지 여부
   favorite: boolean; // 내가 즐겨찾기 눌렀는지 여부
-  versions: Versions[];
+  versions: CodeVersion[];
   reviews: Reviews[];
 };
 
