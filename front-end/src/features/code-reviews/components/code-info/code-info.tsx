@@ -40,7 +40,7 @@ export const CodeInfo = ({
 
   return (
     <>
-      <FlexDiv direction="column" gap="2rem">
+      <FlexDiv direction="column" gap="2rem" width="100%">
         <FlexDiv direction="column" width="100%" gap="0.8rem">
           <FlexDiv width="100%" justify="space-between">
             <FlexDiv>
@@ -58,17 +58,13 @@ export const CodeInfo = ({
               <Count
                 type="like"
                 cnt={likeCnt}
-                // setCnt={setNewLikeCnt}
                 isChecked={liked}
-                // setIsChecked={setisLiked}
                 onClickFunc={() => codeLikeQuery.mutate(codeId)}
               />
               <Count
                 type="bookmark"
                 cnt={favoriteCnt}
-                // setCnt={setBookmarkCnt}
                 isChecked={favorite}
-                // setIsChecked={setIsBookmarked}
                 onClickFunc={() => {}}
               />
               <Selection isMine={true} />

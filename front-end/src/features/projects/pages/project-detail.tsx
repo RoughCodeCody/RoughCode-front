@@ -1,12 +1,12 @@
 import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
+import { VersionsInfo } from "@/features/version-info";
 
 import { useProjectInfo } from "../api";
 import { Notice } from "../components/notice";
 import { ProjectDescription } from "../components/project-description";
 import { ProjectInfo } from "../components/project-info";
 import { RelatedCodes } from "../components/related-codes";
-import { VersionsInfo } from "../components/versions-info";
 
 type ProjectDetailProps = {
   projectId: string;
