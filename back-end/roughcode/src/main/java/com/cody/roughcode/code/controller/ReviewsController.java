@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
+import com.cody.roughcode.code.dto.res.ReviewDetailRes;
 import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.service.ReviewsService;
 import com.cody.roughcode.exception.SelectedException;
@@ -56,7 +57,7 @@ public class ReviewsController {
 
     @Operation(summary = "코드 리뷰 상세 조회 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코드 리뷰 상세 조회 성공", content = @Content(schema = @Schema(implementation = ReviewRes.class))),
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 상세 조회 성공", content = @Content(schema = @Schema(implementation = ReviewDetailRes.class))),
             @ApiResponse(responseCode = "400", description = "일치하는 코드 리뷰가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 리뷰 상세 조회 실패")
     })
@@ -65,7 +66,7 @@ public class ReviewsController {
                               @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
         Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
-        ReviewRes res = null;
+        ReviewDetailRes res = null;
         try {
             res = reviewsService.getReview(reviewId, userId);
         } catch (Exception e) {

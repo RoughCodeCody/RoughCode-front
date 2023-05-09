@@ -2,6 +2,8 @@ package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
+import com.cody.roughcode.code.dto.res.ReviewCodeRes;
+import com.cody.roughcode.code.dto.res.ReviewDetailRes;
 import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
@@ -27,6 +29,8 @@ public class ReviewsServiceImpl implements ReviewsService{
     private final UsersRepository usersRepository;
     private final CodesRepository codesRepository;
     private final CodesInfoRepository codesInfoRepository;
+    private final CodeLikesRepository codeLikesRepository;
+    private final CodeFavoritesRepository codeFavoritesRepository;
     private final ReviewsRepository reviewsRepository;
     private final ReviewLikesRepository reviewLikesRepository;
     private final ReReviewsRepository reReviewsRepository;
@@ -38,8 +42,9 @@ public class ReviewsServiceImpl implements ReviewsService{
 
         Users user = usersRepository.findByUsersId(userId);
         Codes code = codesRepository.findByCodesId(req.getCodeId());
+        CodesInfo codesInfo = codesInfoRepository.findByCodesId(req.getCodeId());
 
-        if(code == null) {
+        if(codesInfo == null) {
             throw new NullPointerException("일치하는 코드가 없습니다");
         }
 
@@ -70,7 +75,7 @@ public class ReviewsServiceImpl implements ReviewsService{
     }
 
     @Override
-    public ReviewRes getReview(Long reviewId, Long userId) {
+    public ReviewDetailRes getReview(Long reviewId, Long userId) {
 
         Users user = usersRepository.findByUsersId(userId);
         Reviews review = reviewsRepository.findByReviewsId(reviewId);
@@ -91,7 +96,40 @@ public class ReviewsServiceImpl implements ReviewsService{
             reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
         }
 
-        return ReviewRes.toDto(review, reviewLiked, reReviewResList);
+        // 코드에 등록된 태그 목록
+        Codes code = review.getCodes();
+        CodesInfo codesInfo = codesInfoRepository.findByCodes(code);
+        List<String> tagList = getTagNames(code);
+
+        // 내가 즐겨찾기/좋아요 눌렀는지 여부
+        CodeFavorites myFavorite = (user != null) ? codeFavoritesRepository.findByCodesAndUsers(code, user) : null;
+        CodeLikes myLike = (user != null) ? codeLikesRepository.findByCodesAndUsers(code, user) : null;
+        Boolean favorite = myFavorite != null;
+        Boolean liked = myLike != null;
+
+        // 연결된 프로젝트 정보(id, 제목) 저장
+        Long connectedProjectId = null;
+        String connectedProjectTitle = null;
+        if (code.getProjects() != null) {
+            connectedProjectId = code.getProjects().getProjectsId();
+            connectedProjectTitle = code.getProjects().getTitle();
+        }
+
+        ReviewCodeRes reviewCodeRes = ReviewCodeRes.builder()
+                .codeId(code.getCodesId())
+                .version(code.getVersion())
+                .title(code.getTitle())
+                .likeCnt(code.getLikeCnt())
+                .liked(liked)
+                .favoriteCnt(codesInfo.getFavoriteCnt())
+                .favorite(favorite)
+                .tags(tagList)
+                .userName(code.getCodeWriter().getName())
+                .projectTitle(connectedProjectTitle)
+                .projectId(connectedProjectId)
+                .build();
+
+        return ReviewDetailRes.toDto(review, reviewLiked, reReviewResList, reviewCodeRes);
     }
 
     @Override
@@ -195,4 +233,12 @@ public class ReviewsServiceImpl implements ReviewsService{
         return 1;
     }
 
+    private static List<String> getTagNames(Codes code) {
+        List<String> tagList = new ArrayList<>();
+        if (code.getSelectedTags() != null)
+            for (CodeSelectedTags selected : code.getSelectedTags()) {
+                tagList.add(selected.getTags().getName());
+            }
+        return tagList;
+    }
 }

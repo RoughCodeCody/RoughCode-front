@@ -50,6 +50,14 @@ public class Codes extends BaseTimeEntity {
     @JoinColumn(name = "projects_id", nullable = true)
     private Projects projects;
 
+    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    private List<Reviews> reviews;
+
+    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    private List<CodeFavorites> codeFavorites;
+
+    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    private List<CodeLikes> codeLikes;
 
     public void setProject(Projects project) {
         this.projects = project;

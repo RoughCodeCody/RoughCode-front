@@ -165,7 +165,7 @@ public class CodesServiceImpl implements CodesService {
                         throw new NullPointerException("일치하는 리뷰가 없습니다.");
                     }
                     if (!review.getCodes().getNum().equals(codeNum)) {
-                        throw new NullPointerException("리뷰와 프로젝트가 일치하지 않습니다.");
+                        throw new NullPointerException("리뷰와 코드가 일치하지 않습니다.");
                     }
                     review.selectedUp();
                     reviewsRepository.save(review);
@@ -251,8 +251,8 @@ public class CodesServiceImpl implements CodesService {
         // 리뷰 목록
         // - 순서 : 1.반영된 리뷰, 2.내가 쓴 리뷰, 3.나머지
         List<ReviewRes> reviewResList = new ArrayList<>();
-        if (codesInfo.getReviews() != null) {
-            for (Reviews review : codesInfo.getReviews()) {
+        if (code.getReviews() != null) {
+            for (Reviews review : code.getReviews()) {
                 ReviewLikes reviewLike = (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user) : null;
                 Boolean reviewLiked = reviewLike != null;
 

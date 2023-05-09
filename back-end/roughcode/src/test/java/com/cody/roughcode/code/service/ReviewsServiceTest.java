@@ -2,6 +2,7 @@ package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
+import com.cody.roughcode.code.dto.res.ReviewDetailRes;
 import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
@@ -162,7 +163,7 @@ public class ReviewsServiceTest {
         doReturn(like).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
 
         // when
-        ReviewRes success = reviewsService.getReview(reviewId, 0L);
+        ReviewDetailRes success = reviewsService.getReview(reviewId, 0L);
 
         // then
         assertThat(success.getReviewId()).isEqualTo(1L);
