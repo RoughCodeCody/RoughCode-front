@@ -17,7 +17,6 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -679,6 +678,36 @@ public class CodesServiceImpl implements CodesService {
             result.add(new CodeTagsRes(tag));
         }
         return result;
+    }
+
+    @Override
+    @Transactional
+    public List<ReviewInfoRes> getReviewList(Long codeId, Long userId) {
+        Users user = usersRepository.findByUsersId(userId);
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+
+        Codes code = codesRepository.findByCodesId(codeId);
+        if (code == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+
+        // num이 일치하는 버전들의 모든 코드 리뷰 목록 조회
+        List<Codes> allVersion = codesRepository.findByNumAndCodeWriterOrderByVersionDesc(code.getNum(), user);
+
+        List<ReviewInfoRes> reviewInfoResList = new ArrayList<>();
+        for (Codes c : allVersion) {
+            for (Reviews r : c.getReviews()) {
+
+                if (r.getCodeContent() == null || r.getCodeContent().equals("")) {
+                    continue;
+                }
+                reviewInfoResList.add(new ReviewInfoRes(r, c.getVersion(), r.getUsers()));
+            }
+        }
+
+        return reviewInfoResList;
     }
 
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {

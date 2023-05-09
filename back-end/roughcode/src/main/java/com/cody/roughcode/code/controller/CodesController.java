@@ -2,9 +2,7 @@ package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.CodeFavoriteReq;
 import com.cody.roughcode.code.dto.req.CodeReq;
-import com.cody.roughcode.code.dto.res.CodeDetailRes;
-import com.cody.roughcode.code.dto.res.CodeInfoRes;
-import com.cody.roughcode.code.dto.res.CodeTagsRes;
+import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -244,6 +242,14 @@ public class CodesController {
     }
 
     @Operation(summary = "코드 태그 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CodeTagsRes.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "코드 리뷰 목록 조회 실패")
+    })
     @GetMapping("/tag")
     ResponseEntity<?> searchTags(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
         List<CodeTagsRes> res;
@@ -254,7 +260,35 @@ public class CodesController {
             return Response.badRequest("코드 태그 목록 조회 실패");
         }
 
-        return Response.makeResponse(HttpStatus.OK, "코드 태그 목록 조회 성공", res.size(),  res);
+        return Response.makeResponse(HttpStatus.OK, "코드 태그 목록 조회 성공", res.size(), res);
     }
 
+    @Operation(summary = "코드 리뷰 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ReviewInfoRes.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 목록 조회 실패")
+    })
+    @GetMapping("/{codeId}/review")
+    ResponseEntity<?> getReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                    @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        List<ReviewInfoRes> res = null;
+        try {
+            res = codesService.getReviewList(codeId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res == null) {
+            return Response.notFound("코드 리뷰 목록 조회 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 리뷰 목록 조회 성공", res.size(), res);
+    }
 }

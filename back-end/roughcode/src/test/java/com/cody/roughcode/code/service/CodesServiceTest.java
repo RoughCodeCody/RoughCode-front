@@ -5,6 +5,7 @@ import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeTagsRes;
+import com.cody.roughcode.code.dto.res.ReviewInfoRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.email.service.EmailServiceImpl;
@@ -621,7 +622,7 @@ class CodesServiceTest {
 
     @DisplayName("tag 목록 검색 성공")
     @Test
-    void searchTagsSucceed(){
+    void searchTagsSucceed() {
         // given
         List<CodeTags> tags = tagsInit();
         doReturn(tags).when(codeTagsRepository).findAllByNameContaining("", Sort.by(Sort.Direction.ASC, "name"));
@@ -633,4 +634,37 @@ class CodesServiceTest {
         AssertionsForClassTypes.assertThat(result.size()).isEqualTo(3);
     }
 
+    @DisplayName("코드 리뷰 목록 조회 성공")
+    @Test
+    void getReviewListSucceed() {
+        Reviews review = Reviews.builder()
+                .reviewsId(1L)
+                .lineNumbers("[[1,2],[3,4]]")
+                .codeContent("import sys ..")
+                .content("설명설명")
+                .codes(code)
+                .users(user)
+                .likeCnt(3)
+                .complaint("2")
+                .build();
+
+        Codes code = Codes.builder()
+                .codesId(2L)
+                .title("코드 좀 봐주세요")
+                .codeWriter(user)
+                .num(2L)
+                .reviews(List.of(review))
+                .build();
+
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(List.of(code)).when(codesRepository).findByNumAndCodeWriterOrderByVersionDesc(any(Long.class), any(Users.class));
+
+        // when
+        List<ReviewInfoRes> result = codesService.getReviewList(1L, 1L);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+    }
 }
