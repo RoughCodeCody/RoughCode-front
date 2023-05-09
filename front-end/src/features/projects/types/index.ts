@@ -1,4 +1,4 @@
-export type Version = {
+export type ProjectVersion = {
   projectId: number;
   version: number;
   date: Date;
@@ -20,7 +20,7 @@ export type Feedback = {
   date: Date;
 };
 
-export type Code = {
+export type RelatedCode = {
   codeId: number;
   title: string;
   tags: string[]; // 태그 이름들
@@ -28,7 +28,7 @@ export type Code = {
 
 export type ProjectInfoResult = {
   closed: boolean;
-  code: Code[];
+  code: RelatedCode[];
   content: string;
   date: Date;
   favorite: boolean;
@@ -45,5 +45,5 @@ export type ProjectInfoResult = {
   url: string;
   userName: string;
   version: number;
-  versions: Version[];
+  versions: ProjectVersion[];
 };

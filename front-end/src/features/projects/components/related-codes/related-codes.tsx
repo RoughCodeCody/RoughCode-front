@@ -1,8 +1,9 @@
-import { Accordion, TagChipSub } from "@/components/elements";
-import { MiniFeedbackItem } from "../mini-feedback-item";
-import { Code } from "../../types";
+import { Accordion } from "@/components/elements";
 
-type RelatedCodesProps = { codes: Code[] };
+import { RelatedCode } from "../../types";
+import { MiniFeedbackItem } from "../mini-feedback-item";
+
+type RelatedCodesProps = { codes: RelatedCode[] };
 
 export const RelatedCodes = ({ codes }: RelatedCodesProps) => {
   // 더미데이터

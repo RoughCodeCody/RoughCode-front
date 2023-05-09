@@ -2,11 +2,11 @@ import { useRouter } from "next/router";
 
 import { FlexDiv, TagChipSub, Text } from "@/components/elements";
 
-import { Code } from "../../types";
+import { RelatedCode } from "@/features/projects";
 import { MiniFeedbackItemWrapper } from "./style";
 
 type MiniFeedbackItemProps = {
-  code: Code;
+  code: RelatedCode;
 };
 
 export const MiniFeedbackItem = ({

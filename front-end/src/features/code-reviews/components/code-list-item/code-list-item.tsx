@@ -40,7 +40,7 @@ export const CodeListItem = ({
   const router = useRouter();
 
   return (
-    <CodeListItemWrapper onClick={() => router.push(`/code-reviews/${codeId}`)}>
+    <CodeListItemWrapper onClick={() => router.push(`/code-review/${codeId}`)}>
       <FlexDiv width="100%" justify="space-between" pointer={true}>
         <FlexDiv>
           <Text bold={true} color="main">{`V${version}`}</Text>
