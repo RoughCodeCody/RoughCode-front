@@ -15,4 +15,7 @@ public interface ReviewsService {
     int deleteReview(Long reviewId, Long userId);
 
     int likeReview(Long reviewId, Long userId);
+
+    int complainReview(Long reviewId, Long userId);
+
 }

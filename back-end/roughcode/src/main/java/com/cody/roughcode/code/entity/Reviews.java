@@ -1,6 +1,5 @@
 package com.cody.roughcode.code.entity;
 
-import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
@@ -26,8 +25,8 @@ public class Reviews extends BaseTimeEntity {
     private int likeCnt = 0;
 
     @Builder.Default
-    @Column(name = "complaint", nullable = true)
-    private int complaint = 0;
+    @Column(name = "complaint", nullable = true, columnDefinition = "text")
+    private String complaint = "";
 
     @Builder.Default
     @Column(name = "line_numbers", nullable = true, columnDefinition = "text")
@@ -84,5 +83,13 @@ public class Reviews extends BaseTimeEntity {
 
     public void updateCodeContent(String codeContent) {
         this.codeContent = codeContent;
+    }
+
+    public void deleteCodeContent() {
+        this.codeContent = "";
+    }
+
+    public void setComplaint(List<String> complainList) {
+        this.complaint = String.join(",", complainList);
     }
 }

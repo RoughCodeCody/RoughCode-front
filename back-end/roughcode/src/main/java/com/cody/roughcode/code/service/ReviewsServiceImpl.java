@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -241,13 +242,13 @@ public class ReviewsServiceImpl implements ReviewsService {
 
         // 좋아요 누른 사용자 확인
         if (user == null) {
-            throw new NullPointerException("일치하는 유저가 없습니다");
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         }
 
         // 기존 코드 리뷰 가져오기
         Reviews target = reviewsRepository.findByReviewsId(reviewId);
         if (target == null) {
-            throw new NullPointerException("일치하는 코드 리뷰가 없습니다");
+            throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
         }
 
         // 좋아요를 누른 여부 확인 (눌려있다면 취소 처리, 새로 누른 경우 등록 처리)
@@ -273,6 +274,37 @@ public class ReviewsServiceImpl implements ReviewsService {
 
         // 좋아요 수 반환
         return target.getLikeCnt();
+    }
+
+    @Override
+    @Transactional
+    public int complainReview(Long reviewId, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+        // 기존 코드 리뷰 가져오기
+        Reviews target = reviewsRepository.findByReviewsId(reviewId);
+        if (target == null) {
+            throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
+        }
+        List<String> complainList = (target.getComplaint().equals("")) ? new ArrayList<>() : new ArrayList<>(List.of(target.getComplaint().split(",")));
+
+        if (target.getCodeContent() == null || target.getCodeContent() == "") {
+            throw new SelectedException("이미 삭제된 코드 리뷰입니다");
+        }
+        if (target.getComplaint().contains(String.valueOf(userId))) {
+            throw new SelectedException("이미 신고한 코드 리뷰입니다");
+        }
+        log.info(complainList.size() + "번 신고된 코드 리뷰입니다");
+        if(complainList.size() >= 10){
+            target.deleteCodeContent();
+        }
+        complainList.add(String.valueOf(userId));
+        target.setComplaint(complainList);
+
+        return 1;
     }
 
     private static List<String> getTagNames(Codes code) {

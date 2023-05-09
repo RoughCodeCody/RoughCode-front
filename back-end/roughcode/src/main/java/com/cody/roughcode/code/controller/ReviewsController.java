@@ -16,9 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -141,14 +143,14 @@ public class ReviewsController {
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 삭제 성공", 1, res);
     }
 
-    @Operation(summary = "코드 좋아요(등록, 취소) API")
+    @Operation(summary = "코드 리뷰 좋아요(등록, 취소) API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코드 좋아요 등록 또는 취소 성공"),
-            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
-            @ApiResponse(responseCode = "404", description = "코드 좋아요 등록 또는 취소 실패")
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 좋아요 등록 또는 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드 리뷰가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 좋아요 등록 또는 취소 실패")
     })
     @PostMapping("/{reviewId}/like")
-    ResponseEntity<?> likeCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+    ResponseEntity<?> likeReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
@@ -168,5 +170,33 @@ public class ReviewsController {
         resultMap.put("like", res);
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 좋아요 등록 또는 취소 성공", 0, resultMap);
 
+    }
+
+    @Operation(summary = "코드 리뷰 신고 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 신고 성공"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드 리뷰가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 신고 실패"),
+            @ApiResponse(responseCode = "409", description = "이미 삭제된 or 신고한 코드 리뷰입니다"),
+    })
+    @PutMapping("/{reviewId}/complaint")
+    ResponseEntity<?> complainReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                     @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId){
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = reviewsService.complainReview(reviewId, userId);
+        } catch(SelectedException e){
+            return Response.conflict(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) {
+            return Response.notFound("코드 리뷰 신고 실패");
+        }
+        return Response.ok("코드 리뷰 신고 성공");
     }
 }
