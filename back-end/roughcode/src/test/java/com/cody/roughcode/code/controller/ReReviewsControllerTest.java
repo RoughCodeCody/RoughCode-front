@@ -73,9 +73,80 @@ public class ReReviewsControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("코드 리-리뷰 삭제 성공")
+    @Test
+    public void deleteReReviewSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}";
+
+        doReturn(1).when(reReviewsService).deleteReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 삭제 성공");
+    }
+
+    @DisplayName("코드 리-리뷰 삭제 실패")
+    @Test
+    public void deleteReReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}";
+
+        doReturn(0).when(reReviewsService).deleteReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 삭제 실패");
+    }
+
+    @DisplayName("코드 리-리뷰 수정 실패")
+    @Test
+    public void updateReReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview";
+
+        doReturn(0).when(reReviewsService).updateReReview(any(ReReviewReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 수정 실패");
+    }
+
     @DisplayName("코드 리-리뷰 수정 성공")
     @Test
-    public void updateReReviewWithCookieSucceed() throws Exception {
+    public void updateReReviewSucceed() throws Exception {
         // given
         final String url = "/api/v1/code/rereview";
 
@@ -95,9 +166,7 @@ public class ReReviewsControllerTest {
         String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
         String message = jsonObject.get("message").getAsString();
-        String result = jsonObject.get("result").getAsString();
         assertThat(message).isEqualTo("코드 리-리뷰 수정 성공");
-        assertThat(result).isEqualTo("1");
     }
 
     @DisplayName("코드 리-리뷰 조회 성공 - with cookie")

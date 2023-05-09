@@ -92,9 +92,64 @@ public class ReReviewsServiceTest {
             .content("리리뷰")
             .build();
 
-    @DisplayName("리-리뷰 수정 성공")
+    @DisplayName("리-리뷰 삭제 성공")
     @Test
-    void updateReReviewSucceed() {
+    void deleteReReviewSucceed() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when
+        int res = reReviewsService.deleteReReview(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("리-리뷰 삭제 실패 - 유저 x")
+    @Test
+    void deleteReReviewFailNoUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.deleteReReview(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 삭제 실패 - 리리뷰 x")
+    @Test
+    void deleteReReviewFailNoReReview() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.deleteReReview(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 리뷰가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 삭제 실패 - 리리뷰가 내꺼가 아님")
+    @Test
+    void deleteReReviewFailNotMatch() {
+        // given
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> reReviewsService.deleteReReview(1L, 2L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("접근 권한이 없습니다");
+    }
+
+    @DisplayName("리-리뷰 수정 실패 - 리리뷰가 내꺼가 아님")
+    @Test
+    void updateReReviewFailNotMatch() {
         // given
         doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
@@ -104,20 +159,6 @@ public class ReReviewsServiceTest {
                 NotMatchException.class, () -> reReviewsService.updateReReview(req, 2L)
         );
         assertThat(exception.getMessage()).isEqualTo("접근 권한이 없습니다");
-    }
-
-    @DisplayName("리-리뷰 수정 실패 - 리리뷰가 내꺼가 아님")
-    @Test
-    void updateReReviewFailNotMatch() {
-        // given
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
-
-        // when & then
-        NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> reReviewsService.updateReReview(req, 1L)
-        );
-        assertThat(exception.getMessage()).isEqualTo("일치하는 리뷰가 존재하지 않습니다");
     }
 
     @DisplayName("리-리뷰 수정 실패 - 리리뷰 x")

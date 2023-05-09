@@ -34,6 +34,26 @@ public class ReReviewsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ReReviewsServiceImpl reReviewsService;
 
+    @Operation(summary = "코드 리-리뷰 삭제 API")
+    @DeleteMapping("/{reReviewId}")
+    ResponseEntity<?> deleteReReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                   @Parameter(description = "삭제할 리-리뷰 아이디", required = true)
+                                   @Min(value = 1, message = "reReviewId 값이 범위를 벗어납니다")
+                                   @PathVariable Long reReviewId) {
+        Long userId = (accessToken!= null)? jwtTokenProvider.getId(accessToken) : -1L;
+
+        int res = 0;
+        try {
+            res = reReviewsService.deleteReReview(reReviewId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("코드 리-리뷰 삭제 실패");
+        return Response.ok("코드 리-리뷰 삭제 성공");
+    }
+
     @Operation(summary = "코드 리-리뷰 목록 조회 API")
     @GetMapping("/{reviewId}")
     ResponseEntity<?> getReReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,

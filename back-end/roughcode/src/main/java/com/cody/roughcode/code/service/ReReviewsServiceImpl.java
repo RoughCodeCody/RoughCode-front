@@ -52,6 +52,7 @@ public class ReReviewsServiceImpl implements ReReviewsService {
     }
 
     @Override
+    @Transactional
     public int updateReReview(ReReviewReq req, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -68,6 +69,7 @@ public class ReReviewsServiceImpl implements ReReviewsService {
     }
 
     @Override
+    @Transactional
     public List<ReReviewRes> getReReviewList(Long reviewsId, Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
 
@@ -96,5 +98,20 @@ public class ReReviewsServiceImpl implements ReReviewsService {
                 });
 
         return reReviewResList;
+    }
+
+    @Override
+    public int deleteReReview(Long reReviewsId, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        ReReviews reReviews = reReviewsRepository.findByReReviewsId(reReviewsId);
+        if(reReviews == null) throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
+
+        if(reReviews.getUsers() == null || !reReviews.getUsers().equals(users)) throw new NotMatchException();
+
+        reReviewsRepository.delete(reReviews);
+
+        return 1;
     }
 }
