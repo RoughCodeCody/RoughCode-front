@@ -14,6 +14,7 @@ type AccordionProps = {
   title: string;
   hasBtn: boolean;
   btnText?: string;
+  btnClickFunc?: () => void;
   children: ReactNode;
 };
 
@@ -21,6 +22,7 @@ export const Accordion = ({
   title,
   hasBtn,
   btnText,
+  btnClickFunc,
   children,
 }: AccordionProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -46,7 +48,9 @@ export const Accordion = ({
           <Text padding="0 1rem 0 0" size="1.2rem">
             {title}
           </Text>
-          {hasBtn && <Btn text={btnText} fontSize="0.85rem" />}
+          {hasBtn && (
+            <Btn text={btnText} fontSize="0.85rem" onClickFunc={btnClickFunc} />
+          )}
         </FlexDiv>
         <FlexDiv pointer={true} onClick={(e) => handleOpenState(e)}>
           <Text size="0.9rem" padding="0 0.2rem" pointer={true}>
