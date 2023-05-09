@@ -1,11 +1,13 @@
 import { ReactNode } from "react";
 import { RiCloseCircleLine } from "react-icons/ri";
+
 import {
   NoticeAlarmWrapper,
   NoticeAlarmDiv,
   NoticeAlarmRibbon,
   DeleteIconContainer,
 } from "./style";
+import { useDeleteNotification } from "@/features/notifications/api";
 
 interface Props {
   children: ReactNode;
@@ -15,6 +17,7 @@ interface Props {
   color?: string;
   shadow?: boolean;
   isNotice?: boolean;
+  alarmId?: string;
 }
 
 // 정훈
@@ -27,7 +30,10 @@ export const NoticeAlarmItem = ({
   color,
   shadow,
   isNotice,
+  alarmId,
 }: Props) => {
+  const deleteNotificationQuery = useDeleteNotification();
+
   return (
     <NoticeAlarmWrapper width={width} height={height} shadow={shadow}>
       <NoticeAlarmRibbon isDirectionRight={isDirectionRight} />
@@ -37,9 +43,15 @@ export const NoticeAlarmItem = ({
         color={color}
       >
         {children}
-        {isNotice ? (
+        {isNotice && alarmId ? (
           <DeleteIconContainer>
-            <RiCloseCircleLine fontSize="2rem" color="var(--font-color)" />
+            <RiCloseCircleLine
+              fontSize="2rem"
+              color="var(--font-color)"
+              onClick={() => {
+                deleteNotificationQuery.mutate(alarmId);
+              }}
+            />
           </DeleteIconContainer>
         ) : (
           <></>

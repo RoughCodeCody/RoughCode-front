@@ -1,9 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-
-import { axios } from "@/lib/axios";
-import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
-
 import { Notification } from "../types";
+import { axios } from "@/lib/axios";
+import { ExtractFnReturnType } from "@/lib/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export const getNotifications = (): Promise<Notification[]> => {
   return axios.get(`/mypage/alarm`);
