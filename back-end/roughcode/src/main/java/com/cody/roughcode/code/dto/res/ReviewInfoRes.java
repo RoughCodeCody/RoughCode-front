@@ -31,7 +31,7 @@ public class ReviewInfoRes {
     @Schema(description = "선택 받은 횟수", example = "5")
     private Boolean selected;
 
-    @Schema(description = "버전 정보")
+    @Schema(description = "버전 정보", example = "2")
     private int version;
 
     public ReviewInfoRes(Reviews review, int version, Users user) {
