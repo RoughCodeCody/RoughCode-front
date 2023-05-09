@@ -200,7 +200,7 @@ public class ProjectsController {
 
         Boolean res = false;
         try{
-            res = projectsService.checkProject(url, userId);
+            res = projectsService.checkProject(url, false);
         } catch(Exception e){
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

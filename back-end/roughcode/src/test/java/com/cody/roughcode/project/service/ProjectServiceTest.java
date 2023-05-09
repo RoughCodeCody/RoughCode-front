@@ -764,7 +764,7 @@ public class ProjectServiceTest {
     @Test
     void checkProjectUrlNotSafe() throws IOException {
         // given
-            String url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/";
+        String url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/";
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
