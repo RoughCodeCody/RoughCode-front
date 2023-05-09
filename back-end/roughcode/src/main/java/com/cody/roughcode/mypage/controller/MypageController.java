@@ -47,6 +47,13 @@ public class MypageController {
     private final MypageServiceImpl mypageService;
     private final EmailServiceImpl emailService;
 
+//    @Operation(summary = "스탯 카드 가져오기 API")
+//    @GetMapping
+//    public ResponseEntity<?> makeStatCard(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+//                                          @Parameter(description = "이메일", required = true)
+//                                          @Size(min=1)
+//                                          @RequestParam String email)
+
     @Operation(summary = "이메일 인증 API")
     @PutMapping("/email")
     public ResponseEntity<?> checkEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
