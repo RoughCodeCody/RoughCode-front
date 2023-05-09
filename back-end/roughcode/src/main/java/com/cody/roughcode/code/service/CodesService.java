@@ -4,6 +4,7 @@ import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.dto.res.CodeTagsRes;
+import com.cody.roughcode.code.dto.res.ReviewInfoRes;
 import org.springframework.data.domain.PageRequest;
 
 import javax.mail.MessagingException;
@@ -26,4 +27,6 @@ public interface CodesService {
     int favoriteCode(Long codeId, String content, Long userId);
 
     List<CodeTagsRes> searchTags(String keyword);
+
+    List<ReviewInfoRes> getReviewList(Long codeId, Long userId);
 }

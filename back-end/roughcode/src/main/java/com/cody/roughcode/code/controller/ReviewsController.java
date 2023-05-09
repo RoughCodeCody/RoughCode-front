@@ -2,7 +2,6 @@ package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.dto.res.ReviewDetailRes;
-import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.service.ReviewsService;
 import com.cody.roughcode.exception.SelectedException;
 import com.cody.roughcode.security.auth.JwtProperties;
@@ -16,11 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
