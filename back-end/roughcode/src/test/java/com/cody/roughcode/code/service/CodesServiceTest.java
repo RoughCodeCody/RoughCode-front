@@ -1,10 +1,13 @@
 package com.cody.roughcode.code.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
@@ -20,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +39,10 @@ class CodesServiceTest {
 
     @InjectMocks
     private CodesServiceImpl codesService;
+    @Mock
+    private AlarmServiceImpl alarmService;
+    @Mock
+    private EmailServiceImpl emailService;
 
     @Mock
     private CodesRepository codesRepository;
@@ -125,9 +133,16 @@ class CodesServiceTest {
             .introduction("개발새발 프로젝트 소개")
             .build();
 
+    final AlarmReq alarmReq = AlarmReq.builder()
+            .content(List.of("알람알람"))
+            .userId(1L)
+            .section("code")
+            .postId(1L)
+            .build();
+
     @DisplayName("코드 등록 성공 - 새 코드")
     @Test
-    void insertCodeSucceed() {
+    void insertCodeSucceed() throws MessagingException {
         // given
         List<CodeTags> tagsList = tagsInit();
         CodeReq req = CodeReq.builder()
@@ -164,7 +179,7 @@ class CodesServiceTest {
 
     @DisplayName("코드 등록 성공 - 기존 코드 업데이트")
     @Test
-    void insertCodeSucceedVersionUp() {
+    void insertCodeSucceedVersionUp() throws MessagingException {
         List<CodeTags> tagsList = tagsInit();
         CodeReq req = CodeReq.builder()
                 .codeId(2L)
@@ -211,6 +226,8 @@ class CodesServiceTest {
         doReturn(info).when(codesInfoRepository).save(any(CodesInfo.class));
         doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
         doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        alarmService.insertAlarm(any(AlarmReq.class));
+        emailService.sendAlarm("이메일 전송", alarmReq);
 
         // when
         Long successCodeId = codesService.insertCode(req, 1L);
