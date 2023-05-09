@@ -4,6 +4,7 @@ import com.cody.roughcode.code.dto.req.CodeFavoriteReq;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -241,4 +242,19 @@ public class CodesController {
         return Response.makeResponse(HttpStatus.OK, "코드 즐겨찾기 등록 또는 취소 성공", 0, resultMap);
 
     }
+
+    @Operation(summary = "코드 태그 목록 조회 API")
+    @GetMapping("/tag")
+    ResponseEntity<?> searchTags(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
+        List<CodeTagsRes> res;
+        try {
+            res = codesService.searchTags(keyword);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest("코드 태그 목록 조회 실패");
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "코드 태그 목록 조회 성공", res.size(),  res);
+    }
+
 }

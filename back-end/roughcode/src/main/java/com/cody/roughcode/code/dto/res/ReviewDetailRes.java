@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class ReviewRes {
+public class ReviewDetailRes {
 
     @Schema(description = "리뷰 id", example = "1")
     private Long reviewId;
@@ -52,11 +52,10 @@ public class ReviewRes {
     @Schema(description = "리뷰에 대한 리뷰 목록")
     private List<ReReviewRes> reReviews;
 
-    public void updateReReviews(List<ReReviewRes> reReviews) {
-        this.reReviews = reReviews;
-    }
+    @Schema(description = "리뷰에 대한 리뷰 목록")
+    private ReviewCodeRes code;
 
-    public static ReviewRes toDto(Reviews review, Boolean liked, List<ReReviewRes> reReviews) {
+    public static ReviewDetailRes toDto(Reviews review, Boolean liked, List<ReReviewRes> reReviews, ReviewCodeRes code) {
 
         Long userId;
         String userName;
@@ -80,7 +79,7 @@ public class ReviewRes {
                     .collect(Collectors.toList());
         }
 
-        return ReviewRes.builder()
+        return ReviewDetailRes.builder()
                 .reviewId(review.getReviewsId())
                 .userId(userId)
                 .userName(userName)
@@ -93,7 +92,7 @@ public class ReviewRes {
                 .liked(liked)
                 .date(review.getModifiedDate())
                 .reReviews(reReviews)
+                .code(code)
                 .build();
     }
-
 }
