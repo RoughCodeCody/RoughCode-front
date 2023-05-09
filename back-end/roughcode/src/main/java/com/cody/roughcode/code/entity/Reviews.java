@@ -5,6 +5,7 @@ import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -91,5 +92,12 @@ public class Reviews extends BaseTimeEntity {
 
     public void setComplaint(List<String> complainList) {
         this.complaint = String.join(",", complainList);
+    }
+
+    public void setReReviews(ReReviews savedReReview) {
+        if (this.reReviews == null) {
+            this.reReviews = new ArrayList<>();
+        }
+        this.reReviews.add(savedReReview);
     }
 }

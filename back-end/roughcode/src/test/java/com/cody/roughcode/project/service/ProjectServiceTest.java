@@ -543,7 +543,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 닫힘 확인 성공 - 열려있음")
     @Test
-    void isProjectClosedSucceedOpen() throws MessagingException {
+    void isProjectClosedSucceedOpen() throws MessagingException, IOException {
         // given
         String url = "https://google.com";
         final Projects project = Projects.builder()
@@ -575,7 +575,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 닫힘 확인 성공 - 닫혀있음")
     @Test
-    void isProjectClosedSucceedClose() throws MessagingException {
+    void isProjectClosedSucceedClose() throws MessagingException, IOException {
         // given
         String url = "http://rough-code.com";
         final Projects project = Projects.builder()
@@ -607,7 +607,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 닫힘 확인 성공 - 닫힌지 1시간 지남")
     @Test
-    void isProjectClosedSucceedCloseProject() throws MessagingException {
+    void isProjectClosedSucceedCloseProject() throws MessagingException, IOException {
         // given
         String url = "http://rough-code.com";
         final Projects project = Projects.builder()
@@ -754,7 +754,7 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
-        Boolean success = projectsService.checkProject(url, 1L);
+        Boolean success = projectsService.checkProject(url, false);
 
         // then
         assertThat(success).isTrue();
@@ -768,7 +768,7 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
-        Boolean success = projectsService.checkProject(url, 1L);
+        Boolean success = projectsService.checkProject(url, false);
 
         // then
         assertThat(success).isFalse();
@@ -783,7 +783,7 @@ public class ProjectServiceTest {
 
         // when & then
         IOException exception = assertThrows(
-                IOException.class, () -> projectsService.checkProject(url, 1L)
+                IOException.class, () -> projectsService.checkProject(url, false)
         );
         assertThat(exception.getMessage()).isEqualTo("서버 확인이 필요한 URL입니다");
     }
@@ -2017,7 +2017,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 성공 - 새 프로젝트")
     @Test
-    void insertProjectSucceed() throws MessagingException {
+    void insertProjectSucceed() throws MessagingException, IOException {
         // given
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
@@ -2059,7 +2059,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 성공 - 기존 프로젝트 업데이트")
     @Test
-    void insertProjectSucceedVersionUp() throws MessagingException {
+    void insertProjectSucceedVersionUp() throws MessagingException, IOException {
         // given
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
