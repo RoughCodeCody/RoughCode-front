@@ -1,9 +1,12 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReReviewReq;
+import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.code.entity.ReReviewLikes;
 import com.cody.roughcode.code.entity.ReReviews;
 import com.cody.roughcode.code.entity.Reviews;
+import com.cody.roughcode.code.repository.ReReviewLikesRepository;
 import com.cody.roughcode.code.repository.ReReviewsRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
 import com.cody.roughcode.user.entity.Users;
@@ -20,6 +23,7 @@ import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -38,6 +42,8 @@ public class ReReviewsServiceTest {
     private ReviewsRepository reviewsRepository;
     @Mock
     private ReReviewsRepository reReviewsRepository;
+    @Mock
+    private ReReviewLikesRepository reReviewLikesRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -67,6 +73,57 @@ public class ReReviewsServiceTest {
             .content("리리뷰")
             .build();
 
+    final ReReviewReq req = ReReviewReq.builder()
+            .reviewsId(1L)
+            .content("리리뷰")
+            .build();
+
+    @DisplayName("리-리뷰 조회 성공 - with login")
+    @Test
+    void getReReviewListWithLoginSucceed() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reviews).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(List.of(reReviews, reReviews)).when(reReviewsRepository).findAllByReviewsId(any(Long.class));
+        doReturn(ReReviewLikes.builder().build()).when(reReviewLikesRepository).findByReReviewsAndUsers(any(ReReviews.class), any(Users.class));
+
+        // when
+        List<ReReviewRes> res = reReviewsService.getReReviewList(1L, -1L);
+
+        // then
+        assertThat(res.size()).isEqualTo(2);
+    }
+
+    @DisplayName("리-리뷰 조회 성공 - without login")
+    @Test
+    void getReReviewListWithoutLoginSucceed() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reviews).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(List.of(reReviews, reReviews)).when(reReviewsRepository).findAllByReviewsId(any(Long.class));
+
+        // when
+        List<ReReviewRes> res = reReviewsService.getReReviewList(1L, -1L);
+
+        // then
+        assertThat(res.size()).isEqualTo(2);
+    }
+
+
+    @DisplayName("리-리뷰 등록 실패 - without login")
+    @Test
+    void insertReReviewFailNoReview() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.insertReReview(req, -1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 리뷰가 존재하지 않습니다");
+    }
+
     @DisplayName("리-리뷰 등록 성공 - without login")
     @Test
     void insertReReviewWithoutLoginSucceed() {
@@ -77,13 +134,14 @@ public class ReReviewsServiceTest {
 
         // when
         int res = reReviewsService.insertReReview(ReReviewReq.builder()
-                .reviewId(1L)
+                .reviewsId(1L)
                 .content("리리뷰")
                 .build(), -1L);
 
         // then
         assertThat(res).isEqualTo(1);
     }
+
     @DisplayName("리-리뷰 등록 성공 - login")
     @Test
     void insertReReviewLoginSucceed() {
@@ -94,7 +152,7 @@ public class ReReviewsServiceTest {
 
         // when
         int res = reReviewsService.insertReReview(ReReviewReq.builder()
-                .reviewId(1L)
+                .reviewsId(1L)
                 .content("리리뷰")
                 .build(), 1L);
 

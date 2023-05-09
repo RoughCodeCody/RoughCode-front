@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.ReReviewReq;
+import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.service.ReReviewsServiceImpl;
 import com.cody.roughcode.project.controller.ProjectsController;
 import com.cody.roughcode.project.service.ProjectsServiceImpl;
@@ -63,7 +64,7 @@ public class ReReviewsControllerTest {
     final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTEyM0BnbWFpbC5jb20iLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjc0NzEyMDg2fQ.fMjhTvyLoCBzAXZ4gtJCAMS98j9DNsC7w2utcB-Uho";
 
     final ReReviewReq req = ReReviewReq.builder()
-            .reviewId(1L)
+            .reviewsId(1L)
             .content("리리뷰")
             .build();
 
@@ -72,11 +73,56 @@ public class ReReviewsControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("코드 리-리뷰 조회 성공 - with cookie")
+    @Test
+    public void getReReviewListWithCookieSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reviewId}";
+
+        doReturn(List.of(ReReviewRes.builder().build())).when(reReviewsService).getReReviewList(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 조회 성공");
+    }
+
+    @DisplayName("코드 리-리뷰 조회 성공 - without cookie")
+    @Test
+    public void getReReviewListWithoutCookieSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reviewId}";
+
+        doReturn(List.of(ReReviewRes.builder().build())).when(reReviewsService).getReReviewList(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1L)
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 조회 성공");
+    }
+
     @DisplayName("코드 리-리뷰 달기 성공 - without cookie")
     @Test
     public void insertReReviewWithoutCookieSucceed() throws Exception {
         // given
-        final String url = "/api/v1/code/review/rereview";
+        final String url = "/api/v1/code/rereview";
 
         doReturn(1).when(reReviewsService).insertReReview(any(ReReviewReq.class), any(Long.class));
 
@@ -102,7 +148,7 @@ public class ReReviewsControllerTest {
     @Test
     public void insertReReviewWithCookieSucceed() throws Exception {
         // given
-        final String url = "/api/v1/code/review/rereview";
+        final String url = "/api/v1/code/rereview";
 
         doReturn(1).when(reReviewsService).insertReReview(any(ReReviewReq.class), any(Long.class));
 

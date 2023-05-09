@@ -3,6 +3,7 @@ package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.ReReviewReq;
 import com.cody.roughcode.code.dto.req.ReviewReq;
+import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.service.ReReviewsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -19,16 +20,38 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import java.util.ArrayList;
+import java.util.List;
 
 @Validated
 @RestController
-@RequestMapping("/api/v1/code/review/rereview")
+@RequestMapping("/api/v1/code/rereview")
 @RequiredArgsConstructor
 @Slf4j
 public class ReReviewsController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final ReReviewsServiceImpl reReviewsService;
+
+    @Operation(summary = "코드 리-리뷰 목록 조회 API")
+    @GetMapping("/{reviewId}")
+    ResponseEntity<?> insertReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                   @Parameter(description = "코드 리뷰 아이디", required = true)
+                                   @Min(value = 1, message = "reviewId 값이 범위를 벗어납니다")
+                                   @PathVariable Long reviewId) {
+        Long userId = (accessToken!= null)? jwtTokenProvider.getId(accessToken) : -1L;
+
+        List<ReReviewRes> res = new ArrayList<>();
+        try {
+            res = reReviewsService.getReReviewList(reviewId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "코드 리-리뷰 조회 성공", res.size(), res);
+    }
 
     @Operation(summary = "코드 리-리뷰 등록 API")
     @PostMapping
