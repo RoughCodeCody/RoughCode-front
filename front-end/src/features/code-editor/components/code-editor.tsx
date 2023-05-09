@@ -45,7 +45,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   language,
   selectedLines,
 }) => {
-  const { setSelectedLines } = useCodeReviewFeedbackDataStore();
+  const { CodeReviewFeedbackData, setSelectedLines, setIsCompleted } =
+    useCodeReviewFeedbackDataStore();
 
   const editorRef = useRef<any>(null);
   const [monaco, setMonaco] = useState<any>(null);
@@ -172,6 +173,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     });
 
     setSelectedLines(selectedLines);
+    setIsCompleted("editor");
   };
 
   return (
@@ -181,7 +183,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           <FaRegLightbulb />
           <Text padding="0 0 0 0.5rem">{headerText}</Text>
         </FlexDiv>
-        {lineSelection ? (
+        {lineSelection && !CodeReviewFeedbackData.isCompleted.editor ? (
           <FlexDiv gap="1rem">
             <Btn
               text="선택"
@@ -212,14 +214,23 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       <EditorBottom>
         {lineSelection ? (
-          <Btn
-            text="확정"
-            height="2rem"
-            display="flex"
-            align="center"
-            bgColor="orange"
-            onClickFunc={saveSelectedLines}
-          />
+          <FlexDiv gap="1rem">
+            {CodeReviewFeedbackData.isCompleted.editor ? (
+              <Text>코드 라인 체크가 완료되었습니다</Text>
+            ) : (
+              <></>
+            )}
+            <Btn
+              text={CodeReviewFeedbackData.isCompleted.editor ? "변경" : "완료"}
+              height="2rem"
+              display="flex"
+              align="center"
+              bgColor={
+                CodeReviewFeedbackData.isCompleted.editor ? "main" : "orange"
+              }
+              onClickFunc={saveSelectedLines}
+            />
+          </FlexDiv>
         ) : (
           <></>
         )}

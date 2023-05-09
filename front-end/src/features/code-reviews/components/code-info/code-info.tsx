@@ -34,7 +34,8 @@ export const CodeInfo = ({
   },
 }: CodeInfoProps) => {
   const router = useRouter();
-  const isWriting = router.asPath.includes("create" || "modify");
+  const isWriting =
+    router.asPath.includes("create") || router.asPath.includes("modify");
 
   // 코드 좋아요/좋아요 취소
   const codeLikeQuery = usePostCodeLike();

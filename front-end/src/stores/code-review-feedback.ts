@@ -1,9 +1,15 @@
 import { create } from "zustand";
 
+type isCompleted = {
+  editor: boolean;
+  diffEditor: boolean;
+};
+
 type CodeReviewFeedbackData = {
   selectedLines: number[][];
   modifiedCode: string;
   feedbackContent: string;
+  isCompleted: isCompleted;
 };
 
 type CodeReviewFeedbackDataStore = {
@@ -11,6 +17,7 @@ type CodeReviewFeedbackDataStore = {
   setSelectedLines: (selectedLines: number[][]) => void;
   setModifiedCode: (modifiedCode: string) => void;
   setFeedbackContent: (FeedbackContent: string) => void;
+  setIsCompleted: (whichEditor: keyof isCompleted) => void;
   reset: () => void;
 };
 
@@ -18,6 +25,7 @@ const initialState: CodeReviewFeedbackData = {
   selectedLines: [],
   modifiedCode: "",
   feedbackContent: "",
+  isCompleted: { editor: false, diffEditor: false },
 };
 
 export const useCodeReviewFeedbackDataStore = create<
@@ -28,6 +36,7 @@ export const useCodeReviewFeedbackDataStore = create<
     selectedLines: [],
     modifiedCode: "",
     feedbackContent: "",
+    isCompleted: { editor: false, diffEditor: false },
   },
   setSelectedLines: (selectedLines) => {
     set((state) => ({
@@ -53,7 +62,20 @@ export const useCodeReviewFeedbackDataStore = create<
       },
     }));
   },
+
   reset: () => {
     set(initialState);
+  },
+
+  setIsCompleted: (whichEditor) => {
+    set((state) => ({
+      CodeReviewFeedbackData: {
+        ...state.CodeReviewFeedbackData,
+        isCompleted: {
+          ...state.CodeReviewFeedbackData.isCompleted,
+          [whichEditor]: !state.CodeReviewFeedbackData.isCompleted[whichEditor],
+        },
+      },
+    }));
   },
 }));

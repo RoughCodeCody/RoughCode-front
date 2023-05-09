@@ -23,7 +23,8 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   language,
   readOnly = true,
 }) => {
-  const { setModifiedCode } = useCodeReviewFeedbackDataStore();
+  const { CodeReviewFeedbackData, setModifiedCode, setIsCompleted } =
+    useCodeReviewFeedbackDataStore();
 
   const diffEditorRef = useRef<any>(null);
 
@@ -59,7 +60,16 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
     const modifiedCode = diffEditorRef?.current?.getModifiedEditor().getValue();
     const encodedCode = encodeUTF8ToBase64(modifiedCode);
     setModifiedCode(encodedCode);
+    setIsCompleted("diffEditor");
   };
+
+  useEffect(() => {
+    if (CodeReviewFeedbackData.isCompleted.diffEditor) {
+      diffEditorRef.current?.updateOptions({ readOnly: true });
+    } else {
+      diffEditorRef.current?.updateOptions({ readOnly: false });
+    }
+  }, [CodeReviewFeedbackData.isCompleted.diffEditor]);
 
   return (
     <EditorWrapper>
@@ -80,14 +90,27 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
         {readOnly ? (
           <></>
         ) : (
-          <Btn
-            text="확정"
-            height="2rem"
-            display="flex"
-            align="center"
-            bgColor="orange"
-            onClickFunc={saveModifiedCode}
-          />
+          <FlexDiv gap="1rem">
+            {CodeReviewFeedbackData.isCompleted.diffEditor ? (
+              <Text>코드 수정이 완료되었습니다</Text>
+            ) : (
+              <></>
+            )}
+            <Btn
+              text={
+                CodeReviewFeedbackData.isCompleted.diffEditor ? "변경" : "완료"
+              }
+              height="2rem"
+              display="flex"
+              align="center"
+              bgColor={
+                CodeReviewFeedbackData.isCompleted.diffEditor
+                  ? "main"
+                  : "orange"
+              }
+              onClickFunc={saveModifiedCode}
+            />
+          </FlexDiv>
         )}
       </EditorBottom>
     </EditorWrapper>

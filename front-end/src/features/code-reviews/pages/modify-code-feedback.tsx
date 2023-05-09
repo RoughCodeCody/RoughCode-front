@@ -30,24 +30,33 @@ export const ModifyCodeFeedback = ({ feedbackId }: ModifyCodeFeedback) => {
   // 여기서 put 요청 보냄
   // 만들고 수정해야 함
   const putCodeFeedback = () => {
-    if (codeFeedbackInfoQuery.data) {
-      const codeId = codeFeedbackInfoQuery.data?.code.codeId;
-      const feedbackId = codeFeedbackInfoQuery.data?.reviewId;
-      const data = {
-        codeId: codeId,
-        selectedRange: CodeReviewFeedbackData.selectedLines,
-        codeContent: CodeReviewFeedbackData.modifiedCode,
-        content: CodeReviewFeedbackData.feedbackContent,
-      };
-      codeFeedbackQuery.mutate(
-        { data, feedbackId },
-        {
-          onSuccess() {
-            reset();
-            router.push(`/code-review/${codeId}`);
-          },
-        }
-      );
+    if (
+      Object.values(CodeReviewFeedbackData.isCompleted).every(
+        (value) => value === true
+      )
+    ) {
+      if (codeFeedbackInfoQuery.data) {
+        const codeId = codeFeedbackInfoQuery.data?.code.codeId;
+        const feedbackId = codeFeedbackInfoQuery.data?.reviewId;
+        const data = {
+          codeId: codeId,
+          selectedRange: CodeReviewFeedbackData.selectedLines,
+          codeContent: CodeReviewFeedbackData.modifiedCode,
+          content: CodeReviewFeedbackData.feedbackContent,
+        };
+        codeFeedbackQuery.mutate(
+          { data, feedbackId },
+          {
+            onSuccess() {
+              reset();
+              router.push(`/code-review/${codeId}`);
+            },
+          }
+        );
+      }
+    } else {
+      // 코드 수정이 완료되지 않았습니다 라는 알림
+      alert("수정 다 안됐음!");
     }
   };
 
