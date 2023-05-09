@@ -284,4 +284,56 @@ public class ReviewsControllerTest {
         String message = jsonObject.get("message").getAsString();
         assertThat(message).isEqualTo("코드 리뷰 삭제 실패");
     }
+
+    @DisplayName("코드 리뷰 좋아요 등록 또는 취소 성공")
+    @Test
+    public void likeReviewSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{reviewId}/like";
+
+        // CodeService likeCode 대한 stub 필요
+        doReturn(3).when(reviewsService)
+                .likeReview(any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 좋아요 등록 또는 취소 성공");
+    }
+
+    @DisplayName("코드 리뷰 좋아요 등록 또는 취소 실패")
+    @Test
+    public void likeReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/review/{codeId}/like";
+
+        // CodeService likeCode 대한 stub 필요
+        doReturn(-1).when(reviewsService)
+                .likeReview(any(Long.class), any(Long.class));
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 좋아요 등록 또는 취소 실패");
+    }
 }

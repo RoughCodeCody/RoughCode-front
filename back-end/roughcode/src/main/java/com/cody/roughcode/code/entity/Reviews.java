@@ -66,6 +66,14 @@ public class Reviews extends BaseTimeEntity {
         this.selected -= 1;
     }
 
+    public void likeCntUp() {
+        this.likeCnt += 1;
+    }
+
+    public void likeCntDown() {
+        this.likeCnt -= 1;
+    }
+
     public void updateLineNumbers(List<List<Integer>> selectedRange) {
         this.lineNumbers = selectedRange.toString();
     }

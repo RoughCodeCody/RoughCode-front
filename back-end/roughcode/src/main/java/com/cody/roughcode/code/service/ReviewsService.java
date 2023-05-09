@@ -13,4 +13,6 @@ public interface ReviewsService {
     int updateReview(ReviewReq reviewReq, Long reviewId, Long userId);
 
     int deleteReview(Long reviewId, Long userId);
+
+    int likeReview(Long reviewId, Long userId);
 }

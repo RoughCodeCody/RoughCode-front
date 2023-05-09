@@ -4,19 +4,19 @@ import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.dto.res.ReviewCodeRes;
 import com.cody.roughcode.code.dto.res.ReviewDetailRes;
-import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
-import com.cody.roughcode.exception.*;
+import com.cody.roughcode.exception.NotMatchException;
+import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.SelectedException;
+import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ReviewsServiceImpl implements ReviewsService{
+public class ReviewsServiceImpl implements ReviewsService {
 
     private final UsersRepository usersRepository;
     private final CodesRepository codesRepository;
@@ -44,7 +44,7 @@ public class ReviewsServiceImpl implements ReviewsService{
         Codes code = codesRepository.findByCodesId(req.getCodeId());
         CodesInfo codesInfo = codesInfoRepository.findByCodesId(req.getCodeId());
 
-        if(codesInfo == null) {
+        if (codesInfo == null) {
             throw new NullPointerException("일치하는 코드가 없습니다");
         }
 
@@ -161,16 +161,16 @@ public class ReviewsServiceImpl implements ReviewsService{
 
         try {
             // 코드 리뷰 정보 업데이트
-            if(StringUtils.hasText(req.getContent())){
-                log.info("코드 리뷰 정보 수정(상세설명): "+ req.getContent());
+            if (StringUtils.hasText(req.getContent())) {
+                log.info("코드 리뷰 정보 수정(상세설명): " + req.getContent());
                 target.updateContent(req.getContent());
             }
-            if(StringUtils.hasText(req.getCodeContent())){
-                log.info("코드 리뷰 정보 수정(코드내용): "+ req.getCodeContent());
+            if (StringUtils.hasText(req.getCodeContent())) {
+                log.info("코드 리뷰 정보 수정(코드내용): " + req.getCodeContent());
                 target.updateCodeContent(req.getCodeContent());
             }
-            if(req.getSelectedRange().size()>0){
-                log.info("코드 리뷰 정보 수정(선택구간): "+ req.getSelectedRange());
+            if (req.getSelectedRange().size() > 0) {
+                log.info("코드 리뷰 정보 수정(선택구간): " + req.getSelectedRange());
                 target.updateLineNumbers(req.getSelectedRange());
             }
         } catch (Exception e) {
@@ -231,6 +231,48 @@ public class ReviewsServiceImpl implements ReviewsService{
         }
 
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public int likeReview(Long reviewId, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+
+        // 좋아요 누른 사용자 확인
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 없습니다");
+        }
+
+        // 기존 코드 리뷰 가져오기
+        Reviews target = reviewsRepository.findByReviewsId(reviewId);
+        if (target == null) {
+            throw new NullPointerException("일치하는 코드 리뷰가 없습니다");
+        }
+
+        // 좋아요를 누른 여부 확인 (눌려있다면 취소 처리, 새로 누른 경우 등록 처리)
+        ReviewLikes reviewLikes = reviewLikesRepository.findByReviewsAndUsers(target, user);
+
+        // 좋아요가 눌려있다면 취소 처리
+        if (reviewLikes != null) {
+            // ReviewLikes 데이터 삭제
+            reviewLikesRepository.delete(reviewLikes);
+            // 코드 리뷰 좋아요 수 감소
+            target.likeCntDown();
+        } else { // 새로 누른 경우 등록 처리
+            // ReviewLikes 데이터 추가
+            reviewLikesRepository.save(
+                    ReviewLikes.builder()
+                            .reviews(target)
+                            .users(user)
+                            .build());
+
+            // 코드 리뷰 좋아요 수 증가
+            target.likeCntUp();
+        }
+
+        // 좋아요 수 반환
+        return target.getLikeCnt();
     }
 
     private static List<String> getTagNames(Codes code) {
