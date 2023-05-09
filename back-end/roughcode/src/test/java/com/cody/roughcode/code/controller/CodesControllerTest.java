@@ -1,16 +1,16 @@
 package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.CodeFavoriteReq;
-import com.cody.roughcode.code.entity.CodeFavorites;
-import com.cody.roughcode.user.entity.Users;
-import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
+import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.service.CodesService;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
-import com.cody.roughcode.user.service.UsersService;
+import com.cody.roughcode.user.entity.Users;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -27,15 +27,17 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.data.domain.PageRequest;
+
 import javax.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.cody.roughcode.user.enums.Role.ROLE_USER;import static org.assertj.core.api.Assertions.assertThat;
+import static com.cody.roughcode.user.enums.Role.ROLE_USER;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,6 +86,20 @@ class CodesControllerTest {
             .content("시간초과 뜹니다!!!!")
             .projectId(3L)
             .build();
+
+    private List<CodeTagsRes> tagsResInit() {
+        List<String> list = List.of("Javascript", "Python", "Java", "C++");
+        List<CodeTagsRes> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(CodeTagsRes.builder()
+                    .tagId(i)
+                    .name(list.get((int)i-1))
+                    .cnt(0)
+                    .build());
+        }
+
+        return tagsList;
+    }
 
     @DisplayName("코드 목록 조회 성공")
     @Test
@@ -463,4 +479,48 @@ class CodesControllerTest {
         assertThat(message).isEqualTo("코드 즐겨찾기 등록 또는 취소 실패");
     }
 
+    @DisplayName("tag 목록 검색 성공")
+    @Test
+    public void searchTags() throws Exception {
+        // given
+        final String url = "/api/v1/code/tag";
+
+        List<CodeTagsRes> tagList = tagsResInit();
+        doReturn(tagList).when(codesService).searchTags("");
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .queryParam("keyword", "")
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 태그 목록 조회 성공");
+    }
+
+    @DisplayName("tag 목록 검색 실패")
+    @Test
+    public void searchTagsFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/tag";
+
+        doThrow(new NullPointerException()).when(codesService).searchTags("");
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .queryParam("keyword", "")
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isBadRequest()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 태그 목록 조회 실패");
+    }
 }
