@@ -9,9 +9,14 @@ import { MyCodeList } from "./code-list";
 interface RelatedCodesProps {
   codes: RelatedCode[];
   isMine: boolean;
+  projectId: string;
 }
 
-export const RelatedCodes = ({ codes, isMine }: RelatedCodesProps) => {
+export const RelatedCodes = ({
+  codes,
+  isMine,
+  projectId,
+}: RelatedCodesProps) => {
   const [codeLinkModalOpen, setCodeLinkModalOpen] = useState(false);
 
   return (
@@ -36,7 +41,10 @@ export const RelatedCodes = ({ codes, isMine }: RelatedCodesProps) => {
         isOpen={codeLinkModalOpen}
         setIsOpen={setCodeLinkModalOpen}
         modalContent={
-          <MyCodeList relatedCodeIds={codes.map((code) => code.codeId)} />
+          <MyCodeList
+            relatedCodeIds={codes.map((code) => code.codeId)}
+            projectId={projectId}
+          />
         }
       />
     </>

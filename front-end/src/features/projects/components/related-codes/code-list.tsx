@@ -5,13 +5,15 @@ import { Btn, FlexDiv } from "@/components/elements";
 import { useMyCodeList } from "@/features/user/api/get-code-list";
 import { queryClient } from "@/lib/react-query";
 
+import { useConnectCodeToProject } from "../../api/connect-code-to-project";
 import { CodeListItem } from "./code-list-item";
 
 interface MyCodeListProps {
   relatedCodeIds: number[];
+  projectId: string;
 }
 
-export const MyCodeList = ({ relatedCodeIds }: MyCodeListProps) => {
+export const MyCodeList = ({ relatedCodeIds, projectId }: MyCodeListProps) => {
   const { ref, inView } = useInView();
   const { status, data, fetchNextPage } = useMyCodeList({
     params: { size: 10 },
@@ -20,6 +22,9 @@ export const MyCodeList = ({ relatedCodeIds }: MyCodeListProps) => {
         lastPage.nextPage === -1 ? undefined : lastPage.nextPage,
     },
   });
+
+  const connectCodeToProjectQuery = useConnectCodeToProject();
+
   const [selectedCodeIds, setSelectedCodeIds] = useState(relatedCodeIds);
 
   // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
@@ -57,7 +62,12 @@ export const MyCodeList = ({ relatedCodeIds }: MyCodeListProps) => {
           />
         ))}
 
-      <Btn text="연결하기" onClickFunc={() => {}} />
+      <Btn
+        text="연결하기"
+        onClickFunc={() =>
+          connectCodeToProjectQuery.mutate({ projectId, data: selectedCodeIds })
+        }
+      />
     </FlexDiv>
   );
 };
