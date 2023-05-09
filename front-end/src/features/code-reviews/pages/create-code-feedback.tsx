@@ -1,27 +1,49 @@
-import React, { useRef } from "react";
+import { useRouter } from "next/navigation";
 
-import { useCodeInfo } from "../api/get-code-info";
 import { useCode } from "../api/get-code";
+import { useCodeInfo } from "../api/get-code-info";
+import { useCreateCodeFeedback } from "../api/post-code-feedback";
 import { CodeInfo } from "../components/code-info";
-import { FlexDiv, Title } from "@/components/elements";
-import { Text } from "@/components/elements";
-import { BottomHeader } from "@/components/elements";
+import { BottomHeader, Btn, FlexDiv, Title, Text } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
+import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 
-type CreateFeedbackProps = {
+type CreateCodeFeedbackProps = {
   codeId: number;
 };
 
-export const CreateFeedback = ({ codeId }: CreateFeedbackProps) => {
+export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
+  const router = useRouter();
+  const codeFeedbackQuery = useCreateCodeFeedback();
+  const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
+
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
   const codeInfoQuery = useCodeInfo(codeId);
-  console.log(codeInfoQuery.data);
 
   const githubUrl = codeInfoQuery.data?.githubUrl
     ? codeInfoQuery.data?.githubUrl
     : "";
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
+
+  // 여기서 post 요청 보냄
+  const postCodeFeedback = () => {
+    const data = {
+      codeId: codeId,
+      selectedRange: CodeReviewFeedbackData.selectedLines,
+      codeContent: CodeReviewFeedbackData.modifiedCode,
+      content: CodeReviewFeedbackData.feedbackContent,
+    };
+    codeFeedbackQuery.mutate(
+      { data },
+      {
+        onSuccess() {
+          reset();
+          router.push(`/code-review/${codeId}`);
+        },
+      }
+    );
+  };
 
   if (codeInfoQuery.isLoading) {
     return <div></div>;
@@ -91,6 +113,15 @@ export const CreateFeedback = ({ codeId }: CreateFeedbackProps) => {
         />
         {/* 여기가 md에디터 자리 */}
       </FlexDiv>
+
+      {/* 등록 버튼 : 서버에 post 요청*/}
+      <Btn
+        text={"등록"}
+        fontSize="2rem"
+        onClickFunc={() => {
+          postCodeFeedback();
+        }}
+      />
     </FlexDiv>
   );
 };

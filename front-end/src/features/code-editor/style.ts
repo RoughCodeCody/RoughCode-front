@@ -28,6 +28,7 @@ const EditorBottom = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  padding-right: 2rem;
   border-top: 1px solid #d9d9d9;
 `;
 

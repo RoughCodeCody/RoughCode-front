@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { DiffEditor } from "@monaco-editor/react";
-
-import { FlexDiv, Text } from "@/components/elements";
-
+import React, { useEffect, useRef } from "react";
 import { FaRegLightbulb } from "react-icons/fa";
 
 import { EditorWrapper, EditorHeader, EditorBottom } from "./style";
+import { FlexDiv, Text, Btn } from "@/components/elements";
+import { DiffEditor } from "@monaco-editor/react";
+import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 
 interface DiffCodeEditorProps {
   headerText: string;
@@ -22,6 +21,8 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   language,
   readOnly = true,
 }) => {
+  const { setModifiedCode } = useCodeReviewFeedbackDataStore();
+
   const diffEditorRef = useRef<any>(null);
 
   function handleEditorDidMount(editor: any, monaco: any) {
@@ -30,22 +31,6 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
       editor.updateOptions({ readOnly: true });
     }
   }
-
-  // const decodeBase64ToUTF8 = (originalCode: string): string => {
-  //   const binaryString = atob(originalCode);
-  //   const bytes = new Uint8Array(binaryString.length);
-  //   for (let i = 0; i < binaryString.length; i++) {
-  //     bytes[i] = binaryString.charCodeAt(i);
-  //   }
-  //   const utf8String = new TextDecoder("utf-8").decode(bytes);
-  //   return utf8String;
-  // };
-
-  // const encodeUTF8ToBase64 = (code: string): string => {
-  //   const bytes = new TextEncoder().encode(code);
-  //   const originalCode = btoa(String.fromCharCode(...bytes));
-  //   return originalCode;
-  // };
 
   const { Buffer } = require("buffer");
 
@@ -67,13 +52,11 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   };
   const decodedString = decodeBase64ToUTF8(originalCode);
 
-  const postFeedback = () => {
+  const saveModifiedCode = () => {
     const modifiedCode = diffEditorRef?.current?.getModifiedEditor().getValue();
     const encodedCode = encodeUTF8ToBase64(modifiedCode);
-    // 이후 encodedCode를 api요청 보내는 코드
+    setModifiedCode(encodedCode);
   };
-
-  useEffect(() => {}, [originalCode]);
 
   return (
     <EditorWrapper>
@@ -90,7 +73,20 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
         modified={decodedString}
         onMount={handleEditorDidMount}
       />
-      <EditorBottom />
+      <EditorBottom>
+        {readOnly ? (
+          <></>
+        ) : (
+          <Btn
+            text="확정"
+            height="2rem"
+            display="flex"
+            align="center"
+            bgColor="orange"
+            onClickFunc={saveModifiedCode}
+          />
+        )}
+      </EditorBottom>
     </EditorWrapper>
   );
 };
