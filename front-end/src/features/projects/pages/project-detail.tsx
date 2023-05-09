@@ -45,7 +45,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
                 }}
               />
               <ProjectDescription content={data.content} />
-              <RelatedCodes codes={data.code} />
+              <RelatedCodes codes={data.code} isMine={data.mine} />
             </WhiteBoxNoshad>
 
             <FeedbackRegister type="feedback" id={projectId} />
