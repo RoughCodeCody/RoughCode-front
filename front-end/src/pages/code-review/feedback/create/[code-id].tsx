@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 
-import { CreateFeedback } from "@/features/code-reviews";
+import { CreateCodeFeedback } from "@/features/code-reviews";
 
 const FeedbackCreate = () => {
   // feedback을 작성할 모체 code의 ID
@@ -17,7 +17,7 @@ const FeedbackCreate = () => {
 
   return (
     <div>
-      <CreateFeedback codeId={codeId} />
+      <CreateCodeFeedback codeId={codeId} />
     </div>
   );
 };

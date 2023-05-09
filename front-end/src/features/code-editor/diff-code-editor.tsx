@@ -58,8 +58,6 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
     setModifiedCode(encodedCode);
   };
 
-  useEffect(() => {}, [originalCode]);
-
   return (
     <EditorWrapper>
       <EditorHeader>
