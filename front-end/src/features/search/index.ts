@@ -1,3 +1,5 @@
 export * from "./api";
-export * from "./components";
-export * from "./search";
+
+export * from "./components/drop-label";
+export * from "./components/search";
+export * from "./components/switch";

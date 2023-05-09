@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 import { useSearchCriteriaStore } from "@/stores";
 
 const BorderLineDiv = styled.div`
