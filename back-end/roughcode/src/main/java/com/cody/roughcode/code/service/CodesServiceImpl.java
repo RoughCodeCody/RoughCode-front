@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -164,7 +165,7 @@ public class CodesServiceImpl implements CodesService {
                         throw new NullPointerException("일치하는 리뷰가 없습니다.");
                     }
                     if (!review.getCodes().getNum().equals(codeNum)) {
-                        throw new NullPointerException("리뷰와 프로젝트가 일치하지 않습니다.");
+                        throw new NullPointerException("리뷰와 코드가 일치하지 않습니다.");
                     }
                     review.selectedUp();
                     reviewsRepository.save(review);
@@ -250,8 +251,8 @@ public class CodesServiceImpl implements CodesService {
         // 리뷰 목록
         // - 순서 : 1.반영된 리뷰, 2.내가 쓴 리뷰, 3.나머지
         List<ReviewRes> reviewResList = new ArrayList<>();
-        if (codesInfo.getReviews() != null) {
-            for (Reviews review : codesInfo.getReviews()) {
+        if (code.getReviews() != null) {
+            for (Reviews review : code.getReviews()) {
                 ReviewLikes reviewLike = (user != null) ? reviewLikesRepository.findByReviewsAndUsers(review, user) : null;
                 Boolean reviewLiked = reviewLike != null;
 
@@ -619,6 +620,17 @@ public class CodesServiceImpl implements CodesService {
 
         // 즐겨찾기 수 반환
         return target.getFavoriteCnt();
+    }
+
+    @Override
+    @Transactional
+    public List<CodeTagsRes> searchTags(String keyword) {
+        List<CodeTags> tags = codeTagsRepository.findAllByNameContaining(keyword, Sort.by(Sort.Direction.ASC, "name"));
+        List<CodeTagsRes> result = new ArrayList<>();
+        for(CodeTags tag: tags){
+            result.add(new CodeTagsRes(tag));
+        }
+        return result;
     }
 
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {

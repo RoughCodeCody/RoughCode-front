@@ -2,6 +2,7 @@ package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
@@ -9,6 +10,7 @@ import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -187,7 +190,7 @@ class CodesServiceTest {
         SelectedReviews selectedReviews = SelectedReviews.builder()
                 .selectedReviewsId(1L)
                 .reviews(review)
-                .codes(code)
+                .codesInfo(info)
                 .build();
         Codes updatedCode = Codes.builder()
                 .codesId(2L)
@@ -312,7 +315,7 @@ class CodesServiceTest {
         doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
         doReturn(favorite).when(codeFavoritesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
         doReturn(like).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
-        doReturn(List.of(code, code2)).when(codesRepository).findByNumAndCodeWriter(any(Long.class), any(Users.class));
+        doReturn(List.of(code, code2)).when(codesRepository).findByNumAndCodeWriterOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
         CodeDetailRes success = codesService.getCode(codeId, 0L);
@@ -352,7 +355,7 @@ class CodesServiceTest {
         SelectedReviews selectedReviews = SelectedReviews.builder()
                 .selectedReviewsId(1L)
                 .reviews(review)
-                .codes(code)
+                .codesInfo(info)
                 .build();
 
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
@@ -598,4 +601,19 @@ class CodesServiceTest {
 
         assertEquals("일치하는 코드가 없습니다", exception.getMessage());
     }
+
+    @DisplayName("tag 목록 검색 성공")
+    @Test
+    void searchTagsSucceed(){
+        // given
+        List<CodeTags> tags = tagsInit();
+        doReturn(tags).when(codeTagsRepository).findAllByNameContaining("", Sort.by(Sort.Direction.ASC, "name"));
+
+        // when
+        List<CodeTagsRes> result = codesService.searchTags("");
+
+        // then
+        AssertionsForClassTypes.assertThat(result.size()).isEqualTo(3);
+    }
+
 }

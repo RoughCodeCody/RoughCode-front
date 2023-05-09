@@ -39,17 +39,8 @@ public class CodesInfo {
     @JoinColumn(name = "codes_id", nullable = false)
     private Codes codes;
 
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
-    private List<Reviews> reviews;
-
     @OneToMany(mappedBy = "codesInfo", fetch = FetchType.LAZY)
     private List<SelectedReviews> selectedReviews;
-
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
-    private List<CodeFavorites> codeFavorites;
-
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
-    private List<CodeLikes> codeLikes;
 
     public void updateCode(CodeReq req) {
         this.content = req.getContent();
