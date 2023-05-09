@@ -16,11 +16,15 @@ import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,17 +44,16 @@ public class MypageServiceImpl implements MypageService{
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final SelectedReviewsRepository selectedReviewsRepository;
 
-    private final String statCard = "<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">    <style>      .small {        font: italic 13px sans-serif;      }      .heavy {        font: bold 30px sans-serif;      }              .Rrrrr {        font: italic 40px serif;        fill: red;      }      .title {        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #319795;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }      .content {        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #45474F;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }    </style>    <rect        data-testid=\"card-bg\"        x=\"1%\"        y=\"0.5%\"        rx=\"25\"        height=\"99%\"        stroke=\"#319795\"        width=\"98%\"        fill=\"#ffffff\"      />      <rect      data-testid=\"card-bg\"      x=\"7%\"      y=\"20%\"      rx=\"5\"      height=\"70%\"      width=\"86%\"      fill=\"#EFF8FF\"    />       <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>    <text x=\"64%\" y=\"32%\" class=\"content\">${feedbackCnt}</text>    <text x=\"64%\" y=\"42%\" class=\"content\">${codeReviewCnt}</text>    <text x=\"64%\" y=\"52%\" class=\"content\">${includedFeedbackCnt}</text>    <text x=\"64%\" y=\"62%\" class=\"content\">${includedCodeReviewCnt}</text>    <text x=\"64%\" y=\"72%\" class=\"content\">${projectRefactorCnt}</text>    <text x=\"64%\" y=\"82%\" class=\"content\">${codeRefactorCnt}</text>  </svg>";
-
-
-
     private void findUser(Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
     }
 
+    @Value("${stat-card.filepath}")
+    static String statFilePath;
+
     @Override
-    public String makeStatCard(String userName) {
+    public String makeStatCard(String userName) throws FileNotFoundException {
         Users user = usersRepository.findByName(userName).orElse(null);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
@@ -58,7 +61,6 @@ public class MypageServiceImpl implements MypageService{
 
         int res = 0;
 
-        log.info(userName + "의 stat card ---------------");
         // 프로젝트 피드백 횟수:     ${feedbackCnt}
         res = feedbackRepository.countByUsers(user);
         stats.put("feedbackCnt", res);
@@ -83,14 +85,21 @@ public class MypageServiceImpl implements MypageService{
         res = codesRepository.countByCodeWriter(user) - codesRepository.countNumByCodeWriter(user);
         stats.put("codeRefactorCnt", res);
 
-        String completeStatCard = statCard;
-        for (String key : stats.keySet()) {
-            completeStatCard = completeStatCard.replace("${" + key + "}", String.valueOf(stats.get(key)));
-            log.info(key + " : " + stats.get(key));
-        }
-        log.info("stat end ----------------------");
+        try { // 파일이 존재하면
+            log.info(userName + "의 stat card ---------------");
+            List<String> lines = Files.readAllLines(Paths.get(statFilePath));
 
-        return completeStatCard;
+            String completeStatCard = String.join("\n", lines);
+            for (String key : stats.keySet()) {
+                completeStatCard = completeStatCard.replace("${" + key + "}", String.valueOf(stats.get(key)));
+                log.info(key + " : " + stats.get(key));
+            }
+            log.info("stat end ----------------------");
+
+            return completeStatCard;
+        } catch(Exception e) {
+            throw new FileNotFoundException("stat card 정보 파일이 없습니다");
+        }
     }
 
     @Override

@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class SelectedReviews {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "selected_reviews_id", nullable = false, columnDefinition = "BIGINT")
+    @Column(name = "selected_reviews_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long selectedReviewsId;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -425,7 +425,7 @@ public class ProjectServiceTest {
         doReturn(null).when(projectFavoritesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
         // when
-        int likes = projectsService.favoriteProject(project.getProjectsId(), "content", users.getUsersId());
+        int likes = projectsService.favoriteProject(project.getProjectsId(), users.getUsersId());
 
         // then
         assertThat(likes).isEqualTo(1);
@@ -438,7 +438,6 @@ public class ProjectServiceTest {
         ProjectFavorites projectFavorites = ProjectFavorites.builder()
                 .projects(project)
                 .users(users)
-                .content("blahblah")
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(1L);
@@ -447,7 +446,7 @@ public class ProjectServiceTest {
         doReturn(projectFavorites).when(projectFavoritesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
         // when
-        int likes = projectsService.favoriteProject(project.getProjectsId(), null, users.getUsersId());
+        int likes = projectsService.favoriteProject(project.getProjectsId(), users.getUsersId());
 
         // then
         assertThat(likes).isEqualTo(0);
@@ -461,7 +460,7 @@ public class ProjectServiceTest {
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), null, users.getUsersId())
+                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), users.getUsersId())
         );
         assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
     }
@@ -475,7 +474,7 @@ public class ProjectServiceTest {
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), null, users.getUsersId())
+                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), users.getUsersId())
         );
         assertThat(exception.getMessage()).isEqualTo("일치하는 프로젝트가 존재하지 않습니다");
     }
