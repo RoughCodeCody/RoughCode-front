@@ -15,9 +15,9 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class ReReviewReq {
-    @Schema(description = "리뷰 아이디", example = "1")
-    @Positive(message = "reviewId 값이 범위를 벗어납니다")
-    Long reviewsId;
+    @Schema(description = "리뷰 or 리-리뷰 아이디", example = "1")
+    @Positive(message = "id 값이 범위를 벗어납니다")
+    Long id;
 
     @Schema(description = "리-리뷰 내용", example = "이 말이 맞습니다!")
     @NotEmpty(message = "리-리뷰는 비어있을 수 없습니다")

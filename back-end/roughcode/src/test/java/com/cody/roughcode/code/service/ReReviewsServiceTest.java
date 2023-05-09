@@ -9,6 +9,7 @@ import com.cody.roughcode.code.entity.Reviews;
 import com.cody.roughcode.code.repository.ReReviewLikesRepository;
 import com.cody.roughcode.code.repository.ReReviewsRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
+import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +52,12 @@ public class ReReviewsServiceTest {
             .name("kosy318")
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
+    final Users users2 = Users.builder()
+            .usersId(2L)
+            .email("kosy1782@gmail.com")
+            .name("kosy318")
+            .roles(List.of(String.valueOf(ROLE_USER)))
+            .build();
 
     final Codes code = Codes.builder()
                 .codesId(1L)
@@ -70,13 +77,75 @@ public class ReReviewsServiceTest {
     final ReReviews reReviews = ReReviews.builder()
             .reReviewsId(1L)
             .reviews(reviews)
+            .users(users)
+            .content("리리뷰")
+            .build();
+    final ReReviews reReviews2 = ReReviews.builder()
+            .reReviewsId(2L)
+            .reviews(reviews)
+            .users(users2)
             .content("리리뷰")
             .build();
 
     final ReReviewReq req = ReReviewReq.builder()
-            .reviewsId(1L)
+            .id(1L)
             .content("리리뷰")
             .build();
+
+    @DisplayName("리-리뷰 수정 성공")
+    @Test
+    void updateReReviewSucceed() {
+        // given
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        NotMatchException exception = assertThrows(
+                NotMatchException.class, () -> reReviewsService.updateReReview(req, 2L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("접근 권한이 없습니다");
+    }
+
+    @DisplayName("리-리뷰 수정 실패 - 리리뷰가 내꺼가 아님")
+    @Test
+    void updateReReviewFailNotMatch() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.updateReReview(req, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 리뷰가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 수정 실패 - 리리뷰 x")
+    @Test
+    void updateReReviewFailNoReReview() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.updateReReview(req, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 리뷰가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 수정 실패 - 유저 x")
+    @Test
+    void updateReReviewFailNoUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.updateReReview(req, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
 
     @DisplayName("리-리뷰 조회 성공 - with login")
     @Test
@@ -134,7 +203,7 @@ public class ReReviewsServiceTest {
 
         // when
         int res = reReviewsService.insertReReview(ReReviewReq.builder()
-                .reviewsId(1L)
+                .id(1L)
                 .content("리리뷰")
                 .build(), -1L);
 
@@ -152,7 +221,7 @@ public class ReReviewsServiceTest {
 
         // when
         int res = reReviewsService.insertReReview(ReReviewReq.builder()
-                .reviewsId(1L)
+                .id(1L)
                 .content("리리뷰")
                 .build(), 1L);
 

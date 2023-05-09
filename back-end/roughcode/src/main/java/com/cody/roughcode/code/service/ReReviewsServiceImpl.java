@@ -8,6 +8,7 @@ import com.cody.roughcode.code.entity.Reviews;
 import com.cody.roughcode.code.repository.ReReviewLikesRepository;
 import com.cody.roughcode.code.repository.ReReviewsRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
+import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class ReReviewsServiceImpl implements ReReviewsService {
     public int insertReReview(ReReviewReq req, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
 
-        Reviews reviews = reviewsRepository.findByReviewsId(req.getReviewsId());
+        Reviews reviews = reviewsRepository.findByReviewsId(req.getId());
         if(reviews == null) throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
 
         ReReviews savedReReview = reReviewsRepository.save(
@@ -48,6 +49,22 @@ public class ReReviewsServiceImpl implements ReReviewsService {
         reviewsRepository.save(reviews);
 
         return reviews.getReReviews().size();
+    }
+
+    @Override
+    public int updateReReview(ReReviewReq req, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        ReReviews reReviews = reReviewsRepository.findByReReviewsId(req.getId());
+        if(reReviews == null) throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
+
+        if(reReviews.getUsers() == null || !reReviews.getUsers().equals(users)) throw new NotMatchException();
+
+        reReviews.setContent(req.getContent());
+        reReviewsRepository.save(reReviews);
+
+        return 1;
     }
 
     @Override
