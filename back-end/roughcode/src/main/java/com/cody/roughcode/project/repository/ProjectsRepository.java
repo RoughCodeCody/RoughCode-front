@@ -36,8 +36,6 @@ public interface ProjectsRepository extends JpaRepository<Projects, Long> {
     @Query("SELECT distinct f.projectsInfo.projects FROM Feedbacks f JOIN f.projectsInfo.projects p WHERE f.users.usersId = :userId ORDER BY f.projectsInfo.projects.modifiedDate DESC")
     Page<Projects> findAllMyFeedbacks(@Param("userId") Long userId, Pageable pageable);
 
-    int countByProjectWriter(Users user);
-
-    @Query("SELECT distinct p.num FROM Projects p WHERE p.projectWriter = :user")
-    int countNumByProjectWriter(@Param("user") Users user);
+    @Query("SELECT count(p) FROM Projects p WHERE p.projectWriter = :user AND p.version > 1")
+    int countByProjectWriter(@Param("user") Users user);
 }

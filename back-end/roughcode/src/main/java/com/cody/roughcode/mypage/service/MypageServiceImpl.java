@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -50,13 +49,26 @@ public class MypageServiceImpl implements MypageService{
     }
 
     @Value("${stat-card.filepath}")
-    static String statFilePath;
+    String statFilePath = "statcard.txt";
 
     @Override
-    public String makeStatCard(String userName) throws FileNotFoundException {
+    public String makeStatCardWithUserId(Long userId) throws FileNotFoundException {
+        Users user = usersRepository.findByUsersId(userId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        String userName = user.getName();
+
+        return getStatCard(user, userName);
+    }
+
+    @Override
+    public String makeStatCardWithUserName(String userName) throws FileNotFoundException {
         Users user = usersRepository.findByName(userName).orElse(null);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
+        return getStatCard(user, userName);
+    }
+
+    private String getStatCard(Users user, String userName) throws FileNotFoundException {
         HashMap<String, Integer> stats = new HashMap<>();
 
         int res = 0;
@@ -78,11 +90,11 @@ public class MypageServiceImpl implements MypageService{
         stats.put("includedCodeReviewCnt", res);
 
         // 프로젝트 리팩토링 횟수:    ${projectRefactorCnt}
-        res = projectsRepository.countByProjectWriter(user) - projectsRepository.countNumByProjectWriter(user);
+        res = projectsRepository.countByProjectWriter(user);
         stats.put("projectRefactorCnt", res);
 
         // 코드 리팩토링 횟수:       ${codeRefactorCnt}
-        res = codesRepository.countByCodeWriter(user) - codesRepository.countNumByCodeWriter(user);
+        res = codesRepository.countByCodeWriter(user);
         stats.put("codeRefactorCnt", res);
 
         try { // 파일이 존재하면

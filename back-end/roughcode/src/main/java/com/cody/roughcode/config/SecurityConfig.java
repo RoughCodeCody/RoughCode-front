@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/api/v1/code/review/{reviewId}/rereview") // 코드 리뷰에 대한 리뷰 목록 조회
                 .antMatchers(HttpMethod.POST, "/api/v1/code/review/rereview") // 코드 리뷰에 대한 리뷰 등록
                 .antMatchers(HttpMethod.GET, "/api/v1/code/tag") // 코드 태그 검색
+                .antMatchers(HttpMethod.GET, "/api/v1/mypage") // stat card 조회
                 .antMatchers(URL_PREFIX+"/user/token", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**", "/v3/api-docs/**", "/favicon.ico");
     }
 
