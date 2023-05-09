@@ -116,9 +116,6 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 즐겨찾기 등록 또는 취소 API")
     @PostMapping("/{projectId}/favorite")
     ResponseEntity<?> favoriteProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                      @Parameter(description = "즐겨찾기 내용")
-                                      @Size(max = 500, message = "즐겨찾기 내용은 500자를 넘을 수 없습니다")
-                                      @RequestBody String content,
                                       @Parameter(description = "프로젝트 아이디")
                                       @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
                                       @PathVariable Long projectId){
@@ -128,7 +125,7 @@ public class ProjectsController {
 
         int res = -1;
         try {
-            res = projectsService.favoriteProject(projectId, content, usersId);
+            res = projectsService.favoriteProject(projectId, usersId);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

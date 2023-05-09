@@ -614,7 +614,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public int favoriteProject(Long projectsId, String content, Long usersId) {
+    public int favoriteProject(Long projectsId, Long usersId) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         Projects project = projectsRepository.findByProjectsId(projectsId);
@@ -635,7 +635,6 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectFavoritesRepository.save(ProjectFavorites.builder()
                     .projects(project)
                     .users(users)
-                    .content((content == null)? "" : content)
                     .build());
 
             projectsInfo.favoriteCntUp();
