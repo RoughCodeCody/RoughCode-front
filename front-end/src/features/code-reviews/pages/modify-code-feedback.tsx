@@ -88,6 +88,7 @@ export const ModifyCodeFeedback = ({ feedbackId }: ModifyCodeFeedback) => {
                   height="30rem"
                   language="javascript"
                   originalCode={originalCode}
+                  selectedLines={codeFeedbackInfoQuery.data.lineNumbers}
                 />
               </FlexDiv>
               <FlexDiv width="100%" height="100%">
@@ -96,7 +97,8 @@ export const ModifyCodeFeedback = ({ feedbackId }: ModifyCodeFeedback) => {
                   height="30rem"
                   readOnly={false}
                   language="javascript"
-                  originalCode={codeFeedbackInfoQuery.data.codeContent}
+                  originalCode={originalCode}
+                  modifiedCode={codeFeedbackInfoQuery.data.codeContent}
                 />
               </FlexDiv>
             </>

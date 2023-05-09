@@ -34,6 +34,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
       codeContent: CodeReviewFeedbackData.modifiedCode,
       content: CodeReviewFeedbackData.feedbackContent,
     };
+    console.log(data);
     codeFeedbackQuery.mutate(
       { data },
       {
@@ -91,6 +92,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
                   readOnly={false}
                   language="javascript"
                   originalCode={originalCode}
+                  modifiedCode={originalCode}
                 />
               </FlexDiv>
             </>

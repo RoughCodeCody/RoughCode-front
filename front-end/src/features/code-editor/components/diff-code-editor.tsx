@@ -9,6 +9,7 @@ import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 interface DiffCodeEditorProps {
   headerText: string;
   originalCode: string;
+  modifiedCode: string;
   height: string;
   language: string;
   readOnly?: boolean;
@@ -17,6 +18,7 @@ interface DiffCodeEditorProps {
 export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   headerText,
   originalCode,
+  modifiedCode,
   height,
   language,
   readOnly = true,
@@ -50,7 +52,8 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
     const base64 = Buffer.from(data).toString("base64");
     return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
   };
-  const decodedString = decodeBase64ToUTF8(originalCode);
+  const decodedOriginalString = decodeBase64ToUTF8(originalCode);
+  const decodedmodifiedString = decodeBase64ToUTF8(modifiedCode);
 
   const saveModifiedCode = () => {
     const modifiedCode = diffEditorRef?.current?.getModifiedEditor().getValue();
@@ -69,8 +72,8 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
       <DiffEditor
         height={height}
         language={language}
-        original={decodedString}
-        modified={decodedString}
+        original={decodedOriginalString}
+        modified={decodedmodifiedString}
         onMount={handleEditorDidMount}
       />
       <EditorBottom>

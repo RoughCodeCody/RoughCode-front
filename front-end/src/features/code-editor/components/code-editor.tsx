@@ -53,7 +53,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const [draggedLineNumber, setDraggedLineNumber] = useState<null[] | number[]>(
     [null, null]
   );
-  const [decoIds, setDecoIds] = useState<string[]>([]);
+  const [decoIds, setDecoIds] = useState<string[][]>([]);
 
   const handleEditorDidMount: OnMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
@@ -62,14 +62,23 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     editor.updateOptions({ readOnly: true });
 
     if (selectedLines?.length !== 0) {
-      let deltaDecorations: monaco.editor.IModelDeltaDecoration[] = [];
+      let temp: string[][] = [];
       selectedLines?.forEach((line) => {
-        deltaDecorations.push({
-          range: new monaco.Range(line[0], 1, line[1], 1),
-          options: { isWholeLine: true, className: "selected-line" },
-        });
+        // let deltaDecorations: monaco.editor.IModelDeltaDecoration[] = [];
+        let deltaDecoration = [
+          {
+            range: new monaco.Range(line[0], 1, line[1], 1),
+            options: { isWholeLine: true, className: "selected-line" },
+          },
+        ];
+        let appliedDecos = editorRef.current?.deltaDecorations(
+          [],
+          deltaDecoration
+        );
+        temp.push(appliedDecos);
+        console.log(temp);
       });
-      editorRef.current?.deltaDecorations([], deltaDecorations);
+      setDecoIds(temp);
     }
 
     editor.onDidChangeCursorSelection((e: any) => handleSelectionChange(e));
@@ -122,14 +131,17 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       const decoId = editorRef.current?.deltaDecorations([], deltaDecorations);
       setDecoIds([...newDecoIds, decoId]);
+      console.log(decoIds);
     }
   };
 
   const erase = () => {
     decoIds.map((deco) => {
-      editorRef.current.removeDecorations(deco);
-      setDecoIds([]);
+      console.log(decoIds);
+      console.log(editorRef.current?.getModel()?.getDecorationRange(deco));
+      editorRef.current?.removeDecorations(deco);
     });
+    setDecoIds([]);
   };
 
   const { Buffer } = require("buffer");
