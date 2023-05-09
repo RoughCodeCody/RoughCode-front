@@ -1,29 +1,25 @@
+import { Notification } from "../types";
 import { FlexDiv, Text } from "@/components/elements";
 
-interface NoticeContentProps {
-  writer: string;
-  isProject: boolean;
-  title: string;
-  version: number;
-}
+type NoticeContentProps = {
+  data: Notification;
+};
 
 export const NoticeContent = ({
-  writer,
-  isProject,
-  title,
-  version,
+  data: { alarmId, section, content, postId, userId, createdDate },
 }: NoticeContentProps) => {
   return (
     <FlexDiv>
       <Text size="1.3rem" bold={true}>
-        {writer} 님의{" "}
-        <Text as="span" size="1.3rem" bold={true}>
-          {isProject ? "프로젝트 " : "코드리뷰 "}
-          <Text as="span" size="1.3rem" bold={true} color="main" pointer={true}>
-            {title} ver{version}{" "}
+        {content[0]}{" "}
+        <Text as="span" size="1.3rem" bold={true} color="main" pointer={true}>
+          {/* {isProject ? "프로젝트 " : "코드리뷰 "} */}
+          {content[1]}{" "}
+          <Text as="span" size="1.3rem" bold={true}>
+            {/* {title} ver{version}{" "} */}
+            {content[2]}{" "}
           </Text>
         </Text>
-        업데이트
       </Text>
     </FlexDiv>
   );
