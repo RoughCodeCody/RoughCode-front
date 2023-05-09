@@ -20,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/code/review")
 @RequiredArgsConstructor
@@ -136,5 +139,34 @@ public class ReviewsController {
             return Response.notFound("코드 리뷰 삭제 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 삭제 성공", 1, res);
+    }
+
+    @Operation(summary = "코드 좋아요(등록, 취소) API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 좋아요 등록 또는 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 좋아요 등록 또는 취소 실패")
+    })
+    @PostMapping("/{reviewId}/like")
+    ResponseEntity<?> likeCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                               @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = reviewsService.likeReview(reviewId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res < 0) {
+            return Response.notFound("코드 리뷰 좋아요 등록 또는 취소 실패");
+        }
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("like", res);
+        return Response.makeResponse(HttpStatus.OK, "코드 리뷰 좋아요 등록 또는 취소 성공", 0, resultMap);
+
     }
 }

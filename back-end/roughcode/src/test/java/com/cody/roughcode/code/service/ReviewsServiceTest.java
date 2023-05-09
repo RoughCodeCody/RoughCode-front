@@ -1,9 +1,7 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReviewReq;
-import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.ReviewDetailRes;
-import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
@@ -82,7 +80,7 @@ public class ReviewsServiceTest {
 
     final ReviewReq req = ReviewReq.builder()
             .codeId(1L)
-            .selectedRange(List.of(List.of(1,2), List.of(4, 6)))
+            .selectedRange(List.of(List.of(1, 2), List.of(4, 6)))
             .codeContent("hello world")
             .content("설명설명")
             .build();
@@ -284,4 +282,74 @@ public class ReviewsServiceTest {
 
         assertEquals("접근 권한이 없습니다", exception.getMessage());
     }
+
+    @DisplayName("코드 리뷰 좋아요 등록 성공")
+    @Test
+    void likeReviewSucceed() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(null).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
+
+        int likeCnt = review.getLikeCnt();
+
+        // when
+        int res = reviewsService.likeReview(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(review.getLikeCnt());
+        assertThat(res).isEqualTo(likeCnt + 1);
+    }
+
+    @DisplayName("코드 리뷰 좋아요 취소 성공")
+    @Test
+    void likeReviewCancelSucceed() {
+        ReviewLikes reviewLikes = ReviewLikes.builder()
+                .reviews(review)
+                .users(user).build();
+
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(reviewLikes).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
+
+        int likeCnt = code.getLikeCnt();
+
+        // when
+        int res = reviewsService.likeReview(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(review.getLikeCnt());
+        assertThat(res).isEqualTo(likeCnt - 1);
+    }
+
+    @DisplayName("코드 리뷰 좋아요 등록 또는 취소 실패 - 일치하는 유저가 없음")
+    @Test
+    void likeReviewFailNotFoundUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reviewsService.likeReview(1L, 0L)
+        );
+
+        assertEquals("일치하는 유저가 없습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 좋아요 등록 또는 취소 실패 - 일치하는 코드가 없음")
+    @Test
+    void likeReviewFailNotFoundReview() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reviewsService.likeReview(0L, 1L)
+        );
+
+        assertEquals("일치하는 코드 리뷰가 없습니다", exception.getMessage());
+    }
+
 }
