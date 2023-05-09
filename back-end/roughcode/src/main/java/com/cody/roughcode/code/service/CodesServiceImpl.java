@@ -272,6 +272,9 @@ public class CodesServiceImpl implements CodesService {
         List<Pair<Codes, CodesInfo>> otherVersions = new ArrayList<>();
         List<Codes> codeList = codesRepository.findByNumAndCodeWriterOrderByVersionDesc(code.getNum(), code.getCodeWriter());
 
+        // 최신 버전인지
+        Boolean latest = codeList.get(0).getCodesId().equals(codeId);
+
         for (Codes c : codeList) {
             otherVersions.add(Pair.of(c, codesInfoRepository.findByCodes(c)));
         }
@@ -355,6 +358,7 @@ public class CodesServiceImpl implements CodesService {
                 .liked(liked)
                 .favorite(favorite)
                 .language(codesInfo.getLanguage())
+                .latest(latest)
                 .versions(versionResList)
                 .reviews(reviewResList)
                 .build();
