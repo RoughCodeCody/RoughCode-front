@@ -42,4 +42,11 @@ public class ReReviews extends BaseTimeEntity {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public void likeCntUp() {
+        this.likeCnt += 1;
+    }
+    public void likeCntDown() {
+        this.likeCnt -= 1;
+    }
 }

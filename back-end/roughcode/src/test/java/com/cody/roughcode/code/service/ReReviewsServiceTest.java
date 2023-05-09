@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.mail.MessagingException;
+import javax.validation.constraints.Null;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -91,6 +92,69 @@ public class ReReviewsServiceTest {
             .id(1L)
             .content("리리뷰")
             .build();
+
+    final ReReviewLikes likes = ReReviewLikes.builder()
+            .reReviews(reReviews)
+            .likesId(1L)
+            .users(users)
+            .build();
+
+    @DisplayName("리-리뷰 좋아요/취소 실패 - 리리뷰 x")
+    @Test
+    void likeReReviewFailNoReReview() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.likeReReview(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 리뷰가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 좋아요/취소 실패 - 유저 x")
+    @Test
+    void likeReReviewFailNoUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.likeReReview(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 좋아요/취소 성공 - 취소")
+    @Test
+    void likeReReviewSucceedCancel() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+        doReturn(likes).when(reReviewLikesRepository).findByReReviewsAndUsers(any(ReReviews.class), any(Users.class));
+
+        // when
+        int res = reReviewsService.likeReReview(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(0);
+    }
+
+    @DisplayName("리-리뷰 좋아요/취소 성공 - 좋아요")
+    @Test
+    void likeReReviewSucceedLike() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+        doReturn(null).when(reReviewLikesRepository).findByReReviewsAndUsers(any(ReReviews.class), any(Users.class));
+
+        // when
+        int res = reReviewsService.likeReReview(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
 
     @DisplayName("리-리뷰 삭제 성공")
     @Test

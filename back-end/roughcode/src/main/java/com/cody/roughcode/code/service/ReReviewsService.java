@@ -10,4 +10,5 @@ public interface ReReviewsService {
     int updateReReview(ReReviewReq req, Long usersId);
     List<ReReviewRes> getReReviewList(Long reviewsId, Long usersId);
     int deleteReReview(Long reReviewsId, Long usersId);
+    int likeReReview(Long reReviewsId, Long usersId);
 }
