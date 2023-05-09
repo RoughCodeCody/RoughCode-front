@@ -11,13 +11,13 @@ const Backdrop = styled.div`
   z-index: 500;
 `;
 
-const ModalWrapper = styled.div`
+const ModalWrapper = styled.div<{ width: string }>`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 700;
-  width: 40%;
+  width: ${({ width }) => width};
 `;
 
 const StyledModal = styled.div`
@@ -42,7 +42,7 @@ const CloseButton = styled(RiCloseFill)`
 `;
 
 const ModalContent = styled.div`
-  max-height: 30rem;
+  max-height: 50vh;
   padding: 0.5rem 0;
   /* overflow-x: hidden; */
   overflow-y: auto;

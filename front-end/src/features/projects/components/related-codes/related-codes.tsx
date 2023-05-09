@@ -4,6 +4,7 @@ import { Accordion, Modal } from "@/components/elements";
 
 import { RelatedCode } from "../../types";
 import { MiniFeedbackItem } from "../mini-feedback-item";
+import { MyCodeList } from "./code-list";
 
 interface RelatedCodesProps {
   codes: RelatedCode[];
@@ -30,10 +31,13 @@ export const RelatedCodes = ({ codes, isMine }: RelatedCodesProps) => {
       <button onClick={() => setCodeLinkModalOpen(true)}>click</button>
 
       <Modal
+        headerText={"나의 코드 목록"}
+        width="80%"
         isOpen={codeLinkModalOpen}
         setIsOpen={setCodeLinkModalOpen}
-        modalContent={<>modal content</>}
-        headerText={"header text"}
+        modalContent={
+          <MyCodeList relatedCodeIds={codes.map((code) => code.codeId)} />
+        }
       />
     </>
   );
