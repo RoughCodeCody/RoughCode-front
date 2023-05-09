@@ -129,7 +129,7 @@ public class ReviewsServiceImpl implements ReviewsService{
                 .projectId(connectedProjectId)
                 .build();
 
-        return ReviewDetailRes.toDto(review, reviewLiked, reReviewResList, reviewCodeRes);
+        return ReviewDetailRes.toDto(codesInfo.getGithubUrl(), review, reviewLiked, reReviewResList, reviewCodeRes);
     }
 
     @Override
