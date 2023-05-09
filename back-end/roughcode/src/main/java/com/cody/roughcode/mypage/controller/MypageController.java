@@ -47,6 +47,31 @@ public class MypageController {
     private final MypageServiceImpl mypageService;
     private final EmailServiceImpl emailService;
 
+    @Operation(summary = "스탯 카드 가져오기 API")
+    @GetMapping
+    public ResponseEntity<?> makeStatCard(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                          @Parameter(description = "유저 이름")
+                                          @RequestParam(required = false) String userName){
+        if(accessToken == null && (userName == null || userName.equals(""))) return Response.badRequest("유저의 정보를 입력해주세요");
+
+        String statCard = "";
+        try {
+            if (accessToken != null) {
+                Long userId = jwtTokenProvider.getId(accessToken);
+                if(userId <= 0) return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+                statCard = mypageService.makeStatCardWithUserId(userId);
+            } else {
+                statCard = mypageService.makeStatCardWithUserName(userName);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "스탯 카드 정보 만들기 성공", 1, statCard);
+    }
+
     @Operation(summary = "이메일 인증 API")
     @PutMapping("/email")
     public ResponseEntity<?> checkEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,

@@ -4,24 +4,29 @@ import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.entity.CodeLikes;
 import com.cody.roughcode.code.entity.CodeSelectedTags;
 import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.repository.CodeLikesRepository;
-import com.cody.roughcode.code.repository.CodeSelectedTagsRepository;
-import com.cody.roughcode.code.repository.CodesRepository;
+import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.Projects;
+import com.cody.roughcode.project.repository.FeedbacksRepository;
 import com.cody.roughcode.project.repository.ProjectsRepository;
+import com.cody.roughcode.project.repository.SelectedFeedbacksRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -33,10 +38,80 @@ public class MypageServiceImpl implements MypageService{
     private final CodeSelectedTagsRepository codeSelectedTagsRepository;
     private final CodeLikesRepository codeLikesRepository;
     private final UsersRepository usersRepository;
+    private final FeedbacksRepository feedbackRepository;
+    private final ReviewsRepository reviewsRepository;
+    private final SelectedFeedbacksRepository selectedFeedbacksRepository;
+    private final SelectedReviewsRepository selectedReviewsRepository;
 
     private void findUser(Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @Value("${stat-card.filepath}")
+    String statFilePath = "statcard.txt";
+
+    @Override
+    public String makeStatCardWithUserId(Long userId) throws FileNotFoundException {
+        Users user = usersRepository.findByUsersId(userId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        String userName = user.getName();
+
+        return getStatCard(user, userName);
+    }
+
+    @Override
+    public String makeStatCardWithUserName(String userName) throws FileNotFoundException {
+        Users user = usersRepository.findByName(userName).orElse(null);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        return getStatCard(user, userName);
+    }
+
+    private String getStatCard(Users user, String userName) throws FileNotFoundException {
+        HashMap<String, Integer> stats = new HashMap<>();
+
+        int res = 0;
+
+        // 프로젝트 피드백 횟수:     ${feedbackCnt}
+        res = feedbackRepository.countByUsers(user);
+        stats.put("feedbackCnt", res);
+
+        // 코드 리뷰 횟수:          ${codeReviewCnt}
+        res = reviewsRepository.countByUsers(user);
+        stats.put("codeReviewCnt", res);
+
+        // 반영된 프로젝트 피드백 수: ${includedFeedbackCnt}
+        res = selectedFeedbacksRepository.countByUsers(user);
+        stats.put("includedFeedbackCnt", res);
+
+        // 반영된 코드 리뷰 수:      ${includedCodeReviewCnt}
+        res = selectedReviewsRepository.countByUsers(user);
+        stats.put("includedCodeReviewCnt", res);
+
+        // 프로젝트 리팩토링 횟수:    ${projectRefactorCnt}
+        res = projectsRepository.countByProjectWriter(user);
+        stats.put("projectRefactorCnt", res);
+
+        // 코드 리팩토링 횟수:       ${codeRefactorCnt}
+        res = codesRepository.countByCodeWriter(user);
+        stats.put("codeRefactorCnt", res);
+
+        try { // 파일이 존재하면
+            log.info(userName + "의 stat card ---------------");
+            List<String> lines = Files.readAllLines(Paths.get(statFilePath));
+
+            String completeStatCard = String.join("\n", lines);
+            for (String key : stats.keySet()) {
+                completeStatCard = completeStatCard.replace("${" + key + "}", String.valueOf(stats.get(key)));
+                log.info(key + " : " + stats.get(key));
+            }
+            log.info("stat end ----------------------");
+
+            return completeStatCard;
+        } catch(Exception e) {
+            throw new FileNotFoundException("stat card 정보 파일이 없습니다");
+        }
     }
 
     @Override

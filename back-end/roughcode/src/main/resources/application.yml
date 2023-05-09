@@ -61,6 +61,9 @@ app:
       https://${HOST}:3000,
       https://${HOST}:80
 
+stat-card:
+  filepath: statcard.txt
+
 ---
 #spring boot batch + scheduler
 spring:

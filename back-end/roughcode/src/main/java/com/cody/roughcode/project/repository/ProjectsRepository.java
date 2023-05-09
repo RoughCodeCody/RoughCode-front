@@ -25,7 +25,7 @@ public interface ProjectsRepository extends JpaRepository<Projects, Long> {
             "AND (LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%)")
     Page<Projects> findAllOpenedByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    List<Projects> findByNumAndProjectWriter(Long num, Users projectWriter);
+    List<Projects> findByNumAndProjectWriterOrderByVersionDesc(Long num, Users projectWriter);
 
     @Query("SELECT p FROM Projects p WHERE p.projectWriter.usersId = :userId AND p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter))")
     Page<Projects> findAllByProjectWriter(@Param("userId") Long userId, Pageable pageable);
@@ -35,4 +35,7 @@ public interface ProjectsRepository extends JpaRepository<Projects, Long> {
 
     @Query("SELECT distinct f.projectsInfo.projects FROM Feedbacks f JOIN f.projectsInfo.projects p WHERE f.users.usersId = :userId ORDER BY f.projectsInfo.projects.modifiedDate DESC")
     Page<Projects> findAllMyFeedbacks(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT count(p) FROM Projects p WHERE p.projectWriter = :user AND p.version > 1")
+    int countByProjectWriter(@Param("user") Users user);
 }

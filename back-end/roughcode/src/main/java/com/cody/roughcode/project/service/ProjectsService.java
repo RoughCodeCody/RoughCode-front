@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProjectsService {
-    Long insertProject(ProjectReq req, Long usersId) throws MessagingException;
+    Long insertProject(ProjectReq req, Long usersId) throws MessagingException, IOException;
     int updateProjectThumbnail(MultipartFile thumbnail, Long projectsId, Long usersId);
     String insertImage(MultipartFile image, Long projectsId, Long usersId);
     int deleteImage(String imgUrl, Long projectsId, Long usersId);
@@ -26,11 +26,11 @@ public interface ProjectsService {
     Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
     ProjectDetailRes getProject(Long projectId, Long usersId);
     int likeProject(Long projectsId, Long usersId);
-    int favoriteProject(Long projectsId, String content, Long usersId);
+    int favoriteProject(Long projectsId, Long usersId);
     int openProject(Long projectsId, Long usersId);
     int closeProject(Long projectsId, Long usersId);
-    int isProjectOpen(Long projectId) throws MessagingException;
-    Boolean checkProject(String url, Long usersId) throws IOException;
+    int isProjectOpen(Long projectId) throws MessagingException, IOException;
+    Boolean checkProject(String url, boolean open) throws IOException;
 
     int insertFeedback(FeedbackInsertReq req, Long usersId) throws MessagingException;
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);

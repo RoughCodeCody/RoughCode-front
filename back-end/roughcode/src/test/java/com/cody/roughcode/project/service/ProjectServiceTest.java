@@ -2,6 +2,7 @@ package com.cody.roughcode.project.service;
 
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.entity.Codes;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.project.dto.req.FeedbackInsertReq;
@@ -32,6 +33,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -71,6 +73,8 @@ public class ProjectServiceTest {
     private S3FileServiceImpl s3FileService;
     @Mock
     private AlarmServiceImpl alarmService;
+    @Mock
+    private EmailServiceImpl emailService;
     @Mock
     private FeedbacksRepository feedbacksRepository;
     @Mock
@@ -306,20 +310,6 @@ public class ProjectServiceTest {
         assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
     }
 
-    @DisplayName("이미지 등록 실패 - 이미지가 등록되어있지 않음")
-    @Test
-    void insertImageFailNoThumbnail() throws IOException {
-        // given
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-
-        // when & then
-        NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.insertImage(null, 1L, 1L)
-        );
-
-        assertEquals("이미지가 등록되어있지 않습니다", exception.getMessage());
-    }
-
     @DisplayName("이미지 등록 실패 - 일치하는 프로젝트가 없음")
     @Test
     void insertImageFailNoProject() throws IOException {
@@ -435,7 +425,7 @@ public class ProjectServiceTest {
         doReturn(null).when(projectFavoritesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
         // when
-        int likes = projectsService.favoriteProject(project.getProjectsId(), "content", users.getUsersId());
+        int likes = projectsService.favoriteProject(project.getProjectsId(), users.getUsersId());
 
         // then
         assertThat(likes).isEqualTo(1);
@@ -448,7 +438,6 @@ public class ProjectServiceTest {
         ProjectFavorites projectFavorites = ProjectFavorites.builder()
                 .projects(project)
                 .users(users)
-                .content("blahblah")
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(1L);
@@ -457,7 +446,7 @@ public class ProjectServiceTest {
         doReturn(projectFavorites).when(projectFavoritesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
         // when
-        int likes = projectsService.favoriteProject(project.getProjectsId(), null, users.getUsersId());
+        int likes = projectsService.favoriteProject(project.getProjectsId(), users.getUsersId());
 
         // then
         assertThat(likes).isEqualTo(0);
@@ -471,7 +460,7 @@ public class ProjectServiceTest {
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), null, users.getUsersId())
+                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), users.getUsersId())
         );
         assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
     }
@@ -485,7 +474,7 @@ public class ProjectServiceTest {
 
         // when & then
         NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), null, users.getUsersId())
+                NullPointerException.class, () -> projectsService.favoriteProject(project.getProjectsId(), users.getUsersId())
         );
         assertThat(exception.getMessage()).isEqualTo("일치하는 프로젝트가 존재하지 않습니다");
     }
@@ -554,7 +543,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 닫힘 확인 성공 - 열려있음")
     @Test
-    void isProjectClosedSucceedOpen(){
+    void isProjectClosedSucceedOpen() throws MessagingException, IOException {
         // given
         String url = "https://google.com";
         final Projects project = Projects.builder()
@@ -586,9 +575,9 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 닫힘 확인 성공 - 닫혀있음")
     @Test
-    void isProjectClosedSucceedClose(){
+    void isProjectClosedSucceedClose() throws MessagingException, IOException {
         // given
-        String url = "https://rough-code.com";
+        String url = "http://rough-code.com";
         final Projects project = Projects.builder()
                 .projectsId(1L)
                 .num(1L)
@@ -618,7 +607,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 닫힘 확인 성공 - 닫힌지 1시간 지남")
     @Test
-    void isProjectClosedSucceedCloseProject(){
+    void isProjectClosedSucceedCloseProject() throws MessagingException, IOException {
         // given
         String url = "http://rough-code.com";
         final Projects project = Projects.builder()
@@ -765,7 +754,7 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
-        Boolean success = projectsService.checkProject(url, 1L);
+        Boolean success = projectsService.checkProject(url, false);
 
         // then
         assertThat(success).isTrue();
@@ -775,11 +764,11 @@ public class ProjectServiceTest {
     @Test
     void checkProjectUrlNotSafe() throws IOException {
         // given
-            String url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/";
+        String url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/";
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
-        Boolean success = projectsService.checkProject(url, 1L);
+        Boolean success = projectsService.checkProject(url, false);
 
         // then
         assertThat(success).isFalse();
@@ -794,7 +783,7 @@ public class ProjectServiceTest {
 
         // when & then
         IOException exception = assertThrows(
-                IOException.class, () -> projectsService.checkProject(url, 1L)
+                IOException.class, () -> projectsService.checkProject(url, false)
         );
         assertThat(exception.getMessage()).isEqualTo("서버 확인이 필요한 URL입니다");
     }
@@ -899,7 +888,7 @@ public class ProjectServiceTest {
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
-        doReturn(List.of(project)).when(projectsRepository).findByNumAndProjectWriter(any(Long.class), any(Users.class));
+        doReturn(List.of(project)).when(projectsRepository).findByNumAndProjectWriterOrderByVersionDesc(any(Long.class), any(Users.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when
@@ -1050,7 +1039,7 @@ public class ProjectServiceTest {
 
     @DisplayName("피드백 등록 성공 - 로그인")
     @Test
-    void insertFeedbackSucceedWithLogin() {
+    void insertFeedbackSucceedWithLogin() throws MessagingException {
         // given
         FeedbackInsertReq req = FeedbackInsertReq.builder()
                 .content("개발새발 최고")
@@ -1076,7 +1065,7 @@ public class ProjectServiceTest {
 
     @DisplayName("피드백 등록 성공 - 로그인x")
     @Test
-    void insertFeedbackSucceedWithoutLogin() {
+    void insertFeedbackSucceedWithoutLogin() throws MessagingException {
         // given
         FeedbackInsertReq req = FeedbackInsertReq.builder()
                 .content("개발새발 최고")
@@ -1162,7 +1151,7 @@ public class ProjectServiceTest {
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(List.of(project, project2)).when(projectsRepository).findByNumAndProjectWriter(any(Long.class), any(Users.class));
+        doReturn(List.of(project, project2)).when(projectsRepository).findByNumAndProjectWriterOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
         ProjectDetailRes success = projectsService.getProject(projectId, 0L);
@@ -1983,20 +1972,6 @@ public class ProjectServiceTest {
         assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
     }
 
-    @DisplayName("프로젝트 썸네일 등록 실패 - 썸네일이 등록되어있지 않음")
-    @Test
-    void updateProjectThumbnailFailNoThumbnail() throws IOException {
-        // given
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-
-        // when & then
-        NullPointerException exception = assertThrows(
-                NullPointerException.class, () -> projectsService.updateProjectThumbnail(null, 1L, 1L)
-        );
-
-        assertEquals("썸네일이 등록되어있지 않습니다", exception.getMessage());
-    }
-
     @DisplayName("프로젝트 썸네일 등록 실패 - 일치하는 프로젝트가 없음")
     @Test
     void updateProjectThumbnailFailNoProject() throws IOException {
@@ -2042,7 +2017,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 성공 - 새 프로젝트")
     @Test
-    void insertProjectSucceed() {
+    void insertProjectSucceed() throws MessagingException, IOException {
         // given
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
@@ -2074,14 +2049,6 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).save(any(Users.class));
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
-        doReturn(ProjectSelectedTags.builder()
-                .tags(tagsList.get(0))
-                .projects(project)
-                .build())
-                .when(projectSelectedTagsRepository)
-                .save(any(ProjectSelectedTags.class));
-        doReturn(tagsList.get(0)).when(projectTagsRepository).save(any(ProjectTags.class));
-        doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
         Long success = projectsService.insertProject(req, 1L);
@@ -2092,7 +2059,7 @@ public class ProjectServiceTest {
 
     @DisplayName("프로젝트 등록 성공 - 기존 프로젝트 업데이트")
     @Test
-    void insertProjectSucceedVersionUp() {
+    void insertProjectSucceedVersionUp() throws MessagingException, IOException {
         // given
         List<ProjectTags> tagsList = tagsInit();
         ProjectReq req = ProjectReq.builder()
@@ -2135,14 +2102,6 @@ public class ProjectServiceTest {
         doReturn(original).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
-        doReturn(ProjectSelectedTags.builder()
-                .tags(tagsList.get(0))
-                .projects(project)
-                .build())
-                .when(projectSelectedTagsRepository)
-                .save(any(ProjectSelectedTags.class));
-        doReturn(tagsList.get(0)).when(projectTagsRepository).save(any(ProjectTags.class));
-        doReturn(info).when(projectsInfoRepository).save(any(ProjectsInfo.class));
 
         // when
         Long success = projectsService.insertProject(req, 1L);

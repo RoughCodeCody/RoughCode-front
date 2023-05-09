@@ -1,5 +1,11 @@
 package com.cody.roughcode.code.service;
 
-public interface ReReviewsService {
+import com.cody.roughcode.code.dto.req.ReReviewReq;
+import com.cody.roughcode.code.dto.res.ReReviewRes;
 
+import java.util.List;
+
+public interface ReReviewsService {
+    int insertReReview(ReReviewReq req, Long usersId);
+    List<ReReviewRes> getReReviewList(Long reviewsId, Long usersId);
 }

@@ -54,4 +54,7 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
 
     @Query("SELECT distinct r.codes FROM Reviews r JOIN r.codes c WHERE r.users.usersId = :userId ORDER BY r.codes.modifiedDate DESC")
     Page<Codes> findAllMyReviews(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("SELECT count(c) FROM Codes c WHERE c.codeWriter = :user AND c.version > 1")
+    int countByCodeWriter(@Param("user") Users user);
 }

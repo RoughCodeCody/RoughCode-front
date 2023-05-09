@@ -6,12 +6,16 @@ import com.cody.roughcode.code.entity.CodeTags;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.CodeLikesRepository;
 import com.cody.roughcode.code.repository.CodesRepository;
+import com.cody.roughcode.code.repository.ReviewsRepository;
+import com.cody.roughcode.code.repository.SelectedReviewsRepository;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
+import com.cody.roughcode.project.repository.FeedbacksRepository;
 import com.cody.roughcode.project.repository.ProjectFavoritesRepository;
 import com.cody.roughcode.project.repository.ProjectsRepository;
+import com.cody.roughcode.project.repository.SelectedFeedbacksRepository;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,8 +30,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -54,6 +60,14 @@ public class MypageServiceTest {
     private CodeLikesRepository codeLikesRepository;
     @Mock
     private UsersRepository usersRepository;
+    @Mock
+    private FeedbacksRepository feedbackRepository;
+    @Mock
+    private ReviewsRepository reviewsRepository;
+    @Mock
+    private SelectedFeedbacksRepository selectedFeedbacksRepository;
+    @Mock
+    private SelectedReviewsRepository selectedReviewsRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -106,6 +120,171 @@ public class MypageServiceTest {
         return tagsList;
     }
 
+    final String statCard = "<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">    <style>      .small {        font: italic 13px sans-serif;      }      .heavy {        font: bold 30px sans-serif;      }              .Rrrrr {        font: italic 40px serif;        fill: red;      }      .title {        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #319795;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }      .content {        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #45474F;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }    </style>    <rect        data-testid=\"card-bg\"        x=\"1%\"        y=\"0.5%\"        rx=\"25\"        height=\"99%\"        stroke=\"#319795\"        width=\"98%\"        fill=\"#ffffff\"      />      <rect      data-testid=\"card-bg\"      x=\"7%\"      y=\"20%\"      rx=\"5\"      height=\"70%\"      width=\"86%\"      fill=\"#EFF8FF\"    />       <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>    <text x=\"64%\" y=\"32%\" class=\"content\">${feedbackCnt}</text>    <text x=\"64%\" y=\"42%\" class=\"content\">${codeReviewCnt}</text>    <text x=\"64%\" y=\"52%\" class=\"content\">${includedFeedbackCnt}</text>    <text x=\"64%\" y=\"62%\" class=\"content\">${includedCodeReviewCnt}</text>    <text x=\"64%\" y=\"72%\" class=\"content\">${projectRefactorCnt}</text>    <text x=\"64%\" y=\"82%\" class=\"content\">${codeRefactorCnt}</text>  </svg>";
+
+    @DisplayName("스탯 카드에 유저 아이디를 가지고 정보 넣기 성공")
+    @Test
+    void makeStackCardWithUserIdSucceed() throws FileNotFoundException {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(1L);
+        doReturn(1).when(feedbackRepository).countByUsers(any(Users.class));
+        doReturn(2).when(reviewsRepository).countByUsers(any(Users.class));
+        doReturn(3).when(selectedFeedbacksRepository).countByUsers(any(Users.class));
+        doReturn(4).when(selectedReviewsRepository).countByUsers(any(Users.class));
+        doReturn(5).when(projectsRepository).countByProjectWriter(any(Users.class));
+        doReturn(6).when(codesRepository).countByCodeWriter(any(Users.class));
+
+        // when
+        String completeCard = mypageService.makeStatCardWithUserId(users.getUsersId());
+
+        // then
+        assertThat(completeCard).isEqualTo("<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
+                "    <style>\n" +
+                "      .small {\n" +
+                "        font: italic 13px sans-serif;\n" +
+                "      }\n" +
+                "      .heavy {\n" +
+                "        font: bold 30px sans-serif;\n" +
+                "      }\n" +
+                "  \n" +
+                "      /* Note that the color of the text is set with the    *\n" +
+                "       * fill property, the color property is for HTML only */\n" +
+                "      .Rrrrr {\n" +
+                "        font: italic 40px serif;\n" +
+                "        fill: red;\n" +
+                "      }\n" +
+                "      .title {\n" +
+                "        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
+                "        fill: #319795;\n" +
+                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
+                "      }\n" +
+                "      .content {\n" +
+                "        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
+                "        fill: #45474F;\n" +
+                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
+                "      }\n" +
+                "    </style>\n" +
+                "    <rect\n" +
+                "        data-testid=\"card-bg\"\n" +
+                "        x=\"1%\"\n" +
+                "        y=\"0.5%\"\n" +
+                "        rx=\"25\"\n" +
+                "        height=\"99%\"\n" +
+                "        stroke=\"#319795\"\n" +
+                "        width=\"98%\"\n" +
+                "        fill=\"#ffffff\"\n" +
+                "      />\n" +
+                "\n" +
+                "      <rect\n" +
+                "      data-testid=\"card-bg\"\n" +
+                "      x=\"7%\"\n" +
+                "      y=\"20%\"\n" +
+                "      rx=\"5\"\n" +
+                "      height=\"70%\"\n" +
+                "      width=\"86%\"\n" +
+                "      fill=\"#EFF8FF\"\n" +
+                "    /> \n" +
+                "  \n" +
+                "    <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>\n" +
+                "\n" +
+                "    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>\n" +
+                "    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>\n" +
+                "    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>\n" +
+                "    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>\n" +
+                "    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>\n" +
+                "    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>\n" +
+                "\n" +
+                "    <text x=\"64%\" y=\"32%\" class=\"content\">1</text>\n" +
+                "    <text x=\"64%\" y=\"42%\" class=\"content\">2</text>\n" +
+                "    <text x=\"64%\" y=\"52%\" class=\"content\">3</text>\n" +
+                "    <text x=\"64%\" y=\"62%\" class=\"content\">4</text>\n" +
+                "    <text x=\"64%\" y=\"72%\" class=\"content\">5</text>\n" +
+                "    <text x=\"64%\" y=\"82%\" class=\"content\">6</text>\n" +
+                "\n" +
+                "  </svg>");
+    }
+
+    @DisplayName("스탯 카드에 유저 이름을 가지고 정보 넣기 성공")
+    @Test
+    void makeStackCardWithUserNameSucceed() throws FileNotFoundException {
+        // given
+        doReturn(Optional.of(users)).when(usersRepository).findByName(any(String.class));
+        doReturn(1).when(feedbackRepository).countByUsers(any(Users.class));
+        doReturn(2).when(reviewsRepository).countByUsers(any(Users.class));
+        doReturn(3).when(selectedFeedbacksRepository).countByUsers(any(Users.class));
+        doReturn(4).when(selectedReviewsRepository).countByUsers(any(Users.class));
+        doReturn(5).when(projectsRepository).countByProjectWriter(any(Users.class));
+        doReturn(6).when(codesRepository).countByCodeWriter(any(Users.class));
+
+        // when
+        String completeCard = mypageService.makeStatCardWithUserName(users.getName());
+
+        // then
+        assertThat(completeCard).isEqualTo("<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
+                "    <style>\n" +
+                "      .small {\n" +
+                "        font: italic 13px sans-serif;\n" +
+                "      }\n" +
+                "      .heavy {\n" +
+                "        font: bold 30px sans-serif;\n" +
+                "      }\n" +
+                "  \n" +
+                "      /* Note that the color of the text is set with the    *\n" +
+                "       * fill property, the color property is for HTML only */\n" +
+                "      .Rrrrr {\n" +
+                "        font: italic 40px serif;\n" +
+                "        fill: red;\n" +
+                "      }\n" +
+                "      .title {\n" +
+                "        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
+                "        fill: #319795;\n" +
+                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
+                "      }\n" +
+                "      .content {\n" +
+                "        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
+                "        fill: #45474F;\n" +
+                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
+                "      }\n" +
+                "    </style>\n" +
+                "    <rect\n" +
+                "        data-testid=\"card-bg\"\n" +
+                "        x=\"1%\"\n" +
+                "        y=\"0.5%\"\n" +
+                "        rx=\"25\"\n" +
+                "        height=\"99%\"\n" +
+                "        stroke=\"#319795\"\n" +
+                "        width=\"98%\"\n" +
+                "        fill=\"#ffffff\"\n" +
+                "      />\n" +
+                "\n" +
+                "      <rect\n" +
+                "      data-testid=\"card-bg\"\n" +
+                "      x=\"7%\"\n" +
+                "      y=\"20%\"\n" +
+                "      rx=\"5\"\n" +
+                "      height=\"70%\"\n" +
+                "      width=\"86%\"\n" +
+                "      fill=\"#EFF8FF\"\n" +
+                "    /> \n" +
+                "  \n" +
+                "    <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>\n" +
+                "\n" +
+                "    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>\n" +
+                "    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>\n" +
+                "    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>\n" +
+                "    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>\n" +
+                "    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>\n" +
+                "    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>\n" +
+                "\n" +
+                "    <text x=\"64%\" y=\"32%\" class=\"content\">1</text>\n" +
+                "    <text x=\"64%\" y=\"42%\" class=\"content\">2</text>\n" +
+                "    <text x=\"64%\" y=\"52%\" class=\"content\">3</text>\n" +
+                "    <text x=\"64%\" y=\"62%\" class=\"content\">4</text>\n" +
+                "    <text x=\"64%\" y=\"72%\" class=\"content\">5</text>\n" +
+                "    <text x=\"64%\" y=\"82%\" class=\"content\">6</text>\n" +
+                "\n" +
+                "  </svg>");
+    }
 
     @DisplayName("즐겨찾기한 코드 목록 조회 성공")
     @Test

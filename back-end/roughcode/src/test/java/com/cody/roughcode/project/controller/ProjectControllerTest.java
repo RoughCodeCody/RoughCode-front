@@ -375,7 +375,7 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/{projectId}/favorite";
 
         doReturn(1).when(projectsService)
-                .favoriteProject(any(Long.class), any(String.class), any(Long.class));
+                .favoriteProject(any(Long.class), any(Long.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -400,7 +400,7 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/{projectId}/favorite";
 
         doReturn(-1).when(projectsService)
-                .favoriteProject(any(Long.class), any(String.class), any(Long.class));
+                .favoriteProject(any(Long.class), any(Long.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -606,7 +606,7 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/check";
 
         doReturn(true).when(projectsService)
-                .checkProject(any(String.class), any(Long.class));
+                .checkProject(any(String.class), false);
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -632,8 +632,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/check";
 
-        doReturn(false).when(projectsService)
-                .checkProject(any(String.class), any(Long.class));
+        doReturn(false).when(projectsService).checkProject(any(String.class), false);
 
         // when
         final ResultActions resultActions = mockMvc.perform(

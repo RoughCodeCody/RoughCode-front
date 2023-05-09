@@ -1,30 +1,35 @@
 package com.cody.roughcode.code.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.dto.res.ReviewCodeRes;
 import com.cody.roughcode.code.dto.res.ReviewDetailRes;
-import com.cody.roughcode.code.dto.res.ReviewRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
-import com.cody.roughcode.exception.*;
+import com.cody.roughcode.email.service.EmailServiceImpl;
+import com.cody.roughcode.exception.NotMatchException;
+import com.cody.roughcode.exception.SaveFailedException;
+import com.cody.roughcode.exception.SelectedException;
+import com.cody.roughcode.exception.UpdateFailedException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ReviewsServiceImpl implements ReviewsService{
+public class ReviewsServiceImpl implements ReviewsService {
 
     private final UsersRepository usersRepository;
     private final CodesRepository codesRepository;
@@ -36,15 +41,17 @@ public class ReviewsServiceImpl implements ReviewsService{
     private final ReReviewsRepository reReviewsRepository;
     private final ReReviewLikesRepository reReviewLikesRepository;
 
+    private final AlarmServiceImpl alarmService;
+    private final EmailServiceImpl emailService;
+
     @Override
     @Transactional
-    public Long insertReview(ReviewReq req, Long userId) {
+    public Long insertReview(ReviewReq req, Long userId) throws MessagingException {
 
         Users user = usersRepository.findByUsersId(userId);
         Codes code = codesRepository.findByCodesId(req.getCodeId());
-        CodesInfo codesInfo = codesInfoRepository.findByCodesId(req.getCodeId());
 
-        if(codesInfo == null) {
+        if (code == null) {
             throw new NullPointerException("일치하는 코드가 없습니다");
         }
 
@@ -70,6 +77,19 @@ public class ReviewsServiceImpl implements ReviewsService{
             log.error(e.getMessage());
             throw new SaveFailedException(e.getMessage());
         }
+
+        // 알람 전송
+        AlarmReq alarmContent = AlarmReq.builder()
+                .content(List.of("작성한", code.getTitle() + " ver" + code.getVersion(), "새 리뷰 등록"))
+                .userId(code.getCodeWriter().getUsersId())
+                .postId(code.getCodesId())
+                .section("code")
+                .build();
+
+        // 작성한 무슨무슨 코드 ver1에 새 리뷰 등록 -> [“작성한”, “무슨무슨 코드 ver1”, “새 리뷰 등록”]
+        alarmService.insertAlarm(alarmContent);
+
+        emailService.sendAlarm("새 리뷰가 등록되었습니다", alarmContent);
 
         return reviewId;
     }
@@ -161,16 +181,16 @@ public class ReviewsServiceImpl implements ReviewsService{
 
         try {
             // 코드 리뷰 정보 업데이트
-            if(StringUtils.hasText(req.getContent())){
-                log.info("코드 리뷰 정보 수정(상세설명): "+ req.getContent());
+            if (StringUtils.hasText(req.getContent())) {
+                log.info("코드 리뷰 정보 수정(상세설명): " + req.getContent());
                 target.updateContent(req.getContent());
             }
-            if(StringUtils.hasText(req.getCodeContent())){
-                log.info("코드 리뷰 정보 수정(코드내용): "+ req.getCodeContent());
+            if (StringUtils.hasText(req.getCodeContent())) {
+                log.info("코드 리뷰 정보 수정(코드내용): " + req.getCodeContent());
                 target.updateCodeContent(req.getCodeContent());
             }
-            if(req.getSelectedRange().size()>0){
-                log.info("코드 리뷰 정보 수정(선택구간): "+ req.getSelectedRange());
+            if (req.getSelectedRange().size() > 0) {
+                log.info("코드 리뷰 정보 수정(선택구간): " + req.getSelectedRange());
                 target.updateLineNumbers(req.getSelectedRange());
             }
         } catch (Exception e) {
@@ -229,6 +249,79 @@ public class ReviewsServiceImpl implements ReviewsService{
             log.error(e.getMessage());
             throw new UpdateFailedException(e.getMessage());
         }
+
+        return 1;
+    }
+
+    @Override
+    @Transactional
+    public int likeReview(Long reviewId, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+
+        // 좋아요 누른 사용자 확인
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+
+        // 기존 코드 리뷰 가져오기
+        Reviews target = reviewsRepository.findByReviewsId(reviewId);
+        if (target == null) {
+            throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
+        }
+
+        // 좋아요를 누른 여부 확인 (눌려있다면 취소 처리, 새로 누른 경우 등록 처리)
+        ReviewLikes reviewLikes = reviewLikesRepository.findByReviewsAndUsers(target, user);
+
+        // 좋아요가 눌려있다면 취소 처리
+        if (reviewLikes != null) {
+            // ReviewLikes 데이터 삭제
+            reviewLikesRepository.delete(reviewLikes);
+            // 코드 리뷰 좋아요 수 감소
+            target.likeCntDown();
+        } else { // 새로 누른 경우 등록 처리
+            // ReviewLikes 데이터 추가
+            reviewLikesRepository.save(
+                    ReviewLikes.builder()
+                            .reviews(target)
+                            .users(user)
+                            .build());
+
+            // 코드 리뷰 좋아요 수 증가
+            target.likeCntUp();
+        }
+
+        // 좋아요 수 반환
+        return target.getLikeCnt();
+    }
+
+    @Override
+    @Transactional
+    public int complainReview(Long reviewId, Long userId) {
+
+        Users user = usersRepository.findByUsersId(userId);
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+        // 기존 코드 리뷰 가져오기
+        Reviews target = reviewsRepository.findByReviewsId(reviewId);
+        if (target == null) {
+            throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
+        }
+        List<String> complainList = (target.getComplaint().equals("")) ? new ArrayList<>() : new ArrayList<>(List.of(target.getComplaint().split(",")));
+
+        if (target.getCodeContent() == null || target.getCodeContent() == "") {
+            throw new SelectedException("이미 삭제된 코드 리뷰입니다");
+        }
+        if (target.getComplaint().contains(String.valueOf(userId))) {
+            throw new SelectedException("이미 신고한 코드 리뷰입니다");
+        }
+        log.info(complainList.size() + "번 신고된 코드 리뷰입니다");
+        if(complainList.size() >= 10){
+            target.deleteCodeContent();
+        }
+        complainList.add(String.valueOf(userId));
+        target.setComplaint(complainList);
 
         return 1;
     }

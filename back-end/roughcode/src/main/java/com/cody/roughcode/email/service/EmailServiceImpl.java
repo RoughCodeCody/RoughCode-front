@@ -71,7 +71,7 @@ public class EmailServiceImpl extends EmailService {
     public void sendAlarm(String subject, AlarmReq alarmReq) throws MessagingException {
         Users user = usersRepository.findByUsersId(alarmReq.getUserId());
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-        if(user.getEmail() == null) {
+        if(user.getEmail() == null || user.getEmail().equals("")) {
             log.debug(user.getName() + "은 이메일이 등록되어있지 않습니다");
             return;
         }
