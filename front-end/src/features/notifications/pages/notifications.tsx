@@ -40,6 +40,7 @@ export const Notifications = () => {
                     }
                     color={notice.section === "project" ? "sub-three" : ""}
                     shadow={true}
+                    alarmId={notice.alarmId}
                     key={notice.alarmId}
                   >
                     <NoticeContent data={notice}></NoticeContent>
