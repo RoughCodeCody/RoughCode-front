@@ -6,13 +6,14 @@ import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import org.springframework.data.domain.PageRequest;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 public interface CodesService {
 
     List<CodeInfoRes> getCodeList(String sort, PageRequest pageRequest, String keyword, String tagIdList, Long userId);
 
-    Long insertCode(CodeReq req, Long userId);
+    Long insertCode(CodeReq req, Long userId) throws MessagingException;
 
     CodeDetailRes getCode(Long codeId, Long userId);
 

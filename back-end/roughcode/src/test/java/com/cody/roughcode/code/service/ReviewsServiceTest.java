@@ -1,9 +1,12 @@
 package com.cody.roughcode.code.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.dto.res.ReviewDetailRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.SelectedException;
 import com.cody.roughcode.user.entity.Users;
@@ -15,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -29,6 +33,10 @@ public class ReviewsServiceTest {
 
     @InjectMocks
     private ReviewsServiceImpl reviewsService;
+    @Mock
+    private AlarmServiceImpl alarmService;
+    @Mock
+    private EmailServiceImpl emailService;
 
     @Mock
     private ReviewsRepository reviewsRepository;
@@ -87,13 +95,22 @@ public class ReviewsServiceTest {
             .content("설명설명")
             .build();
 
+    final AlarmReq alarmReq = AlarmReq.builder()
+            .content(List.of("알람알람"))
+            .userId(1L)
+            .section("code")
+            .postId(1L)
+            .build();
+
     @DisplayName("코드 리뷰 등록 성공")
     @Test
-    void insertReviewSucceed() {
+    void insertReviewSucceed() throws MessagingException {
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
         doReturn(review).when(reviewsRepository).save(any(Reviews.class));
+        alarmService.insertAlarm(any(AlarmReq.class));
+        emailService.sendAlarm("이메일 전송", alarmReq);
 
         // when
         Long savedReviewId = reviewsService.insertReview(req, 1L);
@@ -104,11 +121,13 @@ public class ReviewsServiceTest {
 
     @DisplayName("코드 리뷰 등록 성공 - 익명 사용자")
     @Test
-    void insertReviewSucceedUserNull() {
+    void insertReviewSucceedUserNull() throws MessagingException {
         // given
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
         doReturn(review).when(reviewsRepository).save(any(Reviews.class));
+        alarmService.insertAlarm(any(AlarmReq.class));
+        emailService.sendAlarm("이메일 전송", alarmReq);
 
         // when
         Long savedReviewId = reviewsService.insertReview(req, 1L);

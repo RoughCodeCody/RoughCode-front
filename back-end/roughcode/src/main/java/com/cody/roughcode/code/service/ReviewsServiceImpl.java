@@ -1,11 +1,14 @@
 package com.cody.roughcode.code.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.req.ReviewReq;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.dto.res.ReviewCodeRes;
 import com.cody.roughcode.code.dto.res.ReviewDetailRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.SaveFailedException;
 import com.cody.roughcode.exception.SelectedException;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,15 +41,17 @@ public class ReviewsServiceImpl implements ReviewsService {
     private final ReReviewsRepository reReviewsRepository;
     private final ReReviewLikesRepository reReviewLikesRepository;
 
+    private final AlarmServiceImpl alarmService;
+    private final EmailServiceImpl emailService;
+
     @Override
     @Transactional
-    public Long insertReview(ReviewReq req, Long userId) {
+    public Long insertReview(ReviewReq req, Long userId) throws MessagingException {
 
         Users user = usersRepository.findByUsersId(userId);
         Codes code = codesRepository.findByCodesId(req.getCodeId());
-        CodesInfo codesInfo = codesInfoRepository.findByCodesId(req.getCodeId());
 
-        if (codesInfo == null) {
+        if (code == null) {
             throw new NullPointerException("일치하는 코드가 없습니다");
         }
 
@@ -71,6 +77,19 @@ public class ReviewsServiceImpl implements ReviewsService {
             log.error(e.getMessage());
             throw new SaveFailedException(e.getMessage());
         }
+
+        // 알람 전송
+        AlarmReq alarmContent = AlarmReq.builder()
+                .content(List.of("작성한", code.getTitle() + " ver" + code.getVersion(), "새 리뷰 등록"))
+                .userId(code.getCodeWriter().getUsersId())
+                .postId(code.getCodesId())
+                .section("code")
+                .build();
+
+        // 작성한 무슨무슨 코드 ver1에 새 리뷰 등록 -> [“작성한”, “무슨무슨 코드 ver1”, “새 리뷰 등록”]
+        alarmService.insertAlarm(alarmContent);
+
+        emailService.sendAlarm("새 리뷰가 등록되었습니다", alarmContent);
 
         return reviewId;
     }

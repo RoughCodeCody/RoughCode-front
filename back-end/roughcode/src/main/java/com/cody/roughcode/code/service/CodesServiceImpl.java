@@ -1,9 +1,12 @@
 package com.cody.roughcode.code.service;
 
+import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
+import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.exception.NotNewestVersionException;
 import com.cody.roughcode.exception.SaveFailedException;
@@ -14,6 +17,7 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.mail.MessagingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,6 +48,9 @@ public class CodesServiceImpl implements CodesService {
     private final ReviewLikesRepository reviewLikesRepository;
     private final ReReviewsRepository reReviewsRepository;
     private final ReReviewLikesRepository reReviewLikesRepository;
+
+    private final AlarmServiceImpl alarmService;
+    private final EmailServiceImpl emailService;
 
     @Override
     @Transactional
@@ -76,7 +84,7 @@ public class CodesServiceImpl implements CodesService {
 
     @Override
     @Transactional
-    public Long insertCode(CodeReq req, Long userId) {
+    public Long insertCode(CodeReq req, Long userId) throws MessagingException {
 
         Users user = usersRepository.findByUsersId(userId);
         if (user == null) {
@@ -86,6 +94,10 @@ public class CodesServiceImpl implements CodesService {
         if (req.getGithubUrl() == null) {
             throw new NullPointerException("코드를 불러올 github URL이 존재하지 않습니다");
         }
+
+        // 알람을 보낼 userIds
+        List<Long> bookmarkAlarm = new ArrayList<>(); // 기존 코드를 북마크한 사용자
+        List<Long> reviewAlarm = new ArrayList<>(); // 등록하는 코드에 반영되는 리뷰 작성자
 
         // 새 코드를 생성하는 경우 codeNum은 작성자의 codes_cnt+1
         // 이전 코드를 업데이트 하는 경우 codeNum은 이전 code의 codeNum + 1
@@ -110,6 +122,13 @@ public class CodesServiceImpl implements CodesService {
             log.info("기존 코드 최근 버전: " + original.getVersion());
             codeNum = original.getNum();
             codeVersion = original.getVersion() + 1;
+
+            // 북마크한 사용자 목록 저장
+            if (original.getCodeFavorites() != null) {
+                for (CodeFavorites cf : original.getCodeFavorites()) {
+                    bookmarkAlarm.add(cf.getUsers().getUsersId());
+                }
+            }
         }
 
         // 연결한 프로젝트가 있다면
@@ -118,6 +137,7 @@ public class CodesServiceImpl implements CodesService {
             connectedProject = projectsRepository.findByProjectsId(req.getProjectId());
         }
 
+        Codes savedCode = null;
         Long codeId = -1L;
         try {
             // 코드 저장
@@ -128,7 +148,7 @@ public class CodesServiceImpl implements CodesService {
                     .codeWriter(user)
                     .projects(connectedProject)
                     .build();
-            Codes savedCode = codesRepository.save(code);
+            savedCode = codesRepository.save(code);
             codeId = savedCode.getCodesId();
 
             // tag 등록
@@ -175,15 +195,43 @@ public class CodesServiceImpl implements CodesService {
                             .codesInfo(codesInfo)
                             .build();
                     selectedReviewsRepository.save(selectedReviews);
+
+                    // 반영한 리뷰 작성자 목록 저장
+                    if (review.getUsers() != null) {
+                        reviewAlarm.add(review.getUsers().getUsersId());
+                    }
                 }
             } else {
                 log.info("반영한 리뷰가 없습니다.");
             }
 
-
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new SaveFailedException(e.getMessage());
+        }
+
+        // 알람 저장
+        // 북마크한 무슨무슨 코드 ver1의 새 버전 ver2 업데이트  -> [“북마크한”, “무슨무슨 코드 ver1의 새 버전 ver2”, “업데이트”]
+        for (Long id : bookmarkAlarm) {
+            AlarmReq alarmContent = AlarmReq.builder()
+                    .section("code")
+                    .userId(id)
+                    .content(List.of("북마크한", savedCode.getTitle() + " ver" + (savedCode.getVersion() - 1) + "의 새 버전 ver" + savedCode.getVersion(), "업데이트"))
+                    .postId(codeId).build();
+            alarmService.insertAlarm(alarmContent);
+
+            emailService.sendAlarm("북마크한 코드가 업데이트되었습니다", alarmContent);
+        }
+        // 작성한 리뷰가 반영된 무슨무슨 코드 ver1의 새 버전 ver2 업데이트 -> [“작성한 리뷰가 반영된”, “무슨무슨 코드 ver1의 새 버전 ver2”, “업데이트”]
+        for (Long id : reviewAlarm) {
+            AlarmReq alarmContent = AlarmReq.builder()
+                    .section("code")
+                    .userId(id)
+                    .content(List.of("작성한 리뷰가 반영된", savedCode.getTitle() + " ver" + (savedCode.getVersion() - 1) + "의 새 버전 ver" + savedCode.getVersion(), "업데이트"))
+                    .postId(codeId).build();
+            alarmService.insertAlarm(alarmContent);
+
+            emailService.sendAlarm("리뷰가 반영되었습니다", alarmContent);
         }
 
         return codeId;
@@ -627,7 +675,7 @@ public class CodesServiceImpl implements CodesService {
     public List<CodeTagsRes> searchTags(String keyword) {
         List<CodeTags> tags = codeTagsRepository.findAllByNameContaining(keyword, Sort.by(Sort.Direction.ASC, "name"));
         List<CodeTagsRes> result = new ArrayList<>();
-        for(CodeTags tag: tags){
+        for (CodeTags tag : tags) {
             result.add(new CodeTagsRes(tag));
         }
         return result;
