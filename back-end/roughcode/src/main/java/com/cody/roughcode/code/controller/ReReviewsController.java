@@ -36,7 +36,7 @@ public class ReReviewsController {
 
     @Operation(summary = "코드 리-리뷰 목록 조회 API")
     @GetMapping("/{reviewId}")
-    ResponseEntity<?> insertReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+    ResponseEntity<?> getReReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                    @Parameter(description = "코드 리뷰 아이디", required = true)
                                    @Min(value = 1, message = "reviewId 값이 범위를 벗어납니다")
                                    @PathVariable Long reviewId) {
@@ -53,9 +53,30 @@ public class ReReviewsController {
         return Response.makeResponse(HttpStatus.OK, "코드 리-리뷰 조회 성공", res.size(), res);
     }
 
+    @Operation(summary = "코드 리-리뷰 수정 API")
+    @PutMapping
+    ResponseEntity<?> updateReReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                   @Parameter(description = "코드 리-리뷰 정보 값", required = true)
+                                   @Valid @RequestBody ReReviewReq reReviewReq) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+
+        int res = 0;
+        try {
+            res = reReviewsService.updateReReview(reReviewReq, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res <= 0) {
+            return Response.notFound("코드 리-리뷰 수정 실패");
+        }
+        return Response.ok("코드 리-리뷰 수정 성공");
+    }
+
     @Operation(summary = "코드 리-리뷰 등록 API")
     @PostMapping
-    ResponseEntity<?> insertReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+    ResponseEntity<?> insertReReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                    @Parameter(description = "코드 리-리뷰 정보 값", required = true)
                                    @Valid @RequestBody ReReviewReq reReviewReq) {
         Long userId = (accessToken!= null)? jwtTokenProvider.getId(accessToken) : -1L;

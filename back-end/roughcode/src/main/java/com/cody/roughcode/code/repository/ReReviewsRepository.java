@@ -23,4 +23,6 @@ public interface ReReviewsRepository extends JpaRepository<ReReviews, Long> {
     @Modifying
     @Transactional
     void deleteAllByReviews(Reviews reviews);
+
+    ReReviews findByReReviewsId(Long reReviewsId);
 }

@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ReReviewsService {
     int insertReReview(ReReviewReq req, Long usersId);
+    int updateReReview(ReReviewReq req, Long usersId);
     List<ReReviewRes> getReReviewList(Long reviewsId, Long usersId);
 }
