@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface MypageService {
-    String makeStatCard(String userName) throws IOException;
+    String makeStatCardWithUserId(Long userId) throws FileNotFoundException;
+    String makeStatCardWithUserName(String userName) throws FileNotFoundException;
 
     Pair<List<CodeInfoRes>, Boolean> getCodeList(PageRequest pageRequest, Long usersId);
     Pair<List<CodeInfoRes>, Boolean> getFavoriteCodeList(PageRequest pageRequest, Long usersId);

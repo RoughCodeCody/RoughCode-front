@@ -113,6 +113,55 @@ public class MypageControllerTest {
             .reviewCnt(1)
             .build();
 
+    @DisplayName("스탯 카드 정보 가져오기 성공 - cookie")
+    @Test
+    public void makeStatCardWithCookieSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage";
+        doReturn(users.getUsersId()).when(jwtTokenProvider).getId(any(String.class));
+        doReturn("string").when(mypageService).makeStatCardWithUserId(eq(users.getUsersId()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        String result = jsonObject.get("result").getAsString();
+        assertThat(message).isEqualTo("스탯 카드 정보 만들기 성공");
+        assertThat(result).isEqualTo("string");
+    }
+
+    @DisplayName("스탯 카드 정보 가져오기 성공 - userName")
+    @Test
+    public void makeStatCardWithUserNameSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage";
+        doReturn("string").when(mypageService).makeStatCardWithUserName(eq(users.getName()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .param("userName", users.getName())
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        String result = jsonObject.get("result").getAsString();
+        assertThat(message).isEqualTo("스탯 카드 정보 만들기 성공");
+        assertThat(result).isEqualTo("string");
+    }
+
     @DisplayName("이메일 인증 코드 성공")
     @Test
     public void checkEmailSucceed() throws Exception {
