@@ -1,58 +1,60 @@
 import { useRouter } from "next/navigation";
 
 import { useCode } from "../api/get-code";
-import { useCodeInfo } from "../api/get-code-info";
+import { useCodeFeedbackInfo } from "../api/get-code-feedback-info";
 import { useCreateCodeFeedback } from "../api/post-code-feedback";
+import { useModifyCodeFeedback } from "../api/put-code-feedback";
 import { CodeInfo } from "../components/code-info";
 import { BottomHeader, Btn, FlexDiv, Title, Text } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 
-type CreateCodeFeedbackProps = {
-  codeId: number;
+type ModifyCodeFeedback = {
+  feedbackId: number;
 };
 
-export const ModifyCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
+export const ModifyCodeFeedback = ({ feedbackId }: ModifyCodeFeedback) => {
   const router = useRouter();
-  const codeFeedbackQuery = useCreateCodeFeedback();
-  const { CodeReviewFeedbackData } = useCodeReviewFeedbackDataStore();
+  const codeFeedbackQuery = useModifyCodeFeedback();
+  const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
 
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
-  const codeInfoQuery = useCodeInfo(codeId);
+  const codeFeedbackInfoQuery = useCodeFeedbackInfo(feedbackId);
 
-  const githubUrl = codeInfoQuery.data?.githubUrl
-    ? codeInfoQuery.data?.githubUrl
+  const githubUrl = codeFeedbackInfoQuery.data?.githubUrl
+    ? codeFeedbackInfoQuery.data?.githubUrl
     : "";
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
 
-  // 여기서 post 요청 보냄
-  const postCodeFeedback = () => {
-    const data = {
-      codeId: codeId,
-      selectedRange: CodeReviewFeedbackData.selectedLines,
-      codeContent: CodeReviewFeedbackData.modifiedCode,
-      content: CodeReviewFeedbackData.feedbackContent,
-    };
-    codeFeedbackQuery.mutate(
-      { data },
-      {
-        onSuccess() {
-          router.push(`/code-review/${codeId}`);
-        },
-      }
-    );
-
-    console.log(codeId);
-    console.log(CodeReviewFeedbackData.selectedLines);
-    console.log(CodeReviewFeedbackData.modifiedCode);
-    console.log(CodeReviewFeedbackData.feedbackContent);
+  // 여기서 put 요청 보냄
+  // 만들고 수정해야 함
+  const putCodeFeedback = () => {
+    if (codeFeedbackInfoQuery.data) {
+      const codeId = codeFeedbackInfoQuery.data?.code.codeId;
+      const feedbackId = codeFeedbackInfoQuery.data?.reviewId;
+      const data = {
+        codeId: codeId,
+        selectedRange: CodeReviewFeedbackData.selectedLines,
+        codeContent: CodeReviewFeedbackData.modifiedCode,
+        content: CodeReviewFeedbackData.feedbackContent,
+      };
+      codeFeedbackQuery.mutate(
+        { data, feedbackId },
+        {
+          onSuccess() {
+            reset();
+            router.push(`/code-review/${codeId}`);
+          },
+        }
+      );
+    }
   };
 
-  if (codeInfoQuery.isLoading) {
+  if (codeFeedbackInfoQuery.isLoading) {
     return <div></div>;
   }
-  if (codeInfoQuery.isError)
+  if (codeFeedbackInfoQuery.isError)
     return (
       <FlexDiv>
         <Text>Not Found</Text>
@@ -67,9 +69,9 @@ export const ModifyCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
         gap="6rem"
         align="center"
       >
-        <BottomHeader locations={["코드 피드백 등록"]} />
+        <BottomHeader locations={["코드 피드백 수정"]} />
         <FlexDiv width="95%">
-          <CodeInfo data={codeInfoQuery.data} />
+          <CodeInfo data={codeFeedbackInfoQuery.data?.code} />
         </FlexDiv>
         <FlexDiv width="100%" direction="column" gap="3rem">
           <Title
@@ -94,7 +96,7 @@ export const ModifyCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
                   height="30rem"
                   readOnly={false}
                   language="javascript"
-                  originalCode={originalCode}
+                  originalCode={codeFeedbackInfoQuery.data.codeContent}
                 />
               </FlexDiv>
             </>
@@ -118,12 +120,12 @@ export const ModifyCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
         {/* 여기가 md에디터 자리 */}
       </FlexDiv>
 
-      {/* 등록 버튼 : 서버에 post 요청*/}
+      {/* 등록 버튼 : 서버에 put 요청*/}
       <Btn
-        text={"등록"}
+        text={"수정"}
         fontSize="2rem"
         onClickFunc={() => {
-          postCodeFeedback();
+          putCodeFeedback();
         }}
       />
     </FlexDiv>

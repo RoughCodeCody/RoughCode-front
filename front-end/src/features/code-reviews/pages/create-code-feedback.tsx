@@ -15,7 +15,7 @@ type CreateCodeFeedbackProps = {
 export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
   const router = useRouter();
   const codeFeedbackQuery = useCreateCodeFeedback();
-  const { CodeReviewFeedbackData } = useCodeReviewFeedbackDataStore();
+  const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
 
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
   const codeInfoQuery = useCodeInfo(codeId);
@@ -38,15 +38,11 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
       { data },
       {
         onSuccess() {
+          reset();
           router.push(`/code-review/${codeId}`);
         },
       }
     );
-
-    console.log(codeId);
-    console.log(CodeReviewFeedbackData.selectedLines);
-    console.log(CodeReviewFeedbackData.modifiedCode);
-    console.log(CodeReviewFeedbackData.feedbackContent);
   };
 
   if (codeInfoQuery.isLoading) {
