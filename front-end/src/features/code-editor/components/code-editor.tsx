@@ -69,7 +69,18 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         let deltaDecoration = [
           {
             range: new monaco.Range(line[0], 1, line[1], 1),
-            options: { isWholeLine: true, className: "selected-line" },
+            options: {
+              isWholeLine: true,
+              className: "selected-line",
+              overviewRuler: {
+                color: "rgba(255, 179, 64, 0.7)",
+                position: monaco.editor.OverviewRulerLane.Full,
+              },
+              minimap: {
+                color: "rgba(255, 179, 64, 0.7)",
+                position: monaco.editor.MinimapPosition.Inline,
+              },
+            },
           },
         ];
         let appliedDecos = editorRef.current?.deltaDecorations(
@@ -102,7 +113,18 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             draggedLineNumber[1],
             1
           ),
-          options: { isWholeLine: true, className: "selected-line" },
+          options: {
+            isWholeLine: true,
+            className: "selected-line",
+            minimap: {
+              color: "rgba(255, 179, 64, 0.7)",
+              position: monaco.editor.MinimapPosition.Inline,
+            },
+            overviewRuler: {
+              color: "rgba(255, 179, 64, 0.7)",
+              position: monaco.editor.OverviewRulerLane.Full,
+            },
+          },
         },
       ];
 
