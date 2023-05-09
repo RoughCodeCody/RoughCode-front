@@ -73,6 +73,82 @@ public class ReReviewsControllerTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @DisplayName("코드 리-리뷰 좋아요/취소 실패")
+    @Test
+    public void likeReReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/like";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(-1).when(reReviewsService).likeReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 좋아요 또는 취소 실패");
+    }
+
+    @DisplayName("코드 리-리뷰 좋아요 취소 성공")
+    @Test
+    public void likeReReviewSucceedCancel() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/like";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(0).when(reReviewsService).likeReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        String result = jsonObject.get("result").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 좋아요 또는 취소 성공");
+        assertThat(result).isEqualTo("0");
+    }
+
+    @DisplayName("코드 리-리뷰 좋아요 성공")
+    @Test
+    public void likeReReviewSucceedLike() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/like";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(1).when(reReviewsService).likeReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        String result = jsonObject.get("result").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 좋아요 또는 취소 성공");
+        assertThat(result).isEqualTo("1");
+    }
+
     @DisplayName("코드 리-리뷰 삭제 성공")
     @Test
     public void deleteReReviewSucceed() throws Exception {
@@ -125,6 +201,7 @@ public class ReReviewsControllerTest {
         // given
         final String url = "/api/v1/code/rereview";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(0).when(reReviewsService).updateReReview(any(ReReviewReq.class), any(Long.class));
 
         // when
@@ -150,6 +227,7 @@ public class ReReviewsControllerTest {
         // given
         final String url = "/api/v1/code/rereview";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(reReviewsService).updateReReview(any(ReReviewReq.class), any(Long.class));
 
         // when
