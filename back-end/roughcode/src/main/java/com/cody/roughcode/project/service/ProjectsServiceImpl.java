@@ -72,9 +72,13 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public Long insertProject(ProjectReq req, Long usersId) throws MessagingException {
+    public Long insertProject(ProjectReq req, Long usersId) throws MessagingException, IOException {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        // 등록 전 다시 url 체크
+        checkProject(req.getUrl(), false);
+
         ProjectsInfo info = ProjectsInfo.builder()
                 .url(req.getUrl())
                 .notice(req.getNotice())
@@ -677,13 +681,15 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public int isProjectOpen(Long projectId) throws MessagingException {
+    public int isProjectOpen(Long projectId) throws MessagingException, IOException {
         Projects project = projectsRepository.findByProjectsId(projectId);
             if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
         ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
         if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
 
+
         if(isOpen(projectsInfo.getUrl())) {
+            if(!checkProject(projectsInfo.getUrl(), true)) return 0;
             projectsInfo.setClosedChecked(null);
             return 1;
         }
@@ -739,13 +745,12 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public Boolean checkProject(String url, Long usersId) throws IOException {
+    public Boolean checkProject(String url, boolean open) throws IOException {
         String credentialsPath = "google-credentials.json"; // 인증 정보 파일 경로
 
-        Users users = usersRepository.findByUsersId(usersId);
-        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-
-        if (!isOpen(url)) throw new IOException("서버 확인이 필요한 URL입니다");
+        if(!open)
+            if (!isOpen(url))
+                throw new IOException("서버 확인이 필요한 URL입니다");
 
         SearchUrisResponse searchUrisResponse;
         try {
