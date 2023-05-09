@@ -38,6 +38,12 @@ public class ProjectRepositoryTest {
             .name("고수")
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
+    final Users users2 = Users.builder()
+            .usersId(2L)
+            .email("kosy17822@gmail.com")
+            .name("고수2")
+            .roles(List.of(String.valueOf(ROLE_USER)))
+            .build();
 
     @Autowired
     private CodesRepository codesRepository;
@@ -77,6 +83,72 @@ public class ProjectRepositoryTest {
         }
 
         return tagsList;
+    }
+
+    @DisplayName("내가 작성한 프로젝트 총 개수")
+    @Test
+    void countProjectByProjectWriter(){
+        // given
+        usersRepository.save(users);
+        usersRepository.save(users2);
+        Projects project1 = Projects.builder()
+                .projectsId(1L)
+                .num(1L)
+                .version(1)
+                .img("image url")
+                .introduction("intro1")
+                .title("title")
+                .projectWriter(users)
+                .closed(true)
+                .likeCnt(33)
+                .build();
+        Projects project2 = Projects.builder()
+                .projectsId(2L)
+                .num(1L)
+                .version(2)
+                .img("image url2")
+                .introduction("intro2")
+                .title("title2")
+                .projectWriter(users)
+                .closed(false)
+                .likeCnt(11)
+                .build();
+        Projects project3 = Projects.builder()
+                .projectsId(3L)
+                .num(1L)
+                .version(1)
+                .img("image url3")
+                .introduction("intro3")
+                .title("title3")
+                .projectWriter(users2)
+                .closed(false)
+                .likeCnt(22)
+                .build();
+        Projects project4 = Projects.builder()
+                .projectsId(4L)
+                .num(2L)
+                .version(1)
+                .img("image url4")
+                .introduction("intro4")
+                .title("title4")
+                .projectWriter(users2)
+                .closed(true)
+                .likeCnt(4554)
+                .build();
+
+        projectRepository.save(project1);
+        projectRepository.save(project2);
+        projectRepository.save(project3);
+        projectRepository.save(project4);
+
+
+        // when
+        List<Projects> projects = projectRepository.findAll();
+        int count = projectRepository.countByProjectWriter(users);
+
+        // then
+        assertThat(projects.size()).isEqualTo(4);
+        assertThat(count).isEqualTo(2);
     }
 
     @DisplayName("프로젝트 목록 가져오기 - 닫혀있는 것 포함 최신순")
@@ -477,6 +549,7 @@ public class ProjectRepositoryTest {
         // given
         usersRepository.save(users);
         ProjectsInfo info = ProjectsInfo.builder()
+                .id(1L)
                 .url("url")
                 .notice("notice")
                 .build();
@@ -491,7 +564,8 @@ public class ProjectRepositoryTest {
                 .build();
 
         // when
-        Projects savedProject = projectRepository.save(project);
+        projectRepository.save(project);
+        Projects savedProject = projectRepository.findByProjectsId(project.getProjectsId());
         info.setProjects(savedProject);
         ProjectsInfo savedProjectInfo = projectInfoRepository.save(info);
 

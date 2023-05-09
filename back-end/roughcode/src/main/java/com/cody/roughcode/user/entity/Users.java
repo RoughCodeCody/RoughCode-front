@@ -18,7 +18,7 @@ import java.util.Objects;
 public class Users extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "users_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "users_id", nullable = false, columnDefinition = "BIGINT")
     private Long usersId;
 
     @Column(name = "email", length = 255, nullable = false)
@@ -28,11 +28,11 @@ public class Users extends BaseTimeEntity{
     private String name;
 
     @Builder.Default
-    @Column(name = "codes_cnt", nullable = true, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "codes_cnt", nullable = true, columnDefinition = "BIGINT")
     private Long codesCnt = 0L;
 
     @Builder.Default
-    @Column(name = "projects_cnt", nullable = true, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "projects_cnt", nullable = true, columnDefinition = "BIGINT")
     private Long projectsCnt = 0L;
 
     @Column(name = "roles")

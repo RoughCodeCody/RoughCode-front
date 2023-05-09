@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface MypageService {
+    String makeStatCard(String userName);
+
     Pair<List<CodeInfoRes>, Boolean> getCodeList(PageRequest pageRequest, Long usersId);
     Pair<List<CodeInfoRes>, Boolean> getFavoriteCodeList(PageRequest pageRequest, Long usersId);
     Pair<List<CodeInfoRes>, Boolean> getReviewCodeList(PageRequest pageRequest, Long usersId);
@@ -16,5 +18,4 @@ public interface MypageService {
     Pair<List<ProjectInfoRes>, Boolean> getProjectList(PageRequest pageRequest, Long usersId);
     Pair<List<ProjectInfoRes>, Boolean> getFavoriteProjectList(PageRequest pageRequest, Long usersId);
     Pair<List<ProjectInfoRes>, Boolean> getFeedbackProjectList(PageRequest pageRequest, Long usersId);
-
 }

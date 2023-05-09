@@ -26,7 +26,7 @@ public interface ProjectsService {
     Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
     ProjectDetailRes getProject(Long projectId, Long usersId);
     int likeProject(Long projectsId, Long usersId);
-    int favoriteProject(Long projectsId, String content, Long usersId);
+    int favoriteProject(Long projectsId, Long usersId);
     int openProject(Long projectsId, Long usersId);
     int closeProject(Long projectsId, Long usersId);
     int isProjectOpen(Long projectId) throws MessagingException;

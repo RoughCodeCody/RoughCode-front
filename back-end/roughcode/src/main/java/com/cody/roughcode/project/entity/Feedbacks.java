@@ -19,7 +19,7 @@ import java.util.Set;
 public class Feedbacks extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedbacks_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "feedbacks_id", nullable = false, columnDefinition = "BIGINT")
     private Long feedbacksId;
 
     @Builder.Default

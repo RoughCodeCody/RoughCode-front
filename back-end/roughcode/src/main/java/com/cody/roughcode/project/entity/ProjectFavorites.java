@@ -15,16 +15,12 @@ import javax.persistence.*;
 public class ProjectFavorites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT")
     private Long favoritesId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
     private Users users;
-
-    @Builder.Default
-    @Column(name = "content", nullable = true, columnDefinition = "text")
-    private String content = "";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projects_id", nullable = false)
