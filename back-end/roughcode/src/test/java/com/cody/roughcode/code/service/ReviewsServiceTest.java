@@ -5,6 +5,7 @@ import com.cody.roughcode.code.dto.res.ReviewDetailRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.exception.NotMatchException;
+import com.cody.roughcode.exception.SelectedException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -71,11 +72,12 @@ public class ReviewsServiceTest {
     final Reviews review = Reviews.builder()
             .reviewsId(1L)
             .lineNumbers("[[1,2],[3,4]]")
+            .codeContent("import sys ..")
             .content("설명설명")
             .codes(code)
             .users(user)
             .likeCnt(3)
-            .complaint(2)
+            .complaint("2")
             .build();
 
     final ReviewReq req = ReviewReq.builder()
@@ -334,7 +336,7 @@ public class ReviewsServiceTest {
                 NullPointerException.class, () -> reviewsService.likeReview(1L, 0L)
         );
 
-        assertEquals("일치하는 유저가 없습니다", exception.getMessage());
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
     }
 
     @DisplayName("코드 리뷰 좋아요 등록 또는 취소 실패 - 일치하는 코드가 없음")
@@ -349,7 +351,70 @@ public class ReviewsServiceTest {
                 NullPointerException.class, () -> reviewsService.likeReview(0L, 1L)
         );
 
-        assertEquals("일치하는 코드 리뷰가 없습니다", exception.getMessage());
+        assertEquals("일치하는 코드 리뷰가 존재하지 않습니다", exception.getMessage());
     }
 
+    @DisplayName("코드 리뷰 신고 성공")
+    @Test
+    void complainReviewSucceed() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when
+        int res = reviewsService.complainReview(1L, 1L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("코드 리뷰 신고 실패 - 일치하는 유저가 없음")
+    @Test
+    void complainReviewFailNotFoundUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reviewsService.complainReview(1L, 0L)
+        );
+
+        assertEquals("일치하는 유저가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 신고 실패 - 일치하는 코드가 없음")
+    @Test
+    void complainReviewFailNotFoundReview() {
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reviewsService.complainReview(0L, 1L)
+        );
+
+        assertEquals("일치하는 코드 리뷰가 존재하지 않습니다", exception.getMessage());
+    }
+
+    @DisplayName("코드 리뷰 신고 실패 - 이미 삭제된 코드 리뷰")
+    @Test
+    void complainReviewFailDeletedReview() {
+        Reviews deletedReview = Reviews.builder()
+                .reviewsId(3L)
+                .codeContent("")
+                .users(user)
+                .build();
+
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(deletedReview).when(reviewsRepository).findByReviewsId(any(Long.class));
+
+        // when & then
+        SelectedException exception = assertThrows(
+                SelectedException.class, () -> reviewsService.complainReview(3L, 1L)
+        );
+
+        assertEquals("이미 삭제된 코드 리뷰입니다", exception.getMessage());
+    }
 }
