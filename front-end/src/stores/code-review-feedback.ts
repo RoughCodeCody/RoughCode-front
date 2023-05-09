@@ -11,37 +11,49 @@ type CodeReviewFeedbackDataStore = {
   setSelectedLines: (selectedLines: number[][]) => void;
   setModifiedCode: (modifiedCode: string) => void;
   setFeedbackContent: (FeedbackContent: string) => void;
+  reset: () => void;
 };
 
-export const useCodeReviewFeedbackDataStore =
-  create<CodeReviewFeedbackDataStore>((set) => ({
-    CodeReviewFeedbackData: {
-      selectedLines: [],
-      modifiedCode: "",
-      feedbackContent: "",
-    },
-    setSelectedLines: (selectedLines) => {
-      set((state) => ({
-        CodeReviewFeedbackData: {
-          ...state.CodeReviewFeedbackData,
-          selectedLines: selectedLines,
-        },
-      }));
-    },
-    setModifiedCode: (modifiedCode) => {
-      set((state) => ({
-        CodeReviewFeedbackData: {
-          ...state.CodeReviewFeedbackData,
-          modifiedCode: modifiedCode,
-        },
-      }));
-    },
-    setFeedbackContent: (FeedbackContent) => {
-      set((state) => ({
-        CodeReviewFeedbackData: {
-          ...state.CodeReviewFeedbackData,
-          FeedbackContent: FeedbackContent,
-        },
-      }));
-    },
-  }));
+const initialState: CodeReviewFeedbackData = {
+  selectedLines: [],
+  modifiedCode: "",
+  feedbackContent: "",
+};
+
+export const useCodeReviewFeedbackDataStore = create<
+  CodeReviewFeedbackData & CodeReviewFeedbackDataStore
+>((set) => ({
+  ...initialState,
+  CodeReviewFeedbackData: {
+    selectedLines: [],
+    modifiedCode: "",
+    feedbackContent: "",
+  },
+  setSelectedLines: (selectedLines) => {
+    set((state) => ({
+      CodeReviewFeedbackData: {
+        ...state.CodeReviewFeedbackData,
+        selectedLines: selectedLines,
+      },
+    }));
+  },
+  setModifiedCode: (modifiedCode) => {
+    set((state) => ({
+      CodeReviewFeedbackData: {
+        ...state.CodeReviewFeedbackData,
+        modifiedCode: modifiedCode,
+      },
+    }));
+  },
+  setFeedbackContent: (FeedbackContent) => {
+    set((state) => ({
+      CodeReviewFeedbackData: {
+        ...state.CodeReviewFeedbackData,
+        FeedbackContent: FeedbackContent,
+      },
+    }));
+  },
+  reset: () => {
+    set(initialState);
+  },
+}));

@@ -77,3 +77,43 @@ export type Code = {
   encoding: string;
   _links: _links;
 };
+
+type reReview = {
+  reReviewId: number; // 코드 리리뷰 아이디
+  userId: number; // 코드 리리뷰 작성자 id (0이면 익명)
+  userName: string; // 리리뷰 남긴 사람 닉네임(빈 문자열이면 익명)
+  likeCnt: number; // 코드 리리뷰 좋아요 수
+  liked: boolean; // 좋아요 누른 여부
+  content: string; // 코드 리리뷰 내용
+  createdDate: Date; // 코드 리리뷰 작성 날짜
+  modifiedDate: Date; // 코드 리리뷰 수정 날짜
+};
+
+export type codeForFeedbackModify = {
+  codeId: number; // 코드 id
+  version: number; // 코드 버전
+  title: string; // 코드 제목
+  likeCnt: number; // 좋아요 수
+  liked: boolean; // 내가 좋아요 눌렀는지 여부
+  favoriteCnt: number; // 즐겨찾기 수
+  favorite: boolean; // 내가 즐겨찾기 눌렀는지 여부
+  tags: string[]; // 등록한 태그 이름들
+  userName: string; // 작성자 이름
+  projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
+  projectId: number; // 연결된 프로젝트 id(없을 경우 null)
+};
+export type CodeFeedbackInfoResult = {
+  githubUrl: string;
+  reviewId: number; // 코드 리뷰 아이디
+  userId: number; // 코드 리뷰 작성자 id (0이면 익명)
+  userName: string; // 코드 리뷰 작성자 닉네임 (빈 문자열이면 익명)
+  codeContent: string; // 코드 리뷰 코드 내용 (base64 인코딩된 문자열)
+  content: string; // 코드 리뷰 상세 설명 내용
+  lineNumbers: number[][]; // 코드 선택 부분 [[1, 2], [5, 8]..] [[시작, 끝], [시작, 끝]...]
+  selected: number; // 선택 받은 횟수
+  likeCnt: number; // 코드 리뷰 좋아요 수
+  liked: boolean; // 코드 리뷰 좋아요 누른 여부
+  date: Date; // 코드 리뷰 수정 날짜
+  reReviews: reReview[];
+  code: codeForFeedbackModify;
+};
