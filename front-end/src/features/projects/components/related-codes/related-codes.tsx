@@ -1,11 +1,14 @@
 import { useState } from "react";
 
-import { Accordion } from "@/components/elements";
+import { Accordion, Modal } from "@/components/elements";
 
 import { RelatedCode } from "../../types";
 import { MiniFeedbackItem } from "../mini-feedback-item";
 
-type RelatedCodesProps = { codes: RelatedCode[]; isMine: boolean };
+interface RelatedCodesProps {
+  codes: RelatedCode[];
+  isMine: boolean;
+}
 
 export const RelatedCodes = ({ codes, isMine }: RelatedCodesProps) => {
   const [codeLinkModalOpen, setCodeLinkModalOpen] = useState(false);
@@ -24,6 +27,14 @@ export const RelatedCodes = ({ codes, isMine }: RelatedCodesProps) => {
           ))}
         </Accordion>
       )}
+      <button onClick={() => setCodeLinkModalOpen(true)}>click</button>
+
+      <Modal
+        isOpen={codeLinkModalOpen}
+        setIsOpen={setCodeLinkModalOpen}
+        modalContent={<>modal content</>}
+        headerText={"header text"}
+      />
     </>
   );
 };
