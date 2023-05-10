@@ -5,6 +5,7 @@ plugins {
     // 
     // id "org.sonarqube" version "3.3"
     // id 'jacoco'
+    id 'com.github.spotbugs' version '4.7.2'
 }
 
 group = 'com.cody'
@@ -114,3 +115,15 @@ tasks.named('test') {
 //         property "sonar.coverage.jacoco.xmlReportPaths", "./back-end/roughcode/reports/jacoco/test/jacocoTestReport.xml"  // # jacoco 플러그인의 결과파일
 //     }
 // }
+
+
+spotbugsMain {
+    reports {
+        xml.enabled = true
+    }
+}
+spotbugsTest {
+    reports {
+        xml.enabled = true
+    }
+}
