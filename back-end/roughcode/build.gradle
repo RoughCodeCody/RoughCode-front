@@ -8,8 +8,6 @@ plugins {
     id 'com.github.spotbugs' version '4.7.0'
 }
 
-apply plugin: 'com.github.spotbugs'
-
 group = 'com.cody'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
@@ -28,12 +26,12 @@ spotbugs {
     reportLevel = 'low'
 }
 
-// tasks.withType(com.github.spotbugs.SpotBugsTask.class).configureEach {
-//     reports {
-//         xml.enabled = true
-//         html.enabled = false
-//     }
-// }
+tasks.withType(com.github.spotbugs.SpotBugsTask).configureEach {
+    reports {
+        xml.enabled = true
+        html.enabled = false
+    }
+}
 
 
 repositories {
