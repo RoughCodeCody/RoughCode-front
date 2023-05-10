@@ -5,7 +5,7 @@ plugins {
     // 
     // id "org.sonarqube" version "3.3"
     // id 'jacoco'
-    id 'com.github.spotbugs' version '4.7.2'
+    id 'com.github.spotbugs' version '4.7.0'
 }
 
 group = 'com.cody'
@@ -15,6 +15,21 @@ sourceCompatibility = '11'
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
+    }
+}
+
+spotbugs {
+    toolVersion = '4.2.0'
+    ignoreFailures = true
+    reportsDir = file("$project.buildDir/reports/spotbugs")
+    effort = 'max'
+    reportLevel = 'low'
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+        xml.enabled = true
+        html.enabled = false
     }
 }
 
