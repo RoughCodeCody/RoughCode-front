@@ -3,8 +3,6 @@ package com.cody.roughcode.code.controller;
 import com.cody.roughcode.code.dto.req.ReReviewReq;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.service.ReReviewsServiceImpl;
-import com.cody.roughcode.project.controller.ProjectsController;
-import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.user.entity.Users;
@@ -72,6 +70,54 @@ public class ReReviewsControllerTest {
     private ReReviewsServiceImpl reReviewsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("리-리뷰 신고 성공")
+    @Test
+    public void reReviewComplainSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/complaint";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(1).when(reReviewsService)
+                .reReviewComplain(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 신고 성공");
+    }
+
+    @DisplayName("리-리뷰 신고 실패")
+    @Test
+    public void reReviewComplainFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/complaint";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(0).when(reReviewsService)
+                .reReviewComplain(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 신고 실패");
+    }
 
     @DisplayName("코드 리-리뷰 좋아요/취소 실패")
     @Test
