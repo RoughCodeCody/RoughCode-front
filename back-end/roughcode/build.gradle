@@ -25,12 +25,12 @@ spotbugs {
   ignoreFailures = false
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-   reports {
-      xml.enabled = true
-      html.enabled = true
-   }
-}
+// tasks.withType(com.github.spotbugs.SpotBugsTask) {
+//    reports {
+//       xml.enabled = true
+//       html.enabled = true
+//    }
+// }
 
 dependencies {
   spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
