@@ -125,6 +125,15 @@ tasks.named('test') {
 // }
 
 
+
+
+tasks.withType(com.github.spotbugs.SpotBugsTask).configureEach {
+    it.reports {
+        xml.enabled = true
+        html.enabled = false
+    }
+}
+
 spotbugsMain {
     reports {
         xml.enabled = true
@@ -135,11 +144,3 @@ spotbugsTest {
         xml.enabled = true
     }
 }
-
-
-// tasks.withType(com.github.spotbugs.SpotBugsTask.class).configureEach {
-//     reports {
-//         xml.enabled = true
-//         html.enabled = false
-//     }
-// }
