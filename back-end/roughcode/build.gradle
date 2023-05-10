@@ -26,12 +26,13 @@ spotbugs {
     reportLevel = 'low'
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
+tasks.withType(com.github.spotbugs.SpotBugsTask).configureEach {
     reports {
         xml.enabled = true
         html.enabled = false
     }
 }
+
 
 repositories {
     mavenCentral()
