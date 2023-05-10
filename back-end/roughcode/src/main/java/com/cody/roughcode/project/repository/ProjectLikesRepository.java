@@ -5,6 +5,10 @@ import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.user.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProjectLikesRepository extends JpaRepository<ProjectLikes, Long> {
     ProjectLikes findByProjectsAndUsers(Projects project, Users users);
+
+    List<ProjectLikes> findByProjects(Projects projects);
 }
