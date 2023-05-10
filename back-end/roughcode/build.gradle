@@ -26,12 +26,12 @@ spotbugs {
     reportLevel = 'low'
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask.class).configureEach {
-    reports {
-        xml.enabled = true
-        html.enabled = false
-    }
-}
+// tasks.withType(com.github.spotbugs.SpotBugsTask.class).configureEach {
+//     reports {
+//         xml.enabled = true
+//         html.enabled = false
+//     }
+// }
 
 
 repositories {
