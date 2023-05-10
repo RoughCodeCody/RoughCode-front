@@ -19,7 +19,7 @@ configurations {
 }
 
 spotbugs {
-    toolVersion = '4.2.0'
+    toolVersion = '4.7.0'
     ignoreFailures = true
     reportsDir = file("$project.buildDir/reports/spotbugs")
     effort = 'max'
