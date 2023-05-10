@@ -21,6 +21,7 @@ configurations {
 // 
 spotbugs {
   toolVersion = '4.7.3'
+  reportsDir = file("$project.buildDir/reports/spotbugs")
 }
 
 dependencies {
