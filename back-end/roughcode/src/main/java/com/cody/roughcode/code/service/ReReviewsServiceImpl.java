@@ -9,13 +9,15 @@ import com.cody.roughcode.code.repository.ReReviewLikesRepository;
 import com.cody.roughcode.code.repository.ReReviewsRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.project.entity.FeedbacksLikes;
+import com.cody.roughcode.project.entity.Feedbacks;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,5 +147,33 @@ public class ReReviewsServiceImpl implements ReReviewsService {
             reReviewsRepository.save(reReviews);
             return 1;
         }
+    }
+
+
+    @Override
+    @Transactional
+    public int reReviewComplain(Long reReviewsId, Long usersId) {
+        Users users = usersRepository.findByUsersId(usersId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        ReReviews reReviews = reReviewsRepository.findByReReviewsId(reReviewsId);
+        if(reReviews == null)
+            throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
+
+        List<String> complainList = (reReviews.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(reReviews.getComplaint().split(",")));
+
+        if(reReviews.getContent() == null || reReviews.getContent().equals(""))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 리뷰입니다");
+        if(reReviews.getComplaint().contains(String.valueOf(usersId)))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 리뷰입니다");
+
+        log.info(complainList.size() + "번 신고된 리뷰입니다");
+        if(complainList.size() >= 10){
+            reReviews.deleteContent();
+        }
+        complainList.add(String.valueOf(usersId));
+        reReviews.setComplaint(complainList);
+        reReviewsRepository.save(reReviews);
+
+        return 1;
     }
 }
