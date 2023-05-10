@@ -17,6 +17,6 @@ public class CodeFavoriteReq {
 
 }
 
-public void bugExample() {
+public class bugExample() {
     String unused = "This variable is unused";
 }
