@@ -483,7 +483,7 @@ public class ProjectRepositoryTest {
         projectRepository.delete(project);
 
         // then
-        Projects deleted = projectRepository.findByProjectsId(1L);
+        Projects deleted = projectRepository.findByProjectsIdAndExpireDateIsNull(1L);
         assertThat(deleted).isEqualTo(null);
     }
 
@@ -504,7 +504,7 @@ public class ProjectRepositoryTest {
         projectRepository.save(project);
 
         // when
-        Projects savedProjects = projectRepository.findByProjectsId(1L);
+        Projects savedProjects = projectRepository.findByProjectsIdAndExpireDateIsNull(1L);
 
         // then
         assertThat(project.getNum()).isEqualTo(savedProjects.getNum());
@@ -565,7 +565,7 @@ public class ProjectRepositoryTest {
 
         // when
         projectRepository.save(project);
-        Projects savedProject = projectRepository.findByProjectsId(project.getProjectsId());
+        Projects savedProject = projectRepository.findByProjectsIdAndExpireDateIsNull(project.getProjectsId());
         info.setProjects(savedProject);
         ProjectsInfo savedProjectInfo = projectInfoRepository.save(info);
 

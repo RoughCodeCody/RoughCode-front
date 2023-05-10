@@ -169,7 +169,7 @@ class CodesServiceTest {
                 .save(any(CodeSelectedTags.class));
         doReturn(tagsList.get(0)).when(codeTagsRepository).save(any(CodeTags.class));
         doReturn(info).when(codesInfoRepository).save(any(CodesInfo.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when
         Long successCodeId = codesService.insertCode(req, 1L);
@@ -225,7 +225,7 @@ class CodesServiceTest {
         doReturn(selectedReviews).when(selectedReviewsRepository).save(any(SelectedReviews.class));
         doReturn(tagsList.get(0)).when(codeTagsRepository).save(any(CodeTags.class));
         doReturn(info).when(codesInfoRepository).save(any(CodesInfo.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
         alarmService.insertAlarm(any(AlarmReq.class));
         emailService.sendAlarm("이메일 전송", alarmReq);
@@ -381,7 +381,7 @@ class CodesServiceTest {
         doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
         doReturn(tagsList).when(codeTagsRepository).findByTagsIdIn(Mockito.<Long>anyList());
         doReturn(List.of(review)).when(reviewsRepository).findByReviewsIdIn(Mockito.<Long>anyList());
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when
         int res = codesService.updateCode(req, 1L, 1L);

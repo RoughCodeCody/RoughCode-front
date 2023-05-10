@@ -133,7 +133,7 @@ public class CodesServiceImpl implements CodesService {
         // 연결한 프로젝트가 있다면
         Projects connectedProject = null;
         if (req.getProjectId() != null) {
-            connectedProject = projectsRepository.findByProjectsId(req.getProjectId());
+            connectedProject = projectsRepository.findByProjectsIdAndExpireDateIsNull(req.getProjectId());
         }
 
         Codes savedCode = null;
@@ -452,7 +452,7 @@ public class CodesServiceImpl implements CodesService {
             // 연결된 프로젝트
             Projects connectedProject = null;
             if (req.getProjectId() != null) {
-                connectedProject = projectsRepository.findByProjectsId(req.getProjectId());
+                connectedProject = projectsRepository.findByProjectsIdAndExpireDateIsNull(req.getProjectId());
 
 //                if (connectedProject == null) {
 //                    throw new NullPointerException("일치하는 프로젝트가 없습니다");

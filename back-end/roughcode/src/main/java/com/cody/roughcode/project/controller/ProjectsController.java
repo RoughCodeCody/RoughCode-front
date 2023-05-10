@@ -387,7 +387,7 @@ public class ProjectsController {
 
         int res = 0;
         try{
-            res = projectsService.deleteProject(projectId, userId);
+            res = projectsService.putExpireDateProject(projectId, userId);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
