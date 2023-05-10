@@ -20,12 +20,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/code")
 @RequiredArgsConstructor
@@ -78,13 +81,17 @@ public class CodesController {
     @Operation(summary = "코드 정보 등록 API")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 정보 등록 성공"),
-            @ApiResponse(responseCode = "400", description = "일치하는 유저 or Github URL or 코드가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 정보 등록 실패")
     })
     @PostMapping()
     ResponseEntity<?> insertCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                 @Parameter(description = "코드 정보 값", required = true) @RequestBody CodeReq codeReq) {
+                                 @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
+
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         Long res = 0L;
         try {

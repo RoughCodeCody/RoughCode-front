@@ -86,13 +86,6 @@ public class CodesServiceImpl implements CodesService {
     public Long insertCode(CodeReq req, Long userId) throws MessagingException {
 
         Users user = usersRepository.findByUsersId(userId);
-        if (user == null) {
-            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-        }
-        // github URL이 존재하지 않는다면 error
-        if (req.getGithubUrl() == null) {
-            throw new NullPointerException("코드를 불러올 github URL이 존재하지 않습니다");
-        }
 
         // 알람을 보낼 userIds
         List<Long> bookmarkAlarm = new ArrayList<>(); // 기존 코드를 북마크한 사용자
@@ -112,7 +105,7 @@ public class CodesServiceImpl implements CodesService {
         } else { // 기존 코드 업데이트
             Codes original = codesRepository.findLatestByCodesIdAndUsersId(req.getCodeId(), userId);
             if (original == null) {
-                throw new NullPointerException("일치하는 코드가 없습니다.");
+                throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
             }
             if (!original.getCodeWriter().equals(user)) {
                 throw new NotMatchException();
