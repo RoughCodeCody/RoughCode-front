@@ -5,6 +5,7 @@ plugins {
     // 
     // id "org.sonarqube" version "3.3"
     // id 'jacoco'
+    id 'com.github.spotbugs' version '4.7.0'
 }
 
 group = 'com.cody'
@@ -15,6 +16,14 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+}
+
+spotbugs {
+    toolVersion = '4.7.0'
+    ignoreFailures = true
+    reportsDir = file("$project.buildDir/reports/spotbugs")
+    effort = 'max'
+    reportLevel = 'low'
 }
 
 repositories {
@@ -112,5 +121,25 @@ tasks.named('test') {
 //         property "sonar.test.inclusions", "**/*Test.java" // # 코드 분석에 사용할 테스트 소스 
 //         property "sonar.exclusions", "**/resources/static/**, **/Q*.class, **/test/**"  //# 테스트커버리지에서 제외할 파일, 예제에선 정적 js 파일과 queryDSL Q파일 제외
 //         property "sonar.coverage.jacoco.xmlReportPaths", "./back-end/roughcode/reports/jacoco/test/jacocoTestReport.xml"  // # jacoco 플러그인의 결과파일
+//     }
+// }
+
+
+spotbugsMain {
+    reports {
+        xml.enabled = true
+    }
+}
+spotbugsTest {
+    reports {
+        xml.enabled = true
+    }
+}
+
+
+// tasks.withType(com.github.spotbugs.SpotBugsTask.class).configureEach {
+//     reports {
+//         xml.enabled = true
+//         html.enabled = false
 //     }
 // }

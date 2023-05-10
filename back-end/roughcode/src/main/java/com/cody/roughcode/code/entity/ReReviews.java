@@ -38,4 +38,15 @@ public class ReReviews extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviews_id", nullable = false)
     private Reviews reviews;
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void likeCntUp() {
+        this.likeCnt += 1;
+    }
+    public void likeCntDown() {
+        this.likeCnt -= 1;
+    }
 }

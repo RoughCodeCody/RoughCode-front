@@ -66,6 +66,9 @@ public class CodeDetailRes {
     @Schema(description = "코드 언어", example = "Javascript")
     private String language;
 
+    @Schema(description = "코드가 최신 버전인지 여부", example = "true")
+    private Boolean latest;
+
     @Schema(description = "버전 정보")
     private List<VersionRes> versions;
 

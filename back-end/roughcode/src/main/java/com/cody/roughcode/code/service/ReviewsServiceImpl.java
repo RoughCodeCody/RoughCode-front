@@ -19,8 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import java.util.ArrayList;
@@ -181,18 +179,9 @@ public class ReviewsServiceImpl implements ReviewsService {
 
         try {
             // 코드 리뷰 정보 업데이트
-            if (StringUtils.hasText(req.getContent())) {
-                log.info("코드 리뷰 정보 수정(상세설명): " + req.getContent());
-                target.updateContent(req.getContent());
-            }
-            if (StringUtils.hasText(req.getCodeContent())) {
-                log.info("코드 리뷰 정보 수정(코드내용): " + req.getCodeContent());
-                target.updateCodeContent(req.getCodeContent());
-            }
-            if (req.getSelectedRange().size() > 0) {
-                log.info("코드 리뷰 정보 수정(선택구간): " + req.getSelectedRange());
-                target.updateLineNumbers(req.getSelectedRange());
-            }
+            target.updateContent(req.getContent());
+            target.updateCodeContent(req.getCodeContent());
+            target.updateLineNumbers(req.getSelectedRange());
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new UpdateFailedException(e.getMessage());

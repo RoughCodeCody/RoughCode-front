@@ -64,7 +64,7 @@ public class ReReviewsControllerTest {
     final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTEyM0BnbWFpbC5jb20iLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNjc0NzEyMDg2fQ.fMjhTvyLoCBzAXZ4gtJCAMS98j9DNsC7w2utcB-Uho";
 
     final ReReviewReq req = ReReviewReq.builder()
-            .reviewsId(1L)
+            .id(1L)
             .content("리리뷰")
             .build();
 
@@ -72,6 +72,180 @@ public class ReReviewsControllerTest {
     private ReReviewsServiceImpl reReviewsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @DisplayName("코드 리-리뷰 좋아요/취소 실패")
+    @Test
+    public void likeReReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/like";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(-1).when(reReviewsService).likeReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 좋아요 또는 취소 실패");
+    }
+
+    @DisplayName("코드 리-리뷰 좋아요 취소 성공")
+    @Test
+    public void likeReReviewSucceedCancel() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/like";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(0).when(reReviewsService).likeReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        String result = jsonObject.get("result").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 좋아요 또는 취소 성공");
+        assertThat(result).isEqualTo("0");
+    }
+
+    @DisplayName("코드 리-리뷰 좋아요 성공")
+    @Test
+    public void likeReReviewSucceedLike() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}/like";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(1).when(reReviewsService).likeReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        String result = jsonObject.get("result").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 좋아요 또는 취소 성공");
+        assertThat(result).isEqualTo("1");
+    }
+
+    @DisplayName("코드 리-리뷰 삭제 성공")
+    @Test
+    public void deleteReReviewSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}";
+
+        doReturn(1).when(reReviewsService).deleteReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 삭제 성공");
+    }
+
+    @DisplayName("코드 리-리뷰 삭제 실패")
+    @Test
+    public void deleteReReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview/{reReviewId}";
+
+        doReturn(0).when(reReviewsService).deleteReReview(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url, 1L)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 삭제 실패");
+    }
+
+    @DisplayName("코드 리-리뷰 수정 실패")
+    @Test
+    public void updateReReviewFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(0).when(reReviewsService).updateReReview(any(ReReviewReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 수정 실패");
+    }
+
+    @DisplayName("코드 리-리뷰 수정 성공")
+    @Test
+    public void updateReReviewSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/rereview";
+
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(1).when(reReviewsService).updateReReview(any(ReReviewReq.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(req))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리-리뷰 수정 성공");
+    }
 
     @DisplayName("코드 리-리뷰 조회 성공 - with cookie")
     @Test

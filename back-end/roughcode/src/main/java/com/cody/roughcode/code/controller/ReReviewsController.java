@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,9 +35,29 @@ public class ReReviewsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ReReviewsServiceImpl reReviewsService;
 
+    @Operation(summary = "코드 리-리뷰 삭제 API")
+    @DeleteMapping("/{reReviewId}")
+    ResponseEntity<?> deleteReReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                   @Parameter(description = "삭제할 리-리뷰 아이디", required = true)
+                                   @Min(value = 1, message = "reReviewId 값이 범위를 벗어납니다")
+                                   @PathVariable Long reReviewId) {
+        Long userId = (accessToken!= null)? jwtTokenProvider.getId(accessToken) : -1L;
+
+        int res = 0;
+        try {
+            res = reReviewsService.deleteReReview(reReviewId, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("코드 리-리뷰 삭제 실패");
+        return Response.ok("코드 리-리뷰 삭제 성공");
+    }
+
     @Operation(summary = "코드 리-리뷰 목록 조회 API")
     @GetMapping("/{reviewId}")
-    ResponseEntity<?> insertReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+    ResponseEntity<?> getReReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                    @Parameter(description = "코드 리뷰 아이디", required = true)
                                    @Min(value = 1, message = "reviewId 값이 범위를 벗어납니다")
                                    @PathVariable Long reviewId) {
@@ -53,9 +74,32 @@ public class ReReviewsController {
         return Response.makeResponse(HttpStatus.OK, "코드 리-리뷰 조회 성공", res.size(), res);
     }
 
+    @Operation(summary = "코드 리-리뷰 수정 API")
+    @PutMapping
+    ResponseEntity<?> updateReReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
+                                   @Parameter(description = "코드 리-리뷰 정보 값", required = true)
+                                   @Valid @RequestBody ReReviewReq reReviewReq) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        int res = 0;
+        try {
+            res = reReviewsService.updateReReview(reReviewReq, userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res <= 0) {
+            return Response.notFound("코드 리-리뷰 수정 실패");
+        }
+        return Response.ok("코드 리-리뷰 수정 성공");
+    }
+
     @Operation(summary = "코드 리-리뷰 등록 API")
     @PostMapping
-    ResponseEntity<?> insertReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+    ResponseEntity<?> insertReReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                    @Parameter(description = "코드 리-리뷰 정보 값", required = true)
                                    @Valid @RequestBody ReReviewReq reReviewReq) {
         Long userId = (accessToken!= null)? jwtTokenProvider.getId(accessToken) : -1L;
@@ -72,6 +116,28 @@ public class ReReviewsController {
             return Response.notFound("코드 리-리뷰 등록 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드 리-리뷰 등록 성공", 1, res);
+    }
+
+    @Operation(summary = "리리뷰 좋아요 또는 취소 API")
+    @PostMapping("/{reReviewId}/like")
+    ResponseEntity<?> likeReReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                  @Parameter(description = "리리뷰 아이디")
+                                  @Range(min = 1, max = Long.MAX_VALUE, message = "reReviewId 값이 범위를 벗어납니다")
+                                  @PathVariable Long reReviewId){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        int res = -1;
+        try {
+            res = reReviewsService.likeReReview(reReviewId, usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res < 0) return Response.notFound("코드 리-리뷰 좋아요 또는 취소 실패");
+        return Response.makeResponse(HttpStatus.OK, "코드 리-리뷰 좋아요 또는 취소 성공", 1, res);
     }
 
 }
