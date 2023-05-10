@@ -81,11 +81,10 @@ public class S3FileServiceImpl implements S3FileService {
 
     // 이미지 삭제 method
     @Override
-    public void delete(String imgUrl) {
+    public void delete(String imgUrl, String dirName) {
         // S3에서 삭제
-        final String dirName = "project/content";
         log.info("삭제할 이미지 url : {}", imgUrl);
-        Pattern tokenPattern = Pattern.compile("(?<=project/content/).*");
+        Pattern tokenPattern = Pattern.compile("(?<=" + dirName + "/).*");
         Matcher matcher = tokenPattern.matcher(imgUrl);
 
         String temp = null;

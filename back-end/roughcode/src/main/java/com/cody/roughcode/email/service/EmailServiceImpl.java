@@ -102,7 +102,7 @@ public class EmailServiceImpl extends EmailService {
                 "                            <tr>\n" +
                 "                                <td width=\"520\" style=\"font-size:0;\">\n" +
                 "                                    <div style=\"display:flex;\">\n" +
-                "                                        <img src=\"https://roughcode.s3.ap-northeast-2.amazonaws.com/dog+and+dock-full+body-mini.jpg\" alt=\"로고 이미지\" height=\"80\">\n" +
+                "                                        <img src=\"https://d2swdwg2kwda2j.cloudfront.net/dog+and+dock-full+body-mini.jpg\" alt=\"로고 이미지\" height=\"80\">\n" +
                 "                                        <h1 style=\"font-family:'Nanum Gothic','Malgun Gothic','dotum','AppleGothic',Helvetica,Arial,Sans-Serif;font-size:22px;line-height:3;letter-spacing:-1px;margin-left:2em;color:black;\">개발새발에서 확인해보세요</h1>\n" +
                 "                                    </div>\n" +
                 "                                </td>\n" +
@@ -149,7 +149,7 @@ public class EmailServiceImpl extends EmailService {
                 "            <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" border=\"0\" style=\"border-collapse: collapse;\">\n" +
                 "                <tbody><tr><td width=\"520\" height=\"50\" style=\"font-size: 0;line-height: 0;\"></td></tr> \n" +
                 "                <tr><td width=\"520\" style=\"font-size: 0;\"><div style=\"display: flex; align-items: center;\">\n" +
-                "                <img src=\"https://roughcode.s3.ap-northeast-2.amazonaws.com/foots-color-mini.jpg\" alt=\"로고 이미지\" width=\"148\" border=\"0\" style=\"display: block; margin: 0;\" loading=\"lazy\">\n" +
+                "                <img src=\"https://d2swdwg2kwda2j.cloudfront.net/foots-color-mini.jpg\" alt=\"로고 이미지\" width=\"148\" border=\"0\" style=\"display: block; margin: 0;\" loading=\"lazy\">\n" +
                 "                <h1 style=\"font-family: 'Nanum Gothic','Malgun Gothic', 'dotum','AppleGothic', Helvetica, Arial, Sans-Serif;font-size: 22px;line-height:3;letter-spacing: -1px; margin-left: 10px;color:black;\">인증메일</h1>\n" +
                 "                </div>\n" +
                 "                </td></tr> " +
