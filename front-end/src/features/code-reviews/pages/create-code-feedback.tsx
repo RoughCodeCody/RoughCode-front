@@ -28,21 +28,31 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
 
   // 여기서 post 요청 보냄
   const postCodeFeedback = () => {
-    const data = {
-      codeId: codeId,
-      selectedRange: CodeReviewFeedbackData.selectedLines,
-      codeContent: CodeReviewFeedbackData.modifiedCode,
-      content: CodeReviewFeedbackData.feedbackContent,
-    };
-    codeFeedbackQuery.mutate(
-      { data },
-      {
-        onSuccess() {
-          reset();
-          router.push(`/code-review/${codeId}`);
-        },
-      }
-    );
+    // editor 와 diffEditor 모두 완료된 상태이면
+    if (
+      Object.values(CodeReviewFeedbackData.isCompleted).every(
+        (value) => value === true
+      )
+    ) {
+      const data = {
+        codeId: codeId,
+        selectedRange: CodeReviewFeedbackData.selectedLines,
+        codeContent: CodeReviewFeedbackData.modifiedCode,
+        content: CodeReviewFeedbackData.feedbackContent,
+      };
+      codeFeedbackQuery.mutate(
+        { data },
+        {
+          onSuccess() {
+            reset();
+            router.push(`/code-review/${codeId}`);
+          },
+        }
+      );
+    } else {
+      // 코드 수정이 완료되지 않았습니다 라는 알림
+      alert("수정 다 안됐음!");
+    }
   };
 
   if (codeInfoQuery.isLoading) {
@@ -91,6 +101,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
                   readOnly={false}
                   language="javascript"
                   originalCode={originalCode}
+                  modifiedCode={originalCode}
                 />
               </FlexDiv>
             </>

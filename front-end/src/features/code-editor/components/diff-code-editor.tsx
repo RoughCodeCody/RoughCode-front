@@ -9,6 +9,7 @@ import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 interface DiffCodeEditorProps {
   headerText: string;
   originalCode: string;
+  modifiedCode: string;
   height: string;
   language: string;
   readOnly?: boolean;
@@ -17,11 +18,13 @@ interface DiffCodeEditorProps {
 export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   headerText,
   originalCode,
+  modifiedCode,
   height,
   language,
   readOnly = true,
 }) => {
-  const { setModifiedCode } = useCodeReviewFeedbackDataStore();
+  const { CodeReviewFeedbackData, setModifiedCode, setIsCompleted } =
+    useCodeReviewFeedbackDataStore();
 
   const diffEditorRef = useRef<any>(null);
 
@@ -50,13 +53,23 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
     const base64 = Buffer.from(data).toString("base64");
     return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
   };
-  const decodedString = decodeBase64ToUTF8(originalCode);
+  const decodedOriginalString = decodeBase64ToUTF8(originalCode);
+  const decodedmodifiedString = decodeBase64ToUTF8(modifiedCode);
 
   const saveModifiedCode = () => {
     const modifiedCode = diffEditorRef?.current?.getModifiedEditor().getValue();
     const encodedCode = encodeUTF8ToBase64(modifiedCode);
     setModifiedCode(encodedCode);
+    setIsCompleted("diffEditor");
   };
+
+  useEffect(() => {
+    if (CodeReviewFeedbackData.isCompleted.diffEditor) {
+      diffEditorRef.current?.updateOptions({ readOnly: true });
+    } else {
+      diffEditorRef.current?.updateOptions({ readOnly: false });
+    }
+  }, [CodeReviewFeedbackData.isCompleted.diffEditor]);
 
   return (
     <EditorWrapper>
@@ -69,22 +82,35 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
       <DiffEditor
         height={height}
         language={language}
-        original={decodedString}
-        modified={decodedString}
+        original={decodedOriginalString}
+        modified={decodedmodifiedString}
         onMount={handleEditorDidMount}
       />
       <EditorBottom>
         {readOnly ? (
           <></>
         ) : (
-          <Btn
-            text="확정"
-            height="2rem"
-            display="flex"
-            align="center"
-            bgColor="orange"
-            onClickFunc={saveModifiedCode}
-          />
+          <FlexDiv gap="1rem">
+            {CodeReviewFeedbackData.isCompleted.diffEditor ? (
+              <Text>코드 수정이 완료되었습니다</Text>
+            ) : (
+              <></>
+            )}
+            <Btn
+              text={
+                CodeReviewFeedbackData.isCompleted.diffEditor ? "변경" : "완료"
+              }
+              height="2rem"
+              display="flex"
+              align="center"
+              bgColor={
+                CodeReviewFeedbackData.isCompleted.diffEditor
+                  ? "main"
+                  : "orange"
+              }
+              onClickFunc={saveModifiedCode}
+            />
+          </FlexDiv>
         )}
       </EditorBottom>
     </EditorWrapper>
