@@ -442,7 +442,11 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         ProjectsInfo originalInfo = projectsInfoRepository.findByProjects(target);
         if(originalInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
-        projectsInfoRepository.delete(originalInfo);
+
+        List<ProjectLikes> projectLikes = projectLikesRepository.findByProjects(target);
+        if(projectLikes != null) {
+            projectLikesRepository.deleteAll(projectLikes);
+        }else log.info("기존에 좋아요한 유저가 없습니다");
 
         Long projectNum = target.getNum();
         int projectVersion = target.getVersion();
@@ -471,7 +475,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             projectSelectedTagsRepository.deleteAll(projectSelectedTags);
         }else log.info("연결된 태그가 없습니다");
 
-        // feedback 삭제
+        // 선택된 feedback 삭제
         List<SelectedFeedbacks> selectedFeedbacksList = target.getSelectedFeedbacks();
         if(selectedFeedbacksList != null) {
             List<Feedbacks> feedbacksList = new ArrayList<>();
@@ -484,6 +488,17 @@ public class ProjectsServiceImpl implements ProjectsService{
             selectedFeedbacksRepository.deleteAll(selectedFeedbacksList);
         }else log.info("기존에 선택하였던 feedback이 없습니다");
 
+        // feedback 삭제
+        List<Feedbacks> feedbacksList = originalInfo.getFeedbacks();
+        if(feedbacksList != null) {
+            for (Feedbacks f : feedbacksList) {
+                List<FeedbacksLikes> feedbacksLikesList = feedbacksLikesRepository.findByFeedbacks(f);
+                feedbacksLikesRepository.deleteAll(feedbacksLikesList);
+            }
+            feedbacksRepository.deleteAll(feedbacksList);
+        }else log.info("기존에 선택하였던 feedback이 없습니다");
+
+        projectsInfoRepository.delete(originalInfo);
         projectsRepository.delete(target);
 
         s3FileService.deleteAll("project/content/" + user.getName() + "_" + projectNum + "_" + projectVersion);

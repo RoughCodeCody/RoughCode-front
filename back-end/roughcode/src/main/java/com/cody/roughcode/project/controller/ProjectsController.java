@@ -449,7 +449,7 @@ public class ProjectsController {
                                   @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
                                   @PathVariable Long projectId,
                                   @Parameter(description = "삭제할 이미지", required = true)
-                                  @Pattern(regexp = "^https://img.rough-code.com/.*", message = "url 형식이 유효하지 않습니다")
+                                  @Pattern(regexp = "^https://d2swdwg2kwda2j.cloudfront.net/.*", message = "url 형식이 유효하지 않습니다")
                                   @RequestBody String imgUrl) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)

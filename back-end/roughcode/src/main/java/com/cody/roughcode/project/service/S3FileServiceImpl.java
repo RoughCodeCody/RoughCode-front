@@ -53,7 +53,7 @@ public class S3FileServiceImpl implements S3FileService {
             throw new NullPointerException("이미지 저장에 실패했습니다");
         }
         String imageUrlString = imageUrl.toString();
-        imageUrlString = imageUrlString.replace("https://roughcode.s3.ap-northeast-2.amazonaws.com", "https://img.rough-code.com");
+        imageUrlString = imageUrlString.replace("https://roughcode.s3.ap-northeast-2.amazonaws.com", "https://d2swdwg2kwda2j.cloudfront.net");
 
         // 로컬 파일 삭제
         if (uploadFile.exists()) {
