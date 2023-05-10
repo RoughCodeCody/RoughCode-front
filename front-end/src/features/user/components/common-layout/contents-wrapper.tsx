@@ -17,7 +17,7 @@ export const ContentsWrapper = ({
           {wrapperTitle}
         </Text>
       </FlexDiv>
-      <FlexDiv width="100%" height="100%" overflow="auto">
+      <FlexDiv width="100%" height="100%" overflow="auto" align="start">
         {children}
       </FlexDiv>
     </FlexDiv>
