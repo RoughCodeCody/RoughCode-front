@@ -2,7 +2,10 @@ package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.CodeFavoriteReq;
 import com.cody.roughcode.code.dto.req.CodeReq;
-import com.cody.roughcode.code.dto.res.*;
+import com.cody.roughcode.code.dto.res.CodeDetailRes;
+import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
+import com.cody.roughcode.code.dto.res.ReviewInfoRes;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -16,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -93,6 +97,10 @@ public class CodesController {
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
         }
 
+        if (codeReq.getCodeId() == 0 || codeReq.getCodeId() < -1) {
+            return Response.badRequest("codeId 값이 범위를 벗어납니다");
+        }
+
         Long res = 0L;
         try {
             res = codesService.insertCode(codeReq, userId);
@@ -116,7 +124,9 @@ public class CodesController {
     })
     @GetMapping("/{codeId}")
     ResponseEntity<?> getCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                              @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+                              @Parameter(description = "코드 id 값", required = true)
+                              @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                              @PathVariable Long codeId) {
         Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
         CodeDetailRes res = null;
@@ -142,8 +152,10 @@ public class CodesController {
     })
     @PutMapping("/{codeId}")
     ResponseEntity<?> updateCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId,
-                                 @Parameter(description = "코드 정보 값", required = true) @RequestBody CodeReq codeReq) {
+                                 @Parameter(description = "코드 id 값", required = true)
+                                 @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                                 @PathVariable Long codeId,
+                                 @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         int res = 0;
@@ -169,7 +181,9 @@ public class CodesController {
     })
     @DeleteMapping("/{codeId}")
     ResponseEntity<?> updateCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                 @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+                                 @Parameter(description = "코드 id 값", required = true)
+                                 @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                                 @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         int res = 0;
@@ -195,7 +209,9 @@ public class CodesController {
     })
     @PostMapping("/{codeId}/like")
     ResponseEntity<?> likeCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                               @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+                               @Parameter(description = "코드 id 값", required = true)
+                               @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                               @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         int res = 0;
@@ -225,7 +241,9 @@ public class CodesController {
     @PostMapping("/{codeId}/favorite")
     ResponseEntity<?> favoriteCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                    @Parameter(description = "즐겨찾기 내용") @RequestBody(required = false) CodeFavoriteReq codeFavoriteReq,
-                                   @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+                                   @Parameter(description = "코드 id 값", required = true)
+                                   @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                                   @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         String content = codeFavoriteReq != null ? codeFavoriteReq.getContent() : null;
@@ -282,7 +300,9 @@ public class CodesController {
     })
     @GetMapping("/{codeId}/review")
     ResponseEntity<?> getReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                    @Parameter(description = "코드 id 값", required = true) @PathVariable Long codeId) {
+                                    @Parameter(description = "코드 id 값", required = true)
+                                    @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                                    @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
 
         List<ReviewInfoRes> res = null;
