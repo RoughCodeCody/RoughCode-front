@@ -7,8 +7,7 @@ import { FlexDiv } from "@/components/elements";
 import { ProjectCardGrid } from "@/features/projects/components/lists/style";
 import { ProjectCard } from "@/features/projects/components/project-card";
 import { useSearchCriteriaStore } from "@/stores";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
+import { useUserProjectList } from "../../api/get-user-project-list";
 
 interface ProjectCardProps {
   projectId: number;
@@ -23,11 +22,11 @@ interface ProjectCardProps {
   closed: boolean;
 }
 
-type ProjectContainer = {
+type ProjectContainerProps = {
   endPoint: "" | "feedback" | "favorite";
 };
 
-export const ProjectContainer = ({ endPoint }: ProjectContainer) => {
+export const ProjectContainer = ({ endPoint }: ProjectContainerProps) => {
   const { ref, inView } = useInView();
 
   const { searchCriteria } = useSearchCriteriaStore();
@@ -39,43 +38,13 @@ export const ProjectContainer = ({ endPoint }: ProjectContainer) => {
       ? undefined
       : tagIdList.map((tag) => tag.tagId).join(",");
 
-  const fetchProjects = async ({ pageParam = 0 }) => {
-    const res = await axios.get(
-      `http://k8a306.p.ssafy.io:8080/api/v1/mypage/project/${endPoint}`,
-      //   `http://localhost:8080/api/v1/mypage/project/${endPoint}`,
-      {
-        // params: {
-        //   page: pageParam,
-        //   size: 9,
-        // },
-
-        // css 테스트용
-        params: {
-          page: pageParam,
-          sort: sort,
-          size: size,
-          keyword: usingKeyword,
-          tagIdList: stringTagIdList,
-          closed: closed,
-        },
-      }
-    );
-    console.log("res : ", res);
-    return res.data.result;
-  };
-
-  const { status, data, fetchNextPage } = useInfiniteQuery(
-    ["projects"],
-    fetchProjects,
-    {
-      getNextPageParam: (lastPage) => {
-        return lastPage.nextPage === -1 ? undefined : lastPage.nextPage;
-        // return lastPage.data.nextPage === -1
-        //   ? undefined
-        //   : lastPage.data.nextPage;
-      },
-    }
-  );
+  const { status, data, fetchNextPage } = useUserProjectList({
+    endPoint,
+    config: {
+      getNextPageParam: (lastPage) =>
+        lastPage.nextPage === -1 ? undefined : lastPage.nextPage,
+    },
+  });
 
   useEffect(() => {
     if (inView) {
@@ -87,6 +56,8 @@ export const ProjectContainer = ({ endPoint }: ProjectContainer) => {
       {status === "loading" && <p>Loading...</p>}
       {status === "success" && (
         <>
+          {console.log(status)}
+          {console.log(data)}
           {data.pages.map((page, idx) => (
             <ProjectCardGrid key={idx}>
               {page.list.map((project: ProjectCardProps, index: number) => (
