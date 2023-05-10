@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import javax.validation.constraints.Null;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -75,10 +77,18 @@ public class ReReviewsServiceTest {
             .codes(code)
             .build();
 
+    final ReReviews deletedReReviews = ReReviews.builder()
+            .reReviewsId(1L)
+            .reviews(reviews)
+            .users(users)
+            .complaint("1")
+            .content("")
+            .build();
     final ReReviews reReviews = ReReviews.builder()
             .reReviewsId(1L)
             .reviews(reviews)
             .users(users)
+            .complaint("1")
             .content("리리뷰")
             .build();
     final ReReviews reReviews2 = ReReviews.builder()
@@ -98,6 +108,75 @@ public class ReReviewsServiceTest {
             .likesId(1L)
             .users(users)
             .build();
+
+    @DisplayName("리-리뷰 신고 성공")
+    @Test
+    void complainReReviewSucceed() {
+        // given
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when
+        int res = reReviewsService.reReviewComplain(1L, 2L);
+
+        // then
+        assertThat(res).isEqualTo(1);
+    }
+
+    @DisplayName("리-리뷰 신고 실패 - 유저 x")
+    @Test
+    void complainReReviewFailNoUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.reReviewComplain(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 신고 실패 - 리-리뷰 x")
+    @Test
+    void complainReReviewFailNoReReview() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(null).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> reReviewsService.reReviewComplain(1L, 1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 리뷰가 존재하지 않습니다");
+    }
+
+    @DisplayName("리-리뷰 신고 실패 - 이미 신고했음")
+    @Test
+    void complainReReviewFailAlreadyComplained() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class, () -> reReviewsService.reReviewComplain(1L, 1L)
+        );
+        assertEquals("이미 신고한 리뷰입니다", exception.getReason());
+    }
+
+    @DisplayName("리-리뷰 신고 실패 - 이미 삭제됨")
+    @Test
+    void complainReReviewFailAlreadyDeleted() {
+        // given
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(deletedReReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+
+        // when & then
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class, () -> reReviewsService.reReviewComplain(1L, 1L)
+        );
+        assertEquals("이미 삭제된 리뷰입니다", exception.getReason());
+    }
 
     @DisplayName("리-리뷰 좋아요/취소 실패 - 리리뷰 x")
     @Test
