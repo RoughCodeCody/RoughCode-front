@@ -7,6 +7,10 @@ plugins {
     // id 'jacoco'
     // id 'com.github.spotbugs' version '4.7.0'
     id "com.github.spotbugs" version "5.0.14"
+
+// codenarc
+    id 'groovy'
+    id 'codenarc'
 }
 
 group = 'com.cody'
@@ -94,6 +98,9 @@ dependencies {
 
     // sonarqube
     // implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3'
+
+    //codenarc
+    codenarc 'org.codenarc:CodeNarc:2.2.0'
 }
 
 tasks.named('test') {
