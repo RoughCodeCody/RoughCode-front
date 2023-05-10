@@ -16,3 +16,4 @@ public class CodeFavoriteReq {
     private String content;
 
 }
+
