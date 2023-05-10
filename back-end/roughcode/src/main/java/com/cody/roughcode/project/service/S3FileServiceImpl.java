@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -52,6 +53,7 @@ public class S3FileServiceImpl implements S3FileService {
             throw new NullPointerException("이미지 저장에 실패했습니다");
         }
         String imageUrlString = imageUrl.toString();
+        imageUrlString = imageUrlString.replace("https://roughcode.s3.ap-northeast-2.amazonaws.com", "https://img.rough-code.com");
 
         // 로컬 파일 삭제
         if (uploadFile.exists()) {
@@ -103,6 +105,7 @@ public class S3FileServiceImpl implements S3FileService {
     }
 
     @Override
+    @Transactional
     public void deleteAll(String prefix) {
         ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
                 .withBucketName(bucket)
