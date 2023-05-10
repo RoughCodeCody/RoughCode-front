@@ -444,12 +444,12 @@ public class ProjectsController {
 
     @Operation(summary = "이미지 삭제 API")
     @DeleteMapping(value = "/{projectId}/image")
-    ResponseEntity<?> insertImage(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+    ResponseEntity<?> deleteImage(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                   @Parameter(description = "삭제할 이미지의 project id", required = true)
                                   @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
                                   @PathVariable Long projectId,
                                   @Parameter(description = "삭제할 이미지", required = true)
-                                  @Pattern(regexp = "^https://roughcode.s3.ap-northeast-2.amazonaws.com/.*", message = "url 형식이 유효하지 않습니다")
+                                  @Pattern(regexp = "^https://img.rough-code.com/.*", message = "url 형식이 유효하지 않습니다")
                                   @RequestBody String imgUrl) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
