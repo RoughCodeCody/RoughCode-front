@@ -127,20 +127,31 @@ tasks.named('test') {
 
 
 
-tasks.withType(com.github.spotbugs.SpotBugsTask).configureEach {
-    it.reports {
+tasks.register('spotbugsMain', com.github.spotbugs.SpotBugsTask) {
+    dependsOn 'classes'
+    sourceSets = [sourceSets.main]
+    reports {
         xml.enabled = true
         html.enabled = false
     }
 }
 
-spotbugsMain {
+tasks.register('spotbugsTest', com.github.spotbugs.SpotBugsTask) {
+    dependsOn 'testClasses'
+    sourceSets = [sourceSets.test]
     reports {
         xml.enabled = true
+        html.enabled = false
     }
 }
-spotbugsTest {
-    reports {
-        xml.enabled = true
-    }
-}
+
+// spotbugsMain {
+//     reports {
+//         xml.enabled = true
+//     }
+// }
+// spotbugsTest {
+//     reports {
+//         xml.enabled = true
+//     }
+// }
