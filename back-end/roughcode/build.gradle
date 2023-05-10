@@ -26,14 +26,6 @@ spotbugs {
     reportLevel = 'low'
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask).configureEach {
-    reports {
-        xml.enabled = true
-        html.enabled = false
-    }
-}
-
-
 repositories {
     mavenCentral()
 }
@@ -141,5 +133,13 @@ spotbugsMain {
 spotbugsTest {
     reports {
         xml.enabled = true
+    }
+}
+
+
+tasks.withType(com.github.spotbugs.SpotBugsTask.class).configureEach {
+    reports {
+        xml.enabled = true
+        html.enabled = false
     }
 }
