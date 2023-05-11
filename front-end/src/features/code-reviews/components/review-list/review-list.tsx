@@ -1,9 +1,11 @@
+import { useEffect } from "react";
+
 import { FlexDiv, Text } from "@/components/elements";
 import { useUser } from "@/features/auth";
+import { useClickedReviewStore } from "@/stores";
 
 import { Review } from "../../types";
 import { CodeReviewItem } from "./review-item";
-import { useState } from "react";
 
 interface CodeReviewListProps {
   reviews: Review[];
@@ -13,7 +15,15 @@ export const CodeReviewList = ({ reviews }: CodeReviewListProps) => {
   // 현재 로그인한 유저 정보(피드백이 본인 것인지 확인하기 위함)
   const userQuery = useUser();
 
-  const [clickedIdx, setClickedIdx] = useState(0);
+  // 현재 클릭되어 리리뷰를 보여주고 있는 리뷰 관련 스토어
+  const {
+    initialState: { clickedReviewId },
+    setClickedReviewId,
+  } = useClickedReviewStore();
+
+  useEffect(() => {
+    if (reviews.length > 0) setClickedReviewId(reviews[0].reviewId);
+  }, []);
 
   return (
     <>
@@ -25,7 +35,7 @@ export const CodeReviewList = ({ reviews }: CodeReviewListProps) => {
         {/* 검색을 만들게 되면 이 자리에 */}
 
         {reviews.length !== 0 &&
-          reviews.map((review, idx) => (
+          reviews.map((review) => (
             <>
               <CodeReviewItem
                 review={review}
@@ -34,7 +44,7 @@ export const CodeReviewList = ({ reviews }: CodeReviewListProps) => {
                   review.userName.length !== 0 &&
                     userQuery.data?.nickname === review.userName
                 )}
-                showDetails={Boolean(idx === clickedIdx)}
+                showDetails={Boolean(review.reviewId === clickedReviewId)}
                 key={review.reviewId}
               />
             </>

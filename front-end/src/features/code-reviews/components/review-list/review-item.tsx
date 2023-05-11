@@ -11,6 +11,7 @@ import {
 } from "@/components/elements";
 
 import { Review } from "../../types";
+import { useClickedReviewStore } from "@/stores";
 
 interface CodeReviewItem {
   review: Review;
@@ -38,11 +39,16 @@ export const CodeReviewItem = ({
 }: CodeReviewItem) => {
   const [forceClose, setForceClose] = useState(false);
 
+  const { setClickedReviewId } = useClickedReviewStore();
+
   const selectionListMine = { 수정하기: () => {}, 삭제하기: () => {} };
   const selectionListNotMine = { 신고하기: () => {} };
 
   return (
-    <WhiteBoxShad shadColor={showDetails ? "main" : "shad"} pointer={true}>
+    <WhiteBoxShad
+      shadColor={showDetails ? "main" : "shad"}
+      onClick={() => setClickedReviewId(reviewId)}
+    >
       <FlexDiv direction="column" padding="1rem" pointer={true}>
         <FlexDiv width="100%" justify="space-between" pointer={true}>
           <FlexDiv>
