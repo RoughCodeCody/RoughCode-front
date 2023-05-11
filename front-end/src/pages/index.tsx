@@ -18,7 +18,9 @@ export default function Home() {
       {userQuery.data && userQuery.data.nickname.length === 0 && (
         <UnauthenticatedLanding />
       )}
-      {userQuery.data && <Notifications />}
+      {userQuery.data && userQuery.data.nickname.length !== 0 && (
+        <Notifications />
+      )}
     </>
   );
 }
