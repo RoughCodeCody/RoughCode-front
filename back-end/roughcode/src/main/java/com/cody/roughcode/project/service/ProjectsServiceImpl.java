@@ -839,7 +839,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                 }
             }
         } catch (Exception e) {
-            throw new IOException("서비스 검사 실패");
+            throw new IOException(e.getMessage());
         }
 
         return searchUrisResponse.getThreat().getThreatTypesList().isEmpty();

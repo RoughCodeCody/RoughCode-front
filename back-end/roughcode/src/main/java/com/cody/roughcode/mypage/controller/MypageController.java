@@ -14,6 +14,7 @@ import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
 import com.cody.roughcode.validation.ObjectId;
+import com.google.api.Http;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +70,8 @@ public class MypageController {
             return Response.badRequest(e.getMessage());
         }
 
-        return Response.makeResponse(HttpStatus.OK, "스탯 카드 정보 만들기 성공", 1, statCard);
+        return new ResponseEntity<>(statCard, HttpStatus.OK);
+        //return Response.makeResponse(HttpStatus.OK, "스탯 카드 정보 만들기 성공", 1, statCard);
     }
 
     @Operation(summary = "이메일 인증 API")
