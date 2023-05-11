@@ -1,7 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-
 import { axios } from "@/lib/axios";
 import { queryClient } from "@/lib/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 export const postCodeLike = (codeId: number): Promise<null> => {
   return axios.post(`/code/${codeId}/like`);

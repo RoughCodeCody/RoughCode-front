@@ -13,6 +13,7 @@ interface BtnProps {
   display?: string;
   justify?: string;
   align?: string;
+  disabled?: boolean;
   onClickFunc?: MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -28,6 +29,7 @@ export const Btn = ({
   display,
   justify,
   align,
+  disabled,
   onClickFunc,
 }: BtnProps) => {
   return (
@@ -42,6 +44,7 @@ export const Btn = ({
       display={display}
       justify={justify}
       align={align}
+      disabled={disabled}
       onClick={onClickFunc}
     >
       {text}

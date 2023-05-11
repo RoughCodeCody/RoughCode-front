@@ -1,2 +1,2 @@
-export * from "./code-editor";
-export * from "./diff-code-editor";
+export * from "./components/code-editor";
+export * from "./components/diff-code-editor";
