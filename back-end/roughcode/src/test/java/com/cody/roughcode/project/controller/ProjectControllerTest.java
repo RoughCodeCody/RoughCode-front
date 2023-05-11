@@ -991,7 +991,7 @@ public class ProjectControllerTest {
                 .build();
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(project.getModifiedDate())
+                        .date(project.getCreatedDate())
                         .img(project.getImg())
                         .projectId(project.getProjectsId())
                         .feedbackCnt(project.getFeedbackCnt())
@@ -1012,7 +1012,7 @@ public class ProjectControllerTest {
         // when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
-                        .param("sort", "modifiedDate")
+                        .param("sort", "createdDate")
                         .param("page", String.valueOf(page))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(req))
@@ -1045,7 +1045,7 @@ public class ProjectControllerTest {
                 .build();
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(project.getModifiedDate())
+                        .date(project.getCreatedDate())
                         .img(project.getImg())
                         .projectId(project.getProjectsId())
                         .feedbackCnt(project.getFeedbackCnt())

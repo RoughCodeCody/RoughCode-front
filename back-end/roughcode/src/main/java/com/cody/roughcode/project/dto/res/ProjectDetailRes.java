@@ -44,7 +44,7 @@ public class ProjectDetailRes {
         this.mine = (project.getProjectWriter().equals(user));
         this.title = project.getTitle();
         this.version = project.getVersion();
-        this.date = project.getModifiedDate();
+        this.date = project.getCreatedDate();
         this.likeCnt = project.getLikeCnt();
         this.feedbackCnt = project.getFeedbackCnt();
         this.favoriteCnt = projectsInfo.getFavoriteCnt();
