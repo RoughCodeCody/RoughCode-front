@@ -1,12 +1,12 @@
-import { FlexDiv, Text, WhiteBoxNoshad } from "@/components/elements";
+import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
 import { VersionsInfo } from "@/features/version-info";
 
 import { useCodeInfo } from "../api/get-code-info";
+import { useCode } from "../api/get-code";
 import { CodeInfo } from "../components/code-info";
 import { CodeReviewList } from "../components/review-list";
-import { useCode } from "../api/get-code";
 
 interface CodeDetailProps {
   codeId: string;
@@ -51,11 +51,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                 </FlexDiv>
               )}
 
-              <FlexDiv direction="column" width="100%">
-                <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
-                  이 코드에 대한 코드 리뷰 목록
-                </Text>
-              </FlexDiv>
+              <CodeReviewList reviews={data.reviews} />
 
               {/* <FlexDiv width="100%" height="100%">
                     <DiffCodeEditor
@@ -66,8 +62,6 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                       originalCode={originalCode}
                     />
                   </FlexDiv> */}
-
-              <CodeReviewList />
             </>
           )}
         </WhiteBoxNoshad>
