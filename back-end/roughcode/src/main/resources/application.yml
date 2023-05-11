@@ -17,8 +17,6 @@ spring:
     url: jdbc:mariadb://${HOST}:3306/roughcode
     username: ${MARIADB_USER}
     password: ${MARIADB_PASSWORD}
-    hikari:
-      maximum-pool-size: 1024
   security:
     oauth2:
       client:
