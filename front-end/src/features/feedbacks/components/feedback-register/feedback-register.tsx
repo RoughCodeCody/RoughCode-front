@@ -16,7 +16,6 @@ export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
   const [content, setContent] = useState("");
   const postProjectFeedbackQuery = usePostProjectFeedback();
 
-  console.log(content);
   // 프로젝트 피드백 등록
   const postProjectFeedback = () => {
     if (!content.length) return;

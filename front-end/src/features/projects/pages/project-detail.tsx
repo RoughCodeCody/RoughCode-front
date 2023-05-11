@@ -15,7 +15,6 @@ type ProjectDetailProps = {
 export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
   // 프로젝트 정보 가져오기
   const { isLoading, data } = useProjectInfo({ projectId });
-  console.log(data);
 
   if (isLoading) return <>loading</>;
 
