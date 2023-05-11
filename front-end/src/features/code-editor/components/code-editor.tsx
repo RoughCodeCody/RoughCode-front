@@ -45,7 +45,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   lineSelection,
   language,
   selectedLines,
-  noShad,
+  noShad = false,
 }) => {
   const { CodeReviewFeedbackData, setSelectedLines, setIsCompleted } =
     useCodeReviewFeedbackDataStore();
@@ -200,7 +200,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   return (
-    <EditorWrapper noShad={noShad || false}>
+    <EditorWrapper noShad={noShad}>
       <EditorHeader>
         <FlexDiv>
           <FaRegLightbulb />
