@@ -53,7 +53,11 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
             </WhiteBoxNoshad>
 
             <FeedbackRegister type="feedback" id={projectId} />
-            <Feedbacks type="feedback" feedbacks={data.feedbacks} />
+            <Feedbacks
+              type="feedback"
+              feedbacks={data.feedbacks}
+              id={projectId}
+            />
           </>
         )}
       </FlexDiv>

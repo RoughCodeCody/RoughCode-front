@@ -17,7 +17,7 @@ import { FeedbackItemWrapper } from "./style";
 interface FeedbackItemProps {
   feedback: Feedback;
   type: "feedback" | "review";
-  projectId: string;
+  id: string;
 }
 
 export const FeedbackItem = ({
@@ -32,7 +32,7 @@ export const FeedbackItem = ({
     date,
   },
   type,
-  projectId,
+  id,
 }: FeedbackItemProps) => {
   // 더미데이터
   const isMine = false;
@@ -45,7 +45,7 @@ export const FeedbackItem = ({
 
   const invalidateProjectInfoQuery = () => {
     queryClient.invalidateQueries({
-      queryKey: ["projectInfo", projectId],
+      queryKey: ["projectInfo", id],
     });
   };
 

@@ -53,13 +53,16 @@ export const MyCodeList = ({ relatedCodeIds, projectId }: MyCodeListProps) => {
       {status === "loading" && <>loading...</>}
       {status === "success" &&
         data?.pages[0].list.map((codeListItem, idx, list) => (
-          <CodeListItem
-            codeListItem={codeListItem}
-            handleCodeItemClick={handleCodeItemClick}
-            selected={selectedCodeIds.includes(codeListItem.codeId)}
+          <div
             key={codeListItem.codeId}
             ref={idx === list.length - 1 ? ref : null}
-          />
+          >
+            <CodeListItem
+              codeListItem={codeListItem}
+              handleCodeItemClick={handleCodeItemClick}
+              selected={selectedCodeIds.includes(codeListItem.codeId)}
+            />
+          </div>
         ))}
 
       <Btn
