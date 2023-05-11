@@ -23,6 +23,7 @@ export interface ModalProps {
   modalContent: ReactNode;
   headerText: string;
   width?: string;
+  height?: string;
 }
 
 export const Modal: FunctionComponent<ModalProps> = ({
@@ -31,11 +32,12 @@ export const Modal: FunctionComponent<ModalProps> = ({
   modalContent,
   headerText,
   width,
+  height,
 }) => {
   const modal = (
     <>
       <Backdrop />
-      <ModalWrapper width={width || "40%"}>
+      <ModalWrapper width={width || "40%"} height={height || "auto"}>
         <StyledModal>
           <Header>
             <Text color="main" bold={true}>
