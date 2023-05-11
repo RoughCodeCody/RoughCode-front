@@ -13,9 +13,6 @@ interface CodeDetailProps {
 }
 
 export const CodeDetail = ({ codeId }: CodeDetailProps) => {
-  // 더미데이터
-  const isMine = true;
-
   const { status, data } = useCodeInfo(Number(codeId));
 
   console.log(data);
@@ -38,7 +35,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
               <VersionsInfo
                 versions={data.versions}
                 curVersionId={codeId}
-                isMine={isMine}
+                isMine={data.mine}
               />
 
               {originalCode && (
