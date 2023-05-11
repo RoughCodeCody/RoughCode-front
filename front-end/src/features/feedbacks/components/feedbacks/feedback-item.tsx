@@ -158,7 +158,12 @@ export const FeedbackItem = ({
             )}
           </FlexDiv>
 
-          <FlexDiv width="100%" justify="space-between">
+          <FlexDiv
+            width="100%"
+            justify="space-between"
+            align="end"
+            style={{ whiteSpace: "pre", marginTop: "0.5rem" }}
+          >
             <Text color={!content.length ? "red" : "font"}>
               {!content.length ? "신고되어 가려진 게시물입니다." : content}
             </Text>

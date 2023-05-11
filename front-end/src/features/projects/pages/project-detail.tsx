@@ -30,13 +30,21 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
               versions={data.versions}
             />
 
-            <WhiteBoxNoshad width="65%" padding="2.25rem">
+            <WhiteBoxNoshad
+              width="65%"
+              padding="2.25rem"
+              style={{ minWidth: "850px" }}
+            >
               <ProjectInfo
                 data={data}
                 projectId={projectId}
                 isLatest={Boolean(data.version === data.versions.length)}
               />
-              <VersionsInfo versions={data.versions} curVersionId={projectId} />
+              <VersionsInfo
+                versions={data.versions}
+                curVersionId={projectId}
+                isMine={data.mine}
+              />
               <img
                 src={data.img}
                 alt="project"
