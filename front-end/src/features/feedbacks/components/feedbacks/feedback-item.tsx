@@ -1,8 +1,14 @@
 import dayjs from "dayjs";
 import { useState } from "react";
 
-import { Btn, Count, FlexDiv, Nickname, Text } from "@/components/elements";
-import { Selection } from "@/components/selection";
+import {
+  Btn,
+  Count,
+  FlexDiv,
+  Nickname,
+  Text,
+  Selection,
+} from "@/components/elements";
 import {
   useDeleteProjectFeedback,
   usePostFeedbackLike,

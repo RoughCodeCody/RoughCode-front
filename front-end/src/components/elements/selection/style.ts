@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import { Text } from "../elements";
+
+import { Text } from "../text";
 
 const SelectionWrapper = styled.div`
   position: relative;
