@@ -1,4 +1,5 @@
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { useCode } from "../api/get-code";
 import { useCodeInfo } from "../api/get-code-info";
@@ -7,6 +8,7 @@ import { CodeInfo } from "../components/code-info";
 import { BottomHeader, Btn, FlexDiv, Title, Text } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
+import { TiptapEditor } from "@/features/rich-text-editor/components/tiptap-editor";
 
 type CreateCodeFeedbackProps = {
   codeId: number;
@@ -14,6 +16,7 @@ type CreateCodeFeedbackProps = {
 
 export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
   const router = useRouter();
+  const [feedbackContent, setFeedbackContent] = useState("");
   const codeFeedbackQuery = useCreateCodeFeedback();
   const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
 
@@ -26,6 +29,10 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
 
+  const handleEditorChange = (content: string) => {
+    setFeedbackContent(content);
+    // do something with the content
+  };
   // 여기서 post 요청 보냄
   const postCodeFeedback = () => {
     // editor 와 diffEditor 모두 완료된 상태이면
@@ -38,8 +45,10 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
         codeId: codeId,
         selectedRange: CodeReviewFeedbackData.selectedLines,
         codeContent: CodeReviewFeedbackData.modifiedCode,
-        content: CodeReviewFeedbackData.feedbackContent,
+        content: feedbackContent,
       };
+
+      console.log(data);
       codeFeedbackQuery.mutate(
         { data },
         {
@@ -123,6 +132,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
           description="코드에 대한 리뷰를 작성해 주세요"
         />
         {/* 여기가 md에디터 자리 */}
+        <TiptapEditor onChange={handleEditorChange} minHeight="30rem" />
       </FlexDiv>
 
       {/* 등록 버튼 : 서버에 post 요청*/}
