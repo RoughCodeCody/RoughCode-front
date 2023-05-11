@@ -345,8 +345,8 @@ public class ProjectsController {
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping
     ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준")
-                                     @Pattern(regexp = "modifiedDate|likeCnt|feedbackCnt", message = "sort 값은 modifiedDate, likeCnt, feedbackCnt 중 하나여야 합니다")
-                                     @RequestParam(defaultValue = "modifiedDate") String sort,
+                                     @Pattern(regexp = "createdDate|likeCnt|feedbackCnt", message = "sort 값은 createdDate, likeCnt, feedbackCnt 중 하나여야 합니다")
+                                     @RequestParam(defaultValue = "createdDate") String sort,
                                      @Parameter(description = "페이지 수")
                                      @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                      @RequestParam(defaultValue = "0") int page,

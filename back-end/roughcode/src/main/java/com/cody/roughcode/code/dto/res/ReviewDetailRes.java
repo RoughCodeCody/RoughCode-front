@@ -93,7 +93,7 @@ public class ReviewDetailRes {
                 .likeCnt(review.getLikeCnt())
                 .selected(review.getSelected())
                 .liked(liked)
-                .date(review.getModifiedDate())
+                .date(review.getCreatedDate())
                 .reReviews(reReviews)
                 .code(code)
                 .build();

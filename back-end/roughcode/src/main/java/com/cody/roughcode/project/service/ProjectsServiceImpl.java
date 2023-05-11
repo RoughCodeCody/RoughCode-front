@@ -627,7 +627,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .notice(p.getRight().getNotice())
                     .projectId(p.getLeft().getProjectsId())
                     .version(p.getLeft().getVersion())
-                    .date(p.getLeft().getModifiedDate())
+                    .date(p.getLeft().getCreatedDate())
                     .build());
         }
         projectDetailRes.setVersions(versionResList);
@@ -1033,7 +1033,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             List<String> tagList = getTagNames(p);
 
             projectInfoRes.add(ProjectInfoRes.builder()
-                    .date(p.getModifiedDate())
+                    .date(p.getCreatedDate())
                     .img(p.getImg())
                     .projectId(p.getProjectsId())
                     .feedbackCnt(p.getFeedbackCnt())

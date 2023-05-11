@@ -226,7 +226,7 @@ public class MypageControllerTest {
                         .codeId(code.getCodesId())
                         .version(code.getVersion())
                         .title(code.getTitle())
-                        .date(code.getModifiedDate())
+                        .date(code.getCreatedDate())
                         .likeCnt(code.getLikeCnt())
                         .reviewCnt(code.getReviewCnt())
                         .userName(code.getCodeWriter().getName())
@@ -266,7 +266,7 @@ public class MypageControllerTest {
                         .codeId(code.getCodesId())
                         .version(code.getVersion())
                         .title(code.getTitle())
-                        .date(code.getModifiedDate())
+                        .date(code.getCreatedDate())
                         .likeCnt(code.getLikeCnt())
                         .reviewCnt(code.getReviewCnt())
                         .userName(code.getCodeWriter().getName())
@@ -306,7 +306,7 @@ public class MypageControllerTest {
                         .codeId(code.getCodesId())
                         .version(code.getVersion())
                         .title(code.getTitle())
-                        .date(code.getModifiedDate())
+                        .date(code.getCreatedDate())
                         .likeCnt(code.getLikeCnt())
                         .reviewCnt(code.getReviewCnt())
                         .userName(code.getCodeWriter().getName())
@@ -351,7 +351,7 @@ public class MypageControllerTest {
                 .build();
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(project.getModifiedDate())
+                        .date(project.getCreatedDate())
                         .img(project.getImg())
                         .projectId(project.getProjectsId())
                         .feedbackCnt(project.getFeedbackCnt())
@@ -401,7 +401,7 @@ public class MypageControllerTest {
                 .build();
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(project.getModifiedDate())
+                        .date(project.getCreatedDate())
                         .img(project.getImg())
                         .projectId(project.getProjectsId())
                         .feedbackCnt(project.getFeedbackCnt())
@@ -451,7 +451,7 @@ public class MypageControllerTest {
                 .build();
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(project.getModifiedDate())
+                        .date(project.getCreatedDate())
                         .img(project.getImg())
                         .projectId(project.getProjectsId())
                         .feedbackCnt(project.getFeedbackCnt())

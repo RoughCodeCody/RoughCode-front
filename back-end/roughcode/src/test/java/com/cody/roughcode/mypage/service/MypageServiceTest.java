@@ -315,7 +315,7 @@ public class MypageServiceTest {
                         .codeId(codesList.get(0).getCodesId())
                         .version(codesList.get(0).getVersion())
                         .title(codesList.get(0).getTitle())
-                        .date(codesList.get(0).getModifiedDate())
+                        .date(codesList.get(0).getCreatedDate())
                         .likeCnt(codesList.get(0).getLikeCnt())
                         .reviewCnt(codesList.get(0).getReviewCnt())
                         .tags(List.of("2"))
@@ -368,7 +368,7 @@ public class MypageServiceTest {
                         .codeId(codesList.get(0).getCodesId())
                         .version(codesList.get(0).getVersion())
                         .title(codesList.get(0).getTitle())
-                        .date(codesList.get(0).getModifiedDate())
+                        .date(codesList.get(0).getCreatedDate())
                         .likeCnt(codesList.get(0).getLikeCnt())
                         .reviewCnt(codesList.get(0).getReviewCnt())
                         .tags(List.of("2"))
@@ -420,7 +420,7 @@ public class MypageServiceTest {
                         .codeId(codesList.get(0).getCodesId())
                         .version(codesList.get(0).getVersion())
                         .title(codesList.get(0).getTitle())
-                        .date(codesList.get(0).getModifiedDate())
+                        .date(codesList.get(0).getCreatedDate())
                         .likeCnt(codesList.get(0).getLikeCnt())
                         .reviewCnt(codesList.get(0).getReviewCnt())
                         .tags(List.of("2"))
@@ -429,7 +429,7 @@ public class MypageServiceTest {
                         .build()
         );
 
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDate"));
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), codesList.size());
         final Page<Codes> codesPage = new PageImpl<>(codesList.subList(start, end), pageRequest, codesList.size());
@@ -471,7 +471,7 @@ public class MypageServiceTest {
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -525,7 +525,7 @@ public class MypageServiceTest {
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -558,7 +558,7 @@ public class MypageServiceTest {
         // given
         int page = 0;
 
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDate"));
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
 
         // when & then
@@ -595,7 +595,7 @@ public class MypageServiceTest {
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -607,7 +607,7 @@ public class MypageServiceTest {
                         .build()
         );
 
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createdDate"));
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), projectsList.size());
         final Page<Projects> projectsPage = new PageImpl<>(projectsList.subList(start, end), pageRequest, projectsList.size());
