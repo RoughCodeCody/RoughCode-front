@@ -2,6 +2,7 @@ export * from "./check-url-open";
 export * from "./delete-feedback";
 export * from "./delete-project";
 export * from "./get-project-info";
+export * from "./get-project-list";
 export * from "./post-feedback-like";
 export * from "./post-project-fav";
 export * from "./post-project-feedback";
