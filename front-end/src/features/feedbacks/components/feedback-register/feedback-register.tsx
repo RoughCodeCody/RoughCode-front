@@ -16,7 +16,6 @@ export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
   const [content, setContent] = useState("");
   const postProjectFeedbackQuery = usePostProjectFeedback();
 
-  console.log(content);
   // 프로젝트 피드백 등록
   const postProjectFeedback = () => {
     if (!content.length) return;
@@ -39,8 +38,8 @@ export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
   const postCodeReviewOpinion = () => {};
 
   return (
-    <FlexDiv direction="column" width="80%">
-      <Text color="main" bold={true} padding="0.5rem 0">
+    <FlexDiv direction="column" width="80%" minWidth="850px">
+      <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
         {type === "feedback"
           ? "이 프로젝트에 피드백을 남겨주세요!"
           : "이 코드 리뷰에 의견을 남겨주세요!"}

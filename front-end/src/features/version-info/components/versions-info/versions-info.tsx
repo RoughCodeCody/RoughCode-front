@@ -7,6 +7,7 @@ import { VersionInfo } from "./version-info";
 type VersionsInfoProps = {
   versions: ProjectVersion[] | CodeVersion[];
   curVersionId: string;
+  isMine: boolean;
 };
 
 // 프로젝트 버전인지 여부를 판별
@@ -19,10 +20,11 @@ function isCode(arg: any): arg is CodeVersion[] {
   return arg?.[0].codeId !== undefined;
 }
 
-export const VersionsInfo = ({ versions, curVersionId }: VersionsInfoProps) => {
-  // 더미데이터
-  const isMine = true;
-
+export const VersionsInfo = ({
+  versions,
+  curVersionId,
+  isMine,
+}: VersionsInfoProps) => {
   return (
     <Accordion
       title="버전별 업그레이드 정보"

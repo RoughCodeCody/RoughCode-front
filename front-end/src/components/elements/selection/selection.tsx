@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TbDotsVertical } from "react-icons/tb";
 
 import { SelectionList, SelectionText, SelectionWrapper } from "./style";
@@ -11,10 +11,15 @@ import { SelectionList, SelectionText, SelectionWrapper } from "./style";
 
 type SelectionProps = {
   selectionList: Record<string, () => void>;
+  forceClose?: boolean;
 };
 
-export const Selection = ({ selectionList }: SelectionProps) => {
+export const Selection = ({ selectionList, forceClose }: SelectionProps) => {
   const [isOpen, setisOpen] = useState(false);
+
+  useEffect(() => {
+    if (forceClose) setisOpen(false);
+  }, [forceClose]);
 
   return (
     <SelectionWrapper>

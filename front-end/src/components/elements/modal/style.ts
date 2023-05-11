@@ -11,13 +11,14 @@ const Backdrop = styled.div`
   z-index: 500;
 `;
 
-const ModalWrapper = styled.div<{ width: string }>`
+const ModalWrapper = styled.div<{ width: string; height: string }>`
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 700;
   width: ${({ width }) => width};
+  height: ${({ height }) => height};
 `;
 
 const StyledModal = styled.div`
