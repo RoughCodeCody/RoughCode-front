@@ -60,7 +60,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
             <Feedbacks
               type="feedback"
               feedbacks={data.feedbacks}
-              id={projectId}
+              projectOrCodeid={projectId}
             />
           </>
         )}
