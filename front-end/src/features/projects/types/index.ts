@@ -1,14 +1,3 @@
-export type ProjectVersion = {
-  projectId: number;
-  version: number;
-  date: Date;
-  notice: string;
-  selectedFeedbacks: {
-    feedbackId: number;
-    content: string; // 피드백 내용, 신고당해서 삭제된 피드백은 빈 문자열로 내보내집니다!!
-  }[];
-};
-
 export type Feedback = {
   feedbackId: number;
   userId: number; // 피드백 남긴 사람 id (0이면 익명)
@@ -18,12 +7,6 @@ export type Feedback = {
   selected: number; // 선택 받은 횟수
   liked: boolean; // 내가 좋아요 눌렀는지 여부
   date: Date;
-};
-
-export type RelatedCode = {
-  codeId: number;
-  title: string;
-  tags: string[]; // 태그 이름들
 };
 
 export type ProjectInfoResult = {
@@ -46,4 +29,32 @@ export type ProjectInfoResult = {
   userName: string;
   version: number;
   versions: ProjectVersion[];
+};
+
+export type ProjectUpdateValues = {
+  title: string;
+  notice: string;
+  introduction: string;
+  content: string;
+  url: string;
+  projectId: number;
+  selectedTagsId?: number[];
+  selectedFeedbacksId?: number[];
+};
+
+export type ProjectVersion = {
+  projectId: number;
+  version: number;
+  date: Date;
+  notice: string;
+  selectedFeedbacks: {
+    feedbackId: number;
+    content: string; // 피드백 내용, 신고당해서 삭제된 피드백은 빈 문자열로 내보내집니다!!
+  }[];
+};
+
+export type RelatedCode = {
+  codeId: number;
+  title: string;
+  tags: string[]; // 태그 이름들
 };

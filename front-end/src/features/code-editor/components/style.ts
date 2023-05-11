@@ -1,13 +1,14 @@
 import styled from "styled-components";
 
-const EditorWrapper = styled.div`
+const EditorWrapper = styled.div<{ noShad: boolean }>`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   border: 1px solid #d9d9d9;
   border-radius: 32px;
-  box-shadow: 40px 40px 100px rgba(0, 0, 0, 0.15);
+  box-shadow: ${({ noShad }) =>
+    noShad ? "none" : "40px 40px 100px rgba(0, 0, 0, 0.15)"};
 `;
 const EditorHeader = styled.div`
   width: 100%;

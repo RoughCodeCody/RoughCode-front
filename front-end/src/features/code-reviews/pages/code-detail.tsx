@@ -1,4 +1,4 @@
-import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
+import { FlexDiv, Text, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
 import { VersionsInfo } from "@/features/version-info";
@@ -24,24 +24,38 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   return (
     <>
       <FlexDiv direction="column" gap="4rem" padding="2rem 0">
-        <WhiteBoxNoshad width="65%" padding="2.25rem">
+        <WhiteBoxNoshad
+          width="65%"
+          padding="2.25rem"
+          style={{ minWidth: "850px" }}
+        >
           {data && (
             <>
               <CodeInfo data={data} />
-              <VersionsInfo versions={data.versions} curVersionId={codeId} />
+              <VersionsInfo
+                versions={data.versions}
+                curVersionId={codeId}
+                isMine={data.mine}
+              />
 
               {originalCode && (
                 <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
                   <CodeEditor
-                    // 코드 라인 선택 기능 버튼 여부
                     headerText="코드 리뷰를 요청한 원본 코드입니다"
                     lineSelection={false}
                     height="30rem"
                     language={"javascript"}
                     originalCode={originalCode}
+                    noShad={true}
                   />
                 </FlexDiv>
               )}
+
+              <FlexDiv direction="column" width="100%">
+                <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
+                  이 코드에 대한 코드 리뷰 목록
+                </Text>
+              </FlexDiv>
 
               {/* <FlexDiv width="100%" height="100%">
                     <DiffCodeEditor

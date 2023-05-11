@@ -35,6 +35,7 @@ interface CodeEditorProps {
   lineSelection: boolean;
   language: string;
   selectedLines?: number[][];
+  noShad?: boolean;
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -44,6 +45,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   lineSelection,
   language,
   selectedLines,
+  noShad = false,
 }) => {
   const { CodeReviewFeedbackData, setSelectedLines, setIsCompleted } =
     useCodeReviewFeedbackDataStore();
@@ -198,7 +200,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   return (
-    <EditorWrapper>
+    <EditorWrapper noShad={noShad}>
       <EditorHeader>
         <FlexDiv>
           <FaRegLightbulb />
