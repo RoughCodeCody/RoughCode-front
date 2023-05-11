@@ -403,15 +403,19 @@ public class ProjectsController {
                                      @Parameter(description = "프로젝트 아이디")
                                      @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
                                      @PathVariable Long projectId,
-                                     @Parameter(description = "연결할 코드 아이디 리스트", required = true)
+                                     @Parameter(description = "연결할 코드 아이디 리스트")
                                      @EachPositive(message = "코드 아이디 리스트 안의 값은 1 이상이어야 합니다")
-                                     @Size(min = 1, message = "연결할 코드가 입력되지 않았습니다")
                                      @RequestBody List<Long> req){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
-        int res = 0;
+        if (req == null) {
+            req = new ArrayList<>();
+            log.info("코드 연결 전체 해제");
+        }
+
+        int res = -1;
         try {
             res = projectsService.connect(projectId, userId, req);
         } catch (Exception e) {
@@ -419,7 +423,7 @@ public class ProjectsController {
             return Response.badRequest(e.getMessage());
         }
 
-        if(res <= 0) return Response.notFound("프로젝트 코드 연결 실패");
+        if(res < 0) return Response.notFound("프로젝트 코드 연결 실패");
         else return Response.makeResponse(HttpStatus.OK, "프로젝트 코드 연결 성공", 1, res);
     }
 

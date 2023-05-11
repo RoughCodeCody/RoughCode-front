@@ -412,15 +412,30 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
         if(projectInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
 
+        // code 연결 해제
+        List<Codes> origin = codesRepository.findByProjects(project);
+        if(origin != null) {
+            for (Codes c : origin) {
+                c.setProject(null);
+            }
+            codesRepository.saveAll(origin);
+        } else {
+            log.info("기존 연결된 코드가 없습니다");
+        }
+
         // code 연결
         List<Codes> codesList = new ArrayList<>();
-        for(Long id : codesIdList) {
-            Codes codes = codesRepository.findByCodesIdAndExpireDateIsNull(id);
-            if(codes == null) throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
-            if(!codes.getCodeWriter().equals(user)) throw new NotMatchException();
+        if(codesIdList != null)
+            for(Long id : codesIdList) {
+                Codes codes = codesRepository.findByCodesIdAndExpireDateIsNull(id);
+                if(codes == null) throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+                if(!codes.getCodeWriter().equals(user)) throw new NotMatchException();
 
-            codes.setProject(project);
-            codesList.add(codes);
+                codes.setProject(project);
+                codesList.add(codes);
+            }
+        else {
+            log.info("연결하려는 코드가 없습니다");
         }
         codesRepository.saveAll(codesList);
 

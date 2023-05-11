@@ -58,4 +58,6 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
 
     @Query("SELECT count(c) FROM Codes c WHERE c.codeWriter = :user AND c.version > 1")
     int countByCodeWriter(@Param("user") Users user);
+
+    List<Codes> findByProjects(Projects projects);
 }
