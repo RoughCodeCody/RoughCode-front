@@ -15,13 +15,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.HashMap;
 import java.util.Map;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/code/review")
 @RequiredArgsConstructor
@@ -39,9 +44,8 @@ public class ReviewsController {
     })
     @PostMapping()
     ResponseEntity<?> insertReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                 @Parameter(description = "코드 리뷰 정보 값", required = true) @RequestBody ReviewReq reviewReq) {
+                                 @Parameter(description = "코드 리뷰 정보 값", required = true) @Valid @RequestBody ReviewReq reviewReq) {
         Long userId = (accessToken!= null)? jwtTokenProvider.getId(accessToken) : -1L;
-        log.info(reviewReq.getSelectedRange().toString());
 
         Long res = 0L;
         try {
@@ -65,7 +69,9 @@ public class ReviewsController {
     })
     @GetMapping("/{reviewId}")
     ResponseEntity<?> getReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                              @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
+                              @Parameter(description = "코드 리뷰 id 값", required = true)
+                              @Positive(message = "reviewId 값이 범위를 벗어납니다")
+                              @PathVariable Long reviewId) {
         Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
         ReviewDetailRes res = null;
@@ -92,9 +98,14 @@ public class ReviewsController {
     })
     @PutMapping("/{reviewId}")
     ResponseEntity<?> updateReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                   @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId,
-                                   @Parameter(description = "코드 리뷰 정보 값", required = true) @RequestBody ReviewReq reviewReq) {
+                                   @Parameter(description = "코드 리뷰 id 값", required = true)
+                                   @Positive(message = "reviewId 값이 범위를 벗어납니다")
+                                   @PathVariable Long reviewId,
+                                   @Parameter(description = "코드 리뷰 정보 값", required = true) @Valid @RequestBody ReviewReq reviewReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         int res = 0;
         try {
@@ -121,8 +132,13 @@ public class ReviewsController {
     })
     @DeleteMapping("/{reviewId}")
     ResponseEntity<?> deleteReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                   @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
+                                   @Parameter(description = "코드 리뷰 id 값", required = true)
+                                   @Positive(message = "reviewId 값이 범위를 벗어납니다")
+                                   @PathVariable Long reviewId) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         int res = 0;
         try {
@@ -148,8 +164,13 @@ public class ReviewsController {
     })
     @PostMapping("/{reviewId}/like")
     ResponseEntity<?> likeReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                               @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId) {
+                               @Parameter(description = "코드 리뷰 id 값", required = true)
+                               @Positive(message = "reviewId 값이 범위를 벗어납니다")
+                               @PathVariable Long reviewId) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         int res = 0;
         try {
@@ -178,8 +199,13 @@ public class ReviewsController {
     })
     @PutMapping("/{reviewId}/complaint")
     ResponseEntity<?> complainReview(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
-                                     @Parameter(description = "코드 리뷰 id 값", required = true) @PathVariable Long reviewId){
+                                     @Parameter(description = "코드 리뷰 id 값", required = true)
+                                     @Positive(message = "reviewId 값이 범위를 벗어납니다")
+                                     @PathVariable Long reviewId){
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         int res = 0;
         try {

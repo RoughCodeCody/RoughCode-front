@@ -5,6 +5,7 @@ import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,7 +34,7 @@ public class ReReviews extends BaseTimeEntity {
 
     @Builder.Default
     @Column(name = "complaint", nullable = true)
-    private int complaint = 0;
+    private String complaint = "";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviews_id", nullable = false)
@@ -48,5 +49,13 @@ public class ReReviews extends BaseTimeEntity {
     }
     public void likeCntDown() {
         this.likeCnt -= 1;
+    }
+
+    public void deleteContent() {
+        this.content = "";
+    }
+
+    public void setComplaint(List<String> complainList) {
+        this.complaint = String.join(",", complainList);
     }
 }

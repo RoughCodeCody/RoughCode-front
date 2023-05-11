@@ -7,6 +7,7 @@ import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.List;
 import java.util.Objects;
@@ -49,6 +50,10 @@ public class Projects extends BaseTimeEntity {
 
     @Column(name = "introduction", nullable = false)
     private String introduction;
+
+    @Builder.Default
+    @Column(name = "expire_date", nullable = true)
+    private LocalDateTime expireDate = null;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_writer_id", nullable = false)
@@ -117,5 +122,9 @@ public class Projects extends BaseTimeEntity {
 
     public void setStatus(boolean status) {
         this.closed = status;
+    }
+
+    public void setExpireDate() {
+        this.expireDate = LocalDateTime.now().plusDays(30L);
     }
 }

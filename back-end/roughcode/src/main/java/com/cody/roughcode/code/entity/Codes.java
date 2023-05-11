@@ -7,6 +7,7 @@ import com.cody.roughcode.util.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -42,6 +43,10 @@ public class Codes extends BaseTimeEntity {
     @Builder.Default
     @Column(name = "review_cnt", nullable = true)
     private int reviewCnt = 0;
+
+    @Builder.Default
+    @Column(name = "expire_date", nullable = true)
+    private LocalDateTime expireDate = null;
 
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeSelectedTags> selectedTags;

@@ -35,7 +35,7 @@ public class ProjectInfoRes {
     @Schema(description = "피드백수", example = "2")
     private int feedbackCnt;
 
-    @Schema(description = "썸네일 url", example = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/kosy318_1_5")
+    @Schema(description = "썸네일 url", example = "https://d2swdwg2kwda2j.cloudfront.net/project/kosy318_1_5")
     private String img;
 
     @Schema(description = "태그 이름 리스트", example = "[springboot, react]")

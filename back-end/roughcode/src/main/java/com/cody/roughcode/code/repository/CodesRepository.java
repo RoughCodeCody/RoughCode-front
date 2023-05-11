@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CodesRepository extends JpaRepository<Codes, Long> {
+    Codes findByCodesIdAndExpireDateIsNull(Long id);
     Codes findByCodesId(Long id);
 
 //    // @Query 어노테이션은 LIMIT 설정 불가능 > Pageable 사용하여 가장 최신 버전의 프로젝트 불러오기 수행
@@ -57,4 +58,6 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
 
     @Query("SELECT count(c) FROM Codes c WHERE c.codeWriter = :user AND c.version > 1")
     int countByCodeWriter(@Param("user") Users user);
+
+    List<Codes> findByProjects(Projects projects);
 }

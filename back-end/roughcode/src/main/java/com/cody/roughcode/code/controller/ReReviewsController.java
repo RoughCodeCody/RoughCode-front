@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -138,6 +139,31 @@ public class ReReviewsController {
 
         if(res < 0) return Response.notFound("코드 리-리뷰 좋아요 또는 취소 실패");
         return Response.makeResponse(HttpStatus.OK, "코드 리-리뷰 좋아요 또는 취소 성공", 1, res);
+    }
+
+    @Operation(summary = "리-리뷰 신고 API")
+    @PutMapping("/{reReviewId}/complaint")
+    ResponseEntity<?> reReviewComplain(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                       @Parameter(description = "리-리뷰 아이디")
+                                       @Range(min = 1, max = Long.MAX_VALUE, message = "reReviewId 값이 범위를 벗어납니다")
+                                       @PathVariable Long reReviewId){
+        Long userId = jwtTokenProvider.getId(accessToken);
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        int res = 0;
+        try {
+            res = reReviewsService.reReviewComplain(reReviewId, userId);
+        } catch(ResponseStatusException e){
+            log.warn(e.getReason());
+            return Response.makeResponse(e.getStatus(), e.getReason());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res <= 0) return Response.notFound("코드 리-리뷰 신고 실패");
+        return Response.ok("코드 리-리뷰 신고 성공");
     }
 
 }

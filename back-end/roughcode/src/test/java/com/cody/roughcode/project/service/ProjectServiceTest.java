@@ -194,7 +194,7 @@ public class ProjectServiceTest {
     void projectCloseSucceed(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
 
         // when
@@ -209,7 +209,7 @@ public class ProjectServiceTest {
     void projectOpenSucceed(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
 
         // when
@@ -225,7 +225,7 @@ public class ProjectServiceTest {
         // given
         String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_1_2023-05-01%2014%3A29%3A07";
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when
         int res = projectsService.deleteImage(imgUrl, project.getProjectsId(), users.getUsersId());
@@ -254,7 +254,7 @@ public class ProjectServiceTest {
         // given
         String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_1_2023-05-01%2014%3A29%3A07";
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -269,7 +269,7 @@ public class ProjectServiceTest {
         // given
         String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_2_2023-05-01%2014%3A29%3A07";
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -285,7 +285,7 @@ public class ProjectServiceTest {
         MockMultipartFile image = getImage();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn("imageUrl").when(s3FileService).upload(any(MultipartFile.class), any(String.class), any(String.class));
 
         // when
@@ -316,7 +316,7 @@ public class ProjectServiceTest {
         MockMultipartFile image = getImage();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -343,7 +343,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -420,7 +420,7 @@ public class ProjectServiceTest {
     void projectFavoriteSucceed(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(1L);
-        doReturn(project).when(projectsRepository).findByProjectsId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(1L);
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
         doReturn(null).when(projectFavoritesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
@@ -441,7 +441,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(1L);
-        doReturn(project).when(projectsRepository).findByProjectsId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(1L);
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
         doReturn(projectFavorites).when(projectFavoritesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
@@ -470,7 +470,7 @@ public class ProjectServiceTest {
     void projectFavoriteFailNoProject(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(1L);
-        doReturn(null).when(projectsRepository).findByProjectsId(1L);
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(1L);
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -484,7 +484,7 @@ public class ProjectServiceTest {
     void projectLikeSucceed(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(1L);
-        doReturn(project).when(projectsRepository).findByProjectsId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(1L);
         doReturn(null).when(projectLikesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
         // when
@@ -504,7 +504,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(1L);
-        doReturn(project).when(projectsRepository).findByProjectsId(1L);
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(1L);
         doReturn(projectLikes).when(projectLikesRepository).findByProjectsAndUsers(any(Projects.class), any(Users.class));
 
         // when
@@ -532,7 +532,7 @@ public class ProjectServiceTest {
     void projectLikeFailNoProject(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(1L);
-        doReturn(null).when(projectsRepository).findByProjectsId(1L);
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(1L);
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -563,7 +563,7 @@ public class ProjectServiceTest {
                 .projects(project)
                 .build();
 
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when
@@ -595,7 +595,7 @@ public class ProjectServiceTest {
                 .projects(project)
                 .build();
 
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when
@@ -628,7 +628,7 @@ public class ProjectServiceTest {
                 .closedChecked(LocalDateTime.now().minusMinutes(70))
                 .build();
 
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when
@@ -887,8 +887,8 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
-        doReturn(List.of(project)).when(projectsRepository).findByNumAndProjectWriterOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
+        doReturn(List.of(project)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when
@@ -1052,7 +1052,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(1L);
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
         doReturn(feedbacks).when(feedbacksRepository).save(any(Feedbacks.class));
 
@@ -1078,7 +1078,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(null).when(usersRepository).findByUsersId(1L);
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
         doReturn(feedbacks).when(feedbacksRepository).save(any(Feedbacks.class));
 
@@ -1099,7 +1099,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -1149,9 +1149,9 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(List.of(project, project2)).when(projectsRepository).findByNumAndProjectWriterOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(List.of(project, project2)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
         ProjectDetailRes success = projectsService.getProject(projectId, 0L);
@@ -1646,7 +1646,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
@@ -1676,7 +1676,7 @@ public class ProjectServiceTest {
     void deleteProjectFailNoProject(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -1714,7 +1714,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project2).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
 
         // when & then
@@ -1731,9 +1731,9 @@ public class ProjectServiceTest {
         // given
         List<Codes> codesList = codeInit();
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(codesList.get(0)).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(codesList.get(0)).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
 
         // when
         int success = projectsService.connect(project.getProjectsId(), users.getUsersId(), List.of(0L, 1L, 2L));
@@ -1747,7 +1747,7 @@ public class ProjectServiceTest {
     void connectProjectCodeFailNoProject(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -1762,9 +1762,9 @@ public class ProjectServiceTest {
     void connectProjectCodeFailNoCode(){
         // given
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(null).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(null).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -1779,7 +1779,7 @@ public class ProjectServiceTest {
     void connectProjectCodeFailUserDiffer(){
         // given
         doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when & then
@@ -1810,7 +1810,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
@@ -1838,7 +1838,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -1888,7 +1888,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project2).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
 
         // when & then
@@ -1927,7 +1927,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn(null).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
@@ -1946,7 +1946,7 @@ public class ProjectServiceTest {
         MockMultipartFile thumbnail = getImage();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(project).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn("imageUrl").when(s3FileService).upload(any(MultipartFile.class), any(String.class), any(String.class));
 
@@ -1978,7 +1978,7 @@ public class ProjectServiceTest {
         MockMultipartFile thumbnail = getImage();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -2005,7 +2005,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(project).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -2098,7 +2098,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(original).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(original).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(original).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
@@ -2148,7 +2148,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(null).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -2184,7 +2184,7 @@ public class ProjectServiceTest {
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(original).when(projectsRepository).findByProjectsId(any(Long.class));
+        doReturn(original).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(original).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
 
         // when & then

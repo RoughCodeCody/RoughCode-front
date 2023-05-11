@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ProjectFavoritesRepository extends JpaRepository<ProjectFavorites, Long> {
     ProjectFavorites findByProjectsAndUsers(Projects project, Users user);
-    @Query("SELECT pf.users FROM ProjectFavorites pf WHERE pf.projects = :original")
+    @Query("SELECT pf.users FROM ProjectFavorites pf WHERE pf.projects = :original AND pf.projects.expireDate IS NULL")
     List<Users> findByProjects(@Param("original") Projects original);
 }
