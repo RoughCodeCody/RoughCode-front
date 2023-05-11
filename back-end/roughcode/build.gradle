@@ -2,15 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    // 
-    // id "org.sonarqube" version "3.3"
-    // id 'jacoco'
-    // id 'com.github.spotbugs' version '4.7.0'
-    // id "com.github.spotbugs" version "5.0.14"
-
-// codenarc
-    // id 'groovy'
-    // id 'codenarc'
 }
 
 group = 'com.cody'
@@ -22,24 +13,6 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
-// 
-// spotbugs {
-//   toolVersion = '4.7.3'
-//   reportsDir = file("$project.buildDir/reports/spotbugs")
-//   ignoreFailures = false
-// }
-
-// tasks.withType(com.github.spotbugs.SpotBugsTask) {
-//    reports {
-//       xml.enabled = true
-//       html.enabled = true
-//    }
-// }
-
-// dependencies {
-//   spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
-// }
-// 
 
 repositories {
     mavenCentral()
@@ -95,81 +68,8 @@ dependencies {
 
     // email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-
-    // sonarqube
-    // implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3'
-
-    //codenarc
-    // codenarc 'org.codenarc:CodeNarc:2.2.0'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-
-    // 
-    // finalizedBy 'jacocoTestReport'
 }
-
-
-// jacoco { 
-//     toolVersion = "0.8.7"
-// }
-
-// jacocoTestReport { 
-//     reports {
-//         xml.enabled true // sonarqube 분석에 필요한 xml파일만 생성
-//         csv.enabled false
-//         html.enabled false
-//     }
-
-// }
-
-// sonarqube { 
-//     properties {
-//         property "sonar.host.url", "http://k8a306.p.ssafy.io:8000/"
-//         property "sonar.login", "sqa_8fe374d4ad360a8c8e6acc2ed1ba9cdbcec34d23"
-//         property "sonar.projectKey", "sonarqube"
-//         property "sonar.projectName" , "sonarqube"
-//         property "sonar.sources", "src/main/java,src/main/resources" // 소스 경로
-//         property "sonar.language", "java" // 언어
-//         property "sonar.sourceEncoding", "UTF-8"
-//         property "sonar.profile", "Sonar way" // 소나큐브에서 적용할 프로필(분석할 수준 설정)
-//         property "sonar.java.binaries", "build/classes"
-//         // property "sonar.java.binaries", "./back-end/roughcode/classes" // # 자바 클래스 파일위치
-//         property "sonar.test.inclusions", "**/*Test.java" // # 코드 분석에 사용할 테스트 소스 
-//         property "sonar.exclusions", "**/resources/static/**, **/Q*.class, **/test/**"  //# 테스트커버리지에서 제외할 파일, 예제에선 정적 js 파일과 queryDSL Q파일 제외
-//         property "sonar.coverage.jacoco.xmlReportPaths", "./back-end/roughcode/reports/jacoco/test/jacocoTestReport.xml"  // # jacoco 플러그인의 결과파일
-//     }
-// }
-
-
-
-
-// tasks.register('spotbugsMain', com.github.spotbugs.SpotBugsTask) {
-//     dependsOn 'classes'
-//     sourceSets = [sourceSets.main]
-//     reports {
-//         xml.enabled = true
-//         html.enabled = false
-//     }
-// }
-
-// tasks.register('spotbugsTest', com.github.spotbugs.SpotBugsTask) {
-//     dependsOn 'testClasses'
-//     sourceSets = [sourceSets.test]
-//     reports {
-//         xml.enabled = true
-//         html.enabled = false
-//     }
-// }
-
-// spotbugsMain {
-//     reports {
-//         xml.enabled = true
-//     }
-// }
-// spotbugsTest {
-//     reports {
-//         xml.enabled = true
-//     }
-// }

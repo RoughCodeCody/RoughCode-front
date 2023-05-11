@@ -941,6 +941,10 @@ public class ProjectsServiceImpl implements ProjectsService{
         projects.feedbackCntDown();
         projectsRepository.save(projects);
 
+        List<FeedbacksLikes> feedbacksLikes = feedbacks.getFeedbacksLikes();
+        if(feedbacksLikes != null)
+            feedbacksLikesRepository.deleteAll(feedbacksLikes);
+
         feedbacksRepository.delete(feedbacks);
         return 1;
     }
