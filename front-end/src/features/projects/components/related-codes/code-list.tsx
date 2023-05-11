@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { useInView } from "react-intersection-observer";
 
 import { Btn, FlexDiv } from "@/components/elements";
@@ -11,10 +11,21 @@ import { CodeListItem } from "./code-list-item";
 interface MyCodeListProps {
   relatedCodeIds: number[];
   projectId: string;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const MyCodeList = ({ relatedCodeIds, projectId }: MyCodeListProps) => {
+export const MyCodeList = ({
+  relatedCodeIds,
+  projectId,
+  setModalOpen,
+}: MyCodeListProps) => {
   const { ref, inView } = useInView();
+
+  // 프로젝트에 연결할 코드 id 리스트
+  const [selectedCodeIds, setSelectedCodeIds] = useState(relatedCodeIds);
+  console.log("selectedCodeIds", selectedCodeIds);
+
+  // 내 코드 목록 가져오기
   const { status, data, fetchNextPage } = useMyCodeList({
     params: { size: 10 },
     config: {
@@ -23,9 +34,12 @@ export const MyCodeList = ({ relatedCodeIds, projectId }: MyCodeListProps) => {
     },
   });
 
+  // 프로젝트에 코드 연결
   const connectCodeToProjectQuery = useConnectCodeToProject();
-
-  const [selectedCodeIds, setSelectedCodeIds] = useState(relatedCodeIds);
+  const connectCodeToProject = () => {
+    connectCodeToProjectQuery.mutate({ projectId, data: selectedCodeIds });
+    setModalOpen(false);
+  };
 
   // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
   useEffect(() => {
@@ -37,8 +51,6 @@ export const MyCodeList = ({ relatedCodeIds, projectId }: MyCodeListProps) => {
   useEffect(() => {
     if (inView) fetchNextPage();
   }, [inView]);
-
-  console.log("selectedCodeIds", selectedCodeIds);
 
   const handleCodeItemClick = (codeId: number) => {
     if (selectedCodeIds.includes(codeId)) {
@@ -53,7 +65,8 @@ export const MyCodeList = ({ relatedCodeIds, projectId }: MyCodeListProps) => {
       {status === "loading" && <>loading...</>}
       {status === "success" &&
         data?.pages[0].list.map((codeListItem, idx, list) => (
-          <div
+          <FlexDiv
+            width="100%"
             key={codeListItem.codeId}
             ref={idx === list.length - 1 ? ref : null}
           >
@@ -62,15 +75,10 @@ export const MyCodeList = ({ relatedCodeIds, projectId }: MyCodeListProps) => {
               handleCodeItemClick={handleCodeItemClick}
               selected={selectedCodeIds.includes(codeListItem.codeId)}
             />
-          </div>
+          </FlexDiv>
         ))}
 
-      <Btn
-        text="연결하기"
-        onClickFunc={() =>
-          connectCodeToProjectQuery.mutate({ projectId, data: selectedCodeIds })
-        }
-      />
+      <Btn text="연결하기" onClickFunc={connectCodeToProject} />
     </FlexDiv>
   );
 };

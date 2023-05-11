@@ -1,8 +1,14 @@
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { Btn, Count, FlexDiv, Nickname, Text } from "@/components/elements";
-import { Selection } from "@/components/selection";
+import {
+  Btn,
+  Count,
+  FlexDiv,
+  Nickname,
+  Text,
+  Selection,
+} from "@/components/elements";
 import {
   useDeleteProjectFeedback,
   usePostFeedbackLike,
@@ -12,12 +18,13 @@ import {
 import { Feedback } from "@/features/projects/types";
 import { queryClient } from "@/lib/react-query";
 
-import { FeedbackItemWrapper } from "./style";
+import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 
 interface FeedbackItemProps {
   feedback: Feedback;
   type: "feedback" | "review";
-  id: string;
+  projectOrCodeid: string;
+  isMine: boolean;
 }
 
 export const FeedbackItem = ({
@@ -32,20 +39,17 @@ export const FeedbackItem = ({
     date,
   },
   type,
-  id,
+  projectOrCodeid,
+  isMine,
 }: FeedbackItemProps) => {
-  // 더미데이터
-  const isMine = false;
-  // const [newIsLiked, setNewIsLiked] = useState<boolean>(liked);
-  // const [newLikeCnt, setNewLikeCnt] = useState<number>(like);
-
   // 피드백 수정 관련 state
   const [isModifying, setIsModifying] = useState(false);
   const [newContent, setNewContent] = useState(content);
+  const ref = useRef<HTMLInputElement>(null);
 
   const invalidateProjectInfoQuery = () => {
     queryClient.invalidateQueries({
-      queryKey: ["projectInfo", id],
+      queryKey: ["projectInfo", projectOrCodeid],
     });
   };
 
@@ -84,6 +88,18 @@ export const FeedbackItem = ({
     });
   };
 
+  const selectionListMine = {
+    수정하기: () => {
+      setIsModifying(true);
+      if (ref.current) ref.current.focus();
+    },
+    삭제하기: handleDeleteFeedback,
+  };
+
+  const selectionListNotMine = {
+    신고하기: handleFeedbackComplaint,
+  };
+
   return (
     <FeedbackItemWrapper
       bgColor={Boolean(selected) ? "sub-one" : "white"}
@@ -92,10 +108,12 @@ export const FeedbackItem = ({
       {isModifying ? (
         <>
           <FlexDiv width="100%" justify="space-between">
-            <input
+            <FeedbackModifyInput
               value={newContent}
+              ref={ref}
               onChange={(e) => setNewContent(e.target.value)}
             />
+
             <Btn text="수정 완료" onClickFunc={handlePutFeedback} />
           </FlexDiv>
         </>
@@ -114,17 +132,13 @@ export const FeedbackItem = ({
               <Count
                 type="like"
                 isChecked={liked}
-                // setIsChecked={setNewIsLiked}
                 cnt={like}
-                // setCnt={setNewLikeCnt}
                 onClickFunc={handleFeedbackLike}
               />
               <Selection
-                selectionList={{
-                  수정하기: () => setIsModifying(true),
-                  삭제하기: handleDeleteFeedback,
-                  신고하기: handleFeedbackComplaint,
-                }}
+                selectionList={
+                  isMine ? selectionListMine : selectionListNotMine
+                }
               />
             </FlexDiv>
           </FlexDiv>

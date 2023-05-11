@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { Spinner } from "@/components/elements/spinner";
+import { Spinner } from "@/components/elements";
 
 const StyledDiv = styled.div`
   width: 100vw;
@@ -13,7 +13,7 @@ const StyledDiv = styled.div`
 export const SuspenseFallback = () => {
   return (
     <StyledDiv>
-      <Spinner />
+      <Spinner size={24} />
     </StyledDiv>
   );
 };

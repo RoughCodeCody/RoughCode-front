@@ -1,5 +1,6 @@
 export * from "./check-url-open";
 export * from "./delete-feedback";
+export * from "./delete-project";
 export * from "./get-project-info";
 export * from "./post-feedback-like";
 export * from "./post-project-fav";

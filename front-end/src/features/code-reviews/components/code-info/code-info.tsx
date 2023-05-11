@@ -8,8 +8,8 @@ import {
   Nickname,
   TagChipSub,
   Text,
+  Selection,
 } from "@/components/elements";
-import { Selection } from "@/components/selection";
 
 import { usePostCodeLike } from "../../api";
 import { CodeInfoResult, codeForFeedbackModify } from "../../types";

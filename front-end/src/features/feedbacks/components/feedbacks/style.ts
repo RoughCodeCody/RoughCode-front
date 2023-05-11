@@ -14,4 +14,11 @@ const FeedbackItemWrapper = styled.div<{ bgColor?: string; isMine: boolean }>`
   `}
 `;
 
-export { FeedbackItemWrapper };
+const FeedbackModifyInput = styled.input`
+  width: 80%;
+  height: 100%;
+  border: none;
+  outline: none;
+`;
+
+export { FeedbackItemWrapper, FeedbackModifyInput };
