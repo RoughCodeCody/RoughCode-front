@@ -13,10 +13,8 @@ const schema = z.object({
 
 export const EmailVerification = () => {
   const sendEmailAddressQuery = useSendEmailAddress();
-  const onSubmit = (email: FormValues) => {
-    console.log(email);
-    const params = email;
-    sendEmailAddressQuery.mutate(params);
+  const onSubmit = (data: FormValues) => {
+    sendEmailAddressQuery.mutate(data.email);
   };
 
   return (

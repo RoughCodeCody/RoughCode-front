@@ -2,18 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 
 import { axios } from "@/lib/axios";
 
-type SendEmailAddressDTO = {
-  params: {
-    email: string;
-  };
-};
-
-const sendEmailAddress = ({ params }: SendEmailAddressDTO): Promise<null> => {
-  return axios.post(`/mypage/email=${params}`);
-};
-
-type UseSendEmailAddressOptions = {
-  email: string;
+const sendEmailAddress = (email: string): Promise<null> => {
+  return axios.post(`/mypage/email?email=${email}`);
 };
 
 export const useSendEmailAddress = () => {
