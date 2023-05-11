@@ -17,12 +17,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class MypageServiceImpl implements MypageService{
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
     }
 
-    @Value("${stat-card.filepath}")
+    @Value("${filepath.stat-card}")
     String statFilePath = "statcard.txt";
 
     @Override
@@ -69,37 +72,43 @@ public class MypageServiceImpl implements MypageService{
     }
 
     private String getStatCard(Users user, String userName) throws FileNotFoundException {
-        HashMap<String, Integer> stats = new HashMap<>();
+        HashMap<String, String> stats = new HashMap<>();
 
         int res = 0;
 
         // 프로젝트 피드백 횟수:     ${feedbackCnt}
         res = feedbackRepository.countByUsers(user);
-        stats.put("feedbackCnt", res);
+        stats.put("feedbackCnt", String.valueOf(res));
 
         // 코드 리뷰 횟수:          ${codeReviewCnt}
         res = reviewsRepository.countByUsers(user);
-        stats.put("codeReviewCnt", res);
+        stats.put("codeReviewCnt", String.valueOf(res));
 
         // 반영된 프로젝트 피드백 수: ${includedFeedbackCnt}
         res = selectedFeedbacksRepository.countByUsers(user);
-        stats.put("includedFeedbackCnt", res);
+        stats.put("includedFeedbackCnt", String.valueOf(res));
 
         // 반영된 코드 리뷰 수:      ${includedCodeReviewCnt}
         res = selectedReviewsRepository.countByUsers(user);
-        stats.put("includedCodeReviewCnt", res);
+        stats.put("includedCodeReviewCnt", String.valueOf(res));
 
         // 프로젝트 리팩토링 횟수:    ${projectRefactorCnt}
         res = projectsRepository.countByProjectWriter(user);
-        stats.put("projectRefactorCnt", res);
+        stats.put("projectRefactorCnt", String.valueOf(res));
 
         // 코드 리팩토링 횟수:       ${codeRefactorCnt}
         res = codesRepository.countByCodeWriter(user);
-        stats.put("codeRefactorCnt", res);
+        stats.put("codeRefactorCnt", String.valueOf(res));
+
+        // 유저이름
+        stats.put("name", user.getName());
 
         try { // 파일이 존재하면
             log.info(userName + "의 stat card ---------------");
-            List<String> lines = Files.readAllLines(Paths.get(statFilePath));
+            ClassPathResource cpr = new ClassPathResource(statFilePath);
+            byte[] bdata = FileCopyUtils.copyToByteArray(cpr.getInputStream());
+            String lines = new String(bdata, StandardCharsets.UTF_8);
+//            List<String> lines = Files.readAllLines(Paths.get(statFilePath));
 
             String completeStatCard = String.join("\n", lines);
             for (String key : stats.keySet()) {

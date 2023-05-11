@@ -35,11 +35,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Value;
 
 
 import javax.mail.MessagingException;
+import javax.servlet.ServletContext;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -48,6 +51,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Service
 @Slf4j
@@ -808,18 +813,22 @@ public class ProjectsServiceImpl implements ProjectsService{
         }
     }
 
+    @Value("${filepath.google-credentials}")
+    String credentialsPath = "google-credentials.json"; // 인증 정보 파일 경로
+
     @Override
     @Transactional
     public Boolean checkProject(String url, boolean open) throws IOException {
-        String credentialsPath = "google-credentials.json"; // 인증 정보 파일 경로
-
         if(!open)
             if (!isOpen(url))
                 throw new IOException("서버 확인이 필요한 URL입니다");
 
         SearchUrisResponse searchUrisResponse;
         try {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsPath));
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            InputStream stream = classLoader.getResourceAsStream(credentialsPath);
+            if(stream == null) log.error("credential 정보가 없습니다");
+            GoogleCredentials credentials = GoogleCredentials.fromStream(stream);
 
             WebRiskServiceSettings settings =
                     WebRiskServiceSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
@@ -839,7 +848,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                 }
             }
         } catch (Exception e) {
-            throw new IOException("서비스 검사 실패");
+            throw new IOException(e.getMessage());
         }
 
         return searchUrisResponse.getThreat().getThreatTypesList().isEmpty();
