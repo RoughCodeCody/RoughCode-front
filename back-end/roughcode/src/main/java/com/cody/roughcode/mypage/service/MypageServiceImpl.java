@@ -17,12 +17,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -99,7 +102,10 @@ public class MypageServiceImpl implements MypageService{
 
         try { // 파일이 존재하면
             log.info(userName + "의 stat card ---------------");
-            List<String> lines = Files.readAllLines(Paths.get(statFilePath));
+            ClassPathResource cpr = new ClassPathResource(statFilePath);
+            byte[] bdata = FileCopyUtils.copyToByteArray(cpr.getInputStream());
+            String lines = new String(bdata, StandardCharsets.UTF_8);
+//            List<String> lines = Files.readAllLines(Paths.get(statFilePath));
 
             String completeStatCard = String.join("\n", lines);
             for (String key : stats.keySet()) {
