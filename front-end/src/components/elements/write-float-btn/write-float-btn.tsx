@@ -1,5 +1,4 @@
-import { AiOutlinePlusCircle } from "react-icons/ai";
-import { WriteFloatBtnWrapper } from "./style";
+import { FloatBtn, WriteFloatBtnWrapper } from "./style";
 
 type WriteFloatBtnProps = {
   navTo: string;
@@ -8,7 +7,7 @@ type WriteFloatBtnProps = {
 export const WriteFloatBtn = ({ navTo }: WriteFloatBtnProps) => {
   return (
     <WriteFloatBtnWrapper href={navTo} color="main">
-      <AiOutlinePlusCircle />
+      <FloatBtn />
     </WriteFloatBtnWrapper>
   );
 };
