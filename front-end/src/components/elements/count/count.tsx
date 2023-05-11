@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import {
   TiHeartFullOutline,
   TiHeartOutline,
@@ -14,37 +13,13 @@ import { IconWrapper } from "./style";
 interface CountProps {
   type: "like" | "bookmark" | "code";
   isChecked: boolean | null;
-  // setIsChecked: Dispatch<SetStateAction<boolean>> | null;
   cnt: number;
-  // setCnt: Dispatch<SetStateAction<number>> | null;
-  onClickFunc: () => void;
+  onClickFunc?: () => void;
 }
 
 // like, bookmark, code 카운트 표시
-// type === "code"일 때는 isChecked, setIsChecked props null로 지정할 것
-export const Count = ({
-  type,
-  isChecked,
-  // setIsChecked,
-  cnt,
-  // setCnt,
-  onClickFunc,
-}: CountProps) => {
-  // // 좋아요, 북마크 아이콘 클릭시 상태 및 카운트 변경
-  // const handleIconClick = () => {
-  //   if (!setIsChecked || !setCnt) return;
-
-  //   if (isChecked) {
-  //     // api 요청 성공시
-  //     setIsChecked(false);
-  //     setCnt((prev) => prev - 1);
-  //   } else {
-  //     // api 요청 성공시
-  //     setIsChecked(true);
-  //     setCnt((prev) => prev + 1);
-  //   }
-  // };
-
+// type === "code"일 때는 onClickFunc props null로 지정할 것
+export const Count = ({ type, isChecked, cnt, onClickFunc }: CountProps) => {
   return (
     <FlexDiv padding="0 0.5rem">
       {type === "like" ? (

@@ -69,7 +69,7 @@ export const CodeInfo = ({
                 isChecked={favorite}
                 onClickFunc={() => {}}
               />
-              <Selection isMine={isWriting ? false : true} />
+              <Selection selectionList={{}} />
             </FlexDiv>
           </FlexDiv>
           <FlexDiv width="100%" justify="start">

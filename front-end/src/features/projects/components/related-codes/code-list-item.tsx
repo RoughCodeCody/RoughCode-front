@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import dayjs from "dayjs";
 
 import {
@@ -23,6 +22,8 @@ type CodeListItemProps = {
     userName: string; // 코드 작성자 닉네임
     liked: boolean; // 좋아요 여부
   };
+  handleCodeItemClick: (codeId: number) => void;
+  selected: boolean;
 };
 
 export const CodeListItem = ({
@@ -37,11 +38,14 @@ export const CodeListItem = ({
     userName,
     liked,
   },
+  handleCodeItemClick,
+  selected,
 }: CodeListItemProps) => {
-  const router = useRouter();
-
   return (
-    <CodeListItemWrapper onClick={() => router.push(`/code-review/${codeId}`)}>
+    <CodeListItemWrapper
+      onClick={() => handleCodeItemClick(codeId)}
+      shadColor={selected ? "main" : ""}
+    >
       <FlexDiv width="100%" justify="space-between" pointer={true}>
         <FlexDiv>
           <Text bold={true} color="main">{`V${version}`}</Text>
@@ -53,7 +57,12 @@ export const CodeListItem = ({
           ))}
         </FlexDiv>
         <FlexDiv>
-          <Count type="like" isChecked={liked} cnt={likeCnt} />
+          <Count
+            type="like"
+            isChecked={liked}
+            cnt={likeCnt}
+            onClickFunc={() => {}}
+          />
           <Count type="code" isChecked={null} cnt={reviewCnt} />
         </FlexDiv>
       </FlexDiv>

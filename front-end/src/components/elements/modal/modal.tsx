@@ -22,6 +22,7 @@ export interface ModalProps {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   modalContent: ReactNode;
   headerText: string;
+  width?: string;
 }
 
 export const Modal: FunctionComponent<ModalProps> = ({
@@ -29,14 +30,17 @@ export const Modal: FunctionComponent<ModalProps> = ({
   setIsOpen,
   modalContent,
   headerText,
+  width,
 }) => {
   const modal = (
     <>
       <Backdrop />
-      <ModalWrapper>
+      <ModalWrapper width={width || "40%"}>
         <StyledModal>
           <Header>
-            <Text color="main">{headerText}</Text>
+            <Text color="main" bold={true}>
+              {headerText}
+            </Text>
             <CloseButton onClick={() => setIsOpen(false)}>X</CloseButton>
           </Header>
           <ModalContent>{modalContent}</ModalContent>
