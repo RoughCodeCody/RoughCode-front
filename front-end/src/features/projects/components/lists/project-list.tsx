@@ -23,7 +23,6 @@ interface ProjectCardProps {
 }
 
 export const ProjectList = () => {
-  const queryClient = useQueryClient();
   const { ref, inView } = useInView();
 
   const { searchCriteria } = useSearchCriteriaStore();
@@ -48,14 +47,6 @@ export const ProjectList = () => {
         lastPage.nextPage === -1 ? undefined : lastPage.nextPage,
     },
   });
-
-  useEffect(() => {
-    queryClient.removeQueries(["projectList"]);
-    // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
-    return () => {
-      queryClient.removeQueries(["projectList"]);
-    };
-  }, [sort, size, keyword, tagIdList, closed]);
 
   useEffect(() => {
     if (inView) {
