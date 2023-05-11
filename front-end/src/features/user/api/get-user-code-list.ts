@@ -46,7 +46,7 @@ export const useUserCodeList = ({
 }: UseUserCodeListOptions) => {
   return useInfiniteQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
-    queryKey: ["userCodeList"],
+    queryKey: ["userCodeList", endPoint],
     queryFn: ({ pageParam = 0 }) => {
       const params = { size: 6, page: pageParam };
       return getUserCodeList({ endPoint, params });

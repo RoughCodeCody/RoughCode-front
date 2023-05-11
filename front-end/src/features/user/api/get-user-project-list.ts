@@ -47,7 +47,7 @@ export const useUserProjectList = ({
 }: UseUserProjectListOptions) => {
   return useInfiniteQuery<ExtractFnReturnType<QueryFnType>>({
     ...config,
-    queryKey: ["userProjectList"],
+    queryKey: ["userProjectList", endPoint],
     queryFn: ({ pageParam = 0 }) => {
       const params = { size: 3, page: pageParam };
       return getUserProjectList({ endPoint, params });
