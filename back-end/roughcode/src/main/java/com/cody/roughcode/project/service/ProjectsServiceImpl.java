@@ -967,6 +967,9 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(feedbacks == null)
             throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
 
+        if(feedbacks.getUsers() != null && feedbacks.getUsers().getUsersId().equals(users.getUsersId()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "피드백 작성자와 신고 유저가 동일합니다");
+
         List<String> complainList = (feedbacks.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
 
         if(feedbacks.getContent() == null || feedbacks.getContent().equals(""))
