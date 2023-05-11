@@ -36,7 +36,7 @@ public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.�
         this.content = f.getContent();
         this.like = f.getLikeCnt();
         this.selected = f.getSelected();
-        this.date = f.getModifiedDate();
+        this.date = f.getCreatedDate();
         this.liked = feedbackLiked;
     }
 }
