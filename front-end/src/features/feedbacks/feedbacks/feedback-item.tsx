@@ -120,10 +120,11 @@ export const FeedbackItem = ({
                 onClickFunc={handleFeedbackLike}
               />
               <Selection
-                isMine={isMine}
-                handleModifyFunc={() => setIsModifying(true)}
-                handleDeleteFunc={handleDeleteFeedback}
-                handleComplaintFunc={handleFeedbackComplaint}
+                selectionList={{
+                  수정하기: () => setIsModifying(true),
+                  삭제하기: handleDeleteFeedback,
+                  신고하기: handleFeedbackComplaint,
+                }}
               />
             </FlexDiv>
           </FlexDiv>

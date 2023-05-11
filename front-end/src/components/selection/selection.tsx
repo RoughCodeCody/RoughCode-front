@@ -1,61 +1,32 @@
 import { useState } from "react";
-import { SelectionList, SelectionText, SelectionWrapper } from "./style";
 import { TbDotsVertical } from "react-icons/tb";
-import { Text } from "../elements";
+
+import { SelectionList, SelectionText, SelectionWrapper } from "./style";
+
+/*
+ * props는 객체 형태로 넘겨줄 것
+ * key는 표시할 텍스트
+ * value는 해당 텍스트를 클릭했을 때 실행할 함수
+ */
 
 type SelectionProps = {
-  isMine: boolean;
-  handleModifyFunc?: () => void;
-  handleDeleteFunc?: () => void;
-  handleComplaintFunc?: () => void;
+  selectionList: Record<string, () => void>;
 };
 
-// 아예 props를 객체로 표시할 텍스트랑 클릭시 실행할 함수를 전달해서
-// 그 객체를 map 돌려서 표시하는 게 나을 듯
-
-export const Selection = ({
-  isMine,
-  handleModifyFunc,
-  handleDeleteFunc,
-  handleComplaintFunc,
-}: SelectionProps) => {
-  const [isOpen, setisOpen] = useState<boolean>(false);
+export const Selection = ({ selectionList }: SelectionProps) => {
+  const [isOpen, setisOpen] = useState(false);
 
   return (
     <SelectionWrapper>
       <TbDotsVertical onClick={() => setisOpen((prev) => !prev)} />
+
       {isOpen && (
         <SelectionList>
-          {isMine ? (
-            <>
-              <SelectionText
-                onClick={() => {
-                  handleModifyFunc();
-                  setisOpen(false);
-                }}
-              >
-                수정하기
-              </SelectionText>
-              <SelectionText
-                onClick={() => {
-                  handleDeleteFunc();
-                  setisOpen(false);
-                }}
-              >
-                삭제하기
-              </SelectionText>
-            </>
-          ) : (
-            <SelectionText
-              color="red"
-              onClick={() => {
-                handleComplaintFunc();
-                setisOpen(false);
-              }}
-            >
-              신고하기
+          {Object.entries(selectionList).map((selectionItem, idx) => (
+            <SelectionText onClick={selectionItem[1]} key={idx}>
+              {selectionItem[0]}
             </SelectionText>
-          )}
+          ))}
         </SelectionList>
       )}
     </SelectionWrapper>
