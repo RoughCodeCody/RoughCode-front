@@ -86,6 +86,9 @@ public class CodesServiceImpl implements CodesService {
     public Long insertCode(CodeReq req, Long userId) throws MessagingException {
 
         Users user = usersRepository.findByUsersId(userId);
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
 
         // 알람을 보낼 userIds
         List<Long> bookmarkAlarm = new ArrayList<>(); // 기존 코드를 북마크한 사용자

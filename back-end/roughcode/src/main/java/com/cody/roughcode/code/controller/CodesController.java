@@ -92,7 +92,6 @@ public class CodesController {
     ResponseEntity<?> insertCode(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                  @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
-
         if (userId <= 0) {
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
         }
@@ -157,6 +156,9 @@ public class CodesController {
                                  @PathVariable Long codeId,
                                  @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         int res = 0;
         try {
@@ -185,6 +187,9 @@ public class CodesController {
                                  @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
                                  @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         int res = 0;
         try {
@@ -213,6 +218,9 @@ public class CodesController {
                                @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
                                @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         int res = 0;
         try {
@@ -245,6 +253,9 @@ public class CodesController {
                                    @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
                                    @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         String content = codeFavoriteReq != null ? codeFavoriteReq.getContent() : null;
 
@@ -304,6 +315,9 @@ public class CodesController {
                                     @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
                                     @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
 
         List<ReviewInfoRes> res = null;
         try {
