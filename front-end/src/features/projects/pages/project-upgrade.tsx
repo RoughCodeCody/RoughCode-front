@@ -7,10 +7,18 @@ import {
 import { Head } from "@/components/head";
 import { ProjectFeedbacksSidebar } from "@/features/feedbacks";
 
+import { usePostProject } from "../api";
 import { ProjectUpdateForm } from "../components/project-update-form";
+import { ProjectUpdateValues } from "../types";
 
 export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
   const projectIdNum = Number(projectId);
+  const postProjectMutation = usePostProject();
+
+  const onSubmit = async (values: ProjectUpdateValues) => {
+    const todo = await postProjectMutation.mutateAsync({ data: values });
+    // console.log(todo);
+  };
 
   return (
     <>
@@ -25,7 +33,7 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
             title="프로젝트 버전 업"
             description="프로젝트의 버전을 올립니다."
           />
-          <ProjectUpdateForm projectId={projectIdNum} />
+          <ProjectUpdateForm projectId={projectIdNum} onSubmit={onSubmit} />
         </WhiteBoxNoshad>
         <ProjectFeedbacksSidebar projectId={projectId} />
       </FlexDiv>

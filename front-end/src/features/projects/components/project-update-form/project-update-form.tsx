@@ -19,16 +19,17 @@ const schema = z.object({
 
 type ProjectUpdateFormProps = {
   projectId: number;
+  onSubmit: (values: ProjectUpdateValues) => void;
 };
 
-export const ProjectUpdateForm = ({ projectId }: ProjectUpdateFormProps) => {
+export const ProjectUpdateForm = ({
+  projectId,
+  onSubmit,
+}: ProjectUpdateFormProps) => {
   return (
     <div>
       <Form<ProjectUpdateValues, typeof schema>
-        onSubmit={async (values) => {
-          console.log(values);
-          // await register(values);
-        }}
+        onSubmit={onSubmit}
         schema={schema}
         options={{
           shouldUnregister: true,
