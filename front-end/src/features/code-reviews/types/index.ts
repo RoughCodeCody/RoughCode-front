@@ -48,6 +48,7 @@ export type CodeInfoResult = {
   tags: string[]; // 등록한 태그 이름들
   userId: number; // 작성자 id
   userName: string; // 작성자 이름
+  mine: boolean; // 내 코드인지 여부
   projectId: number; // 연결된 프로젝트 id(없을 경우 null)
   projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
   content: string; // 코드 상세 설명
