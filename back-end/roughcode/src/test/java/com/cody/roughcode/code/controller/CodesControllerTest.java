@@ -122,7 +122,7 @@ class CodesControllerTest {
                         .codeId(code.getCodesId())
                         .version(code.getVersion())
                         .title(code.getTitle())
-                        .date(code.getModifiedDate())
+                        .date(code.getCreatedDate())
                         .likeCnt(code.getLikeCnt())
                         .reviewCnt(code.getReviewCnt())
                         .tags(List.of("java", "javascript"))
@@ -140,7 +140,7 @@ class CodesControllerTest {
         // when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
-                        .param("sort", "modifiedDate")
+                        .param("sort", "createdDate")
                         .param("page", String.valueOf(page))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(req))

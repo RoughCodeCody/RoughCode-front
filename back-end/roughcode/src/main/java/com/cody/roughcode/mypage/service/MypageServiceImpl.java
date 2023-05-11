@@ -176,7 +176,7 @@ public class MypageServiceImpl implements MypageService{
                     .codeId(c.getCodesId())
                     .version(c.getVersion())
                     .title(c.getTitle())
-                    .date(c.getModifiedDate())
+                    .date(c.getCreatedDate())
                     .likeCnt(c.getLikeCnt())
                     .reviewCnt(c.getReviewCnt())
                     .tags(tagList)
@@ -225,7 +225,7 @@ public class MypageServiceImpl implements MypageService{
             List<String> tagList = getTagNames(p);
 
             projectInfoRes.add(ProjectInfoRes.builder()
-                    .date(p.getModifiedDate())
+                    .date(p.getCreatedDate())
                     .img(p.getImg())
                     .projectId(p.getProjectsId())
                     .feedbackCnt(p.getFeedbackCnt())

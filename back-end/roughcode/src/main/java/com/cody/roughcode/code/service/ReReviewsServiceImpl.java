@@ -94,8 +94,8 @@ public class ReReviewsServiceImpl implements ReReviewsService {
                         return -1;
                     } else if (!r1.getUserId().equals(usersId) && r2.getUserId().equals(usersId)) {
                         return 1;
-                    } else if(r1.getModifiedDate() != null && r2.getModifiedDate() != null) {
-                        return r2.getModifiedDate().compareTo(r1.getModifiedDate());
+                    } else if(r1.getCreatedDate() != null && r2.getCreatedDate() != null) {
+                        return r2.getCreatedDate().compareTo(r1.getCreatedDate());
                     }
                     return 1;
                 });

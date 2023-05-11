@@ -1186,12 +1186,12 @@ public class ProjectServiceTest {
                         .build()
         );
 
-        String sort = "modifiedDate";
+        String sort = "createdDate";
         int page = 0;
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -1251,7 +1251,7 @@ public class ProjectServiceTest {
         int closed = 1;
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -1309,7 +1309,7 @@ public class ProjectServiceTest {
         int closed = 1;
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -1361,7 +1361,7 @@ public class ProjectServiceTest {
         );
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -1419,7 +1419,7 @@ public class ProjectServiceTest {
         );
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -1477,7 +1477,7 @@ public class ProjectServiceTest {
         );
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -1542,7 +1542,7 @@ public class ProjectServiceTest {
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
@@ -1601,7 +1601,7 @@ public class ProjectServiceTest {
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
