@@ -51,19 +51,22 @@ export const UnauthenticatedLanding = () => {
               content={
                 "우리의 토이 프로젝트를 공유합니다 우리의 토이 프로젝트를 공유합니다"
               }
-              imageUrl={"Project URL"}
+              imageUrl={dogFoot}
+              endPoint={"project"}
             ></HomeLinkCard>
             <HomeLinkCard
               title={"코드"}
               content={
                 "우리의 토이 코드를 공유합니다 우리의 토이 코드를 공유합니다"
               }
-              imageUrl={"code URL"}
+              imageUrl={dogFoot}
+              endPoint={"code-review"}
             ></HomeLinkCard>
             <HomeLinkCard
               title={"로그인"}
               content={"로그인로그인로그인 로그인로그인로그인"}
-              imageUrl={"login URL"}
+              imageUrl={dogFoot}
+              endPoint={"login"}
             ></HomeLinkCard>
           </LinkCardwrapper>
         </LinkCardContainer>

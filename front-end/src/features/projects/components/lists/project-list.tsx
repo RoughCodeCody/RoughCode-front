@@ -1,14 +1,12 @@
-import axios from "axios";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
+import { useProjectList } from "../../api";
 import { ProjectCard } from "../project-card";
 import { ProjectCardGrid } from "./style";
 
 import { FlexDiv } from "@/components/elements";
 import { useSearchCriteriaStore } from "@/stores";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface ProjectCardProps {
   projectId: number;
@@ -24,7 +22,6 @@ interface ProjectCardProps {
 }
 
 export const ProjectList = () => {
-  const queryClient = useQueryClient();
   const { ref, inView } = useInView();
 
   const { searchCriteria } = useSearchCriteriaStore();
@@ -36,57 +33,40 @@ export const ProjectList = () => {
       ? undefined
       : tagIdList.map((tag) => tag.tagId).join(",");
 
-  const fetchProjects = async ({ pageParam = 0 }) => {
-    const res = await axios.get(
-      "http://k8a306.p.ssafy.io:8080/api/v1/project",
-      {
-        params: {
-          page: pageParam,
-          sort: sort,
-          size: size,
-          keyword: usingKeyword,
-          tagIdList: stringTagIdList,
-          closed: closed,
-        },
-      }
-    );
-    return res.data.result;
-  };
-  useEffect(() => {
-    queryClient.removeQueries(["projects"]);
-    // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
-    return () => {
-      queryClient.removeQueries(["projects"]);
-    };
-  }, [sort, size, keyword, tagIdList, closed]);
+  const { status, data, fetchNextPage } = useProjectList({
+    params: {
+      sort: sort,
+      size: size,
+      keyword: usingKeyword,
+      tagIdList: stringTagIdList,
+      closed: closed,
+    },
+    config: {
+      getNextPageParam: (lastPage) =>
+        lastPage.nextPage === -1 ? undefined : lastPage.nextPage,
+    },
+  });
 
-  const { status, data, fetchNextPage } = useInfiniteQuery(
-    ["projects"],
-    fetchProjects,
-    {
-      getNextPageParam: (lastPage) => {
-        return lastPage.nextPage === -1 ? undefined : lastPage.nextPage;
-      },
-    }
-  );
-
-  // 스크롤 트리거
-  // 9개의 그리드 item들 중 마지막 녀석한테 inView를 달아놨음
   useEffect(() => {
     if (inView) {
       fetchNextPage();
     }
   }, [inView]);
 
-  useEffect(() => {
-    if (keyword === "") {
-      fetchNextPage();
-    }
-  }, [keyword]);
+  // useEffect(() => {
+  //   if (keyword === "") {
+  //     fetchNextPage();
+  //   }
+  // }, [keyword]);
 
   return (
     <FlexDiv height="100%" width="100%" direction="column" gap="3rem">
       {status === "loading" && <p>Loading...</p>}
+      {status === "success" && data.pages[0].list.length === 0 && (
+        <FlexDiv width="100%" height="50vh">
+          데이터가 없어요
+        </FlexDiv>
+      )}
       {status === "success" && (
         <>
           {data.pages.map((page, idx) => (

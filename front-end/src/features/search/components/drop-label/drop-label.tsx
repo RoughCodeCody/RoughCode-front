@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { FlexDiv, Text } from "@/components/elements";
 import { DropdownArrow } from "@/components/elements";
@@ -12,13 +12,26 @@ interface DropLabelProps {
 }
 
 export const DropLabel = ({ sortOptions, type }: DropLabelProps) => {
-  const { searchCriteria, setSort } = useSearchCriteriaStore();
-
-  const [selectedOption, setSelectedOption] = useState("최신순");
+  const boxRef = useRef<HTMLInputElement>(null);
   const [isOpened, setIsOpened] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("최신순");
+
+  const { setSort } = useSearchCriteriaStore();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(event.target as Node)) {
+        setIsOpened(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [boxRef]);
 
   return (
-    <DropLabelBox>
+    <DropLabelBox ref={boxRef}>
       <FlexDiv
         width="100%"
         height="100%"
