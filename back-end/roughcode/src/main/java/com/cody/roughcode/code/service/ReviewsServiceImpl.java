@@ -9,10 +9,7 @@ import com.cody.roughcode.code.dto.res.ReviewDetailRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.email.service.EmailServiceImpl;
-import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.exception.SaveFailedException;
-import com.cody.roughcode.exception.SelectedException;
-import com.cody.roughcode.exception.UpdateFailedException;
+import com.cody.roughcode.exception.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +48,9 @@ public class ReviewsServiceImpl implements ReviewsService {
 
         if (code == null) {
             throw new NullPointerException("일치하는 코드가 없습니다");
+        }
+        if (code.getCodeWriter().equals(user)) {
+            throw new BadRequestException("내가 작성한 코드에 대해서는 리뷰는 작성할 수 없습니다");
         }
 
         String selectedRange = req.getSelectedRange().toString();
@@ -306,7 +306,7 @@ public class ReviewsServiceImpl implements ReviewsService {
             throw new SelectedException("이미 신고한 코드 리뷰입니다");
         }
         log.info(complainList.size() + "번 신고된 코드 리뷰입니다");
-        if(complainList.size() >= 10){
+        if (complainList.size() >= 10) {
             target.deleteCodeContent();
         }
         complainList.add(String.valueOf(userId));
