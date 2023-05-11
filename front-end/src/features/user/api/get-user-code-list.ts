@@ -30,6 +30,9 @@ export const getUserCodeList = ({
   endPoint,
   params,
 }: UserCodeListParams): Promise<UserCodeListResult> => {
+  if (endPoint === "feedback") {
+    return axios.get("/mypage/code/review", { params });
+  }
   return axios.get(`/mypage/code/${endPoint}`, { params });
 };
 
