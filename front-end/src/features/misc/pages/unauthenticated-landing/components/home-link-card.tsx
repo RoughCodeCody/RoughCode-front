@@ -1,4 +1,7 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FiArrowRightCircle } from "react-icons/fi";
 
 import {
   LinkCard,
@@ -8,20 +11,23 @@ import {
   ArrowRightContainer,
 } from "./style";
 
-import { FiArrowRightCircle } from "react-icons/fi";
+import { API_URL } from "@/config";
 import { Text } from "@/components/elements/text";
 
 interface HomeLinkCardProps {
   title: string;
   content: string;
-  imageUrl: string;
+  imageUrl: StaticImageData;
+  endPoint: string;
 }
 
 export const HomeLinkCard = ({
   title,
   content,
   imageUrl,
+  endPoint,
 }: HomeLinkCardProps) => {
+  const router = useRouter();
   return (
     <>
       <LinkCard>
@@ -29,23 +35,25 @@ export const HomeLinkCard = ({
           <Text size="2.3rem" bold={true}>
             {title}
           </Text>
-          <ArrowRightContainer>
-            <FiArrowRightCircle fontSize="2rem" color="var(--font-color)" />
-          </ArrowRightContainer>
+          <Link
+            href={
+              endPoint === "login"
+                ? `${API_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`
+                : `/${endPoint}`
+            }
+          >
+            <ArrowRightContainer>
+              <FiArrowRightCircle fontSize="2rem" color="var(--font-color)" />
+            </ArrowRightContainer>
+          </Link>
         </LinkCardTitle>
         <LinkCardContent>
           <Text size="1.1rem" bold={true} lineHeight="1.6rem">
             {content}
           </Text>
         </LinkCardContent>
-        {/* <LinkCardImage>{imageUrl}</LinkCardImage> */}
         <LinkCardImage>
-          <Image
-            src="https://picsum.photos/400/300"
-            width={400}
-            height={300}
-            alt={title}
-          />
+          <Image src={imageUrl} width={400} height={300} alt={title} />
         </LinkCardImage>
       </LinkCard>
     </>
