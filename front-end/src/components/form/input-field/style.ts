@@ -17,7 +17,10 @@ export const Input = styled.input`
   }
 `;
 
-export const InputContainer = styled.div`
+export const InputContainer = styled.div<{
+  width?: string;
+}>`
+  width: ${({ width }) => (width ? width : "unset")};
   display: flex;
   position: relative;
   flex-flow: column nowrap;

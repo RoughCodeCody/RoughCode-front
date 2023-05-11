@@ -9,6 +9,7 @@ export const axios = Axios.create({
 
 axios.interceptors.response.use(
   (response) => {
+    console.log("response data: ", response.data);
     console.log("res msg: ", response.data.message);
     return response.data?.result;
   },
