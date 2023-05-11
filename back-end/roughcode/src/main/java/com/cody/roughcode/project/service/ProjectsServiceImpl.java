@@ -319,6 +319,8 @@ public class ProjectsServiceImpl implements ProjectsService{
         // 기존의 프로젝트 가져오기
         Projects target = projectsRepository.findByProjectsIdAndExpireDateIsNull(req.getProjectId());
         if(target == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        if(!target.getProjectWriter().equals(user)) throw new NotMatchException();
+
         Projects latestProject = projectsRepository.findLatestProject(target.getNum(), user.getUsersId());
         if(!target.equals(latestProject)) throw new NotNewestVersionException();
 
@@ -700,6 +702,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         Projects project = projectsRepository.findByProjectsIdAndExpireDateIsNull(projectsId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
 
         Projects latestProject = projectsRepository.findLatestProject(project.getNum(), usersId);
         if(!project.equals(latestProject)) throw new NotNewestVersionException();
@@ -716,6 +719,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         Projects project = projectsRepository.findByProjectsIdAndExpireDateIsNull(projectsId);
         if(project == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
+        if(!project.getProjectWriter().equals(user)) throw new NotMatchException();
 
         Projects latestProject = projectsRepository.findLatestProject(project.getNum(), usersId);
         if(!project.equals(latestProject)) throw new NotNewestVersionException();
