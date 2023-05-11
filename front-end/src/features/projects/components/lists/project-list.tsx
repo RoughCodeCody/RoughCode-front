@@ -7,7 +7,6 @@ import { ProjectCardGrid } from "./style";
 
 import { FlexDiv } from "@/components/elements";
 import { useSearchCriteriaStore } from "@/stores";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface ProjectCardProps {
   projectId: number;
@@ -54,15 +53,20 @@ export const ProjectList = () => {
     }
   }, [inView]);
 
-  useEffect(() => {
-    if (keyword === "") {
-      fetchNextPage();
-    }
-  }, [keyword]);
+  // useEffect(() => {
+  //   if (keyword === "") {
+  //     fetchNextPage();
+  //   }
+  // }, [keyword]);
 
   return (
     <FlexDiv height="100%" width="100%" direction="column" gap="3rem">
       {status === "loading" && <p>Loading...</p>}
+      {status === "success" && data.pages[0].list.length === 0 && (
+        <FlexDiv width="100%" height="50vh">
+          데이터가 없어요
+        </FlexDiv>
+      )}
       {status === "success" && (
         <>
           {data.pages.map((page, idx) => (

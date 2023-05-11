@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -46,11 +45,11 @@ export const CodeList = () => {
     }
   }, [inView]);
 
-  useEffect(() => {
-    if (keyword === "") {
-      fetchNextPage();
-    }
-  }, [keyword]);
+  // useEffect(() => {
+  //   if (keyword === "") {
+  //     fetchNextPage();
+  //   }
+  // }, [keyword]);
 
   return (
     <>
