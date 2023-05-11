@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Btn,
@@ -42,10 +42,13 @@ export const FeedbackItem = ({
   projectOrCodeid,
   isMine,
 }: FeedbackItemProps) => {
+  // 피드백 신고 관련 state
+  const [forceClose, setForceClose] = useState(false);
+
   // 피드백 수정 관련 state
   const [isModifying, setIsModifying] = useState(false);
   const [newContent, setNewContent] = useState(content);
-  const ref = useRef<HTMLInputElement>(null);
+  const modifyInputRef = useRef<HTMLInputElement | null>(null);
 
   const invalidateProjectInfoQuery = () => {
     queryClient.invalidateQueries({
@@ -67,7 +70,10 @@ export const FeedbackItem = ({
     putFeedbackQuery.mutate(
       { feedbackId, content: newContent },
       {
-        onSuccess: invalidateProjectInfoQuery,
+        onSuccess: () => {
+          setIsModifying(false);
+          invalidateProjectInfoQuery;
+        },
       }
     );
   };
@@ -84,21 +90,27 @@ export const FeedbackItem = ({
   const putFeedbackComplaintQuery = usePutFeedbackComplaint();
   const handleFeedbackComplaint = () => {
     putFeedbackComplaintQuery.mutate(feedbackId, {
-      onSuccess: invalidateProjectInfoQuery,
+      onSettled: () => setForceClose(true),
+      onSuccess: () => {
+        invalidateProjectInfoQuery;
+        alert("신고하였습니다");
+      },
     });
+    setForceClose(false);
   };
 
   const selectionListMine = {
-    수정하기: () => {
-      setIsModifying(true);
-      if (ref.current) ref.current.focus();
-    },
+    수정하기: () => setIsModifying(true),
     삭제하기: handleDeleteFeedback,
   };
 
   const selectionListNotMine = {
     신고하기: handleFeedbackComplaint,
   };
+
+  useEffect(() => {
+    modifyInputRef.current?.focus();
+  }, [isModifying]);
 
   return (
     <FeedbackItemWrapper
@@ -110,7 +122,7 @@ export const FeedbackItem = ({
           <FlexDiv width="100%" justify="space-between">
             <FeedbackModifyInput
               value={newContent}
-              ref={ref}
+              ref={modifyInputRef}
               onChange={(e) => setNewContent(e.target.value)}
             />
 
@@ -128,23 +140,26 @@ export const FeedbackItem = ({
                 </Text>
               )}
             </FlexDiv>
-            <FlexDiv>
-              <Count
-                type="like"
-                isChecked={liked}
-                cnt={like}
-                onClickFunc={handleFeedbackLike}
-              />
-              <Selection
-                selectionList={
-                  isMine ? selectionListMine : selectionListNotMine
-                }
-              />
-            </FlexDiv>
+            {!content.length || (
+              <FlexDiv>
+                <Count
+                  type="like"
+                  isChecked={liked}
+                  cnt={like}
+                  onClickFunc={handleFeedbackLike}
+                />
+                <Selection
+                  selectionList={
+                    isMine ? selectionListMine : selectionListNotMine
+                  }
+                  forceClose={forceClose}
+                />
+              </FlexDiv>
+            )}
           </FlexDiv>
 
           <FlexDiv width="100%" justify="space-between">
-            <Text>
+            <Text color={!content.length ? "red" : "font"}>
               {!content.length ? "신고되어 가려진 게시물입니다." : content}
             </Text>
             <Text size="0.8rem">{dayjs(date).format("YY.MM.DD HH:MM")}</Text>
