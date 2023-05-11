@@ -26,7 +26,11 @@ export const Feedbacks = ({
             feedback={feedback}
             type={type}
             projectOrCodeid={projectOrCodeid}
-            isMine={Boolean(userQuery.data?.nickname === feedback.userName)}
+            // 익명이 아니고 로그인한 유저 닉네임과 피드백의 유저네임이 같을 때
+            isMine={Boolean(
+              feedback.userName.length !== 0 &&
+                userQuery.data?.nickname === feedback.userName
+            )}
             key={idx}
           />
         ))}
