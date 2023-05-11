@@ -32,7 +32,11 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
             />
 
             <WhiteBoxNoshad width="65%" padding="2.25rem">
-              <ProjectInfo data={data} projectId={projectId} />
+              <ProjectInfo
+                data={data}
+                projectId={projectId}
+                isLatest={Boolean(data.version === data.versions.length)}
+              />
               <VersionsInfo versions={data.versions} curVersionId={projectId} />
               <img
                 src={data.img}
