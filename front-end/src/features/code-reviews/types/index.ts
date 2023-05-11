@@ -18,7 +18,7 @@ type ReReviews = {
   likeCnt: number; // 코드 리리뷰 좋아요 수
   content: string; // 리리뷰 내용
   createdDate: Date; // 리리뷰 작성 시간
-  createdDate: Date; // 리리뷰 수정 시간
+  modifiedDate: Date; // 리리뷰 수정 시간
 };
 
 type Reviews = {
@@ -87,7 +87,7 @@ type reReview = {
   liked: boolean; // 좋아요 누른 여부
   content: string; // 코드 리리뷰 내용
   createdDate: Date; // 코드 리리뷰 작성 날짜
-  createdDate: Date; // 코드 리리뷰 수정 날짜
+  modifiedDate: Date; // 코드 리리뷰 수정 날짜
 };
 
 export type codeForFeedbackModify = {
