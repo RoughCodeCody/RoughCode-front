@@ -1,70 +1,49 @@
+import { useNotifications } from "../api/get-notifications";
 import { NoticeContent } from "../components";
 import {
   HomeContainer,
   HomeContentsContainer,
   NoticeContainer,
 } from "./notifications-style";
-
+import { Notification } from "../types";
 import { NoticeAlarmItem, Title } from "@/components/elements";
 
-interface notice {
-  writer: string;
-  isProject: boolean;
-  title: string;
-  version: number;
-}
-
 export const Notifications = () => {
-  const notice: notice[] = [
-    {
-      writer: "정민",
-      isProject: true,
-      title: "이 코드 어떻게 작동시키져",
-      version: 4,
-    },
-    { writer: "수연", isProject: false, title: "싸피", version: 2 },
-    { writer: "동수", isProject: false, title: "개발새발", version: 3 },
-    {
-      writer: "하늬",
-      isProject: true,
-      title: "저 코드 어떻게 작동시키져",
-      version: 5,
-    },
-    { writer: "정훈", isProject: false, title: "조기퇴근", version: 2 },
-    {
-      writer: "준하",
-      isProject: true,
-      title: "이 코드 어떻게 작동시키져",
-      version: 2,
-    },
-  ];
-  console.log(notice);
+  const notificationsQuery = useNotifications();
+  console.log(notificationsQuery.data);
+
+  if (notificationsQuery.isLoading) {
+    return <>loading...</>;
+  }
+
+  if (notificationsQuery.isError) {
+    return <>Not Found</>;
+  }
+
   return (
     <>
       <HomeContainer>
         <HomeContentsContainer>
-          {notice.length ? (
+          {notificationsQuery.data.length ? (
             <>
               <Title
                 title="새로운 피드"
                 description="나의 피드백을 반영한 코드와 프로젝트를 확인해 보세요"
               />
               <NoticeContainer>
-                {notice.map((notice: notice) => (
+                {notificationsQuery.data.map((notice: Notification) => (
                   <NoticeAlarmItem
                     width={"100%"}
                     isNotice={true}
-                    isDirectionRight={notice.isProject}
-                    color={notice.isProject ? "sub-three" : ""}
+                    isDirectionRight={
+                      notice.section === "project" ? true : false
+                    }
+                    color={notice.section === "project" ? "sub-three" : ""}
                     shadow={true}
-                    key={notice.title}
+                    alarmId={notice.alarmId}
+                    key={notice.alarmId}
                   >
-                    <NoticeContent
-                      writer={notice.writer}
-                      isProject={notice.isProject}
-                      title={notice.title}
-                      version={notice.version}
-                    ></NoticeContent>
+                    <NoticeContent data={notice}></NoticeContent>
                   </NoticeAlarmItem>
                 ))}
               </NoticeContainer>

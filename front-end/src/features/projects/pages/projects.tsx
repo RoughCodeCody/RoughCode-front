@@ -5,9 +5,7 @@ import { BottomHeader } from "@/components/elements";
 import { WriteFloatBtn } from "@/components/elements";
 import { BackToTop } from "@/components/elements";
 import { Title } from "@/components/elements/title";
-import { Search } from "@/features/search";
-import { DropLabel } from "@/features/search/";
-import { SwitchDemo } from "@/features/search/";
+import { DropLabel, Search, SwitchDemo } from "@/features/search";
 
 export const Projects = () => {
   const sortOptions = ["최신순", "좋아요순", "리뷰순"];

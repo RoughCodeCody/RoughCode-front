@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType } from "@/lib/react-query";
 
-import { CodeInfo } from "../types";
+import { CodeInfoResult } from "../types";
 
-export const getCodeInfo = (codeId: number): Promise<CodeInfo> => {
+export const getCodeInfo = (codeId: number): Promise<CodeInfoResult> => {
   return axios.get(`/code/${codeId}`);
 };
 

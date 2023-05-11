@@ -1,7 +1,7 @@
-import { TagSearchBox } from "./tag-search-box";
-import { SeletectTags } from "./selected-tags";
-
 import { FlexDiv } from "@/components/elements";
+
+import { TagSearchBox } from "./tag-search-box";
+import { SeletedTags } from "./selected-tags";
 
 export const TagSearch = () => {
   return (
@@ -12,7 +12,7 @@ export const TagSearch = () => {
       align="start"
       gap="1rem"
     >
-      <SeletectTags />
+      <SeletedTags />
       <TagSearchBox />
     </FlexDiv>
   );

@@ -45,11 +45,19 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
                 }}
               />
               <ProjectDescription content={data.content} />
-              <RelatedCodes codes={data.code} />
+              <RelatedCodes
+                codes={data.code}
+                isMine={data.mine}
+                projectId={projectId}
+              />
             </WhiteBoxNoshad>
 
             <FeedbackRegister type="feedback" id={projectId} />
-            <Feedbacks type="feedback" feedbacks={data.feedbacks} />
+            <Feedbacks
+              type="feedback"
+              feedbacks={data.feedbacks}
+              id={projectId}
+            />
           </>
         )}
       </FlexDiv>

@@ -1,2 +1,2 @@
-export * from "./feedback-register";
-export * from "./feedbacks";
+export * from "./components/feedback-register";
+export * from "./components/feedbacks";

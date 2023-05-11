@@ -6,7 +6,11 @@ const nextConfig = {
   },
   output: "standalone",
   images: {
-    domains: ["picsum.photos", "roughcode.s3.ap-northeast-2.amazonaws.com"],
+    domains: [
+      "img.rough-code.com",
+      "roughcode.s3.ap-northeast-2.amazonaws.com",
+      "d2swdwg2kwda2j.cloudfront.net",
+    ],
   },
 };
 

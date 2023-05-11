@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
 import dayjs from "dayjs";
+
 import {
   FlexDiv,
   Nickname,
@@ -8,6 +8,7 @@ import {
   Text,
   Count,
 } from "@/components/elements";
+
 import { CodeListItemWrapper } from "./style";
 
 type CodeListItemProps = {
@@ -52,20 +53,8 @@ export const CodeListItem = ({
           ))}
         </FlexDiv>
         <FlexDiv>
-          <Count
-            type="like"
-            isChecked={liked}
-            setIsChecked={null}
-            cnt={likeCnt}
-            setCnt={null}
-          />
-          <Count
-            type="code"
-            isChecked={null}
-            setIsChecked={null}
-            cnt={reviewCnt}
-            setCnt={null}
-          />
+          <Count type="like" isChecked={liked} cnt={likeCnt} />
+          <Count type="code" isChecked={null} cnt={reviewCnt} />
         </FlexDiv>
       </FlexDiv>
 

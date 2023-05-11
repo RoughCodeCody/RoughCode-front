@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
-import { DiffEditor } from "@monaco-editor/react";
-
-import { FlexDiv, Text } from "@/components/elements";
-
+import React, { useEffect, useRef } from "react";
 import { FaRegLightbulb } from "react-icons/fa";
 
 import { EditorWrapper, EditorHeader, EditorBottom } from "./style";
+import { FlexDiv, Text, Btn } from "@/components/elements";
+import { DiffEditor } from "@monaco-editor/react";
+import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 
 interface DiffCodeEditorProps {
   headerText: string;
   originalCode: string;
+  modifiedCode: string;
   height: string;
   language: string;
   readOnly?: boolean;
@@ -18,10 +18,14 @@ interface DiffCodeEditorProps {
 export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   headerText,
   originalCode,
+  modifiedCode,
   height,
   language,
   readOnly = true,
 }) => {
+  const { CodeReviewFeedbackData, setModifiedCode, setIsCompleted } =
+    useCodeReviewFeedbackDataStore();
+
   const diffEditorRef = useRef<any>(null);
 
   function handleEditorDidMount(editor: any, monaco: any) {
@@ -30,22 +34,6 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
       editor.updateOptions({ readOnly: true });
     }
   }
-
-  // const decodeBase64ToUTF8 = (originalCode: string): string => {
-  //   const binaryString = atob(originalCode);
-  //   const bytes = new Uint8Array(binaryString.length);
-  //   for (let i = 0; i < binaryString.length; i++) {
-  //     bytes[i] = binaryString.charCodeAt(i);
-  //   }
-  //   const utf8String = new TextDecoder("utf-8").decode(bytes);
-  //   return utf8String;
-  // };
-
-  // const encodeUTF8ToBase64 = (code: string): string => {
-  //   const bytes = new TextEncoder().encode(code);
-  //   const originalCode = btoa(String.fromCharCode(...bytes));
-  //   return originalCode;
-  // };
 
   const { Buffer } = require("buffer");
 
@@ -65,15 +53,23 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
     const base64 = Buffer.from(data).toString("base64");
     return base64.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
   };
-  const decodedString = decodeBase64ToUTF8(originalCode);
+  const decodedOriginalString = decodeBase64ToUTF8(originalCode);
+  const decodedmodifiedString = decodeBase64ToUTF8(modifiedCode);
 
-  const postFeedback = () => {
+  const saveModifiedCode = () => {
     const modifiedCode = diffEditorRef?.current?.getModifiedEditor().getValue();
     const encodedCode = encodeUTF8ToBase64(modifiedCode);
-    // 이후 encodedCode를 api요청 보내는 코드
+    setModifiedCode(encodedCode);
+    setIsCompleted("diffEditor");
   };
 
-  useEffect(() => {}, [originalCode]);
+  useEffect(() => {
+    if (CodeReviewFeedbackData.isCompleted.diffEditor) {
+      diffEditorRef.current?.updateOptions({ readOnly: true });
+    } else {
+      diffEditorRef.current?.updateOptions({ readOnly: false });
+    }
+  }, [CodeReviewFeedbackData.isCompleted.diffEditor]);
 
   return (
     <EditorWrapper>
@@ -86,11 +82,37 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
       <DiffEditor
         height={height}
         language={language}
-        original={decodedString}
-        modified={decodedString}
+        original={decodedOriginalString}
+        modified={decodedmodifiedString}
         onMount={handleEditorDidMount}
       />
-      <EditorBottom />
+      <EditorBottom>
+        {readOnly ? (
+          <></>
+        ) : (
+          <FlexDiv gap="1rem">
+            {CodeReviewFeedbackData.isCompleted.diffEditor ? (
+              <Text>코드 수정이 완료되었습니다</Text>
+            ) : (
+              <></>
+            )}
+            <Btn
+              text={
+                CodeReviewFeedbackData.isCompleted.diffEditor ? "변경" : "완료"
+              }
+              height="2rem"
+              display="flex"
+              align="center"
+              bgColor={
+                CodeReviewFeedbackData.isCompleted.diffEditor
+                  ? "main"
+                  : "orange"
+              }
+              onClickFunc={saveModifiedCode}
+            />
+          </FlexDiv>
+        )}
+      </EditorBottom>
     </EditorWrapper>
   );
 };
