@@ -12,6 +12,7 @@ const TitleText = styled.p<{
   color?: string;
 }>`
   ${({ color }) => css`
+    margin: 0;
     font-weight: bold;
     font-size: 4rem;
     color: ${color ? "var(--" + color + "-color)" : "black"};
@@ -22,6 +23,7 @@ const Description = styled.p<{
   color?: string;
 }>`
   ${({ color }) => css`
+    margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
     color: ${color ? "var(--" + color + "-color)" : "var(--main-color)"};

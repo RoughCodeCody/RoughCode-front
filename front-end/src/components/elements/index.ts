@@ -8,6 +8,8 @@ export * from "./flexdiv";
 export * from "./modal";
 export * from "./nickname";
 export * from "./notice-alarm-item";
+export * from "./selection";
+export * from "./spinner";
 export * from "./tag-chip";
 export * from "./tag-chip-sub";
 export * from "./text";

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Accordion, Modal } from "@/components/elements";
+import { Accordion, FlexDiv, Modal } from "@/components/elements";
 
 import { RelatedCode } from "../../types";
 import { MiniFeedbackItem } from "../mini-feedback-item";
@@ -28,12 +28,13 @@ export const RelatedCodes = ({
           btnText="+ 새 코드 연결"
           btnClickFunc={() => setCodeLinkModalOpen(true)}
         >
-          {codes.map((code) => (
-            <MiniFeedbackItem code={code} key={code.codeId} />
-          ))}
+          <FlexDiv width="100%" direction="column" gap="1rem">
+            {codes.map((code) => (
+              <MiniFeedbackItem code={code} key={code.codeId} />
+            ))}
+          </FlexDiv>
         </Accordion>
       )}
-      <button onClick={() => setCodeLinkModalOpen(true)}>click</button>
 
       <Modal
         headerText={"나의 코드 목록"}
@@ -44,6 +45,7 @@ export const RelatedCodes = ({
           <MyCodeList
             relatedCodeIds={codes.map((code) => code.codeId)}
             projectId={projectId}
+            setModalOpen={setCodeLinkModalOpen}
           />
         }
       />
