@@ -77,12 +77,12 @@ public class SecurityConfig {
                 .oauth2Login()
                 .authorizationEndpoint(authorize -> {
                     // 프론트엔드에서 백엔드로 소셜로그인 요청을 보내는 URI
-                    authorize.baseUri("/oauth2/authorization");
+                    authorize.baseUri(URL_PREFIX+"/oauth2/authorization");
                     // Authorization 과정에서 기본으로 Session을 사용하지만 Cookie로 변경하기 위해 설정함
                     authorize.authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository);
                 })
                 .redirectionEndpoint()
-                .baseUri("/oauth2/callback/**")
+                .baseUri(URL_PREFIX+"/oauth2/callback/**")
                 .and()
                 .userInfoEndpoint(userInfo -> { // Provider로부터 획득한 유저정보를 다룰 service class 지정함
                     userInfo.userService(customOAuth2UserService);
