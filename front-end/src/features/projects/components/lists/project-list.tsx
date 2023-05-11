@@ -1,13 +1,12 @@
-import axios from "axios";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
+import { useProjectList } from "../../api";
 import { ProjectCard } from "../project-card";
 import { ProjectCardGrid } from "./style";
 
 import { FlexDiv } from "@/components/elements";
 import { useSearchCriteriaStore } from "@/stores";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ProjectCardProps {
@@ -36,42 +35,28 @@ export const ProjectList = () => {
       ? undefined
       : tagIdList.map((tag) => tag.tagId).join(",");
 
-  const fetchProjects = async ({ pageParam = 0 }) => {
-    const res = await axios.get(
-      "http://k8a306.p.ssafy.io:8080/api/v1/project",
-      {
-        params: {
-          page: pageParam,
-          sort: sort,
-          size: size,
-          keyword: usingKeyword,
-          tagIdList: stringTagIdList,
-          closed: closed,
-        },
-      }
-    );
-    return res.data.result;
-  };
+  const { status, data, fetchNextPage } = useProjectList({
+    params: {
+      sort: sort,
+      size: size,
+      keyword: usingKeyword,
+      tagIdList: stringTagIdList,
+      closed: closed,
+    },
+    config: {
+      getNextPageParam: (lastPage) =>
+        lastPage.nextPage === -1 ? undefined : lastPage.nextPage,
+    },
+  });
+
   useEffect(() => {
-    queryClient.removeQueries(["projects"]);
+    queryClient.removeQueries(["projectList"]);
     // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
     return () => {
-      queryClient.removeQueries(["projects"]);
+      queryClient.removeQueries(["projectList"]);
     };
   }, [sort, size, keyword, tagIdList, closed]);
 
-  const { status, data, fetchNextPage } = useInfiniteQuery(
-    ["projects"],
-    fetchProjects,
-    {
-      getNextPageParam: (lastPage) => {
-        return lastPage.nextPage === -1 ? undefined : lastPage.nextPage;
-      },
-    }
-  );
-
-  // 스크롤 트리거
-  // 9개의 그리드 item들 중 마지막 녀석한테 inView를 달아놨음
   useEffect(() => {
     if (inView) {
       fetchNextPage();
