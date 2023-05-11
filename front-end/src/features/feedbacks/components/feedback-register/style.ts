@@ -8,6 +8,9 @@ const FeedbackRegisterTextarea = styled.textarea.attrs(({ placeholder }) => ({
   resize: none;
   border: none;
   outline: none;
+  font-size: 1rem;
+  line-height: 1.8rem;
+  font-family: Arial, Helvetica, sans-serif;
 
   &::placeholder {
     color: var(--shad-color);

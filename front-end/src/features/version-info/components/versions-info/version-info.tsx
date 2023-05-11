@@ -70,9 +70,13 @@ export const VersionInfo = ({
         </Text>
         {feedbacks.length !== 0 && isProject(feedbacks) ? (
           <>
-            <Text>반영한 피드백</Text>
+            <Text size="0.8rem" bold={true}>
+              반영한 피드백
+            </Text>
             {feedbacks.map(({ feedbackId, content }) => (
-              <WhiteBoxShad key={feedbackId}>{content}</WhiteBoxShad>
+              <WhiteBoxShad radius="0" padding="0.8rem" key={feedbackId}>
+                <Text size="0.9rem">{content}</Text>
+              </WhiteBoxShad>
             ))}
           </>
         ) : feedbacks.length !== 0 && isCode(feedbacks) ? (
@@ -81,7 +85,7 @@ export const VersionInfo = ({
             {feedbacks.map(({ reviewId, userName, content }) => (
               <WhiteBoxShad key={reviewId}>
                 <Nickname nickname={userName} />
-                <Text>{content}</Text>
+                <Text size="0.9rem">{content}</Text>
               </WhiteBoxShad>
             ))}
           </>

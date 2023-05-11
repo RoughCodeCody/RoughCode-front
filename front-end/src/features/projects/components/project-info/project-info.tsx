@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 import {
   FlexDiv,
@@ -7,6 +8,7 @@ import {
   Text,
   Count,
   Selection,
+  Modal,
 } from "@/components/elements";
 
 import {
@@ -16,8 +18,8 @@ import {
   usePostProjectFav,
   useDeleteProject,
 } from "../../api";
-
 import { ProjectInfoResult } from "../../types";
+import { DeleteProject } from "./delete-project";
 import { UrlApkBtn } from "./style";
 
 type ProjectInfoProps = {
@@ -44,6 +46,8 @@ export const ProjectInfo = ({
 }: ProjectInfoProps) => {
   const router = useRouter();
 
+  const [projectDeleteModalOpen, setProjectDeleteModalOpen] = useState(false);
+
   // 프로젝트 좋아요/좋아요 취소
   const postProjectLikeQuery = usePostProjectLike();
 
@@ -55,6 +59,10 @@ export const ProjectInfo = ({
 
   // 프로젝트 삭제
   const deleteProjectQuery = useDeleteProject();
+  const handleDelete = () => {
+    deleteProjectQuery.mutate(projectId);
+    router.replace("/project");
+  };
 
   // URL 버튼 클릭시 서버 running 여부 확인한 후 연결
   const checkURLQuery = useCheckURLOpen();
@@ -63,7 +71,6 @@ export const ProjectInfo = ({
 
     checkURLQuery.mutate(projectId, {
       onSuccess: (data) => {
-        console.log("res", data);
         if (data === 1) window.open(url, "_blank");
         else alert("프로젝트 서버가 닫혀있어요");
       },
@@ -93,14 +100,11 @@ export const ProjectInfo = ({
               isChecked={favorite}
               onClickFunc={() => postProjectFavQuery.mutate(projectId)}
             />
-            {mine && (
+            {mine && isLatest && (
               <Selection
                 selectionList={{
                   수정하기: () => {},
-                  삭제하기: () => {
-                    deleteProjectQuery.mutate(projectId);
-                    router.replace("/project");
-                  },
+                  삭제하기: () => setProjectDeleteModalOpen(true),
                 }}
               />
             )}
@@ -135,6 +139,20 @@ export const ProjectInfo = ({
           </UrlApkBtn>
         </FlexDiv>
       </FlexDiv>
+
+      <Modal
+        headerText={"프로젝트 삭제"}
+        height="10rem"
+        isOpen={projectDeleteModalOpen}
+        setIsOpen={setProjectDeleteModalOpen}
+        modalContent={
+          <DeleteProject
+            projectTitle={title}
+            setModalOpen={setProjectDeleteModalOpen}
+            handleDelete={handleDelete}
+          />
+        }
+      />
     </>
   );
 };

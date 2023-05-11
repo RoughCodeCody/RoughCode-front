@@ -9,7 +9,7 @@ const VersionInfoWrapper = styled.div<{
   border-radius: 15px;
   padding: 1rem;
   background-color: ${({ bgColor }) => "var(--" + bgColor + "-color)"};
-  border: 2px solid var(--sub-one-color);
+  border: 3px solid var(--sub-one-color);
   cursor: ${({ pointer }) => (pointer ? "pointer" : "auto")};
   ${({ theme }) => theme.MIXINS.flexBox("row", "spce-around", "start")}
   gap: 5%;
