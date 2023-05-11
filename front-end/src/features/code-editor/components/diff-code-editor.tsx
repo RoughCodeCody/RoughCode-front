@@ -13,6 +13,7 @@ interface DiffCodeEditorProps {
   height: string;
   language: string;
   readOnly?: boolean;
+  noShad?: boolean;
 }
 
 export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
@@ -22,6 +23,7 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   height,
   language,
   readOnly = true,
+  noShad = false,
 }) => {
   const { CodeReviewFeedbackData, setModifiedCode, setIsCompleted } =
     useCodeReviewFeedbackDataStore();
@@ -72,7 +74,7 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
   }, [CodeReviewFeedbackData.isCompleted.diffEditor]);
 
   return (
-    <EditorWrapper>
+    <EditorWrapper noShad={noShad}>
       <EditorHeader>
         <FlexDiv>
           <FaRegLightbulb />

@@ -4,7 +4,7 @@ import { Accordion, FlexDiv, Modal } from "@/components/elements";
 
 import { RelatedCode } from "../../types";
 import { MiniFeedbackItem } from "../mini-feedback-item";
-import { MyCodeList } from "./code-list";
+import { MyCodeList } from "./my-code-list";
 
 interface RelatedCodesProps {
   codes: RelatedCode[];
