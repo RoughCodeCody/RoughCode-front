@@ -48,7 +48,7 @@ const UserNavigation = () => {
           로그인
         </Link>
       )}
-      {userQuery.data && <Link href="/profile">마이 페이지</Link>}
+      {userQuery.data && <Link href="/mypage/profile">마이 페이지</Link>}
     </FlexDiv>
   );
 };
