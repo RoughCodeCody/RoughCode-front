@@ -19,7 +19,7 @@ interface ProjectListResult {
   }[];
 }
 
-type SortOption = "modifiedDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
+type SortOption = "createdDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
 
 type ProjectListParams = {
   sort: SortOption;

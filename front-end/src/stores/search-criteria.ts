@@ -5,7 +5,7 @@ type Tag = {
   name: string;
 };
 
-type SortOption = "modifiedDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
+type SortOption = "createdDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
 
 type SearchCriteria = {
   keyword: string;
@@ -27,7 +27,7 @@ type SearchCriteriaStore = {
 
 export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
   searchCriteria: {
-    sort: "modifiedDate",
+    sort: "createdDate",
     page: 0,
     size: 9,
     keyword: "",
@@ -49,7 +49,7 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
     let mappedSortOption: SortOption;
 
     if (sortOption === "최신순") {
-      mappedSortOption = "modifiedDate";
+      mappedSortOption = "createdDate";
     } else if (sortOption === "좋아요순") {
       mappedSortOption = "likeCnt";
     } else if (sortOption === "리뷰순") {
