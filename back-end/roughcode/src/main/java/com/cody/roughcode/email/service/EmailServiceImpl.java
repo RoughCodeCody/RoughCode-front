@@ -102,7 +102,7 @@ public class EmailServiceImpl extends EmailService {
                 "                            <tr>\n" +
                 "                                <td width=\"520\" style=\"font-size:0;\">\n" +
                 "                                    <div style=\"display:flex;\">\n" +
-                "                                        <img src=\"https://d2swdwg2kwda2j.cloudfront.net/dog+and+dock-full+body-mini.jpg\" alt=\"로고 이미지\" height=\"80\">\n" +
+                "                                        <img src=\"https://d2swdwg2kwda2j.cloudfront.net/dog_and_dock-full_body-mini.png\" alt=\"로고 이미지\" height=\"80\">\n" +
                 "                                        <h1 style=\"font-family:'Nanum Gothic','Malgun Gothic','dotum','AppleGothic',Helvetica,Arial,Sans-Serif;font-size:22px;line-height:3;letter-spacing:-1px;margin-left:2em;color:black;\">개발새발에서 확인해보세요</h1>\n" +
                 "                                    </div>\n" +
                 "                                </td>\n" +
