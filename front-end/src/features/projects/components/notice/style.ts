@@ -14,7 +14,7 @@ const VersionDropdownWrapper = styled.div`
 
 const DropdownContentWrapper = styled.div`
   position: absolute;
-  top: calc(3.75rem - 1px);
+  top: calc(4rem - 1px);
   left: 0;
   width: 100%;
   overflow: hidden;

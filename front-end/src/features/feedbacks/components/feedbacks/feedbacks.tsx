@@ -17,7 +17,6 @@ export const Feedbacks = ({
 }: FeedbacksProps) => {
   // 현재 로그인한 유저 정보(피드백이 본인 것인지 확인하기 위함)
   const userQuery = useUser();
-  console.log("aaa", userQuery.data);
 
   return (
     <FlexDiv direction="column" width="65%" gap="1rem">

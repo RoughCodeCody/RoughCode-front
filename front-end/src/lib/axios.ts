@@ -14,6 +14,7 @@ axios.interceptors.response.use(
     return response.data?.result;
   },
   (error) => {
+    if (error.response.status === 409) alert(error.response.data.message);
     return Promise.reject(error);
   }
 );

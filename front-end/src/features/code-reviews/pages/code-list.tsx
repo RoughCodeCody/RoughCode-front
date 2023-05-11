@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -16,7 +15,6 @@ import { useCodeList } from "../api";
 import { CodeListItem } from "../components/code-list-item";
 
 export const CodeList = () => {
-  const queryClient = useQueryClient();
   const { ref, inView } = useInView();
 
   const { searchCriteria } = useSearchCriteriaStore();
@@ -39,14 +37,6 @@ export const CodeList = () => {
     },
   });
 
-  useEffect(() => {
-    queryClient.removeQueries(["codeList"]);
-    // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
-    return () => {
-      queryClient.removeQueries(["codeList"]);
-    };
-  }, [sort, size, keyword, tagIdList]);
-
   // 스크롤 트리거
   // 9개의 그리드 item들 중 마지막 녀석한테 inView를 달아놨음
   useEffect(() => {
@@ -55,11 +45,11 @@ export const CodeList = () => {
     }
   }, [inView]);
 
-  useEffect(() => {
-    if (keyword === "") {
-      fetchNextPage();
-    }
-  }, [keyword]);
+  // useEffect(() => {
+  //   if (keyword === "") {
+  //     fetchNextPage();
+  //   }
+  // }, [keyword]);
 
   return (
     <>
