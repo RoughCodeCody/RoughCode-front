@@ -14,7 +14,6 @@ type tagResult = {
 
 export const TagList = ({ tagKeyword }: TagListProps) => {
   const tagsQuery = useTags({ tagKeyword });
-  console.log(tagsQuery.data);
   if (tagsQuery.isLoading) {
     return <div></div>;
   }

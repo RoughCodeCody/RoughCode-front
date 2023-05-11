@@ -1,9 +1,9 @@
 import React from "react";
 
-import { SwitchRoot, SwitchThumb, Label } from "./style";
-
 import { Text } from "@/components/elements";
 import { useSearchCriteriaStore } from "@/stores";
+
+import { SwitchRoot, SwitchThumb, Label } from "./style";
 
 export const SwitchDemo = () => {
   const { searchCriteria, setClosedValue } = useSearchCriteriaStore();

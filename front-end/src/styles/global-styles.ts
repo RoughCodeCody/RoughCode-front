@@ -29,7 +29,7 @@ const GlobalStyles = createGlobalStyle`
   *, *::before, *::after {
     box-sizing: border-box;
   }
-  
+
   html, body, div, span, applet, object, iframe,
   h1, h2, h3, h4, h5, h6, p, blockquote, pre,
   a, abbr, acronym, address, big, cite, code,
@@ -88,6 +88,33 @@ const GlobalStyles = createGlobalStyle`
   button {
     border: none;
   }
+
+  /* ProseMirror start */
+  h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+  code,
+  em, s,
+  strong,
+  ol, ul, li,
+  mark {
+    margin: revert;
+    border: revert;
+    padding: revert;
+    vertical-align: revert;
+    color: revert;
+    font: revert;
+    font-size: revert;
+  }
+  ol, ul {
+    list-style: revert;
+  }
+  blockquote, q {
+    quotes: revert;
+  }
+  blockquote:before, blockquote:after,
+  q:before, q:after {
+    content: revert;
+  }
+  /* ProseMirror end */
 `;
 
 export default GlobalStyles;
