@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRouter } from "next/router";
 
 import {
   FlexDiv,
@@ -6,6 +6,7 @@ import {
   TagChipSub,
   Text,
   Count,
+  Selection,
 } from "@/components/elements";
 
 import {
@@ -13,13 +14,16 @@ import {
   usePutProjectOpenStatus,
   usePostProjectLike,
   usePostProjectFav,
+  useDeleteProject,
 } from "../../api";
+
 import { ProjectInfoResult } from "../../types";
 import { UrlApkBtn } from "./style";
 
 type ProjectInfoProps = {
   data: ProjectInfoResult;
   projectId: string;
+  isLatest: boolean;
 };
 
 export const ProjectInfo = ({
@@ -27,6 +31,7 @@ export const ProjectInfo = ({
     title,
     userName,
     url,
+    closed,
     liked,
     likeCnt,
     favorite,
@@ -35,14 +40,9 @@ export const ProjectInfo = ({
     mine,
   },
   projectId,
+  isLatest,
 }: ProjectInfoProps) => {
-  // const [isLiked, setisLiked] = useState(liked);
-  // const [newLikeCnt, setNewLikeCnt] = useState(likeCnt);
-  // const [isBookmarked, setIsBookmarked] = useState(favorite);
-  // const [bookmarkCnt, setBookmarkCnt] = useState(favoriteCnt);
-
-  // 더미데이터
-  // const mine = true;
+  const router = useRouter();
 
   // 프로젝트 좋아요/좋아요 취소
   const postProjectLikeQuery = usePostProjectLike();
@@ -53,9 +53,14 @@ export const ProjectInfo = ({
   // 프로젝트 열기/닫기
   const putProjectOpenStatusQuery = usePutProjectOpenStatus();
 
+  // 프로젝트 삭제
+  const deleteProjectQuery = useDeleteProject();
+
   // URL 버튼 클릭시 서버 running 여부 확인한 후 연결
   const checkURLQuery = useCheckURLOpen();
   const handleURLAPKBtnClick = () => {
+    if (closed) return;
+
     checkURLQuery.mutate(projectId, {
       onSuccess: (data) => {
         console.log("res", data);
@@ -79,19 +84,26 @@ export const ProjectInfo = ({
             <Count
               type="like"
               cnt={likeCnt}
-              // setCnt={setNewLikeCnt}
               isChecked={liked}
-              // setIsChecked={setisLiked}
               onClickFunc={() => postProjectLikeQuery.mutate(projectId)}
             />
             <Count
               type="bookmark"
               cnt={favoriteCnt}
-              // setCnt={setBookmarkCnt}
               isChecked={favorite}
-              // setIsChecked={setIsBookmarked}
               onClickFunc={() => postProjectFavQuery.mutate(projectId)}
             />
+            {mine && (
+              <Selection
+                selectionList={{
+                  수정하기: () => {},
+                  삭제하기: () => {
+                    deleteProjectQuery.mutate(projectId);
+                    router.replace("/project");
+                  },
+                }}
+              />
+            )}
           </FlexDiv>
         </FlexDiv>
         <FlexDiv width="100%" justify="start">
@@ -105,7 +117,7 @@ export const ProjectInfo = ({
           align="end"
           margin="1rem 0 0 0"
         >
-          {mine && (
+          {mine && isLatest && (
             <Text
               pointer={true}
               onClick={() =>
@@ -118,7 +130,9 @@ export const ProjectInfo = ({
               {closed ? "프로젝트 열기" : "프로젝트 닫기"}
             </Text>
           )}
-          <UrlApkBtn onClick={handleURLAPKBtnClick}>{url}</UrlApkBtn>
+          <UrlApkBtn isClosed={closed} onClick={handleURLAPKBtnClick}>
+            {url}
+          </UrlApkBtn>
         </FlexDiv>
       </FlexDiv>
     </>
