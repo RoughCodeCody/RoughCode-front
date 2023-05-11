@@ -15,7 +15,7 @@ export type CodesList = {
   codesId: number;
   title: String;
   createdDate: Date;
-  createdDate: Date;
+  modifiedDate: Date;
   like: number;
   favorite: number;
   reviewCnt: number;
