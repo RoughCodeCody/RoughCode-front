@@ -15,20 +15,13 @@ export const connectCodeToProject = ({
   return axios.put(`/project/${projectId}/connect`, data);
 };
 
-type useConnectCodeToProjectOptions = {
-  config?: MutationConfig<typeof connectCodeToProject>;
-};
-
-export const useConnectCodeToProject = ({
-  config,
-}: useConnectCodeToProjectOptions = {}) => {
+export const useConnectCodeToProject = () => {
   return useMutation({
-    ...config,
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: ["myCodeList"],
-      }),
-
+    onSuccess: (_, { projectId }) =>
+      Promise.all([
+        queryClient.invalidateQueries(["myCodeList"]),
+        queryClient.invalidateQueries(["projectInfo", projectId]),
+      ]),
     mutationFn: connectCodeToProject,
   });
 };

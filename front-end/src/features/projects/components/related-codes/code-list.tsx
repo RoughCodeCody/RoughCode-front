@@ -20,6 +20,12 @@ export const MyCodeList = ({
   setModalOpen,
 }: MyCodeListProps) => {
   const { ref, inView } = useInView();
+
+  // 프로젝트에 연결할 코드 id 리스트
+  const [selectedCodeIds, setSelectedCodeIds] = useState(relatedCodeIds);
+  console.log("selectedCodeIds", selectedCodeIds);
+
+  // 내 코드 목록 가져오기
   const { status, data, fetchNextPage } = useMyCodeList({
     params: { size: 10 },
     config: {
@@ -31,20 +37,9 @@ export const MyCodeList = ({
   // 프로젝트에 코드 연결
   const connectCodeToProjectQuery = useConnectCodeToProject();
   const connectCodeToProject = () => {
-    connectCodeToProjectQuery.mutate(
-      { projectId, data: selectedCodeIds },
-      {
-        onSuccess: () =>
-          queryClient.invalidateQueries({
-            queryKey: ["projectInfo", projectId],
-          }),
-      }
-    );
+    connectCodeToProjectQuery.mutate({ projectId, data: selectedCodeIds });
     setModalOpen(false);
   };
-
-  const [selectedCodeIds, setSelectedCodeIds] = useState(relatedCodeIds);
-  console.log("selectedCodeIds", selectedCodeIds);
 
   // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
   useEffect(() => {
