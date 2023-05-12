@@ -569,6 +569,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .map(Long::valueOf)
                     .collect(Collectors.toList());
 
+        log.info("find project list of" + ((closed == 1)?" closed and opened" : " only opened"));
         if(keyword == null) keyword = "";
         Page<Projects> projectsPage = null;
         if(tagIdList == null || tagIdList.size() == 0){ // tag 검색 x
