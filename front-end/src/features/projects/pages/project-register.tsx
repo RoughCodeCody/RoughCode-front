@@ -7,7 +7,7 @@ import {
 import { Head } from "@/components/head";
 import { ProjectFeedbacksSidebar } from "@/features/feedbacks";
 
-import { usePostProject } from "../api";
+import { postProjectThumbnail, usePostProject } from "../api";
 import { ProjectUpdateForm } from "../components/project-update-form";
 import { ProjectUpdateValues } from "../types";
 
@@ -15,8 +15,23 @@ export const ProjectRegister = () => {
   const postProjectMutation = usePostProject();
 
   const onSubmit = async (values: ProjectUpdateValues) => {
-    const todo = await postProjectMutation.mutateAsync({ data: values });
-    // console.log(todo);
+    const postProjectRes = await postProjectMutation.mutateAsync({
+      data: values,
+    });
+
+    // const inputThumbnail = document.getElementById(
+    //   "input-thumbnail"
+    // ) as HTMLInputElement;
+
+    // const formData = new FormData();
+    // formData.append("thumbnail", inputThumbnail?.files?.item(0) as File);
+
+    console.log(postProjectRes);
+
+    // const res = await postProjectThumbnail({
+    //   data: { thumbnail: formData },
+    //   projectId: postProjectRes.projectId,
+    // });
   };
 
   return (
