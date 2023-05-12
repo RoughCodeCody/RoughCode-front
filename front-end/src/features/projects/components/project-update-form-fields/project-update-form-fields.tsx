@@ -75,6 +75,7 @@ export const ProjectUpdateFormFields = ({
 
       <TiptapController<ProjectUpdateValues> name="content" control={control} />
       <TagSearch />
+      <input id="input-thumbnail" type="file" />
 
       <SubmitButtonWrapper>
         <SubmitButton type="submit" value="확인" />

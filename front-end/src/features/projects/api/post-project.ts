@@ -9,14 +9,14 @@ export type PostProjectDTO = {
   data: ProjectUpdateValues;
 };
 
-export const PostProject = ({
+export const postProject = ({
   data,
 }: PostProjectDTO): Promise<{ projectId: number }> => {
   return axios.post(`/project/content`, data);
 };
 
 type usePostProjectOptions = {
-  config?: MutationConfig<typeof PostProject>;
+  config?: MutationConfig<typeof postProject>;
 };
 
 export const usePostProject = ({ config }: usePostProjectOptions = {}) => {
@@ -27,6 +27,6 @@ export const usePostProject = ({ config }: usePostProjectOptions = {}) => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
     ...config,
-    mutationFn: PostProject,
+    mutationFn: postProject,
   });
 };
