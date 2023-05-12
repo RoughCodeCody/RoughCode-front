@@ -1,10 +1,7 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
-import com.cody.roughcode.code.dto.res.CodeDetailRes;
-import com.cody.roughcode.code.dto.res.CodeInfoRes;
-import com.cody.roughcode.code.dto.res.CodeTagsRes;
-import com.cody.roughcode.code.dto.res.ReviewInfoRes;
+import com.cody.roughcode.code.dto.res.*;
 import org.springframework.data.domain.PageRequest;
 
 import javax.mail.MessagingException;
@@ -29,4 +26,6 @@ public interface CodesService {
     List<CodeTagsRes> searchTags(String keyword);
 
     List<ReviewInfoRes> getReviewList(Long codeId, Long userId);
+
+    List<ReviewRes> getCodeReviewList(Long codeId, Long userId, String keyword);
 }

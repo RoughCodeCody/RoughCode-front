@@ -710,6 +710,34 @@ public class CodesServiceImpl implements CodesService {
         return reviewInfoResList;
     }
 
+    @Override
+    public List<ReviewRes> getCodeReviewList(Long codeId, Long userId, String keyword) {
+        Users user = usersRepository.findByUsersId(userId);
+
+        Codes code = codesRepository.findByCodesId(codeId);
+        if (code == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+
+
+        List<ReviewRes> reviewResList = new ArrayList<>();
+        for (Reviews r : code.getReviews()) {
+            if (r.getCodeContent() == null || r.getCodeContent().equals("")) {
+                continue;
+            }
+            // keyword 포함하지 않는 경우 continue
+            if (!r.getCodeContent().contains(keyword) && !r.getContent().contains(keyword)) {
+                continue;
+            }
+            // 좋아요 여부
+
+
+            reviewResList.add(new ReviewInfoRes(r, , r.getUsers()));
+        }
+
+        return null;
+    }
+
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
         List<Codes> codeList = codesPage.getContent();
         List<CodeInfoRes> codeInfoRes = new ArrayList<>();
