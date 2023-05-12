@@ -9,10 +9,14 @@ import { TiptapMenuBar } from "../tiptap-menu-bar";
 import { Editor } from "./style";
 
 type TiptapEditorProps = {
+  onChange: (...event: any[]) => void;
   minHeight?: string;
 };
 
-export const TiptapEditor = ({ minHeight = "10rem" }: TiptapEditorProps) => {
+export const TiptapEditor = ({
+  onChange,
+  minHeight = "10rem",
+}: TiptapEditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -23,6 +27,10 @@ export const TiptapEditor = ({ minHeight = "10rem" }: TiptapEditorProps) => {
         limit: 10000,
       }),
     ],
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      onChange(html);
+    },
   });
 
   return (

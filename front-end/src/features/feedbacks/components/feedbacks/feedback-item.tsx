@@ -16,12 +16,13 @@ import {
   usePutProjectFeedback,
 } from "@/features/projects/api";
 import { Feedback } from "@/features/projects/types";
+import { Review } from "@/features/code-reviews";
 import { queryClient } from "@/lib/react-query";
 
 import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 
 interface FeedbackItemProps {
-  feedback: Feedback;
+  feedback: Feedback | Review;
   type: "feedback" | "review";
   projectOrCodeid: string;
   isMine: boolean;

@@ -13,6 +13,7 @@ interface CodeDetailProps {
 }
 
 export const CodeDetail = ({ codeId }: CodeDetailProps) => {
+  // 코드 정보 가져오기
   const { status, data } = useCodeInfo(Number(codeId));
 
   console.log(data);
@@ -51,17 +52,17 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                 </FlexDiv>
               )}
 
-              <CodeReviewList reviews={data.reviews} />
-
               {/* <FlexDiv width="100%" height="100%">
                     <DiffCodeEditor
-                      headerText="코드 리뷰어가 수정한 코드입니다"
-                      height="30rem"
-                      readOnly={true}
-                      language={"javascript"}
-                      originalCode={originalCode}
+                    headerText="코드 리뷰어가 수정한 코드입니다"
+                    height="30rem"
+                    readOnly={true}
+                    language={"javascript"}
+                    originalCode={originalCode}
                     />
                   </FlexDiv> */}
+
+              <CodeReviewList reviews={data.reviews} />
             </>
           )}
         </WhiteBoxNoshad>

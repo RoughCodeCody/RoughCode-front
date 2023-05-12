@@ -1,1 +1,1 @@
-export * from "./components/tiptap-editor";
+export * from "./components/tiptap-controller";
