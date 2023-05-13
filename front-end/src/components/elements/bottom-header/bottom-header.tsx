@@ -36,6 +36,7 @@ export const BottomHeader = ({ locations, menus }: BottomHeaderProps) => {
         <FlexDiv gap="3rem">
           {menus?.map((menu) => (
             <Link
+              key={menu}
               href={
                 menu === "프로필"
                   ? "/mypage/profile"
@@ -51,7 +52,6 @@ export const BottomHeader = ({ locations, menus }: BottomHeaderProps) => {
                 size="1.2rem"
                 color={currentPage === menu ? "main" : "bg"}
                 bold={true}
-                key={menu}
               >
                 {menu}
               </Text>
