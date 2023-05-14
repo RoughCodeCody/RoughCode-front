@@ -148,17 +148,18 @@ public class CodesServiceImpl implements CodesService {
 
             // tag 등록
             if (req.getSelectedTagsId() != null) {
-                for (Long id : req.getSelectedTagsId()) {
-                    CodeTags codeTag = codeTagsRepository.findByTagsId(id);
-                    codeSelectedTagsRepository.save(
+                List<CodeSelectedTags> selectedTagsList = new ArrayList<>();
+                List<CodeTags> codeTags = codeTagsRepository.findByTagsIdIn(req.getSelectedTagsId());
+                for (CodeTags codeTag : codeTags) {
+                    selectedTagsList.add(
                             CodeSelectedTags.builder()
                                     .tags(codeTag)
                                     .codes(savedCode)
                                     .build());
                     // 태그 사용 수 증가
                     codeTag.cntUp();
-                    codeTagsRepository.save(codeTag);
                 }
+                codeSelectedTagsRepository.saveAll(selectedTagsList);
             } else {
                 log.info("등록한 태그가 없습니다.");
             }
@@ -174,8 +175,9 @@ public class CodesServiceImpl implements CodesService {
 
             // 반영한 review 저장
             if (req.getSelectedReviewsId() != null) {
-                for (Long id : req.getSelectedReviewsId()) {
-                    Reviews review = reviewsRepository.findByReviewsId(id);
+                List<Reviews> reviewsList = reviewsRepository.findByReviewsIdIn(req.getSelectedReviewsId());
+                List<SelectedReviews> selectedReviewsList = new ArrayList<>();
+                for (Reviews review : reviewsList) {
                     if (review == null) {
                         throw new NullPointerException("일치하는 리뷰가 없습니다.");
                     }
@@ -183,19 +185,22 @@ public class CodesServiceImpl implements CodesService {
                         throw new NullPointerException("리뷰와 코드가 일치하지 않습니다.");
                     }
                     review.selectedUp();
-                    reviewsRepository.save(review);
+                    reviewsList.add(review);
 
                     SelectedReviews selectedReviews = SelectedReviews.builder()
                             .reviews(review)
                             .codesInfo(codesInfo)
                             .build();
-                    selectedReviewsRepository.save(selectedReviews);
+                    selectedReviewsList.add(selectedReviews);
 
                     // 반영한 리뷰 작성자 목록 저장
                     if (review.getUsers() != null) {
                         reviewAlarm.add(review.getUsers().getUsersId());
                     }
                 }
+                reviewsRepository.saveAll(reviewsList);
+                selectedReviewsRepository.saveAll(selectedReviewsList);
+
             } else {
                 log.info("반영한 리뷰가 없습니다.");
             }
@@ -389,28 +394,30 @@ public class CodesServiceImpl implements CodesService {
             // 기존 Tag 삭제
             List<CodeSelectedTags> selectedTagsList = target.getSelectedTags();
             if (selectedTagsList != null) {
+                List<CodeTags> tagsList = new ArrayList<>();
                 for (CodeSelectedTags tag : selectedTagsList) {
                     CodeTags codeTag = tag.getTags();
                     codeTag.cntDown();
-                    codeTagsRepository.save(codeTag);
-
-                    codeSelectedTagsRepository.delete(tag);
+                    tagsList.add(codeTag);
                 }
+                codeTagsRepository.saveAll(tagsList);
+                codeSelectedTagsRepository.deleteAll(selectedTagsList);
             } else {
                 log.info("기존에 선택하였던 태그가 없습니다");
             }
 
             // 업데이트한 Tag 등록
             if (req.getSelectedTagsId() != null) {
+                List<CodeSelectedTags> updatedSelectedTagsList = new ArrayList<>();
                 List<CodeTags> codeTags = codeTagsRepository.findByTagsIdIn(req.getSelectedTagsId());
                 for (CodeTags codeTag : codeTags) {
-                    codeSelectedTagsRepository.save(CodeSelectedTags.builder()
+                    updatedSelectedTagsList.add(CodeSelectedTags.builder()
                             .tags(codeTag)
                             .codes(target)
                             .build());
                     codeTag.cntUp();
-                    codeTagsRepository.save(codeTag);
                 }
+                codeSelectedTagsRepository.saveAll(updatedSelectedTagsList);
             } else {
                 log.info("새로 선택한 태그가 없습니다");
             }
@@ -418,29 +425,31 @@ public class CodesServiceImpl implements CodesService {
             // 기존에 선택한 review 삭제
             List<SelectedReviews> selectedReviewsList = targetInfo.getSelectedReviews();
             if (selectedReviewsList != null) {
+                List<Reviews> reviewsList = new ArrayList<>();
                 for (SelectedReviews review : selectedReviewsList) {
                     Reviews reviews = review.getReviews();
                     reviews.selectedDown();
-                    reviewsRepository.save(reviews);
-
-                    selectedReviewsRepository.delete(review);
+                    reviewsList.add(reviews);
                 }
+                reviewsRepository.saveAll(reviewsList);
+                selectedReviewsRepository.deleteAll(selectedReviewsList);
             } else {
                 log.info("기존에 선택하였던 리뷰가 없습니다");
             }
 
             // 새로 선택한 review 등록
             if (req.getSelectedReviewsId() != null) {
+                List<SelectedReviews> newSelectedReviewsList = new ArrayList<>();
                 List<Reviews> reviews = reviewsRepository.findByReviewsIdIn(req.getSelectedReviewsId());
                 for (Reviews review : reviews) {
-                    selectedReviewsRepository.save(SelectedReviews.builder()
+                    newSelectedReviewsList.add(SelectedReviews.builder()
                             .codesInfo(targetInfo)
                             .reviews(review)
                             .build());
 
                     review.selectedUp();
-                    reviewsRepository.save(review);
                 }
+                selectedReviewsRepository.saveAll(newSelectedReviewsList);
             } else {
                 log.info("새로 선택한 리뷰가 없습니다");
             }
@@ -532,10 +541,8 @@ public class CodesServiceImpl implements CodesService {
             for (CodeSelectedTags tag : selectedTagsList) {
                 CodeTags codeTag = tag.getTags();
                 codeTag.cntDown();
-                codeTagsRepository.save(codeTag);
-
-                codeSelectedTagsRepository.delete(tag);
             }
+            codeSelectedTagsRepository.deleteAll(selectedTagsList);
         } else {
             log.info("기존에 선택하였던 태그가 없습니다");
         }
@@ -546,10 +553,8 @@ public class CodesServiceImpl implements CodesService {
             for (SelectedReviews review : selectedReviewsList) {
                 Reviews reviews = review.getReviews();
                 reviews.selectedDown();
-                reviewsRepository.save(reviews);
-
-                selectedReviewsRepository.delete(review);
             }
+            selectedReviewsRepository.deleteAll(selectedReviewsList);
         } else {
             log.info("기존에 선택하였던 리뷰가 없습니다");
         }
