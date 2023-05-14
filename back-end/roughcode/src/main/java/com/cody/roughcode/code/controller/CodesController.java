@@ -296,7 +296,7 @@ public class CodesController {
         return Response.makeResponse(HttpStatus.OK, "코드 태그 목록 조회 성공", res.size(), res);
     }
 
-    @Operation(summary = "코드 리뷰 목록 조회 API")
+    @Operation(summary = "코드 리뷰 목록 조회 API - 코드 등록/수정 시 사용")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
                     @Content(
@@ -330,27 +330,27 @@ public class CodesController {
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 목록 조회 성공", res.size(), res);
     }
 
-    @Operation(summary = "코드 리뷰 목록 조회 API")
+    @Operation(summary = "코드 리뷰 목록 조회 API - 코드 상세조회 시 사용")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
                     @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = ReviewInfoRes.class)))
+                            array = @ArraySchema(schema = @Schema(implementation = ReviewSearchRes.class)))
             }),
             @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 리뷰 목록 조회 실패")
     })
     @GetMapping("/{codeId}/code-review")
-    ResponseEntity<?> getCodeReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+    ResponseEntity<?> getCodeReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                         @Parameter(description = "코드 id 값", required = true)
                                         @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
                                         @PathVariable Long codeId,
-                                        @Parameter(description = "검색어", example = "개발새발") @RequestParam(defaultValue = "") String keyword) {
-        Long userId = jwtTokenProvider.getId(accessToken);
+                                        @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword) {
+        Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
-        List<ReviewRes> res = null;
+        List<ReviewSearchRes> res = null;
         try {
-            res = codesService.getCodeReviewList(codeId, userId, keyword);
+            res = codesService.getReviewSearchList(codeId, userId, keyword);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

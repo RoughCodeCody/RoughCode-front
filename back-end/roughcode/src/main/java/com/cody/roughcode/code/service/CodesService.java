@@ -27,5 +27,5 @@ public interface CodesService {
 
     List<ReviewInfoRes> getReviewList(Long codeId, Long userId);
 
-    List<ReviewRes> getCodeReviewList(Long codeId, Long userId, String keyword);
+    List<ReviewSearchRes> getReviewSearchList(Long codeId, Long userId, String keyword);
 }

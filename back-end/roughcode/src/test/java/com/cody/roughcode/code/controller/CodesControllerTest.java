@@ -559,12 +559,69 @@ class CodesControllerTest {
 
     @DisplayName("코드 리뷰 목록 조회 실패")
     @Test
-    public void getFeedbackListFail() throws Exception {
+    public void getReviewListFail() throws Exception {
         // given
         final String url = "/api/v1/code/{codeId}/review";
 
         doReturn(null).when(codesService)
                 .getReviewList(any(Long.class), any(Long.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 목록 조회 실패");
+    }
+
+    @DisplayName("코드 리뷰 목록 조회 성공")
+    @Test
+    public void getCodeReviewListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}/code-review";
+
+        ReviewInfoRes reviewInfoRes = ReviewInfoRes.builder()
+                .reviewId(1L)
+                .userName("user")
+                .userId(1L)
+                .codeContent("codeContent")
+                .content("content")
+                .selected(true)
+                .build();
+
+        doReturn(List.of(reviewInfoRes)).when(codesService)
+                .getReviewSearchList(any(Long.class), any(Long.class), any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 목록 조회 성공");
+    }
+
+    @DisplayName("코드 리뷰 목록 조회 실패")
+    @Test
+    public void getCodeReviewListFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}/code-review";
+
+        doReturn(null).when(codesService)
+                .getReviewSearchList(any(Long.class), any(Long.class), any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(

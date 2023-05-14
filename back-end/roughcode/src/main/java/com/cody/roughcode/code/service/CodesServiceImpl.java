@@ -711,7 +711,8 @@ public class CodesServiceImpl implements CodesService {
     }
 
     @Override
-    public List<ReviewRes> getCodeReviewList(Long codeId, Long userId, String keyword) {
+    @Transactional
+    public List<ReviewSearchRes> getReviewSearchList(Long codeId, Long userId, String keyword) {
         Users user = usersRepository.findByUsersId(userId);
 
         Codes code = codesRepository.findByCodesId(codeId);
@@ -719,23 +720,23 @@ public class CodesServiceImpl implements CodesService {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
 
-
-        List<ReviewRes> reviewResList = new ArrayList<>();
+        List<ReviewSearchRes> reviewSearchResList = new ArrayList<>();
         for (Reviews r : code.getReviews()) {
             if (r.getCodeContent() == null || r.getCodeContent().equals("")) {
                 continue;
             }
-            // keyword 포함하지 않는 경우 continue
-            if (!r.getCodeContent().contains(keyword) && !r.getContent().contains(keyword)) {
+            // 검색 대상 : 코드 내용, 상세 설명, 닉네임
+            if (!r.getCodeContent().contains(keyword) && !r.getContent().contains(keyword) && !r.getUsers().getName().contains(keyword)) {
+                // keyword 포함하지 않는 경우 continue
                 continue;
             }
             // 좋아요 여부
+            Boolean liked = reviewLikesRepository.findByReviewsAndUsers(r, user) != null;
 
-
-            reviewResList.add(new ReviewInfoRes(r, , r.getUsers()));
+            reviewSearchResList.add(new ReviewSearchRes(r, liked));
         }
 
-        return null;
+        return reviewSearchResList;
     }
 
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
