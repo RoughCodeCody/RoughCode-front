@@ -4,7 +4,9 @@ import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -48,6 +50,7 @@ public class Codes extends BaseTimeEntity {
     @Column(name = "expire_date", nullable = true)
     private LocalDateTime expireDate = null;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeSelectedTags> selectedTags;
 
@@ -55,13 +58,16 @@ public class Codes extends BaseTimeEntity {
     @JoinColumn(name = "projects_id", nullable = true)
     private Projects projects;
 
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    @JsonIgnore
+@OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<Reviews> reviews;
 
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    @JsonIgnore
+@OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeFavorites> codeFavorites;
 
-    @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
+    @JsonIgnore
+@OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeLikes> codeLikes;
 
     public void setProject(Projects project) {

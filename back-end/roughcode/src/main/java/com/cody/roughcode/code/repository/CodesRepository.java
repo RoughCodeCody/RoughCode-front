@@ -60,4 +60,5 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
     int countByCodeWriter(@Param("user") Users user);
 
     List<Codes> findByProjects(Projects projects);
+
 }

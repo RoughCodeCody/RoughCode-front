@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,10 +73,15 @@ public class AlarmServiceImpl implements AlarmService {
         alarmRepository.deleteById(new ObjectId(alarmId));
     }
 
+    private final EntityManager entityManager;
+
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteLimited() {
         LocalDateTime tenDaysAgo = LocalDateTime.now().minusDays(10);
         alarmRepository.deleteOlderThan(tenDaysAgo);
+
+        // 영속성 컨텍스트 초기화
+        entityManager.clear();
     }
 }

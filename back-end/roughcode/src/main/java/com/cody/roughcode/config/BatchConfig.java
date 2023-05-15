@@ -26,7 +26,6 @@ import java.util.List;
 public class BatchConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final AlarmRepository alarmRepository;
     private final AlarmServiceImpl alarmService;
 
     @Bean

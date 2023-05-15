@@ -2,9 +2,12 @@ package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,10 +37,13 @@ public class Feedbacks extends BaseTimeEntity {
     @Column(name = "complaint", nullable = true, columnDefinition = "text")
     private String complaint = "";
 
-
     @Builder.Default
     @Column(name = "selected", nullable = true)
     private int selected = 0;
+
+    @Builder.Default
+    @Column(name = "complained", nullable = true)
+    private LocalDateTime complained = null;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", nullable = false)
@@ -48,6 +54,7 @@ public class Feedbacks extends BaseTimeEntity {
     @JoinColumn(name = "users_id", nullable = true)
     private Users users = null;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "feedbacks")
     private List<FeedbacksLikes> feedbacksLikes;
 
@@ -63,12 +70,12 @@ public class Feedbacks extends BaseTimeEntity {
         this.content = content;
     }
 
-    public void deleteContent() {
-        this.content = "";
-    }
-
     public void setComplaint(List<String> complainList) {
         this.complaint = String.join(",", complainList);
+    }
+
+    public void setComplained(){
+        this.complained = LocalDateTime.now();
     }
 
     public void likeCntDown() {

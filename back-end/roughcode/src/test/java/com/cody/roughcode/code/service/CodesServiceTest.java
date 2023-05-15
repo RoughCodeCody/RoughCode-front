@@ -6,6 +6,7 @@ import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.dto.res.ReviewInfoRes;
+import com.cody.roughcode.code.dto.res.ReviewSearchRes;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.email.service.EmailServiceImpl;
@@ -634,7 +635,7 @@ class CodesServiceTest {
         AssertionsForClassTypes.assertThat(result.size()).isEqualTo(3);
     }
 
-    @DisplayName("코드 리뷰 목록 조회 성공")
+    @DisplayName("코드 리뷰 목록 조회 성공 - 코드 등록/수정 시 사용")
     @Test
     void getReviewListSucceed() {
         Reviews review = Reviews.builder()
@@ -663,6 +664,45 @@ class CodesServiceTest {
 
         // when
         List<ReviewInfoRes> result = codesService.getReviewList(1L, 1L);
+
+        // then
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    @DisplayName("코드 리뷰 목록 조회 성공 - 코드 상세조회 시 사용")
+    @Test
+    void getReviewSearchListSucceed() {
+        Reviews review = Reviews.builder()
+                .reviewsId(1L)
+                .lineNumbers("[[1,2],[3,4]]")
+                .codeContent("import sys ..")
+                .content("설명설명")
+                .codes(code)
+                .users(user)
+                .likeCnt(3)
+                .complaint("2")
+                .build();
+
+        Codes code = Codes.builder()
+                .codesId(2L)
+                .title("코드 좀 봐주세요")
+                .codeWriter(user)
+                .num(2L)
+                .reviews(List.of(review))
+                .build();
+        ReviewLikes reviewLike = ReviewLikes.builder()
+                .likesId(1L)
+                .reviews(review)
+                .users(user)
+                .build();
+
+        // given
+        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(reviewLike).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
+
+        // when
+        List<ReviewSearchRes> result = codesService.getReviewSearchList(1L, 1L, "설명");
 
         // then
         assertThat(result.size()).isEqualTo(1);

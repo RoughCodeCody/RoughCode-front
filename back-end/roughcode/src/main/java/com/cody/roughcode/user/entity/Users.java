@@ -1,7 +1,9 @@
 package com.cody.roughcode.user.entity;
 
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
