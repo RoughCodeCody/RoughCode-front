@@ -5,10 +5,10 @@ services:
     image: mariadb:10.6.5
     volumes:
       - db-data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/my.cnf
     environment:
       - MYSQL_ROOT_PASSWORD=${MARIADB_PASSWORD}
       - MYSQL_DATABASE=roughcode
-      - MYSQL_INIT_WAIT_TIMEOUT=60
     ports:
       - "3306:3306"
   redis:
