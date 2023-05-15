@@ -3,7 +3,11 @@ import { FlexDiv } from "@/components/elements";
 import { KeywordSearch } from "../keyword-search";
 import { TagSearch } from "../tag-search";
 
-export const Search = () => {
+type SearchProps = {
+  whichTag: string;
+};
+
+export const Search = ({ whichTag }: SearchProps) => {
   return (
     <FlexDiv
       width="100%"
@@ -13,7 +17,7 @@ export const Search = () => {
       gap="1rem"
     >
       <KeywordSearch />
-      <TagSearch />
+      <TagSearch whichTag={whichTag} />
     </FlexDiv>
   );
 };
