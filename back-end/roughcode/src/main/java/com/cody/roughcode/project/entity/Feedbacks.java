@@ -2,9 +2,9 @@ package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -45,6 +45,7 @@ public class Feedbacks extends BaseTimeEntity {
     @Column(name = "complained", nullable = true)
     private LocalDateTime complained = null;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", nullable = false)
     private ProjectsInfo projectsInfo;
@@ -54,7 +55,7 @@ public class Feedbacks extends BaseTimeEntity {
     @JoinColumn(name = "users_id", nullable = true)
     private Users users = null;
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "feedbacks")
     private List<FeedbacksLikes> feedbacksLikes;
 

@@ -1,8 +1,9 @@
 package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.user.entity.Users;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -23,6 +24,7 @@ public class FeedbacksLikes {
     @JoinColumn(name = "users_id", nullable = false)
     private Users users;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feedbacks_id", nullable = false)
     private Feedbacks feedbacks;
