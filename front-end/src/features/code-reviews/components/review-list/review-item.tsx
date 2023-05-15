@@ -103,25 +103,6 @@ export const CodeReviewItem = ({
             </Text>
           )}
         </FlexDiv>
-
-        {/* <FlexDiv
-          width="100%"
-          justify="space-between"
-          align="end"
-          pointer={true}
-          style={{ whiteSpace: "pre", marginTop: "0.5rem" }}
-        >
-          {!content.length ? (
-            <Text color={!content.length ? "red" : "font"}>
-              신고되어 가려진 게시물입니다.
-            </Text>
-          ) : (
-            <div
-              dangerouslySetInnerHTML={{ __html: content }}
-              style={{ width: "100%" }}
-            ></div>
-          )}
-        </FlexDiv> */}
       </FlexDiv>
     </WhiteBoxShad>
   );

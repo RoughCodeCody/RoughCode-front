@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { AiOutlineLink } from "react-icons/ai";
 
 import {
@@ -9,6 +10,7 @@ import {
   TagChipSub,
   Text,
   Selection,
+  Modal,
 } from "@/components/elements";
 
 import { usePostCodeLike, usePostCodeFav } from "../../api";
@@ -36,6 +38,8 @@ export const CodeInfo = ({
   const router = useRouter();
   const isWriting =
     router.asPath.includes("create") || router.asPath.includes("modify");
+
+  const [codeDeleteModalOpen, setCodeDeleteModalOpen] = useState(false);
 
   // 코드 좋아요/좋아요 취소
   const codeLikeQuery = usePostCodeLike();
@@ -72,7 +76,12 @@ export const CodeInfo = ({
                 isChecked={favorite}
                 onClickFunc={() => codeFavQuery.mutate(codeId)}
               />
-              <Selection selectionList={{}} />
+              <Selection
+                selectionList={{
+                  수정하기: () => {},
+                  삭제하기: () => setCodeDeleteModalOpen(true),
+                }}
+              />
             </FlexDiv>
           </FlexDiv>
           <FlexDiv width="100%" justify="start">
@@ -91,7 +100,12 @@ export const CodeInfo = ({
               disabled={true}
             />
           ) : (
-            <Btn text="이 코드에 리뷰 작성하기" onClickFunc={() => {}} />
+            <Btn
+              text="이 코드에 리뷰 작성하기"
+              onClickFunc={() =>
+                router.push(`/code-review/review/create/${codeId}`)
+              }
+            />
           )}
 
           {projectId && (
@@ -114,6 +128,21 @@ export const CodeInfo = ({
           )}
         </FlexDiv>
       </FlexDiv>
+
+      <Modal
+        headerText={"코드 삭제"}
+        height="10rem"
+        isOpen={codeDeleteModalOpen}
+        setIsOpen={setCodeDeleteModalOpen}
+        modalContent={
+          <></>
+          // <DeleteProject
+          //   projectTitle={title}
+          //   setModalOpen={setProjectDeleteModalOpen}
+          //   handleDelete={handleDelete}
+          // />
+        }
+      />
     </>
   );
 };
