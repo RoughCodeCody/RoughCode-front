@@ -76,7 +76,7 @@ public class AlarmServiceImpl implements AlarmService {
     private final EntityManager entityManager;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void deleteLimited() {
         LocalDateTime tenDaysAgo = LocalDateTime.now().minusDays(10);
         alarmRepository.deleteOlderThan(tenDaysAgo);
