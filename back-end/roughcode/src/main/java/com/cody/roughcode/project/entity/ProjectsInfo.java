@@ -2,7 +2,9 @@ package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -47,6 +49,7 @@ public class ProjectsInfo {
     @JoinColumn(name = "projects_id", nullable = false)
     private Projects projects;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "projectsInfo")
     private List<Feedbacks> feedbacks;
 

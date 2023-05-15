@@ -25,6 +25,7 @@ import com.google.webrisk.v1.SearchUrisRequest;
 import com.google.webrisk.v1.SearchUrisResponse;
 import com.google.webrisk.v1.ThreatType;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
@@ -206,7 +207,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
+                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트되었습니다."))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -217,7 +218,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
+                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트되었습니다."))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
