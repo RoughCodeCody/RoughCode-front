@@ -20,11 +20,14 @@ public class LoggingAspect {
     @Pointcut("within(com.cody.roughcode..controller..*)")
     public void myPointcut() { }
 
+    @Pointcut("within(com.cody.roughcode.security..*)")
+    public void mySecurityPointcut() { }
+
     @Before("myPointcut()")
     public void beforeParameterLog(JoinPoint joinPoint) {
         // 메서드 정보 받아오기
         Method method = getMethod(joinPoint);
-        log.info("======= 메서드 호출 전 = {} =======", method.getName());
+        log.info("======= Method 호출 전 = {} =======", method.getName());
 
         // 파라미터 받아오기
         Object[] args = joinPoint.getArgs();
@@ -42,10 +45,25 @@ public class LoggingAspect {
     public void afterReturnLog(JoinPoint joinPoint, Object returnObj) {
         // 메서드 정보 받아오기
         Method method = getMethod(joinPoint);
-        log.info("======= 메서드 리턴 완료 = {} =======", method.getName());
+        log.info("======= Method 리턴 완료 = {} =======", method.getName());
 
         log.info("return type = {}", returnObj.getClass().getSimpleName());
         log.info("return value = {}", returnObj);
+    }
+
+    @Before("mySecurityPointcut()")
+    public void beforeSecurityLog(JoinPoint joinPoint) {
+        // 메서드 정보 받아오기
+        Method method = getMethod(joinPoint);
+        log.info("======= Security 호출 전 = {} =======", method.getName());
+    }
+
+    // Poincut에 의해 필터링된 경로로 들어오는 경우 메서드 리턴 후에 적용
+    @AfterReturning(value = "mySecurityPointcut()")
+    public void afterSecurityLog(JoinPoint joinPoint) {
+        // 메서드 정보 받아오기
+        Method method = getMethod(joinPoint);
+        log.info("======= Security 실행 완료 = {} =======", method.getName());
     }
 
     // JoinPoint로 메서드 정보 가져오기
