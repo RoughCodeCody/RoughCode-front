@@ -327,7 +327,7 @@ public class ProjectsController {
         if(userId <= 0)
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
-        int res = 0;
+        int res = -1;
         try {
             res = projectsService.feedbackComplain(feedbackId, userId);
         } catch(ResponseStatusException e){
@@ -338,7 +338,7 @@ public class ProjectsController {
             return Response.badRequest(e.getMessage());
         }
 
-        if(res <= 0) return Response.notFound("프로젝트 피드백 신고 실패");
+        if(res < 0) return Response.notFound("프로젝트 피드백 신고 실패");
         return Response.ok("프로젝트 피드백 신고 성공");
     }
 
