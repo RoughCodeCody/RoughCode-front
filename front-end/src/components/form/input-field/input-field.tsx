@@ -18,7 +18,10 @@ export const InputField = (props: InputFieldProps) => {
   return (
     <InputContainer width={inputContainerWidth}>
       <Input type={type} {...registration} />
-      <InputLabel htmlFor={registration.name} isDirty={isDirty}>
+      <InputLabel
+        htmlFor={registration ? registration.name : ""}
+        isDirty={isDirty}
+      >
         {label}
       </InputLabel>
       {error?.message && (
