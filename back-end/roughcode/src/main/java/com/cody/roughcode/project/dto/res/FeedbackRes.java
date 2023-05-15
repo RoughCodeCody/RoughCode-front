@@ -33,7 +33,7 @@ public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.�
             this.userId = 0L;
             this.userName = "";
         }
-        this.content = f.getContent();
+        this.content = (f.getComplained() == null)? f.getContent() : "";
         this.like = f.getLikeCnt();
         this.selected = f.getSelected();
         this.date = f.getCreatedDate();
