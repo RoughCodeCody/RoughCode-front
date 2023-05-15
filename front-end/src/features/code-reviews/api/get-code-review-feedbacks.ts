@@ -3,11 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 
-import { CodeFeedbackInfoResult } from "../types";
+import { CodeReviewInfoResult } from "../types";
 
+// 코드 상세 페이지에서 리뷰에 대한 정보 및 피드백을 가져오기 위한 api
 export const getCodeReviewFeedbacks = (
   reviewId: number
-): Promise<CodeFeedbackInfoResult> => {
+): Promise<CodeReviewInfoResult> => {
   return axios.get(`/code/review/${reviewId}`);
 };
 

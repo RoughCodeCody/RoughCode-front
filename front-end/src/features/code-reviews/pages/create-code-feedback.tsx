@@ -1,9 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { useCode } from "../api/get-code";
-import { useCodeInfo } from "../api/get-code-info";
-import { useCreateCodeFeedback } from "../api/post-code-feedback";
+import { useCodeInfo, useCode, useCreateCodeReview } from "../api";
 import { CodeInfo } from "../components/code-info";
 import { BottomHeader, Btn, FlexDiv, Title, Text } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
@@ -17,7 +15,7 @@ type CreateCodeFeedbackProps = {
 export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
   const router = useRouter();
   const [feedbackContent, setFeedbackContent] = useState("");
-  const codeFeedbackQuery = useCreateCodeFeedback();
+  const codeReviewQuery = useCreateCodeReview();
   const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
 
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
@@ -49,7 +47,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
       };
 
       console.log(data);
-      codeFeedbackQuery.mutate(
+      codeReviewQuery.mutate(
         { data },
         {
           onSuccess() {

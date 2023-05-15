@@ -104,7 +104,7 @@ export type codeForFeedbackModify = {
   projectId: number; // 연결된 프로젝트 id(없을 경우 null)
 };
 
-export type CodeFeedbackInfoResult = {
+export type CodeReviewInfoResult = {
   githubUrl: string;
   reviewId: number; // 코드 리뷰 아이디
   userId: number; // 코드 리뷰 작성자 id (0이면 익명)
