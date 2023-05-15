@@ -8,6 +8,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${MARIADB_PASSWORD}
       - MYSQL_DATABASE=roughcode
+      - MYSQL_INIT_WAIT_TIMEOUT=60
     ports:
       - "3306:3306"
   redis:
