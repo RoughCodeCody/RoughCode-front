@@ -987,7 +987,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         feedbacksRepository.save(feedbacks);
 
-        return 1;
+        return (feedbacks.getComplained() == null)? 0 : 1;
     }
 
     @Override
