@@ -33,10 +33,9 @@ export const ProjectFeedbacksSidebarContent = ({
   // fill initial selection status on each project feedback
   useEffect(() => {
     projectFeedbacksQuery.data?.forEach((projectFeedback) => {
-      console.log(projectFeedback, "hmm");
       toggleProjectFeedbackSelection(projectFeedback.feedbackId);
     });
-  }, [projectFeedbacksQuery, toggleProjectFeedbackSelection]);
+  }, [projectFeedbacksQuery.data, toggleProjectFeedbackSelection]);
 
   // isLoading
   if (projectFeedbacksQuery.isLoading) {

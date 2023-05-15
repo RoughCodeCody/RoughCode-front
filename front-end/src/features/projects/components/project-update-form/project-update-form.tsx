@@ -21,11 +21,13 @@ const schema = z.object({
 type ProjectUpdateFormProps = {
   projectId: number;
   onSubmit: SubmitHandler<ProjectUpdateValues>;
+  projectUpdateInitialValues?: ProjectUpdateValues;
 };
 
 export const ProjectUpdateForm = ({
   projectId,
   onSubmit,
+  projectUpdateInitialValues,
 }: ProjectUpdateFormProps) => {
   return (
     <div>
@@ -43,7 +45,11 @@ export const ProjectUpdateForm = ({
         }}
       >
         {(methods) => (
-          <ProjectUpdateFormFields methods={methods} projectId={projectId} />
+          <ProjectUpdateFormFields
+            methods={methods}
+            projectId={projectId}
+            projectUpdateInitialValues={projectUpdateInitialValues}
+          />
         )}
       </Form>
     </div>

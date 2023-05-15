@@ -103,7 +103,9 @@ export const ProjectInfo = ({
             {mine && isLatest && (
               <Selection
                 selectionList={{
-                  수정하기: () => {},
+                  수정하기: () => {
+                    router.push(`/project/modify/${projectId}`);
+                  },
                   삭제하기: () => setProjectDeleteModalOpen(true),
                 }}
               />

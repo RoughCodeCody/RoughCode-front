@@ -15,11 +15,13 @@ import { UrlInspectionBtn, SubmitButtonWrapper, SubmitButton } from "./style";
 type ProjectUpdateFormFieldsProps = {
   methods: UseFormReturn<ProjectUpdateValues>;
   projectId: number;
+  projectUpdateInitialValues?: ProjectUpdateValues;
 };
 
 export const ProjectUpdateFormFields = ({
   methods,
   projectId,
+  projectUpdateInitialValues,
 }: ProjectUpdateFormFieldsProps) => {
   const { register, formState, control, setValue, getValues } = methods;
 
@@ -43,6 +45,31 @@ export const ProjectUpdateFormFields = ({
     searchCriteria.tagIdList,
     selectedProjectFeedbackId,
   ]);
+  useEffect(() => {
+    if (projectUpdateInitialValues) {
+      setValue("title", projectUpdateInitialValues.title, {
+        shouldDirty: true,
+      });
+      setValue("notice", projectUpdateInitialValues.notice, {
+        shouldDirty: true,
+      });
+      setValue("introduction", projectUpdateInitialValues.introduction, {
+        shouldDirty: true,
+      });
+      setValue("url", projectUpdateInitialValues.url, { shouldDirty: true });
+      setValue("projectId", projectUpdateInitialValues.projectId, {
+        shouldDirty: true,
+      });
+      setValue(
+        "selectedFeedbacksId",
+        projectUpdateInitialValues.selectedFeedbacksId,
+        { shouldDirty: true }
+      );
+      setValue("selectedTagsId", projectUpdateInitialValues.selectedTagsId, {
+        shouldDirty: true,
+      });
+    }
+  }, [projectUpdateInitialValues, setValue]);
 
   register("projectId");
   register("selectedTagsId");
@@ -95,8 +122,13 @@ export const ProjectUpdateFormFields = ({
           검사
         </UrlInspectionBtn>
       </FlexDiv>
-
-      <TiptapController<ProjectUpdateValues> name="content" control={control} />
+      {projectUpdateInitialValues?.content ? (
+        <TiptapController<ProjectUpdateValues>
+          name="content"
+          control={control}
+          initialValue={projectUpdateInitialValues.content}
+        />
+      ) : null}
       <TagSearch />
       <input id="input-thumbnail" type="file" />
 
