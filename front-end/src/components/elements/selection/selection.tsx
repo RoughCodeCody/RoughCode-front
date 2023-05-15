@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { TbDotsVertical } from "react-icons/tb";
+import { useRef } from "react";
 
 import { SelectionList, SelectionText, SelectionWrapper } from "./style";
 
@@ -15,14 +16,30 @@ type SelectionProps = {
 };
 
 export const Selection = ({ selectionList, forceClose }: SelectionProps) => {
+  const wrapperRef = useRef<HTMLInputElement>(null);
   const [isOpen, setisOpen] = useState(false);
 
   useEffect(() => {
     if (forceClose) setisOpen(false);
   }, [forceClose]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setisOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [wrapperRef]);
+
   return (
-    <SelectionWrapper>
+    <SelectionWrapper ref={wrapperRef}>
       <TbDotsVertical onClick={() => setisOpen((prev) => !prev)} />
 
       {isOpen && (
