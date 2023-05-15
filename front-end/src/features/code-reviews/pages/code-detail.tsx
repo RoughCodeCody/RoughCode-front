@@ -52,20 +52,22 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                     height="30rem"
                     language={"javascript"}
                     originalCode={originalCode}
+                    selectedLines={clickedReview.lineNumbers}
                     noShad={true}
                   />
                 </FlexDiv>
               )}
 
-              {/* <FlexDiv width="100%" height="100%">
-                    <DiffCodeEditor
-                    headerText="코드 리뷰어가 수정한 코드입니다"
-                    height="30rem"
-                    readOnly={true}
-                    language={"javascript"}
-                    originalCode={originalCode}
-                    />
-                  </FlexDiv> */}
+              <FlexDiv width="100%" height="100%">
+                <DiffCodeEditor
+                  headerText="코드 리뷰어가 수정한 코드입니다"
+                  height="30rem"
+                  readOnly={true}
+                  language={"javascript"}
+                  originalCode={originalCode || ""}
+                  modifiedCode={clickedReview.codeContent}
+                />
+              </FlexDiv>
 
               <CodeReviewList reviews={data.reviews} />
             </>

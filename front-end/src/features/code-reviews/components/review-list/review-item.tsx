@@ -38,12 +38,15 @@ export const CodeReviewItem = ({
   isMine,
   showDetails,
 }: CodeReviewItem) => {
+  // selection 선택시 닫기 위한 state
   const [forceClose, setForceClose] = useState(false);
 
+  // 리뷰 선택시 정보 가져오기
   const { status, data, refetch } = useCodeReviewFeedbacks({
     reviewId,
     config: { enabled: false, refetchOnWindowFocus: false },
   });
+
   const { setClickedReviewInfo } = useClickedReviewStore();
 
   const hadleReviewClick = () => {
@@ -66,8 +69,11 @@ export const CodeReviewItem = ({
         <FlexDiv width="100%" justify="space-between" pointer={true}>
           <FlexDiv>
             <Nickname nickname={!userName.length ? "익명" : userName} />
+            <Text size="0.8rem" padding="0 2rem 0 1rem">
+              {dayjs(date).format("YY.MM.DD HH:MM")}
+            </Text>
             {Boolean(selected) && (
-              <Text color="main" bold={true} padding="0 2rem">
+              <Text color="main" bold={true}>
                 코드에 반영됨
               </Text>
             )}
@@ -93,10 +99,16 @@ export const CodeReviewItem = ({
           pointer={true}
           style={{ whiteSpace: "pre", marginTop: "0.5rem" }}
         >
-          <Text color={!content.length ? "red" : "font"}>
-            {!content.length ? "신고되어 가려진 게시물입니다." : content}
-          </Text>
-          <Text size="0.8rem">{dayjs(date).format("YY.MM.DD HH:MM")}</Text>
+          {!content.length ? (
+            <Text color={!content.length ? "red" : "font"}>
+              신고되어 가려진 게시물입니다.
+            </Text>
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{ __html: content }}
+              style={{ width: "100%" }}
+            ></div>
+          )}
         </FlexDiv>
       </FlexDiv>
     </WhiteBoxShad>
