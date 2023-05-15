@@ -50,7 +50,7 @@ public class ReviewsServiceImpl implements ReviewsService {
             throw new NullPointerException("일치하는 코드가 없습니다");
         }
         if (code.getCodeWriter().equals(user)) {
-            throw new BadRequestException("내가 작성한 코드에 대해서는 리뷰는 작성할 수 없습니다");
+            throw new BadRequestException("내가 작성한 코드에 대해서는 리뷰를 작성할 수 없습니다");
         }
 
         String selectedRange = req.getSelectedRange().toString();
@@ -302,14 +302,15 @@ public class ReviewsServiceImpl implements ReviewsService {
         if (target.getCodeContent() == null || target.getCodeContent() == "") {
             throw new SelectedException("이미 삭제된 코드 리뷰입니다");
         }
-        if (target.getComplaint().contains(String.valueOf(userId))) {
+        if (complainList.contains(String.valueOf(userId))) {
             throw new SelectedException("이미 신고한 코드 리뷰입니다");
         }
         log.info(complainList.size() + "번 신고된 코드 리뷰입니다");
-        if (complainList.size() >= 10) {
-            target.deleteCodeContent();
-        }
         complainList.add(String.valueOf(userId));
+        if (complainList.size() >= 5) { // 5명 이상 신고 시 complained true 처리
+            // 신고됨 처리
+            target.setComplained(true);
+        }
         target.setComplaint(complainList);
 
         return 1;
