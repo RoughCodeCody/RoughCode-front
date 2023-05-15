@@ -708,10 +708,15 @@ public class CodesServiceImpl implements CodesService {
         List<ReviewInfoRes> reviewInfoResList = new ArrayList<>();
         for (Codes c : allVersion) {
             for (Reviews r : c.getReviews()) {
-
+                // 삭제 처리된 코드 리뷰 제외
                 if (r.getCodeContent() == null || r.getCodeContent().equals("")) {
                     continue;
                 }
+                // 신고 횟수가 5번 이상인 코드 리뷰 제외
+                if (r.getComplained()) {
+                    continue;
+                }
+
                 reviewInfoResList.add(new ReviewInfoRes(r, c.getVersion(), r.getUsers()));
             }
         }
@@ -731,9 +736,15 @@ public class CodesServiceImpl implements CodesService {
 
         List<ReviewSearchRes> reviewSearchResList = new ArrayList<>();
         for (Reviews r : code.getReviews()) {
+            // 삭제 처리된 코드 리뷰 제외
             if (r.getCodeContent() == null || r.getCodeContent().equals("")) {
                 continue;
             }
+            // 신고 횟수가 5번 이상인 코드 리뷰 제외
+            if (r.getComplained()) {
+                continue;
+            }
+
             // 검색 대상 : 코드 내용, 상세 설명, 닉네임
             if (!r.getCodeContent().contains(keyword) && !r.getContent().contains(keyword) && !r.getUsers().getName().contains(keyword)) {
                 // keyword 포함하지 않는 경우 continue

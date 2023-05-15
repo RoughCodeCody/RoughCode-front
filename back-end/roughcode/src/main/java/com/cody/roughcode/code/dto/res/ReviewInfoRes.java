@@ -63,8 +63,9 @@ public class ReviewInfoRes {
             this.userId = 0L;
             this.userName = "";
         }
-        this.codeContent = review.getCodeContent();
-        this.content = review.getContent();
+        // 5번 이상 신고를 받은 코드리뷰는 코드내용, 상세설명 빈문자열로 넘겨줌
+        this.codeContent = Boolean.TRUE.equals(review.getComplained()) ? "" : review.getCodeContent();
+        this.content = Boolean.TRUE.equals(review.getComplained()) ? "" : review.getContent();
         this.lineNumbers = lineNumbers;
         this.selected = review.getSelected() > 0;
         this.version = version;

@@ -39,6 +39,10 @@ public class ReReviews extends BaseTimeEntity {
     @Column(name = "complaint", nullable = true)
     private String complaint = "";
 
+    @Builder.Default
+    @Column(name = "complained", nullable = true)
+    private Boolean complained = false;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviews_id", nullable = false)
@@ -61,5 +65,9 @@ public class ReReviews extends BaseTimeEntity {
 
     public void setComplaint(List<String> complainList) {
         this.complaint = String.join(",", complainList);
+    }
+
+    public void setComplained(Boolean status) {
+        this.complained = status;
     }
 }
