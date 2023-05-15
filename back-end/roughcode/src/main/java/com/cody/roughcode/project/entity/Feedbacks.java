@@ -2,7 +2,9 @@ package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -48,7 +50,8 @@ public class Feedbacks extends BaseTimeEntity {
     @JoinColumn(name = "users_id", nullable = true)
     private Users users = null;
 
-    @OneToMany(mappedBy = "feedbacks")
+    @JsonIgnore
+@OneToMany(mappedBy = "feedbacks")
     private List<FeedbacksLikes> feedbacksLikes;
 
     public void selectedUp() {
