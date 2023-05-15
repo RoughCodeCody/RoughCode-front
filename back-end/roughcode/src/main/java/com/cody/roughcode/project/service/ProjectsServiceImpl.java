@@ -569,6 +569,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .map(Long::valueOf)
                     .collect(Collectors.toList());
 
+        log.info("find project list of" + ((closed == 1)?" closed and opened" : " only opened"));
         if(keyword == null) keyword = "";
         Page<Projects> projectsPage = null;
         if(tagIdList == null || tagIdList.size() == 0){ // tag 검색 x
@@ -627,7 +628,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .notice(p.getRight().getNotice())
                     .projectId(p.getLeft().getProjectsId())
                     .version(p.getLeft().getVersion())
-                    .date(p.getLeft().getModifiedDate())
+                    .date(p.getLeft().getCreatedDate())
                     .build());
         }
         projectDetailRes.setVersions(versionResList);
@@ -967,6 +968,9 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(feedbacks == null)
             throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
 
+        if(feedbacks.getUsers() != null && feedbacks.getUsers().getUsersId().equals(users.getUsersId()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "피드백 작성자와 신고 유저가 동일합니다");
+
         List<String> complainList = (feedbacks.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
 
         if(feedbacks.getContent() == null || feedbacks.getContent().equals(""))
@@ -1033,7 +1037,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             List<String> tagList = getTagNames(p);
 
             projectInfoRes.add(ProjectInfoRes.builder()
-                    .date(p.getModifiedDate())
+                    .date(p.getCreatedDate())
                     .img(p.getImg())
                     .projectId(p.getProjectsId())
                     .feedbackCnt(p.getFeedbackCnt())

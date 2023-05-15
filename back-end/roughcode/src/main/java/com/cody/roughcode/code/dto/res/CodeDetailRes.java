@@ -18,6 +18,9 @@ public class CodeDetailRes {
     @Schema(description = "코드 id", example = "1")
     private Long codeId;
 
+    @Schema(description = "내가 작성한 코드인지 여부", example = "true")
+    private Boolean mine;
+
     @Schema(description = "코드 제목", example = "이 코드 좀 봐주세용")
     private String title;
 

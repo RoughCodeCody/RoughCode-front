@@ -252,6 +252,9 @@ public class CodesServiceImpl implements CodesService {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
 
+        // 내가 작성한 코드인지 여부
+        Boolean mine = code.getCodeWriter().equals(user);
+
         // 코드에 등록된 태그 목록
         List<String> tagList = getTagNames(code);
 
@@ -343,9 +346,10 @@ public class CodesServiceImpl implements CodesService {
         // 코드 상세 정보 response dto
         return CodeDetailRes.builder()
                 .codeId(code.getCodesId())
+                .mine(mine)
                 .title(code.getTitle())
                 .version(code.getVersion())
-                .date(code.getModifiedDate())
+                .date(code.getCreatedDate())
                 .likeCnt(code.getLikeCnt())
                 .reviewCnt(code.getReviewCnt())
                 .favoriteCnt(codesInfo.getFavoriteCnt())
@@ -758,7 +762,7 @@ public class CodesServiceImpl implements CodesService {
                     .codeId(c.getCodesId())
                     .version(c.getVersion())
                     .title(c.getTitle())
-                    .date(c.getModifiedDate())
+                    .date(c.getCreatedDate())
                     .likeCnt(c.getLikeCnt())
                     .reviewCnt(c.getReviewCnt())
                     .tags(tagList)

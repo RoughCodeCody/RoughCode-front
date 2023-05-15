@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ProjectSelectedTagsRepository extends JpaRepository<ProjectSelectedTags, Long> {
     @Query("SELECT p FROM Projects p JOIN p.selectedTags pst WHERE " +
-            "p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter)) AND " +
+            "p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter AND p.expireDate IS NULL)) AND " +
             "pst.tags.tagsId IN :tagIds " +
             "AND (LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%) " +
             "GROUP BY p.projectsId " +
@@ -21,7 +21,7 @@ public interface ProjectSelectedTagsRepository extends JpaRepository<ProjectSele
     Page<Projects> findAllByKeywordAndTag(@Param("keyword") String keyword, @Param("tagIds") List<Long> tagIds, @Param("tagIdsSize") Long tagIdsSize, Pageable pageable);
 
     @Query("SELECT p FROM Projects p JOIN p.selectedTags pst WHERE " +
-            "p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter)) AND " +
+            "p.version = (SELECT MAX(p2.version) FROM Projects p2 WHERE (p2.num = p.num AND p2.projectWriter = p.projectWriter AND p.expireDate IS NULL)) AND " +
             "pst.tags.tagsId IN :tagIds " +
             "AND p.closed = false " +
             "AND (LOWER(p.title) LIKE %:keyword% OR LOWER(p.introduction) LIKE %:keyword%) " +

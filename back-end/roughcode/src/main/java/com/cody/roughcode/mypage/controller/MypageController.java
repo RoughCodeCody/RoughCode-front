@@ -191,7 +191,7 @@ public class MypageController {
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
         try{
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
             res = mypageService.getCodeList(pageRequest, usersId);
             codeRes = res.getLeft();
         } catch (Exception e){
@@ -282,7 +282,7 @@ public class MypageController {
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
         try{
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
             res = mypageService.getProjectList(pageRequest, usersId);
             projectRes = res.getLeft();
         } catch (Exception e){

@@ -207,7 +207,7 @@ public class ProjectRepositoryTest {
         projectRepository.save(project2);
 
         // when
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<Projects> projectsList = projectRepository.findAllByKeyword("", pageRequest);
         List<Projects> projects = projectsList.getContent();
 
