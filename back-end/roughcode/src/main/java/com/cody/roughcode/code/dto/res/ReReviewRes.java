@@ -44,7 +44,7 @@ public class ReReviewRes {
         Long userId;
         String userName;
 
-        if(reReviews.getUsers() != null) {
+        if (reReviews.getUsers() != null) {
             userId = reReviews.getUsers().getUsersId();
             userName = reReviews.getUsers().getName();
         } else { // 익명인 경우
@@ -58,7 +58,7 @@ public class ReReviewRes {
                 .userName(userName)
                 .likeCnt(reReviews.getLikeCnt())
                 .liked(liked)
-                .content(Boolean.FALSE.equals(reReviews.getComplained()) ? reReviews.getContent() : "")
+                .content(Boolean.TRUE.equals(reReviews.getComplained()) ? "" : reReviews.getContent())
                 .createdDate(reReviews.getCreatedDate())
                 .modifiedDate(reReviews.getModifiedDate())
                 .build();

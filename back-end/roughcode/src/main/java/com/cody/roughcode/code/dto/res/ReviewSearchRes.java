@@ -32,7 +32,7 @@ public class ReviewSearchRes {
             this.userId = 0L;
             this.userName = "";
         }
-        this.content = Boolean.FALSE.equals(review.getComplained()) ? review.getContent() : "";
+        this.content = Boolean.TRUE.equals(review.getComplained()) ? "": review.getContent();
         this.selected = review.getSelected() > 0;
         this.likeCnt = review.getLikeCnt();
         this.liked = liked;
