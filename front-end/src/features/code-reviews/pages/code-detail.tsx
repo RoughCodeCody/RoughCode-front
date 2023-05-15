@@ -7,6 +7,7 @@ import { useClickedReviewStore } from "@/stores";
 import { useCodeInfo } from "../api/get-code-info";
 import { useCode } from "../api/get-code";
 import { CodeInfo } from "../components/code-info";
+import { ClickedReviewContent } from "../components/clicked-review-content";
 import { CodeReviewList } from "../components/review-list";
 
 interface CodeDetailProps {
@@ -70,6 +71,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
               </FlexDiv>
 
               <CodeReviewList reviews={data.reviews} />
+              <ClickedReviewContent content={clickedReview.content} />
             </>
           )}
         </WhiteBoxNoshad>

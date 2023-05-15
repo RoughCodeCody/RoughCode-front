@@ -16,6 +16,7 @@ interface ReviewInfo {
   reReviews: codeReviewFeedback[];
   lineNumbers: number[][];
   codeContent: string;
+  content: string;
 }
 
 interface ClickedReviewStore {
@@ -27,6 +28,7 @@ export const useClickedReviewStore = create<ClickedReviewStore>((set) => ({
   clickedReview: {
     reviewId: -1,
     codeContent: "",
+    content: "",
     lineNumbers: [],
     reReviews: [],
   },

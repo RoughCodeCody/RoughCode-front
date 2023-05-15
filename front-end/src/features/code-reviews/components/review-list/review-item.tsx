@@ -52,8 +52,14 @@ export const CodeReviewItem = ({
   const hadleReviewClick = () => {
     refetch();
     if (status === "success") {
-      const { reviewId, codeContent, lineNumbers, reReviews } = data;
-      setClickedReviewInfo({ reviewId, codeContent, lineNumbers, reReviews });
+      const { reviewId, codeContent, lineNumbers, reReviews, content } = data;
+      setClickedReviewInfo({
+        reviewId,
+        codeContent,
+        lineNumbers,
+        reReviews,
+        content,
+      });
     }
   };
 
@@ -64,21 +70,18 @@ export const CodeReviewItem = ({
     <WhiteBoxShad
       shadColor={showDetails ? "main" : "shad"}
       onClick={hadleReviewClick}
+      width="32%"
+      margin="0.5rem 0"
     >
-      <FlexDiv direction="column" padding="1rem" pointer={true}>
+      <FlexDiv
+        direction="column"
+        padding="1rem"
+        pointer={true}
+        width="100%"
+        gap="1rem"
+      >
         <FlexDiv width="100%" justify="space-between" pointer={true}>
-          <FlexDiv>
-            <Nickname nickname={!userName.length ? "익명" : userName} />
-            <Text size="0.8rem" padding="0 2rem 0 1rem">
-              {dayjs(date).format("YY.MM.DD HH:MM")}
-            </Text>
-            {Boolean(selected) && (
-              <Text color="main" bold={true}>
-                코드에 반영됨
-              </Text>
-            )}
-          </FlexDiv>
-
+          <Nickname nickname={!userName.length ? "익명" : userName} />
           {!content.length || (
             <FlexDiv pointer={true}>
               <Count type="like" isChecked={liked} cnt={likeCnt} />
@@ -92,7 +95,16 @@ export const CodeReviewItem = ({
           )}
         </FlexDiv>
 
-        <FlexDiv
+        <FlexDiv direction="row-reverse" justify="space-between" width="100%">
+          <Text size="0.8rem">{dayjs(date).format("YY.MM.DD HH:MM")}</Text>
+          {Boolean(selected) && (
+            <Text color="main" bold={true}>
+              코드에 반영됨
+            </Text>
+          )}
+        </FlexDiv>
+
+        {/* <FlexDiv
           width="100%"
           justify="space-between"
           align="end"
@@ -109,7 +121,7 @@ export const CodeReviewItem = ({
               style={{ width: "100%" }}
             ></div>
           )}
-        </FlexDiv>
+        </FlexDiv> */}
       </FlexDiv>
     </WhiteBoxShad>
   );
