@@ -14,13 +14,12 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class EmailServiceImpl extends EmailService {
+public class EmailServiceImpl implements EmailService {
 
     private final UsersRepository usersRepository;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -65,6 +64,17 @@ public class EmailServiceImpl extends EmailService {
             usersRepository.save(user);
         };
         return checked;
+    }
+
+    @Override
+    public String deleteEmailInfo(Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        user.setEmail("");
+        usersRepository.save(user);
+
+        return user.getEmail();
     }
 
     @Override
