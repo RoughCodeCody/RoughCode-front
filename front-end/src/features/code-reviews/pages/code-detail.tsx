@@ -2,10 +2,12 @@ import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
 import { VersionsInfo } from "@/features/version-info";
+import { useClickedReviewStore } from "@/stores";
 
 import { useCodeInfo } from "../api/get-code-info";
 import { useCode } from "../api/get-code";
 import { CodeInfo } from "../components/code-info";
+import { ClickedReviewContent } from "../components/clicked-review-content";
 import { CodeReviewList } from "../components/review-list";
 
 interface CodeDetailProps {
@@ -18,9 +20,13 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
 
   console.log(data);
 
+  // 깃허브 코드 내용 가져오기
   const githubUrl = data?.githubUrl ? data?.githubUrl : "";
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
+
+  // 현재 클릭되어 리리뷰를 보여주고 있는 리뷰 관련 스토어
+  const { clickedReview } = useClickedReviewStore();
 
   return (
     <>
@@ -47,28 +53,35 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                     height="30rem"
                     language={"javascript"}
                     originalCode={originalCode}
+                    selectedLines={clickedReview.lineNumbers}
                     noShad={true}
                   />
                 </FlexDiv>
               )}
 
-              {/* <FlexDiv width="100%" height="100%">
-                    <DiffCodeEditor
-                    headerText="코드 리뷰어가 수정한 코드입니다"
-                    height="30rem"
-                    readOnly={true}
-                    language={"javascript"}
-                    originalCode={originalCode}
-                    />
-                  </FlexDiv> */}
+              <FlexDiv width="100%" height="100%">
+                <DiffCodeEditor
+                  headerText="코드 리뷰어가 수정한 코드입니다"
+                  height="30rem"
+                  readOnly={true}
+                  language={"javascript"}
+                  originalCode={originalCode || ""}
+                  modifiedCode={clickedReview.codeContent}
+                />
+              </FlexDiv>
 
               <CodeReviewList reviews={data.reviews} />
+              <ClickedReviewContent content={clickedReview.content} />
             </>
           )}
         </WhiteBoxNoshad>
 
-        {/* <FeedbackRegister type="review" id={} />
-        <Feedbacks type="review" feedbacks={} /> */}
+        <FeedbackRegister type="review" id={clickedReview.reviewId} />
+        <Feedbacks
+          type="review"
+          feedbacks={clickedReview.reReviews}
+          projectOrCodeId={Number(codeId)}
+        />
       </FlexDiv>
     </>
   );

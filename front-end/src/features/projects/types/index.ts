@@ -1,4 +1,4 @@
-export type Feedback = {
+export type ProjectFeedback = {
   feedbackId: number;
   userId: number; // 피드백 남긴 사람 id (0이면 익명)
   userName: string; // 빈 문자열이면 익명
@@ -17,7 +17,7 @@ export type ProjectInfoResult = {
   favorite: boolean;
   favoriteCnt: number;
   feedbackCnt: number;
-  feedbacks: Feedback[];
+  feedbacks: ProjectFeedback[];
   img: string;
   likeCnt: number;
   liked: boolean;

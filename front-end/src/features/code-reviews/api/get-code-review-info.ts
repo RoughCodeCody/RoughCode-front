@@ -6,16 +6,16 @@ import { ExtractFnReturnType } from "@/lib/react-query";
 import { CodeReviewInfoResult } from "../types";
 
 export const getCodeReviewInfo = (
-  feedbackId: number
+  codeReviewId: number
 ): Promise<CodeReviewInfoResult> => {
-  return axios.get(`/code/review/${feedbackId}`);
+  return axios.get(`/code/review/${codeReviewId}`);
 };
 
 type QueryFnType = typeof getCodeReviewInfo;
 
-export const useCodeFeedbackInfo = (feedbackId: number) => {
+export const useCodeReviewInfo = (codeReviewId: number) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ["codeFeedbackInfo", feedbackId],
-    queryFn: () => getCodeReviewInfo(feedbackId),
+    queryKey: ["codeReviewInfo", codeReviewId],
+    queryFn: () => getCodeReviewInfo(codeReviewId),
   });
 };

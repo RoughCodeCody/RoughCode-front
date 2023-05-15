@@ -16,14 +16,22 @@ export const CodeReviewList = ({ reviews }: CodeReviewListProps) => {
   const userQuery = useUser();
 
   // 현재 클릭되어 리리뷰를 보여주고 있는 리뷰 관련 스토어
-  // const {
-  //   initialState: { clickedReviewId },
-  //   setClickedReviewId,
-  // } = useClickedReviewStore();
+  const { clickedReview, setClickedReviewInfo } = useClickedReviewStore();
 
-  // useEffect(() => {
-  //   if (reviews.length > 0) setClickedReviewId(reviews[0].reviewId);
-  // }, []);
+  // 최초 렌더시 가장 첫번째 리뷰를 클릭 상태로 함
+  useEffect(() => {
+    if (reviews.length > 0) {
+      const { reviewId, codeContent, lineNumbers, reReviews, content } =
+        reviews[0];
+      setClickedReviewInfo({
+        reviewId,
+        codeContent,
+        lineNumbers,
+        reReviews,
+        content,
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -34,21 +42,26 @@ export const CodeReviewList = ({ reviews }: CodeReviewListProps) => {
 
         {/* 검색을 만들게 되면 이 자리에 */}
 
-        {reviews.length !== 0 &&
-          reviews.map((review) => (
-            <>
-              <CodeReviewItem
-                review={review}
-                // 익명이 아니고 로그인한 유저 닉네임과 리뷰의 유저네임이 같을 때
-                isMine={Boolean(
-                  review.userName.length !== 0 &&
-                    userQuery.data?.nickname === review.userName
-                )}
-                // showDetails={Boolean(review.reviewId === clickedReviewId)}
-                key={review.reviewId}
-              />
-            </>
-          ))}
+        {reviews.length !== 0 && (
+          <FlexDiv wrap="wrap" justify="start" gap="2%">
+            {reviews.map((review) => (
+              <>
+                <CodeReviewItem
+                  review={review}
+                  // 익명이 아니고 로그인한 유저 닉네임과 리뷰의 유저네임이 같을 때
+                  isMine={Boolean(
+                    review.userName.length !== 0 &&
+                      userQuery.data?.nickname === review.userName
+                  )}
+                  showDetails={Boolean(
+                    review.reviewId === clickedReview.reviewId
+                  )}
+                  key={review.reviewId}
+                />
+              </>
+            ))}
+          </FlexDiv>
+        )}
       </FlexDiv>
     </>
   );

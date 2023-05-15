@@ -1,32 +1,26 @@
 import { create } from "zustand";
+import { CodeReviewFeedback } from "@/features/code-reviews";
 
-import { Review } from "@/features/code-reviews";
+interface ReviewInfo {
+  reviewId: number;
+  reReviews: CodeReviewFeedback[];
+  lineNumbers: number[][];
+  codeContent: string;
+  content: string;
+}
 
 interface ClickedReviewStore {
-  clickedReview: Review;
-  setClickedReviewId: (id: number) => void;
+  clickedReview: ReviewInfo;
+  setClickedReviewInfo: (clickedReview: ReviewInfo) => void;
 }
 
 export const useClickedReviewStore = create<ClickedReviewStore>((set) => ({
   clickedReview: {
     reviewId: -1,
-    userId: -1,
-    userName: "",
     codeContent: "",
-    content: "",
-    language: "",
+    content: "등록된 코드 리뷰가 없어요",
     lineNumbers: [],
-    likeCnt: 0,
-    selected: 0,
-    liked: false,
-    date: new Date(),
     reReviews: [],
   },
-  setClickedReviewId: (id: number) =>
-    set((state) => ({
-      clickedReview: {
-        ...state.clickedReview,
-        reviewId: id,
-      },
-    })),
+  setClickedReviewInfo: (clickedReview) => set(() => ({ clickedReview })),
 }));
