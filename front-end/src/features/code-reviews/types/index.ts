@@ -21,7 +21,7 @@ type ReReviews = {
   modifiedDate: Date; // 리리뷰 수정 시간
 };
 
-type Reviews = {
+export type Review = {
   reviewId: number; // 리뷰 id
   userId: number; // 리뷰 남긴 사람 id (0이면 익명)
   userName: string; // 리뷰 남긴 사람 닉네임(빈 문자열이면 익명)
@@ -55,7 +55,7 @@ export type CodeInfoResult = {
   liked: boolean; // 내가 좋아요 눌렀는지 여부
   favorite: boolean; // 내가 즐겨찾기 눌렀는지 여부
   versions: CodeVersion[];
-  reviews: Reviews[];
+  reviews: Review[];
 };
 
 type _links = {
@@ -103,6 +103,7 @@ export type codeForFeedbackModify = {
   projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
   projectId: number; // 연결된 프로젝트 id(없을 경우 null)
 };
+
 export type CodeFeedbackInfoResult = {
   githubUrl: string;
   reviewId: number; // 코드 리뷰 아이디
