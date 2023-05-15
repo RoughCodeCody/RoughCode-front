@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType } from "@/lib/react-query";
 
-import { CodeFeedbackInfoResult } from "../types";
+import { CodeReviewInfoResult } from "../types";
 
 export const getCodeReviewInfo = (
   feedbackId: number
-): Promise<CodeFeedbackInfoResult> => {
+): Promise<CodeReviewInfoResult> => {
   return axios.get(`/code/review/${feedbackId}`);
 };
 
