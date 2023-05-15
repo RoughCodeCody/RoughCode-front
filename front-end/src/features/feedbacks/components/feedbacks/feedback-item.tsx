@@ -15,31 +15,54 @@ import {
   usePutFeedbackComplaint,
   usePutProjectFeedback,
 } from "@/features/projects/api";
-import { Feedback } from "@/features/projects/types";
+import { ProjectFeedback } from "@/features/projects/types";
+import { CodeReviewFeedback } from "@/features/code-reviews";
 import { queryClient } from "@/lib/react-query";
 
 import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 
 interface FeedbackItemProps {
-  feedback: Feedback;
-  type: "feedback" | "review";
-  projectOrCodeid: string;
+  feedback: ProjectFeedback | CodeReviewFeedback;
+  type: "project" | "review";
+  projectOrCodeId: number;
   isMine: boolean;
 }
 
+// export type ProjectFeedback = {
+//   feedbackId: number;
+//   userId: number; // 피드백 남긴 사람 id (0이면 익명)
+//   userName: string; // 빈 문자열이면 익명
+//   content: string; // 피드백 내용, 신고당해서 삭제된 피드백은 빈 문자열로 내보내집니다!!
+//   like: number;
+//   selected: number; // 선택 받은 횟수
+//   liked: boolean; // 내가 좋아요 눌렀는지 여부
+//   date: Date;
+// };
+
+// export type ReviewFeedback = {
+//   reReviewId: number; // 코드 리리뷰(리뷰에 대한 리뷰) id
+//   userId: number; // 코드 리리뷰 작성자 id (0이면 익명)
+//   userName: string; // 리리뷰 남긴 사람 닉네임(빈 문자열이면 익명)
+//   liked: boolean; // 내가 좋아요 눌렀는지 여부
+//   like: number; // 코드 리리뷰 좋아요 수
+//   content: string; // 리리뷰 내용
+//   date: Date
+// };
+
+// 프로젝트 버전인지 여부를 판별
+function isProject(arg: any): arg is ProjectFeedback {
+  return arg?.feedbackId !== undefined;
+}
+
+// 코드 버전인지 여부를 판별
+function isCode(arg: any): arg is CodeReviewFeedback {
+  return arg?.reReviewId !== undefined;
+}
+
 export const FeedbackItem = ({
-  feedback: {
-    feedbackId,
-    userId,
-    userName,
-    content,
-    like,
-    selected,
-    liked,
-    date,
-  },
+  feedback,
   type,
-  projectOrCodeid,
+  projectOrCodeId,
   isMine,
 }: FeedbackItemProps) => {
   // 피드백 신고 관련 state
@@ -47,56 +70,66 @@ export const FeedbackItem = ({
 
   // 피드백 수정 관련 state
   const [isModifying, setIsModifying] = useState(false);
-  const [newContent, setNewContent] = useState(content);
+  const [newContent, setNewContent] = useState(feedback.content);
   const modifyInputRef = useRef<HTMLInputElement | null>(null);
 
-  const invalidateProjectInfoQuery = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["projectInfo", projectOrCodeid],
-    });
+  const invalidateQuery = () => {
+    const queryKey = type === "project" ? "projectInfo" : "codeInfo";
+    queryClient.invalidateQueries([queryKey, projectOrCodeId]);
   };
 
   // 피드백 좋아요/좋아요 취소
-  const postFeedbackLikeQuery = usePostFeedbackLike();
+  const postProjectFeedbackLikeQuery = usePostFeedbackLike();
+  // const postReviewFeedbackLikeQuery =
   const handleFeedbackLike = () => {
-    postFeedbackLikeQuery.mutate(feedbackId, {
-      onSuccess: invalidateProjectInfoQuery,
-    });
+    if (isProject(feedback)) {
+      postProjectFeedbackLikeQuery.mutate(feedback.feedbackId, {
+        onSuccess: invalidateQuery,
+      });
+    } else if (isCode(feedback)) {
+    }
   };
 
   // 피드백 수정
   const putFeedbackQuery = usePutProjectFeedback();
   const handlePutFeedback = () => {
-    putFeedbackQuery.mutate(
-      { feedbackId, content: newContent },
-      {
-        onSuccess: () => {
-          setIsModifying(false);
-          invalidateProjectInfoQuery;
-        },
-      }
-    );
+    if (isProject(feedback)) {
+      putFeedbackQuery.mutate(
+        { feedbackId: feedback.feedbackId, content: newContent },
+        {
+          onSuccess: () => {
+            setIsModifying(false);
+            invalidateQuery;
+          },
+        }
+      );
+    } else if (isCode(feedback)) {
+    }
   };
 
   // 피드백 삭제
   const deleteFeedbackQuery = useDeleteProjectFeedback();
   const handleDeleteFeedback = () => {
-    deleteFeedbackQuery.mutate(feedbackId, {
-      onSuccess: invalidateProjectInfoQuery,
-    });
+    if (isProject(feedback)) {
+      deleteFeedbackQuery.mutate(feedback.feedbackId, {
+        onSuccess: invalidateQuery,
+      });
+    }
   };
 
   // 피드백 신고
   const putFeedbackComplaintQuery = usePutFeedbackComplaint();
   const handleFeedbackComplaint = () => {
-    putFeedbackComplaintQuery.mutate(feedbackId, {
-      onSettled: () => setForceClose(true),
-      onSuccess: () => {
-        invalidateProjectInfoQuery;
-        alert("신고하였습니다");
-      },
-    });
-    setForceClose(false);
+    if (isProject(feedback)) {
+      putFeedbackComplaintQuery.mutate(feedback.feedbackId, {
+        onSettled: () => setForceClose(true),
+        onSuccess: () => {
+          invalidateQuery;
+          alert("신고하였습니다");
+        },
+      });
+      setForceClose(false);
+    }
   };
 
   const selectionListMine = {
@@ -114,7 +147,9 @@ export const FeedbackItem = ({
 
   return (
     <FeedbackItemWrapper
-      bgColor={Boolean(selected) ? "sub-one" : "white"}
+      bgColor={
+        isProject(feedback) && Boolean(feedback.selected) ? "sub-one" : "white"
+      }
       isMine={isMine}
     >
       {isModifying ? (
@@ -133,19 +168,23 @@ export const FeedbackItem = ({
         <>
           <FlexDiv width="100%" justify="space-between">
             <FlexDiv>
-              <Nickname nickname={!userName.length ? "익명" : userName} />
-              {Boolean(selected) && (
+              <Nickname
+                nickname={
+                  !feedback.userName.length ? "익명" : feedback.userName
+                }
+              />
+              {isProject(feedback) && Boolean(feedback.selected) && (
                 <Text color="main" bold={true} padding="0 2rem">
-                  {`${type === "feedback" ? "프로젝트" : "코드"}에 반영됨`}
+                  프로젝트에 반영됨
                 </Text>
               )}
             </FlexDiv>
-            {!content.length || (
+            {!feedback.content.length || (
               <FlexDiv>
                 <Count
                   type="like"
-                  isChecked={liked}
-                  cnt={like}
+                  isChecked={feedback.liked}
+                  cnt={feedback.like}
                   onClickFunc={handleFeedbackLike}
                 />
                 <Selection
@@ -164,10 +203,14 @@ export const FeedbackItem = ({
             align="end"
             style={{ whiteSpace: "pre", marginTop: "0.5rem" }}
           >
-            <Text color={!content.length ? "red" : "font"}>
-              {!content.length ? "신고되어 가려진 게시물입니다." : content}
+            <Text color={!feedback.content.length ? "red" : "font"}>
+              {!feedback.content.length
+                ? "신고되어 가려진 게시물입니다."
+                : feedback.content}
             </Text>
-            <Text size="0.8rem">{dayjs(date).format("YY.MM.DD HH:MM")}</Text>
+            <Text size="0.8rem">
+              {dayjs(feedback.date).format("YY.MM.DD HH:MM")}
+            </Text>
           </FlexDiv>
         </>
       )}

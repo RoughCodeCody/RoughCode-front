@@ -63,11 +63,11 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
               />
             </WhiteBoxNoshad>
 
-            <FeedbackRegister type="feedback" id={projectId} />
+            <FeedbackRegister type="project" id={Number(projectId)} />
             <Feedbacks
-              type="feedback"
+              type="project"
               feedbacks={data.feedbacks}
-              projectOrCodeid={projectId}
+              projectOrCodeId={Number(projectId)}
             />
           </>
         )}

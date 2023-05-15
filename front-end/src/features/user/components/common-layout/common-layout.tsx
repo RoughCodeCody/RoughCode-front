@@ -13,13 +13,15 @@ export const CommonLayout = ({
   children,
 }: CommonLayout) => {
   return (
-    <FlexDiv direction="column" gap="2rem">
+    <FlexDiv width="100%" direction="column" gap="4rem">
       <BottomHeader
         locations={["마이 페이지"]}
         menus={["프로필", "내가 쓴 글", "나의 리뷰", "즐겨찾기"]}
       />
-      <FlexDiv direction="column" width="70%" gap="3rem">
-        <Title title={title} description={description} />
+      <FlexDiv direction="column" width="100%" gap="3rem">
+        <FlexDiv width="100%" maxWidth="70%" justify="start">
+          <Title title={title} description={description} />
+        </FlexDiv>
         {children}
       </FlexDiv>
     </FlexDiv>
