@@ -333,6 +333,17 @@ public class CodesServiceImpl implements CodesService {
                 Boolean reReviewLiked = reReviewLike != null;
                 reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
             }
+            // 1. 내가 쓴 리리뷰, 2. 최신순 으로 정렬
+            Collections.sort(reReviewResList, (r1, r2) -> {
+                if ((r1.getUserId() != null && r1.getUserId().equals(userId)) && (r2.getUserId() == null || !r2.getUserId().equals(userId))) {
+                    return -1;
+                } else if ((r1.getUserId() == null || !r1.getUserId().equals(userId)) && (r2.getUserId() != null && r2.getUserId().equals(userId))) {
+                    return 1;
+                } else {
+                    return r2.getDate().compareTo(r1.getDate());
+                }
+            });
+
             reviewResList.get(0).updateReReviews(reReviewResList);
         }
 
@@ -713,7 +724,7 @@ public class CodesServiceImpl implements CodesService {
                     continue;
                 }
                 // 신고 횟수가 5번 이상인 코드 리뷰 제외
-                if (r.getComplained()) {
+                if (Boolean.TRUE.equals(r.getComplained())) {
                     continue;
                 }
 
@@ -741,7 +752,7 @@ public class CodesServiceImpl implements CodesService {
                 continue;
             }
             // 신고 횟수가 5번 이상인 코드 리뷰 제외
-            if (r.getComplained()) {
+            if (Boolean.TRUE.equals(r.getComplained())) {
                 continue;
             }
 
@@ -755,6 +766,7 @@ public class CodesServiceImpl implements CodesService {
 
             reviewSearchResList.add(new ReviewSearchRes(r, liked));
         }
+        Collections.sort(reviewSearchResList, (r1, r2) -> r2.getDate().compareTo(r1.getDate()));
 
         return reviewSearchResList;
     }
