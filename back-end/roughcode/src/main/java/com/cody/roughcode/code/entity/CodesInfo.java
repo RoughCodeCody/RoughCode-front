@@ -1,8 +1,8 @@
 package com.cody.roughcode.code.entity;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -40,7 +40,7 @@ public class CodesInfo {
     @JoinColumn(name = "codes_id", nullable = false)
     private Codes codes;
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "codesInfo", fetch = FetchType.LAZY)
     private List<SelectedReviews> selectedReviews;
 

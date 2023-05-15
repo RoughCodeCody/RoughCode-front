@@ -1,7 +1,6 @@
 package com.cody.roughcode.code.entity;
 
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 

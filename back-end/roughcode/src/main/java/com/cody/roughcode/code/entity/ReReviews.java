@@ -2,6 +2,7 @@ package com.cody.roughcode.code.entity;
 
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,6 +39,7 @@ public class ReReviews extends BaseTimeEntity {
     @Column(name = "complaint", nullable = true)
     private String complaint = "";
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviews_id", nullable = false)
     private Reviews reviews;
