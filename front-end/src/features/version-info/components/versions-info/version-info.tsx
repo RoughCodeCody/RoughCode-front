@@ -81,11 +81,17 @@ export const VersionInfo = ({
           </>
         ) : feedbacks.length !== 0 && isCode(feedbacks) ? (
           <>
-            <Text>반영한 코드 리뷰</Text>
+            <Text size="0.8rem" bold={true}>
+              반영한 코드 리뷰
+            </Text>
             {feedbacks.map(({ reviewId, userName, content }) => (
-              <WhiteBoxShad key={reviewId}>
-                <Nickname nickname={userName} />
-                <Text size="0.9rem">{content}</Text>
+              <WhiteBoxShad radius="0" key={reviewId}>
+                <FlexDiv width="100%" justify="start" padding="1rem">
+                  <Nickname nickname={userName} />
+                  <Text size="0.9rem" padding="0 1rem">
+                    {content}
+                  </Text>
+                </FlexDiv>
               </WhiteBoxShad>
             ))}
           </>
