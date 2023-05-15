@@ -1,3 +1,4 @@
+export * from "./delete-code";
 export * from "./get-code";
 export * from "./get-code-info";
 export * from "./get-code-list";
