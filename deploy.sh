@@ -1,13 +1,13 @@
 EXIST_BLUE=$(docker-compose -p ${IMAGE_NAME}-blue -f docker-compose.blue.yaml ps | grep Up)
 
 if [ -z "$EXIST_BLUE" ]; then
-    docker-compose -p ${IMAGE_NAME}-blue -f ~/docker-compose.blue.yaml up -d
+    docker-compose -p ${IMAGE_NAME}-blue -f ./docker-compose.blue.yaml up -d
     BEFORE_COMPOSE_COLOR="green"
     AFTER_COMPOSE_COLOR="blue"
     BEFORE_PORT_NUMBER=8081
     AFTER_PORT_NUMBER=8080
 else
-    docker-compose -p ${IMAGE_NAME}-green -f ~/docker-compose.green.yaml up -d
+    docker-compose -p ${IMAGE_NAME}-green -f ./docker-compose.green.yaml up -d
     BEFORE_COMPOSE_COLOR="blue"
     AFTER_COMPOSE_COLOR="green"
     BEFORE_PORT_NUMBER=8080
