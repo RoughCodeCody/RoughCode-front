@@ -6,7 +6,7 @@ import { MutationConfig, queryClient } from "@/lib/react-query";
 import { ProjectInfoResult } from "../types";
 
 export type PostProjectFeedbackDTO = {
-  projectId: string;
+  projectId: number;
   content: string;
 };
 

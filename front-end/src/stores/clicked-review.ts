@@ -28,7 +28,7 @@ export const useClickedReviewStore = create<ClickedReviewStore>((set) => ({
   clickedReview: {
     reviewId: -1,
     codeContent: "",
-    content: "",
+    content: "등록된 코드 리뷰가 없어요",
     lineNumbers: [],
     reReviews: [],
   },

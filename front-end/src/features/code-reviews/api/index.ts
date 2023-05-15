@@ -4,4 +4,5 @@ export * from "./get-code-list";
 export * from "./get-code-review-info";
 export * from "./post-code-like";
 export * from "./post-code-review";
+export * from "./post-code-review-feedback";
 export * from "./put-code-review";

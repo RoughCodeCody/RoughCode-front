@@ -56,7 +56,12 @@ export const CodeList = () => {
       <FlexDiv direction="column" width="100%" gap="4rem">
         <BottomHeader locations={["코드 리뷰"]} />
 
-        <FlexDiv direction="column" width="70%" gap="3rem">
+        <FlexDiv
+          direction="column"
+          width="70%"
+          gap="3rem"
+          style={{ minWidth: "850px" }}
+        >
           <Title title="코드 리뷰" description="코드를 보고 리뷰해보세요" />
 
           <Search />
