@@ -16,14 +16,20 @@ export const CodeReviewList = ({ reviews }: CodeReviewListProps) => {
   const userQuery = useUser();
 
   // 현재 클릭되어 리리뷰를 보여주고 있는 리뷰 관련 스토어
-  // const {
-  //   initialState: { clickedReviewId },
-  //   setClickedReviewId,
-  // } = useClickedReviewStore();
+  const { clickedReview, setClickedReviewInfo } = useClickedReviewStore();
 
-  // useEffect(() => {
-  //   if (reviews.length > 0) setClickedReviewId(reviews[0].reviewId);
-  // }, []);
+  // 최초 렌더시 가장 첫번째 리뷰를 클릭 상태로 함
+  useEffect(() => {
+    if (reviews.length > 0) {
+      const clickedReview = {
+        reviewId: reviews[0].reviewId,
+        reReviews: reviews[0].reReviews,
+        lineNumbers: reviews[0].lineNumbers,
+        codeContent: reviews[0].codeContent,
+      };
+      setClickedReviewInfo(clickedReview);
+    }
+  }, []);
 
   return (
     <>
@@ -44,7 +50,9 @@ export const CodeReviewList = ({ reviews }: CodeReviewListProps) => {
                   review.userName.length !== 0 &&
                     userQuery.data?.nickname === review.userName
                 )}
-                // showDetails={Boolean(review.reviewId === clickedReviewId)}
+                showDetails={Boolean(
+                  review.reviewId === clickedReview.reviewId
+                )}
                 key={review.reviewId}
               />
             </>

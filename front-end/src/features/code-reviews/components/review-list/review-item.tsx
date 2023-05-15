@@ -9,9 +9,10 @@ import {
   WhiteBoxShad,
   Selection,
 } from "@/components/elements";
+import { useClickedReviewStore } from "@/stores";
 
 import { Review } from "../../types";
-import { useClickedReviewStore } from "@/stores";
+import { useCodeReviewFeedbacks } from "../../api/get-code-review-feedbacks";
 
 interface CodeReviewItem {
   review: Review;
@@ -39,7 +40,19 @@ export const CodeReviewItem = ({
 }: CodeReviewItem) => {
   const [forceClose, setForceClose] = useState(false);
 
-  const { setClickedReviewId } = useClickedReviewStore();
+  const { status, data, refetch } = useCodeReviewFeedbacks({
+    reviewId,
+    config: { enabled: false, refetchOnWindowFocus: false },
+  });
+  const { setClickedReviewInfo } = useClickedReviewStore();
+
+  const hadleReviewClick = () => {
+    refetch();
+    if (status === "success") {
+      const { reviewId, codeContent, lineNumbers, reReviews } = data;
+      setClickedReviewInfo({ reviewId, codeContent, lineNumbers, reReviews });
+    }
+  };
 
   const selectionListMine = { 수정하기: () => {}, 삭제하기: () => {} };
   const selectionListNotMine = { 신고하기: () => {} };
@@ -47,7 +60,7 @@ export const CodeReviewItem = ({
   return (
     <WhiteBoxShad
       shadColor={showDetails ? "main" : "shad"}
-      onClick={() => setClickedReviewId(reviewId)}
+      onClick={hadleReviewClick}
     >
       <FlexDiv direction="column" padding="1rem" pointer={true}>
         <FlexDiv width="100%" justify="space-between" pointer={true}>

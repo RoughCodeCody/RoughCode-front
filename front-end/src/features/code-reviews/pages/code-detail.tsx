@@ -2,6 +2,7 @@ import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
 import { VersionsInfo } from "@/features/version-info";
+import { useClickedReviewStore } from "@/stores";
 
 import { useCodeInfo } from "../api/get-code-info";
 import { useCode } from "../api/get-code";
@@ -18,9 +19,13 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
 
   console.log(data);
 
+  // 깃허브 코드 내용 가져오기
   const githubUrl = data?.githubUrl ? data?.githubUrl : "";
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
+
+  // 현재 클릭되어 리리뷰를 보여주고 있는 리뷰 관련 스토어
+  const { clickedReview } = useClickedReviewStore();
 
   return (
     <>
