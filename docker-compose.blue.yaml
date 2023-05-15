@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  api:
+    image: ${IMAGE_STORAGE}/${IMAGE_NAME}:${BUILD_NUMBER}
+    container_name: ${IMAGE_NAME}-blue
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      - LANG=ko_KR.UTF-8
+      - UWSGI_PORT=8080
+
+networks:
+  default:
+    external:
+      name: service-network
