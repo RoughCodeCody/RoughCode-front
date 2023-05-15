@@ -30,7 +30,7 @@ type UseTagsOptions = {
 
 export const useTags = ({ whichTag, tagKeyword, config }: UseTagsOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ["tags", tagKeyword],
+    queryKey: ["tags", whichTag, tagKeyword],
     queryFn: () => getTags({ whichTag, tagKeyword }),
     ...config,
   });
