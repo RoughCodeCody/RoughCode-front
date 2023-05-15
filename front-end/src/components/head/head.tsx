@@ -8,7 +8,7 @@ type HeadProps = {
 export const Head = ({ title = "", description = "" }: HeadProps = {}) => {
   return (
     <NextHead>
-      <title>{`${title} | `}개발새발</title>
+      <title>{title ? `${title} | 개발새발` : "개발새발"}</title>
       <meta name="description" content={description} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="icon" href="/favicon.ico" />
