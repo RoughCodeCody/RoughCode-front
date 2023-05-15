@@ -74,6 +74,25 @@ public class MypageController {
         //return Response.makeResponse(HttpStatus.OK, "스탯 카드 정보 만들기 성공", 1, statCard);
     }
 
+    @Operation(summary = "이메일 정보 삭제 API")
+    @DeleteMapping("/email")
+    public ResponseEntity<?> deleteEmailInfo(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken) {
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        String res = "result";
+        try {
+            res = emailService.deleteEmailInfo(usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(!res.equals("")) return Response.notFound("이메일 정보 삭제 실패");
+        return Response.ok("이메일 정보 삭제 성공");
+    }
+
     @Operation(summary = "이메일 인증 API")
     @PutMapping("/email")
     public ResponseEntity<?> checkEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
