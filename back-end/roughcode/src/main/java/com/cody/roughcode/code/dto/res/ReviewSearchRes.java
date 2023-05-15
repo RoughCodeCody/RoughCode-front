@@ -25,14 +25,14 @@ public class ReviewSearchRes {
 
     public ReviewSearchRes(Reviews review, Boolean liked) {
         this.reviewId = review.getReviewsId();
-        if(review.getUsers() != null) {
+        if (review.getUsers() != null) {
             this.userId = review.getUsers().getUsersId();
             this.userName = review.getUsers().getName();
         } else {
             this.userId = 0L;
             this.userName = "";
         }
-        this.content = review.getContent();
+        this.content = Boolean.FALSE.equals(review.getComplained()) ? review.getContent() : "";
         this.selected = review.getSelected() > 0;
         this.likeCnt = review.getLikeCnt();
         this.liked = liked;

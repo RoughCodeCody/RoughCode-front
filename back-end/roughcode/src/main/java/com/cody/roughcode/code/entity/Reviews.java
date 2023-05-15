@@ -45,6 +45,10 @@ public class Reviews extends BaseTimeEntity {
     @Column(name = "selected", nullable = true)
     private int selected = 0;
 
+    @Builder.Default
+    @Column(name = "complained", nullable = true)
+    private Boolean complained = false;
+
     @JsonIgnore
     @OneToMany(mappedBy = "reviews")
     private List<ReReviews> reReviews;
@@ -59,7 +63,7 @@ public class Reviews extends BaseTimeEntity {
     private Users users = null;
 
     @JsonIgnore
-@OneToMany(mappedBy = "reviews")
+    @OneToMany(mappedBy = "reviews")
     private List<ReviewLikes> reviewLikes;
 
     public void selectedUp() {
@@ -96,6 +100,10 @@ public class Reviews extends BaseTimeEntity {
 
     public void setComplaint(List<String> complainList) {
         this.complaint = String.join(",", complainList);
+    }
+
+    public void setComplained(Boolean status) {
+        this.complained = status;
     }
 
     public void setReReviews(ReReviews savedReReview) {
