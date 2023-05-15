@@ -927,7 +927,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             ProjectsInfo info = projectsInfoRepository.findByProjects(p);
             List<Feedbacks> feedbacksList = info.getFeedbacks();
             for (Feedbacks f : feedbacksList) {
-                if(f.getContent() == null || f.getContent().equals("")) continue;
+                if(f.getComplained() != null) continue; // 신고된 피드백
                 feedbackInfoResList.add(new FeedbackInfoRes(f, p.getVersion(), f.getUsers()));
             }
         }
@@ -974,17 +974,17 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         List<String> complainList = (feedbacks.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
 
-        if(feedbacks.getContent() == null || feedbacks.getContent().equals(""))
+        if(feedbacks.getComplained() != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 피드백입니다");
         if(complainList.contains(String.valueOf(usersId)))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 피드백입니다");
 
         log.info(complainList.size() + "번 신고된 피드백입니다");
-        if(complainList.size() >= 10){
-            feedbacks.deleteContent();
-        }
         complainList.add(String.valueOf(usersId));
         feedbacks.setComplaint(complainList);
+
+        if(complainList.size() >= 5) feedbacks.setComplained();
+
         feedbacksRepository.save(feedbacks);
 
         return 1;
