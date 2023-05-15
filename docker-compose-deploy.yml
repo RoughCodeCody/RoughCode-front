@@ -40,7 +40,7 @@ services:
     volumes:
       # - ./nginx/:/etc/nginx/conf.d/
       - ./nginx/service-url.inc:/etc/nginx/conf.d/service-url.inc
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      # - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     build:
       context: ./nginx
       dockerfile: Dockerfile
