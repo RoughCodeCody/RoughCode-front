@@ -20,14 +20,14 @@ import org.springframework.test.context.TestPropertySource;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.validation.constraints.Null;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,6 +63,32 @@ class EmailServiceTest {
             .name("고수")
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
+
+    @Test
+    @DisplayName("이메일 정보 삭제 테스트 실패 - user x")
+    void deleteEmailInfoFailNoUser() {
+        // given
+        doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when & then
+        NullPointerException exception = assertThrows(
+                NullPointerException.class, () -> emailService.deleteEmailInfo(1L)
+        );
+        assertThat(exception.getMessage()).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+    @Test
+    @DisplayName("이메일 정보 삭제 테스트 성공")
+    void deleteEmailInfoSucceed() {
+        // given
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+
+        // when
+        String result = emailService.deleteEmailInfo(users.getUsersId());
+
+        // then
+        assertThat(result).isEqualTo("");
+    }
 
     @Test
     @DisplayName("알람전송 테스트")
