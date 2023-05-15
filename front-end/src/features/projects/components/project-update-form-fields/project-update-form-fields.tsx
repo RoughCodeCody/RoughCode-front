@@ -1,14 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 import { useProjectFeedbackSelectionStore } from "@/features/feedbacks";
+import { FlexDiv } from "@/components/elements";
 import { InputField } from "@/components/form";
 import { TiptapController } from "@/features/rich-text-editor";
 import { TagSearch } from "@/features/search";
 import { useSearchCriteriaStore } from "@/stores";
 
+import { useCheckProjectUrl } from "../../api";
 import { ProjectUpdateValues } from "../../types";
-import { SubmitButtonWrapper, SubmitButton } from "./style";
+import { UrlInspectionBtn, SubmitButtonWrapper, SubmitButton } from "./style";
 
 type ProjectUpdateFormFieldsProps = {
   methods: UseFormReturn<ProjectUpdateValues>;
@@ -19,11 +21,15 @@ export const ProjectUpdateFormFields = ({
   methods,
   projectId,
 }: ProjectUpdateFormFieldsProps) => {
-  const { register, formState, control, setValue } = methods;
+  const { register, formState, control, setValue, getValues } = methods;
 
   const { searchCriteria } = useSearchCriteriaStore();
   const { selectedProjectFeedbackId } = useProjectFeedbackSelectionStore();
-
+  const checkProjectUrlQuery = useCheckProjectUrl({
+    url: getValues("url"),
+    config: { enabled: false },
+  });
+  const [submitBtnDisabled, setSubmitBtnDisabled] = useState(true);
   useEffect(() => {
     setValue("projectId", projectId);
     setValue(
@@ -42,6 +48,14 @@ export const ProjectUpdateFormFields = ({
   register("selectedTagsId");
   register("selectedFeedbacksId");
 
+  const onUrlInspectionBtnClick = () => {
+    checkProjectUrlQuery.refetch();
+
+    if (checkProjectUrlQuery.data) {
+      setSubmitBtnDisabled(false);
+    }
+  };
+
   return (
     <>
       <InputField
@@ -50,6 +64,7 @@ export const ProjectUpdateFormFields = ({
         isDirty={formState.dirtyFields["title"]}
         error={formState.errors["title"]}
         registration={register("title")}
+        inputContainerWidth="80%"
       />
       <InputField
         type="text"
@@ -57,6 +72,7 @@ export const ProjectUpdateFormFields = ({
         isDirty={formState.dirtyFields["notice"]}
         error={formState.errors["notice"]}
         registration={register("notice")}
+        inputContainerWidth="80%"
       />
       <InputField
         type="text"
@@ -64,21 +80,33 @@ export const ProjectUpdateFormFields = ({
         isDirty={formState.dirtyFields["introduction"]}
         error={formState.errors["introduction"]}
         registration={register("introduction")}
+        inputContainerWidth="80%"
       />
-      <InputField
-        type="text"
-        label="URL"
-        isDirty={formState.dirtyFields["url"]}
-        error={formState.errors["url"]}
-        registration={register("url")}
-      />
+      <FlexDiv direction="row" justify="flex-start" width="100%" gap="2rem">
+        <InputField
+          type="text"
+          label="URL"
+          isDirty={formState.dirtyFields["url"]}
+          error={formState.errors["url"]}
+          registration={register("url")}
+          inputContainerWidth="80%"
+        />
+        <UrlInspectionBtn onClick={onUrlInspectionBtnClick}>
+          검사
+        </UrlInspectionBtn>
+      </FlexDiv>
 
       <TiptapController<ProjectUpdateValues> name="content" control={control} />
       <TagSearch />
       <input id="input-thumbnail" type="file" />
 
       <SubmitButtonWrapper>
-        <SubmitButton type="submit" value="확인" />
+        <SubmitButton
+          id="submit-btn"
+          type="submit"
+          value="확인"
+          disabled={submitBtnDisabled}
+        />
       </SubmitButtonWrapper>
     </>
   );
