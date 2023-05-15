@@ -1,3 +1,5 @@
+import { useRouter } from "next/router";
+
 import {
   BottomHeader,
   FlexDiv,
@@ -7,17 +9,34 @@ import {
 import { Head } from "@/components/head";
 import { ProjectFeedbacksSidebar } from "@/features/feedbacks";
 
-import { usePostProject } from "../api";
+import { postProjectThumbnail, usePostProject } from "../api";
 import { ProjectUpdateForm } from "../components/project-update-form";
 import { ProjectUpdateValues } from "../types";
 
 export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
-  const projectIdNum = Number(projectId);
+  const router = useRouter();
   const postProjectMutation = usePostProject();
+  const projectIdNum = Number(projectId);
 
   const onSubmit = async (values: ProjectUpdateValues) => {
-    const todo = await postProjectMutation.mutateAsync({ data: values });
-    // console.log(todo);
+    const projectIdNum = await postProjectMutation.mutateAsync({
+      data: values,
+    });
+    const projectIdStr = String(projectIdNum);
+
+    const inputThumbnail = document.getElementById(
+      "input-thumbnail"
+    ) as HTMLInputElement;
+
+    const formData = new FormData();
+    formData.append("thumbnail", inputThumbnail?.files?.item(0) as File);
+
+    await postProjectThumbnail({
+      data: formData,
+      projectId: projectIdStr,
+    });
+
+    router.push(`/project/${projectIdStr}`);
   };
 
   return (

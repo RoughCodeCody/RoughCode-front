@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as z from "zod";
+import { SubmitHandler } from "react-hook-form";
 
 import { Form } from "@/components/form";
 
@@ -19,7 +20,7 @@ const schema = z.object({
 
 type ProjectUpdateFormProps = {
   projectId: number;
-  onSubmit: (values: ProjectUpdateValues) => void;
+  onSubmit: SubmitHandler<ProjectUpdateValues>;
 };
 
 export const ProjectUpdateForm = ({
