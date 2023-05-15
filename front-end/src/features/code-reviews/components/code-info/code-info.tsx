@@ -11,7 +11,7 @@ import {
   Selection,
 } from "@/components/elements";
 
-import { usePostCodeLike } from "../../api";
+import { usePostCodeLike, usePostCodeFav } from "../../api";
 import { CodeInfoResult, codeForFeedbackModify } from "../../types";
 
 interface CodeInfoProps {
@@ -40,6 +40,9 @@ export const CodeInfo = ({
   // 코드 좋아요/좋아요 취소
   const codeLikeQuery = usePostCodeLike();
 
+  // 코드 즐겨찾기/즐겨찾기 취소
+  const codeFavQuery = usePostCodeFav();
+
   return (
     <>
       <FlexDiv direction="column" gap="2rem" width="100%">
@@ -67,7 +70,7 @@ export const CodeInfo = ({
                 type="bookmark"
                 cnt={favoriteCnt}
                 isChecked={favorite}
-                onClickFunc={() => {}}
+                onClickFunc={() => codeFavQuery.mutate(codeId)}
               />
               <Selection selectionList={{}} />
             </FlexDiv>
