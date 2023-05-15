@@ -8,6 +8,7 @@ const sendEmailAddress = (email: string): Promise<null> => {
 
 export const useSendEmailAddress = () => {
   return useMutation({
+    mutationKey: ["email"],
     mutationFn: sendEmailAddress,
   });
 };

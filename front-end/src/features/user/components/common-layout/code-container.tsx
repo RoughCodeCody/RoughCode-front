@@ -32,23 +32,37 @@ export const CodeContainer = ({ endPoint }: CodeContainerProps) => {
   }, [inView]);
 
   return (
-    <>
-      <FlexDiv direction="column" width="100%" gap="4rem" justify="start">
-        <FlexDiv direction="column" width="100%" align="center" gap="1rem">
-          {status === "loading" && <p>Loading...</p>}
-          {status === "success" &&
-            data?.pages[0].list.map((codeListItem, idx) => (
-              <FlexDiv
-                key={idx}
-                ref={idx === data?.pages[0].list.length - 1 ? ref : undefined}
-                justify={"center"}
-              >
-                <CodeListItem codeListItem={codeListItem} />
-              </FlexDiv>
-            ))}
+    <FlexDiv
+      direction="column"
+      width="100%"
+      height="100%"
+      justify="start"
+      gap="1rem"
+    >
+      {status === "loading" && <p>Loading...</p>}
+      {status === "success" && data.pages[0].list.length === 0 && (
+        <FlexDiv width="100%" height="50vh">
+          데이터가 없어요
         </FlexDiv>
-      </FlexDiv>
-      <BackToTop />
-    </>
+      )}
+      {status === "success" && (
+        <>
+          {data?.pages.map((page, idx) => (
+            <FlexDiv direction="column" width="100%" gap="1rem" key={idx}>
+              {page.list.map((codeListItem, index) => (
+                <FlexDiv
+                  width="100%"
+                  ref={index === page.list.length - 1 ? ref : undefined}
+                  key={codeListItem.codeId}
+                  justify="center"
+                >
+                  <CodeListItem codeListItem={codeListItem} />
+                </FlexDiv>
+              ))}
+            </FlexDiv>
+          ))}
+        </>
+      )}
+    </FlexDiv>
   );
 };

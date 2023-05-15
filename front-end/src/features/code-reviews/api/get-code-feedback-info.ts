@@ -5,17 +5,17 @@ import { ExtractFnReturnType } from "@/lib/react-query";
 
 import { CodeFeedbackInfoResult } from "../types";
 
-export const getCodeFeedbackInfo = (
+export const getCodeReviewInfo = (
   feedbackId: number
 ): Promise<CodeFeedbackInfoResult> => {
   return axios.get(`/code/review/${feedbackId}`);
 };
 
-type QueryFnType = typeof getCodeFeedbackInfo;
+type QueryFnType = typeof getCodeReviewInfo;
 
 export const useCodeFeedbackInfo = (feedbackId: number) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     queryKey: ["codeFeedbackInfo", feedbackId],
-    queryFn: () => getCodeFeedbackInfo(feedbackId),
+    queryFn: () => getCodeReviewInfo(feedbackId),
   });
 };

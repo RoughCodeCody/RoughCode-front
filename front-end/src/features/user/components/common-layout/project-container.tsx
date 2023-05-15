@@ -41,8 +41,19 @@ export const ProjectContainer = ({ endPoint }: ProjectContainerProps) => {
     }
   }, [inView]);
   return (
-    <FlexDiv height="100%" width="100%" direction="column" justify="start">
+    <FlexDiv
+      height="100%"
+      width="100%"
+      direction="column"
+      justify="start"
+      gap="3rem"
+    >
       {status === "loading" && <p>Loading...</p>}
+      {status === "success" && data.pages[0].list.length === 0 && (
+        <FlexDiv width="100%" height="50vh">
+          데이터가 없어요
+        </FlexDiv>
+      )}
       {status === "success" && (
         <>
           {data.pages.map((page, idx) => (

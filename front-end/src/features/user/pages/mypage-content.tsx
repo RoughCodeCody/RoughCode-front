@@ -16,10 +16,10 @@ export const MyPageContent = ({
 }: MyPageContentProps) => {
   return (
     <CommonLayout title={title} description={description}>
-      <ContentsWrapper wrapperTitle="프로젝트">
+      <ContentsWrapper maxWidth="1280px" wrapperTitle="프로젝트">
         <ProjectContainer endPoint={endPoint} />
       </ContentsWrapper>
-      <ContentsWrapper wrapperTitle="코드">
+      <ContentsWrapper maxWidth="1280px" wrapperTitle="코드">
         <CodeContainer endPoint={endPoint} />
       </ContentsWrapper>
     </CommonLayout>
