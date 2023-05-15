@@ -302,7 +302,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         if (target.getCodeContent() == null || target.getCodeContent() == "") {
             throw new SelectedException("이미 삭제된 코드 리뷰입니다");
         }
-        if (target.getComplaint().contains(String.valueOf(userId))) {
+        if (complainList.contains(String.valueOf(userId))) {
             throw new SelectedException("이미 신고한 코드 리뷰입니다");
         }
         log.info(complainList.size() + "번 신고된 코드 리뷰입니다");

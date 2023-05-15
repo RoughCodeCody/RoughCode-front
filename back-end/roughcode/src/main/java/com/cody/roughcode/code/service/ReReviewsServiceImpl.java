@@ -163,7 +163,7 @@ public class ReReviewsServiceImpl implements ReReviewsService {
 
         if(reReviews.getContent() == null || reReviews.getContent().equals(""))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 리뷰입니다");
-        if(reReviews.getComplaint().contains(String.valueOf(usersId)))
+        if(complainList.contains(String.valueOf(usersId)))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 리뷰입니다");
 
         log.info(complainList.size() + "번 신고된 리뷰입니다");

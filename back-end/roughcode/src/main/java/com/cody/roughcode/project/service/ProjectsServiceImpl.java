@@ -976,7 +976,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         if(feedbacks.getContent() == null || feedbacks.getContent().equals(""))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 피드백입니다");
-        if(feedbacks.getComplaint().contains(String.valueOf(usersId)))
+        if(complainList.contains(String.valueOf(usersId)))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 피드백입니다");
 
         log.info(complainList.size() + "번 신고된 피드백입니다");
