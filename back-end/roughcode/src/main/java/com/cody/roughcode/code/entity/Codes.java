@@ -98,4 +98,8 @@ public class Codes extends BaseTimeEntity {
     public void updateTitle(String title){
         this.title = title;
     }
+
+    public void setExpireDate() {
+        this.expireDate = LocalDateTime.now().plusDays(30L);
+    }
 }
