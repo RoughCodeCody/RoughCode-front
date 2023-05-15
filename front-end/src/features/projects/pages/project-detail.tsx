@@ -65,9 +65,9 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
 
             <FeedbackRegister type="project" id={Number(projectId)} />
             <Feedbacks
-              type="feedback"
+              type="project"
               feedbacks={data.feedbacks}
-              projectOrCodeid={projectId}
+              projectOrCodeId={Number(projectId)}
             />
           </>
         )}

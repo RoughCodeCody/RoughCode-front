@@ -77,7 +77,11 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
         </WhiteBoxNoshad>
 
         <FeedbackRegister type="review" id={clickedReview.reviewId} />
-        {/* <Feedbacks type="review" feedbacks={} /> */}
+        <Feedbacks
+          type="review"
+          feedbacks={clickedReview.reReviews}
+          projectOrCodeId={Number(codeId)}
+        />
       </FlexDiv>
     </>
   );
