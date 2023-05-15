@@ -58,7 +58,7 @@ public class ReReviewRes {
                 .userName(userName)
                 .likeCnt(reReviews.getLikeCnt())
                 .liked(liked)
-                .content(reReviews.getContent())
+                .content(Boolean.FALSE.equals(reReviews.getComplained()) ? reReviews.getContent() : "")
                 .createdDate(reReviews.getCreatedDate())
                 .modifiedDate(reReviews.getModifiedDate())
                 .build();

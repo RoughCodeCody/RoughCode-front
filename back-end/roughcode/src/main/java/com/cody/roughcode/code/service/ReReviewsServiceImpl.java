@@ -163,14 +163,15 @@ public class ReReviewsServiceImpl implements ReReviewsService {
 
         if(reReviews.getContent() == null || reReviews.getContent().equals(""))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 리뷰입니다");
-        if(reReviews.getComplaint().contains(String.valueOf(usersId)))
+        if(complainList.contains(String.valueOf(usersId)))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 리뷰입니다");
 
         log.info(complainList.size() + "번 신고된 리뷰입니다");
-        if(complainList.size() >= 10){
-            reReviews.deleteContent();
-        }
         complainList.add(String.valueOf(usersId));
+        if(complainList.size() >= 5){ // 5명 이상 신고 시 complained true 처리
+            // 신고됨 처리
+            reReviews.setComplained(true);
+        }
         reReviews.setComplaint(complainList);
         reReviewsRepository.save(reReviews);
 
