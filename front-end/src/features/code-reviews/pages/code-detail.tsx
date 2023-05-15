@@ -1,18 +1,19 @@
-import { FlexDiv, Text, WhiteBoxNoshad } from "@/components/elements";
+import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
 import { VersionsInfo } from "@/features/version-info";
 
 import { useCodeInfo } from "../api/get-code-info";
+import { useCode } from "../api/get-code";
 import { CodeInfo } from "../components/code-info";
 import { CodeReviewList } from "../components/review-list";
-import { useCode } from "../api/get-code";
 
 interface CodeDetailProps {
   codeId: string;
 }
 
 export const CodeDetail = ({ codeId }: CodeDetailProps) => {
+  // 코드 정보 가져오기
   const { status, data } = useCodeInfo(Number(codeId));
 
   console.log(data);
@@ -51,23 +52,17 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                 </FlexDiv>
               )}
 
-              <FlexDiv direction="column" width="100%">
-                <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
-                  이 코드에 대한 코드 리뷰 목록
-                </Text>
-              </FlexDiv>
-
               {/* <FlexDiv width="100%" height="100%">
                     <DiffCodeEditor
-                      headerText="코드 리뷰어가 수정한 코드입니다"
-                      height="30rem"
-                      readOnly={true}
-                      language={"javascript"}
-                      originalCode={originalCode}
+                    headerText="코드 리뷰어가 수정한 코드입니다"
+                    height="30rem"
+                    readOnly={true}
+                    language={"javascript"}
+                    originalCode={originalCode}
                     />
                   </FlexDiv> */}
 
-              <CodeReviewList />
+              <CodeReviewList reviews={data.reviews} />
             </>
           )}
         </WhiteBoxNoshad>
