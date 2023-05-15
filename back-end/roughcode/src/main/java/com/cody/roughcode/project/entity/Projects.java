@@ -4,9 +4,8 @@ import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -61,24 +60,24 @@ public class Projects extends BaseTimeEntity {
     @JoinColumn(name = "project_writer_id", nullable = false)
     private Users projectWriter;
 
-    @JsonIgnore
-@OneToMany(mappedBy = "projects")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "projects")
     private List<ProjectSelectedTags> selectedTags;
 
-    @JsonIgnore
-@OneToMany(mappedBy = "projects")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "projects")
     private List<SelectedFeedbacks> selectedFeedbacks;
 
-    @JsonIgnore
-@OneToMany(mappedBy = "projects")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "projects")
     private List<Codes> projectsCodes;
 
-    @JsonIgnore
-@OneToMany(mappedBy = "projects")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "projects")
     private List<ProjectFavorites> projectFavorites;
 
-    @JsonIgnore
-@OneToMany(mappedBy = "projects")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "projects")
     private List<ProjectLikes> projectLikes;
 
     public void updateProject(ProjectReq req) {

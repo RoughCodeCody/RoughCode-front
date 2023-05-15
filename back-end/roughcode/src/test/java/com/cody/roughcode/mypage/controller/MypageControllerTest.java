@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -162,7 +163,77 @@ public class MypageControllerTest {
         assertThat(result).isEqualTo("string");
     }
 
-    @DisplayName("이메일 인증 코드 성공")
+    @DisplayName("이메일 정보 삭제 실패 - 존재하지 않는 유저")
+    @Test
+    public void deleteEmailFailNoUser() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/email";
+        doReturn(1L).when(jwtTokenProvider).getId(eq(accessToken));
+        doThrow(new NullPointerException("일치하는 유저가 존재하지 않습니다")).when(emailService).deleteEmailInfo(eq(users.getUsersId()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isBadRequest()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("일치하는 유저가 존재하지 않습니다");
+    }
+
+
+    @DisplayName("이메일 정보 삭제 실패")
+    @Test
+    public void deleteEmailFail() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/email";
+        doReturn(1L).when(jwtTokenProvider).getId(eq(accessToken));
+        doReturn("not null").when(emailService).deleteEmailInfo(eq(users.getUsersId()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("이메일 정보 삭제 실패");
+    }
+
+    @DisplayName("이메일 정보 삭제 성공")
+    @Test
+    public void deleteEmailSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage/email";
+        doReturn(1L).when(jwtTokenProvider).getId(eq(accessToken));
+        doReturn("").when(emailService).deleteEmailInfo(eq(users.getUsersId()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("이메일 정보 삭제 성공");
+    }
+
+    @DisplayName("이메일 인증 성공")
     @Test
     public void checkEmailSucceed() throws Exception {
         // given

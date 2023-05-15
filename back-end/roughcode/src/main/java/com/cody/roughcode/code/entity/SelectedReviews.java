@@ -1,7 +1,7 @@
 package com.cody.roughcode.code.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -22,6 +22,7 @@ public class SelectedReviews {
     @JoinColumn(name = "reviews_id", nullable = false)
     private Reviews reviews;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selected_codes_id", nullable = false)
     private CodesInfo codesInfo;
