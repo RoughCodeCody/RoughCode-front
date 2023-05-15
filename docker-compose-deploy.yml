@@ -39,8 +39,8 @@ services:
     container_name: nginx-back
     volumes:
       # - ./nginx/:/etc/nginx/conf.d/
-      - ./nginx/service-url.inc:/etc/nginx/conf.d/service-url.inc
-      # - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/service-url.inc:/etc/nginx/conf.d/
+      - ./nginx/default.conf:/etc/nginx/conf.d/
     build:
       context: ./nginx
       dockerfile: Dockerfile
