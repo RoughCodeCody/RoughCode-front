@@ -37,6 +37,8 @@ services:
   nginx-back:
     restart: always
     container_name: nginx-back
+    volumes:
+      - ./nginx/service-url.inc:/etc/nginx/conf.d/service-url.inc
     build:
       context: ./nginx
       dockerfile: Dockerfile
