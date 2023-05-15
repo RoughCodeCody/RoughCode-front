@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -113,6 +114,16 @@ public class ReviewsServiceImpl implements ReviewsService {
             Boolean reReviewLiked = reReviewLike != null;
             reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
         }
+        // 1. 내가 쓴 리리뷰, 2. 최신순 으로 정렬
+        Collections.sort(reReviewResList, (r1, r2) -> {
+            if ((r1.getUserId() != null && r1.getUserId().equals(userId)) && (r2.getUserId() == null || !r2.getUserId().equals(userId))) {
+                return -1;
+            } else if ((r1.getUserId() == null || !r1.getUserId().equals(userId)) && (r2.getUserId() != null && r2.getUserId().equals(userId))) {
+                return 1;
+            } else {
+                return r2.getDate().compareTo(r1.getDate());
+            }
+        });
 
         // 코드에 등록된 태그 목록
         Codes code = review.getCodes();
