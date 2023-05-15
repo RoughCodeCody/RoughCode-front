@@ -6,11 +6,14 @@ import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 import { Tag } from "../types";
 
 export const getTags = ({
+  whichTag,
   tagKeyword,
 }: {
+  whichTag: string;
   tagKeyword: string;
 }): Promise<Tag> => {
-  return axios.get(`/project/tag`, {
+  console.log(whichTag);
+  return axios.get(`/${whichTag}/tag`, {
     params: {
       keyword: tagKeyword,
     },
@@ -20,14 +23,15 @@ export const getTags = ({
 type QueryFnType = typeof getTags;
 
 type UseTagsOptions = {
+  whichTag: string;
   tagKeyword: string;
   config?: QueryConfig<QueryFnType>;
 };
 
-export const useTags = ({ tagKeyword, config }: UseTagsOptions) => {
+export const useTags = ({ whichTag, tagKeyword, config }: UseTagsOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ["tags", tagKeyword],
-    queryFn: () => getTags({ tagKeyword }),
+    queryKey: ["tags", whichTag, tagKeyword],
+    queryFn: () => getTags({ whichTag, tagKeyword }),
     ...config,
   });
 };

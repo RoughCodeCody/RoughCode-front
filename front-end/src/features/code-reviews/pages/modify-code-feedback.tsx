@@ -1,25 +1,22 @@
 import { useRouter } from "next/navigation";
 
-import { useCode } from "../api/get-code";
-import { useCodeFeedbackInfo } from "../api/get-code-feedback-info";
-import { useCreateCodeFeedback } from "../api/post-code-feedback";
-import { useModifyCodeFeedback } from "../api/put-code-feedback";
+import { useCode, useCodeReviewInfo, useModifyCodeReview } from "../api";
 import { CodeInfo } from "../components/code-info";
 import { BottomHeader, Btn, FlexDiv, Title, Text } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
 
-type ModifyCodeFeedback = {
-  feedbackId: number;
+type ModifyCodeReviewProps = {
+  codeReviewId: number;
 };
 
-export const ModifyCodeFeedback = ({ feedbackId }: ModifyCodeFeedback) => {
+export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
   const router = useRouter();
-  const codeFeedbackQuery = useModifyCodeFeedback();
+  const codeFeedbackQuery = useModifyCodeReview();
   const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
 
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
-  const codeFeedbackInfoQuery = useCodeFeedbackInfo(feedbackId);
+  const codeFeedbackInfoQuery = useCodeReviewInfo(codeReviewId);
 
   const githubUrl = codeFeedbackInfoQuery.data?.githubUrl
     ? codeFeedbackInfoQuery.data?.githubUrl
@@ -45,7 +42,7 @@ export const ModifyCodeFeedback = ({ feedbackId }: ModifyCodeFeedback) => {
           content: CodeReviewFeedbackData.feedbackContent,
         };
         codeFeedbackQuery.mutate(
-          { data, feedbackId },
+          { data, codeReviewId },
           {
             onSuccess() {
               reset();

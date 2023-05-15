@@ -32,7 +32,7 @@ export const Projects = () => {
           description="우리의 토이 프로젝트를 구경해 보세요"
         />
       </FlexDiv>
-      <Search />
+      <Search whichTag="project" />
       <FlexDiv
         width="100%"
         height="100%"

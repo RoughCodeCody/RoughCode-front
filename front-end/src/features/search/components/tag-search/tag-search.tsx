@@ -3,7 +3,11 @@ import { FlexDiv } from "@/components/elements";
 import { TagSearchBox } from "./tag-search-box";
 import { SeletedTags } from "./selected-tags";
 
-export const TagSearch = () => {
+type TagSearchProps = {
+  whichTag: string;
+};
+
+export const TagSearch = ({ whichTag }: TagSearchProps) => {
   return (
     <FlexDiv
       width="100%"
@@ -13,7 +17,7 @@ export const TagSearch = () => {
       gap="1rem"
     >
       <SeletedTags />
-      <TagSearchBox />
+      <TagSearchBox whichTag={whichTag} />
     </FlexDiv>
   );
 };

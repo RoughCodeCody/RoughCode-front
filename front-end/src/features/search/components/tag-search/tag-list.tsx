@@ -4,6 +4,7 @@ import { TagSelectItem } from "./tag-select-item";
 import { useTags } from "../../api";
 
 type TagListProps = {
+  whichTag: string;
   tagKeyword: string;
 };
 type tagResult = {
@@ -12,8 +13,8 @@ type tagResult = {
   cnt: number;
 };
 
-export const TagList = ({ tagKeyword }: TagListProps) => {
-  const tagsQuery = useTags({ tagKeyword });
+export const TagList = ({ whichTag, tagKeyword }: TagListProps) => {
+  const tagsQuery = useTags({ whichTag, tagKeyword });
   if (tagsQuery.isLoading) {
     return <div></div>;
   }

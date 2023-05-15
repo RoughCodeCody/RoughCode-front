@@ -1,12 +1,12 @@
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { useCode } from "../api/get-code";
-import { useCodeInfo } from "../api/get-code-info";
-import { useCreateCodeFeedback } from "../api/post-code-feedback";
+import { useCodeInfo, useCode, useCreateCodeReview } from "../api";
 import { CodeInfo } from "../components/code-info";
 import { BottomHeader, Btn, FlexDiv, Title, Text } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
+import { TiptapEditor } from "@/features/rich-text-editor/components/tiptap-editor";
 
 type CreateCodeFeedbackProps = {
   codeId: number;
@@ -14,7 +14,8 @@ type CreateCodeFeedbackProps = {
 
 export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
   const router = useRouter();
-  const codeFeedbackQuery = useCreateCodeFeedback();
+  const [feedbackContent, setFeedbackContent] = useState("");
+  const codeReviewQuery = useCreateCodeReview();
   const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
 
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
@@ -26,6 +27,10 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
 
+  const handleEditorChange = (content: string) => {
+    setFeedbackContent(content);
+    // do something with the content
+  };
   // 여기서 post 요청 보냄
   const postCodeFeedback = () => {
     // editor 와 diffEditor 모두 완료된 상태이면
@@ -38,9 +43,11 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
         codeId: codeId,
         selectedRange: CodeReviewFeedbackData.selectedLines,
         codeContent: CodeReviewFeedbackData.modifiedCode,
-        content: CodeReviewFeedbackData.feedbackContent,
+        content: feedbackContent,
       };
-      codeFeedbackQuery.mutate(
+
+      console.log(data);
+      codeReviewQuery.mutate(
         { data },
         {
           onSuccess() {
@@ -123,6 +130,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
           description="코드에 대한 리뷰를 작성해 주세요"
         />
         {/* 여기가 md에디터 자리 */}
+        <TiptapEditor onChange={handleEditorChange} minHeight="30rem" />
       </FlexDiv>
 
       {/* 등록 버튼 : 서버에 post 요청*/}

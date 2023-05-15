@@ -6,7 +6,11 @@ import { FlexDiv } from "@/components/elements";
 import { SearchInput } from "./style";
 import { TagList } from "./tag-list";
 
-export const TagSearchBox = () => {
+type TagSearchBoxProps = {
+  whichTag: string;
+};
+
+export const TagSearchBox = ({ whichTag }: TagSearchBoxProps) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setisOpen] = useState(false);
@@ -67,7 +71,7 @@ export const TagSearchBox = () => {
           setisOpen(!isOpen);
         }}
       />
-      {isOpen ? <TagList tagKeyword={tagKeyword} /> : <></>}
+      {isOpen ? <TagList whichTag={whichTag} tagKeyword={tagKeyword} /> : <></>}
     </FlexDiv>
   );
 };
