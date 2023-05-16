@@ -11,15 +11,17 @@ import {
   Selection,
   Modal,
 } from "@/components/elements";
+import { useCodeReviewFeedbacks } from "@/features/feedbacks/api";
 import { queryClient } from "@/lib/react-query";
 import { useClickedReviewStore } from "@/stores";
 
+import {
+  useDeleteCodeReview,
+  usePutCodeReviewComplaint,
+  usePostCodeReviewLike,
+} from "../../api";
 import { Review } from "../../types";
-import { useCodeReviewFeedbacks } from "../../api/get-code-review-feedbacks";
-import { useDeleteCodeReview } from "../../api/delete-code-review";
 import { DeleteCodeReview } from "./delete-code-review";
-import { usePutCodeReviewComplaint } from "../../api";
-import { usePostCodeReviewLike } from "../../api/post-code-review-like";
 
 interface CodeReviewItem {
   review: Review;

@@ -9,23 +9,22 @@ import {
   Text,
   Selection,
 } from "@/components/elements";
-import {
-  useDeleteProjectFeedback,
-  usePostFeedbackLike,
-  usePutFeedbackComplaint,
-  usePutProjectFeedback,
-} from "@/features/projects/api";
+
 import { ProjectFeedback } from "@/features/projects/types";
 import { CodeReviewFeedback } from "@/features/code-reviews";
 import { queryClient } from "@/lib/react-query";
 
-import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
-import { usePostCodeReviewFeedbackLike } from "@/features/code-reviews/api/post-code-review-feedback-like";
-import { useDeleteCodeReviewFeedback } from "@/features/code-reviews/api";
 import {
-  putCodeReviewFeedbackComplaint,
+  useDeleteProjectFeedback,
+  usePostProjectFeedbackLike,
+  usePutProjectFeedbackComplaint,
+  usePutProjectFeedback,
+  useDeleteCodeReviewFeedback,
+  usePostCodeReviewFeedbackLike,
   usePutCodeReviewFeedbackComplaint,
-} from "@/features/code-reviews/api/post-code-review-feedback-complaint";
+  usePutCodeReviewFeedback,
+} from "../../api";
+import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 
 interface FeedbackItemProps {
   feedback: ProjectFeedback | CodeReviewFeedback;
@@ -85,34 +84,44 @@ export const FeedbackItem = ({
   };
 
   // 피드백 좋아요/좋아요 취소
-  const postProjectFeedbackLikeQuery = usePostFeedbackLike();
+  const postProjectFeedbackLikeQuery = usePostProjectFeedbackLike();
   const postCodeReviewFeedbackLikeQuery = usePostCodeReviewFeedbackLike();
   const handleFeedbackLike = () => {
     if (isProject(feedback)) {
       postProjectFeedbackLikeQuery.mutate(feedback.feedbackId, {
-        onSuccess: invalidateQuery,
+        onSuccess: () => invalidateQuery(),
       });
     } else if (isCode(feedback)) {
       postCodeReviewFeedbackLikeQuery.mutate(feedback.reReviewId, {
-        onSuccess: invalidateQuery,
+        onSuccess: () => invalidateQuery(),
       });
     }
   };
 
   // 피드백 수정
-  const putFeedbackQuery = usePutProjectFeedback();
+  const putProjectFeedbackQuery = usePutProjectFeedback();
+  const putReviewFeedbackQuery = usePutCodeReviewFeedback();
   const handlePutFeedback = () => {
     if (isProject(feedback)) {
-      putFeedbackQuery.mutate(
+      putProjectFeedbackQuery.mutate(
         { feedbackId: feedback.feedbackId, content: newContent },
         {
           onSuccess: () => {
             setIsModifying(false);
-            invalidateQuery;
+            invalidateQuery();
           },
         }
       );
     } else if (isCode(feedback)) {
+      putReviewFeedbackQuery.mutate(
+        { feedbackId: feedback.reReviewId, content: newContent },
+        {
+          onSuccess: () => {
+            setIsModifying(false);
+            invalidateQuery();
+          },
+        }
+      );
     }
   };
 
@@ -122,24 +131,24 @@ export const FeedbackItem = ({
   const handleDeleteFeedback = () => {
     if (isProject(feedback)) {
       deleteProjectFeedbackQuery.mutate(feedback.feedbackId, {
-        onSuccess: invalidateQuery,
+        onSuccess: () => invalidateQuery(),
       });
     } else if (isCode(feedback)) {
       deleteCodeReviewFeedbackQuery.mutate(feedback.reReviewId, {
-        onSuccess: invalidateQuery,
+        onSuccess: () => invalidateQuery(),
       });
     }
   };
 
   // 피드백 신고
-  const putProjectFeedbackComplaintQuery = usePutFeedbackComplaint();
+  const putProjectFeedbackComplaintQuery = usePutProjectFeedbackComplaint();
   const putReviewFeedbackComplaintQuery = usePutCodeReviewFeedbackComplaint();
   const handleFeedbackComplaint = () => {
     if (isProject(feedback)) {
       putProjectFeedbackComplaintQuery.mutate(feedback.feedbackId, {
         onSettled: () => setForceClose(true),
         onSuccess: () => {
-          invalidateQuery;
+          invalidateQuery();
           alert("신고하였습니다");
         },
       });
@@ -148,7 +157,7 @@ export const FeedbackItem = ({
       putReviewFeedbackComplaintQuery.mutate(feedback.reReviewId, {
         onSettled: () => setForceClose(true),
         onSuccess: () => {
-          invalidateQuery;
+          invalidateQuery();
           alert("신고하였습니다");
         },
       });
