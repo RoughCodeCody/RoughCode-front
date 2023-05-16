@@ -70,7 +70,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                 />
               </FlexDiv>
 
-              <CodeReviewList reviews={data.reviews} />
+              <CodeReviewList reviews={data.reviews} codeId={Number(codeId)} />
               <ClickedReviewContent content={clickedReview.content} />
             </>
           )}

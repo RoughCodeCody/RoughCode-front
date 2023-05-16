@@ -1,4 +1,5 @@
 export * from "./delete-code";
+export * from "./delete-code-review";
 export * from "./get-code";
 export * from "./get-code-info";
 export * from "./get-code-list";
@@ -8,3 +9,4 @@ export * from "./post-code-like";
 export * from "./post-code-review";
 export * from "./post-code-review-feedback";
 export * from "./put-code-review";
+export * from "./put-code-review-complaint";
