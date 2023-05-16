@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 
 import {
   Count,
@@ -13,7 +13,6 @@ import {
 } from "@/components/elements";
 import { useCodeReviewFeedbacks } from "@/features/feedbacks/api";
 import { queryClient } from "@/lib/react-query";
-import { useClickedReviewStore } from "@/stores";
 
 import {
   useDeleteCodeReview,
@@ -23,11 +22,12 @@ import {
 import { Review } from "../../types";
 import { DeleteCodeReview } from "./delete-code-review";
 
-interface CodeReviewItem {
+interface CodeReviewItemPops {
   review: Review;
   isMine: boolean;
   showDetails: boolean;
   codeId: number;
+  setClickedReviewId: Dispatch<SetStateAction<number>>;
 }
 
 export const CodeReviewItem = ({
@@ -48,32 +48,19 @@ export const CodeReviewItem = ({
   isMine,
   showDetails,
   codeId,
-}: CodeReviewItem) => {
+  setClickedReviewId,
+}: CodeReviewItemPops) => {
   const router = useRouter();
 
   // selection 선택시 닫기 위한 state
   const [forceClose, setForceClose] = useState(false);
 
   // 리뷰 선택시 정보 가져오기
-  const { status, data, refetch } = useCodeReviewFeedbacks({
-    reviewId,
-    config: { enabled: false, refetchOnWindowFocus: false },
-  });
-
-  const { setClickedReviewInfo } = useClickedReviewStore();
+  const { refetch } = useCodeReviewFeedbacks(reviewId);
 
   const hadleReviewClick = () => {
     refetch();
-    if (status === "success") {
-      const { reviewId, codeContent, lineNumbers, reReviews, content } = data;
-      setClickedReviewInfo({
-        reviewId,
-        codeContent,
-        lineNumbers,
-        reReviews,
-        content,
-      });
-    }
+    setClickedReviewId(reviewId);
   };
 
   const [codeReviewDeleteModalOpen, setCodeReviewDeleteModalOpen] =
