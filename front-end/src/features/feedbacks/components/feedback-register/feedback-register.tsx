@@ -70,6 +70,9 @@ export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
             }
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) postFeedback();
+            }}
           />
           <Btn text="등록하기" padding="2rem 1rem" onClickFunc={postFeedback} />
         </FlexDiv>
