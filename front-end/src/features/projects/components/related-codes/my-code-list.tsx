@@ -5,7 +5,7 @@ import { Btn, FlexDiv, Spinner } from "@/components/elements";
 import { useMyCodeList } from "@/features/user/api/get-code-list";
 import { queryClient } from "@/lib/react-query";
 
-import { useConnectCodeToProject } from "../../api/connect-code-to-project";
+import { useConnectCodeToProject } from "../../api";
 import { CodeListItem } from "./code-list-item";
 
 interface MyCodeListProps {

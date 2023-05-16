@@ -13,8 +13,9 @@ import {
   Modal,
 } from "@/components/elements";
 
-import { usePostCodeLike, usePostCodeFav } from "../../api";
+import { usePostCodeLike, usePostCodeFav, useDeleteCode } from "../../api";
 import { CodeInfoResult, codeForFeedbackModify } from "../../types";
+import { DeleteCode } from "./delete-code";
 
 interface CodeInfoProps {
   data: CodeInfoResult | codeForFeedbackModify;
@@ -39,13 +40,24 @@ export const CodeInfo = ({
   const isWriting =
     router.asPath.includes("create") || router.asPath.includes("modify");
 
+  // 삭제 확인 모달 관련 state
   const [codeDeleteModalOpen, setCodeDeleteModalOpen] = useState(false);
+
+  // selection 선택시 닫기 위한 state
+  const [forceClose, setForceClose] = useState(false);
 
   // 코드 좋아요/좋아요 취소
   const codeLikeQuery = usePostCodeLike();
 
   // 코드 즐겨찾기/즐겨찾기 취소
   const codeFavQuery = usePostCodeFav();
+
+  // 코드 삭제
+  const deleteCodeQuery = useDeleteCode();
+  const handleDelete = () => {
+    deleteCodeQuery.mutate(codeId);
+    router.replace("/code-review");
+  };
 
   return (
     <>
@@ -79,8 +91,12 @@ export const CodeInfo = ({
               <Selection
                 selectionList={{
                   수정하기: () => {},
-                  삭제하기: () => setCodeDeleteModalOpen(true),
+                  삭제하기: () => {
+                    setCodeDeleteModalOpen(true);
+                    setForceClose(true);
+                  },
                 }}
+                forceClose={forceClose}
               />
             </FlexDiv>
           </FlexDiv>
@@ -134,13 +150,14 @@ export const CodeInfo = ({
         height="10rem"
         isOpen={codeDeleteModalOpen}
         setIsOpen={setCodeDeleteModalOpen}
+        setForceClose={setForceClose}
         modalContent={
-          <></>
-          // <DeleteProject
-          //   projectTitle={title}
-          //   setModalOpen={setProjectDeleteModalOpen}
-          //   handleDelete={handleDelete}
-          // />
+          <DeleteCode
+            codeTitle={title}
+            setModalOpen={setCodeDeleteModalOpen}
+            handleDelete={handleDelete}
+            setForceClose={setForceClose}
+          />
         }
       />
     </>
