@@ -1,18 +1,32 @@
 version: "3.8"
 
 services:
-  api:
-    image: ${IMAGE_STORAGE}/${IMAGE_NAME}:${BUILD_NUMBER}
-    container_name: ${IMAGE_NAME}-blue
-
-    ports:
-      - "8080:8080"
-
+  app:
+    image: app:0.1
+    container_name: app_blue
     environment:
-      - LANG=ko_KR.UTF-8
-      - UWSGI_PORT=8080
+      - "spring_profiles_active=blue"
+      - S3_ACCESSKEY=${S3_ACCESSKEY}
+      - S3_SECRETKEY=${S3_SECRETKEY}
+      - HOST=${HOST}
+      - JWT_SECRET=${JWT_SECRET}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_USER=${MONGODB_USER}
+      - OAUTH2_CLIENT_ID=${OAUTH2_CLIENT_ID}
+      - OAUTH2_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - CREDENTIAL_PATH=${CREDENTIAL_PATH}
+      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./back-end:/app
 
-networks:
-  default:
-    external:
-      name: service-network
+    external_links:
+      - dev-back_db_1:db
+      - dev-back_mongodb_1:mongodb
+      - dev-back_redis_1:redis
