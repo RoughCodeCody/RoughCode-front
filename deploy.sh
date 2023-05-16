@@ -1,6 +1,12 @@
 #!/bin/bash
 
 BASEDIR=$(dirname "$0")
+if [ "$BASEDIR" == "." ]
+then
+    BASEDIR=""
+else
+    BASEDIR="$BASEDIR/"
+fi
 
 
 function create_docker_image_blue(){
