@@ -3,7 +3,7 @@ import Link from "next/link";
 import * as React from "react";
 
 import logo from "@/assets/dog-foot.png";
-import { NEXT_PUBLIC_REDIRECT_URL } from "@/config";
+import { REDIRECT_URL } from "@/config";
 import { FlexDiv } from "@/components/elements";
 import { useUser } from "@/features/auth";
 
@@ -43,7 +43,7 @@ const UserNavigation = () => {
       {userQuery.isLoading && "Loading..."}
       {userQuery.data && userQuery.data.nickname.length === 0 && (
         <Link
-          href={`${NEXT_PUBLIC_REDIRECT_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
+          href={`${REDIRECT_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
         >
           로그인
         </Link>
