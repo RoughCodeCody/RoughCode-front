@@ -13,8 +13,8 @@ import java.util.List;
 public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     Reviews findByReviewsId(Long id);
 
-    @Query("DELETE FROM Reviews r WHERE r.reviewsId = :id AND r.codes.expireDate IS null")
-    Reviews findByReviewsIdAndCodeExpireDateIsNull(Long id);
+    @Query("SELECT r FROM Reviews r WHERE r.reviewsId = :id AND r.codes.expireDate IS null")
+    Reviews findByReviewsIdAndCodeExpireDateIsNull(@Param("id") Long id);
 
     List<Reviews> findByReviewsIdIn(List<Long> ids);
 
