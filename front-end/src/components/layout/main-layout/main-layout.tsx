@@ -43,7 +43,7 @@ const UserNavigation = () => {
       {userQuery.isLoading && "Loading..."}
       {userQuery.data && userQuery.data.nickname.length === 0 && (
         <Link
-          href={`${NREDIRECT_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
+          href={`${REDIRECT_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
         >
           로그인
         </Link>
