@@ -13,7 +13,7 @@ public interface CodeFavoritesRepository extends JpaRepository<CodeFavorites, Lo
 
     CodeFavorites findByCodesAndUsers(Codes code, Users user);
 
-    @Query("select c from CodeFavorites c where c.codes.codesId = :codesId and c.users.usersId = :usersId")
+    @Query("select c from CodeFavorites c where c.codes.codesId = :codesId and c.users.usersId = :usersId and c.codes.expireDate is NULL ")
     CodeFavorites findByCodesIdAndUsersId(@Param("codesId") Long codesId, @Param("usersId") Long usersId);
 
     @Modifying

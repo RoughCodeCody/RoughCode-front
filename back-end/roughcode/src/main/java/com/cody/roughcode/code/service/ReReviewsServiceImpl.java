@@ -9,7 +9,6 @@ import com.cody.roughcode.code.repository.ReReviewLikesRepository;
 import com.cody.roughcode.code.repository.ReReviewsRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.project.entity.Feedbacks;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -94,8 +93,8 @@ public class ReReviewsServiceImpl implements ReReviewsService {
                         return -1;
                     } else if (!r1.getUserId().equals(usersId) && r2.getUserId().equals(usersId)) {
                         return 1;
-                    } else if(r1.getCreatedDate() != null && r2.getCreatedDate() != null) {
-                        return r2.getCreatedDate().compareTo(r1.getCreatedDate());
+                    } else if(r1.getDate() != null && r2.getDate() != null) {
+                        return r2.getDate().compareTo(r1.getDate());
                     }
                     return 1;
                 });
@@ -113,6 +112,9 @@ public class ReReviewsServiceImpl implements ReReviewsService {
         if(reReviews == null) throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
 
         if(reReviews.getUsers() == null || !reReviews.getUsers().equals(users)) throw new NotMatchException();
+
+        List<ReReviewLikes> reReviewLikes = reReviewLikesRepository.findByReReviews(reReviews);
+        reReviewLikesRepository.deleteAll(reReviewLikes);
 
         reReviewsRepository.delete(reReviews);
 

@@ -190,7 +190,7 @@ public class CodesController {
 
         int res = 0;
         try {
-            res = codesService.deleteCode(codeId, userId);
+            res = codesService.putExpireDateCode(codeId, userId);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
