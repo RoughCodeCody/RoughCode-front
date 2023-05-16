@@ -28,54 +28,48 @@ const initialState: CodeReviewFeedbackData = {
   isCompleted: { editor: false, diffEditor: false },
 };
 
-export const useCodeReviewFeedbackDataStore = create<
-  CodeReviewFeedbackData & CodeReviewFeedbackDataStore
->((set) => ({
-  ...initialState,
-  CodeReviewFeedbackData: {
-    selectedLines: [],
-    modifiedCode: "",
-    feedbackContent: "",
-    isCompleted: { editor: false, diffEditor: false },
-  },
-  setSelectedLines: (selectedLines) => {
-    set((state) => ({
-      CodeReviewFeedbackData: {
-        ...state.CodeReviewFeedbackData,
-        selectedLines: selectedLines,
-      },
-    }));
-  },
-  setModifiedCode: (modifiedCode) => {
-    set((state) => ({
-      CodeReviewFeedbackData: {
-        ...state.CodeReviewFeedbackData,
-        modifiedCode: modifiedCode,
-      },
-    }));
-  },
-  setFeedbackContent: (FeedbackContent) => {
-    set((state) => ({
-      CodeReviewFeedbackData: {
-        ...state.CodeReviewFeedbackData,
-        FeedbackContent: FeedbackContent,
-      },
-    }));
-  },
-
-  reset: () => {
-    set(initialState);
-  },
-
-  setIsCompleted: (whichEditor) => {
-    set((state) => ({
-      CodeReviewFeedbackData: {
-        ...state.CodeReviewFeedbackData,
-        isCompleted: {
-          ...state.CodeReviewFeedbackData.isCompleted,
-          [whichEditor]: !state.CodeReviewFeedbackData.isCompleted[whichEditor],
+export const useCodeReviewFeedbackDataStore =
+  create<CodeReviewFeedbackDataStore>((set) => ({
+    CodeReviewFeedbackData: initialState,
+    setSelectedLines: (selectedLines) => {
+      set((state) => ({
+        CodeReviewFeedbackData: {
+          ...state.CodeReviewFeedbackData,
+          selectedLines: selectedLines,
         },
-      },
-    }));
-  },
-}));
+      }));
+    },
+    setModifiedCode: (modifiedCode) => {
+      set((state) => ({
+        CodeReviewFeedbackData: {
+          ...state.CodeReviewFeedbackData,
+          modifiedCode: modifiedCode,
+        },
+      }));
+    },
+    setFeedbackContent: (FeedbackContent) => {
+      set((state) => ({
+        CodeReviewFeedbackData: {
+          ...state.CodeReviewFeedbackData,
+          FeedbackContent: FeedbackContent,
+        },
+      }));
+    },
+
+    reset: () => {
+      set(() => ({ CodeReviewFeedbackData: initialState }));
+    },
+
+    setIsCompleted: (whichEditor) => {
+      set((state) => ({
+        CodeReviewFeedbackData: {
+          ...state.CodeReviewFeedbackData,
+          isCompleted: {
+            ...state.CodeReviewFeedbackData.isCompleted,
+            [whichEditor]:
+              !state.CodeReviewFeedbackData.isCompleted[whichEditor],
+          },
+        },
+      }));
+    },
+  }));

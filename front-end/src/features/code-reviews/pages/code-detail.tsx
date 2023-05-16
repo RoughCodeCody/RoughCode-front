@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FlexDiv, Spinner, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
@@ -19,18 +19,27 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   // 코드 정보 가져오기
   const { status, data } = useCodeInfo(Number(codeId));
 
-  console.log(data);
-
   // 깃허브 코드 내용 가져오기
   const githubUrl = data?.githubUrl ? data?.githubUrl : "";
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
 
   // 코드 리뷰 클릭시 해당 리뷰의 정보를 가져오기 위한 state
+  const defaultCilckedReviewId =
+    data && data.reviews.length !== 0 ? data.reviews[0].reviewId : -1;
+
   const [clickedReviewId, setClickedReviewId] = useState(
-    data && data.reviews.length !== 0 ? data.reviews[0].reviewId : -1
+    defaultCilckedReviewId
   );
-  const codeReviewFeedbackQuery = useCodeReviewFeedbacks(clickedReviewId);
+
+  // 최초 렌더시 가장 앞의 리뷰를 선택
+  useEffect(
+    () => setClickedReviewId(defaultCilckedReviewId),
+    [defaultCilckedReviewId]
+  );
+
+  // 선택된 리뷰의 정보를 가져옴
+  const codeReviewInfoQuery = useCodeReviewFeedbacks(clickedReviewId);
 
   return (
     <>
@@ -52,19 +61,17 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                   isMine={data.mine}
                 />
 
-                {originalCode && (
-                  <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
-                    <CodeEditor
-                      headerText="코드 리뷰를 요청한 원본 코드입니다"
-                      lineSelection={false}
-                      height="30rem"
-                      language={"javascript"}
-                      originalCode={originalCode}
-                      selectedLines={codeReviewFeedbackQuery.data?.lineNumbers}
-                      noShad={true}
-                    />
-                  </FlexDiv>
-                )}
+                <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
+                  <CodeEditor
+                    headerText="코드 리뷰를 요청한 원본 코드입니다"
+                    lineSelection={false}
+                    height="30rem"
+                    language={"javascript"}
+                    originalCode={originalCode || ""}
+                    selectedLines={codeReviewInfoQuery.data?.lineNumbers}
+                    noShad={true}
+                  />
+                </FlexDiv>
 
                 <FlexDiv width="100%" height="100%">
                   <DiffCodeEditor
@@ -73,11 +80,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                     readOnly={true}
                     language={"javascript"}
                     originalCode={originalCode || ""}
-                    modifiedCode={
-                      codeReviewFeedbackQuery.data
-                        ? codeReviewFeedbackQuery.data.codeContent
-                        : ""
-                    }
+                    modifiedCode={codeReviewInfoQuery.data?.codeContent || ""}
                   />
                 </FlexDiv>
 
@@ -90,7 +93,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
 
                 <ClickedReviewContent
                   content={
-                    codeReviewFeedbackQuery.data?.content || "설명이 없습니다"
+                    codeReviewInfoQuery.data?.content || "설명이 없습니다"
                   }
                 />
               </>
@@ -100,11 +103,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
           <FeedbackRegister type="review" id={clickedReviewId} />
           <Feedbacks
             type="review"
-            feedbacks={
-              codeReviewFeedbackQuery.data
-                ? codeReviewFeedbackQuery.data.reReviews
-                : []
-            }
+            feedbacks={codeReviewInfoQuery.data?.reReviews || []}
             projectOrCodeId={Number(codeId)}
           />
         </FlexDiv>
