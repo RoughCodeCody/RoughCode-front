@@ -88,6 +88,7 @@ export const FlexDiv = styled.div<{
     border-right: ${borderRight ? borderRight : "none"};
     border-bottom: ${borderBottom ? borderBottom : "none"};
     border-left: ${borderLeft ? borderLeft : "none"};
+    border: ${border ? border : "none"};
     border-radius: ${radius ? radius : "0"};
     cursor: ${pointer ? "pointer" : "auto"};
     overflow: ${overflow ? overflow : "none"};

@@ -41,6 +41,9 @@ export const CodeContainer = ({ endPoint }: CodeContainerProps) => {
     <FlexDiv
       direction="column"
       width="100%"
+      paddingX="5rem"
+      maxWidth="1024px"
+      minWidth="720px"
       height="100%"
       justify="start"
       gap="1rem"
