@@ -1,12 +1,17 @@
 import { FlexDiv, Text } from "@/components/elements";
-import { TooltopWrapper, EditNickNameIcon } from "./style";
+import { Btn } from "@/components/elements";
+import { useLogout } from "../../api/";
+import { useUser } from "@/features/auth";
+import { useRouter } from "next/router";
 
 export const Welcome = () => {
-  // 더미 데이터
-  const name = "개발새발";
+  const router = useRouter();
+  const logoutQuery = useLogout();
+  const userQuery = useUser();
 
+  const name = userQuery.data?.nickname;
   return (
-    <FlexDiv justify="start" width="100%" padding="0 0 0 3%">
+    <FlexDiv justify="start" width="100%" padding="0 0 0 3%" gap="1rem">
       <Text size="2.3rem">
         <Text as="span" size="2.5rem" bold={true}>
           {name}
@@ -14,9 +19,14 @@ export const Welcome = () => {
         님, 안녕하세요
       </Text>
 
-      <TooltopWrapper aria-label="닉네임 수정하기">
-        <EditNickNameIcon />
-      </TooltopWrapper>
+      <Btn
+        text="로그아웃"
+        bgColor="orange"
+        onClickFunc={() => {
+          logoutQuery.mutateAsync();
+          router.push("/");
+        }}
+      />
     </FlexDiv>
   );
 };
