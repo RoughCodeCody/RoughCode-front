@@ -1,5 +1,6 @@
 import Head from "next/head";
 
+import { Spinner } from "@/components/elements";
 import { Notifications } from "@/features/notifications";
 import { UnauthenticatedLanding } from "@/features/misc";
 import { useUser } from "@/features/auth";
@@ -14,7 +15,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {userQuery.isLoading && "Loading..."}
+      {userQuery.isLoading && <></>}
       {userQuery.data && userQuery.data.nickname.length === 0 && (
         <UnauthenticatedLanding />
       )}

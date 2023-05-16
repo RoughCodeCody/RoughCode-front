@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Form, InputField } from "@/components/form";
-import { Btn, FlexDiv, Text } from "@/components/elements";
+import { Btn, FlexDiv, Spinner, Text } from "@/components/elements";
 import {
   useSendEmailAddress,
   useSendEmailCode,
@@ -106,7 +106,13 @@ export const EmailVerification = () => {
                 registration={register("email")}
               />
               {sendEmailAddressQuery.status === "loading" ? (
-                <Btn text="인증코드 전송 중" />
+                <Btn
+                  text="인증코드 전송 중"
+                  display="flex"
+                  padding="0.2rem 0.5rem 0.2rem 0.5rem"
+                >
+                  <Spinner size={30} />
+                </Btn>
               ) : sendEmailAddressQuery.status === "success" ? (
                 <Btn
                   bgColor="orange"

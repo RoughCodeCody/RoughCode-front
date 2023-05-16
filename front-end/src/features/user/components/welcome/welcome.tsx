@@ -1,8 +1,10 @@
+import { useRouter } from "next/router";
+
 import { FlexDiv, Text } from "@/components/elements";
 import { Btn } from "@/components/elements";
-import { useLogout } from "../../api/";
 import { useUser } from "@/features/auth";
-import { useRouter } from "next/router";
+
+import { useLogout } from "../../api/";
 
 export const Welcome = () => {
   const router = useRouter();
@@ -10,6 +12,7 @@ export const Welcome = () => {
   const userQuery = useUser();
 
   const name = userQuery.data?.nickname;
+
   return (
     <FlexDiv justify="start" width="100%" padding="0 0 0 3%" gap="1rem">
       <Text size="2.3rem">
@@ -18,7 +21,6 @@ export const Welcome = () => {
         </Text>
         님, 안녕하세요
       </Text>
-
       <Btn
         text="로그아웃"
         bgColor="orange"
