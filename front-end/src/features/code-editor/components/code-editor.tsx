@@ -47,6 +47,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   selectedLines,
   noShad = false,
 }) => {
+  const [editorKey, setEditorKey] = useState(0);
   const { CodeReviewFeedbackData, setSelectedLines, setIsCompleted } =
     useCodeReviewFeedbackDataStore();
 
@@ -90,7 +91,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           deltaDecoration
         );
         temp.push(appliedDecos);
-        console.log(temp);
       });
       setDecoIds(temp);
     }
@@ -199,6 +199,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     setIsCompleted("editor");
   };
 
+  useEffect(() => {
+    setEditorKey((prevKey) => prevKey + 1);
+  }, [selectedLines]);
+
   return (
     <EditorWrapper noShad={noShad}>
       <EditorHeader>
@@ -229,6 +233,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       </EditorHeader>
 
       <Editor
+        key={editorKey}
         height={height}
         defaultLanguage={language}
         defaultValue={decodedString}
