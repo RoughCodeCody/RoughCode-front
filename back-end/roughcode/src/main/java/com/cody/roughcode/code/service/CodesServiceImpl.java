@@ -213,7 +213,7 @@ public class CodesServiceImpl implements CodesService {
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("code")
                     .userId(id)
-                    .content(List.of("북마크한", savedCode.getTitle() + " ver" + (savedCode.getVersion() - 1) + "의 새 버전 ver" + savedCode.getVersion(), "업데이트"))
+                    .content(List.of("북마크한", savedCode.getTitle() + " ver" + (savedCode.getVersion() - 1) + "의 새 버전 ver" + savedCode.getVersion(), "가 업데이트 되었습니다"))
                     .postId(codeId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -224,7 +224,7 @@ public class CodesServiceImpl implements CodesService {
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("code")
                     .userId(id)
-                    .content(List.of("작성한 리뷰가 반영된", savedCode.getTitle() + " ver" + (savedCode.getVersion() - 1) + "의 새 버전 ver" + savedCode.getVersion(), "업데이트"))
+                    .content(List.of("작성한 리뷰가 반영된", savedCode.getTitle() + " ver" + (savedCode.getVersion() - 1) + "의 새 버전 ver" + savedCode.getVersion(), "가 업데이트 되었습니다"))
                     .postId(codeId).build();
             alarmService.insertAlarm(alarmContent);
 

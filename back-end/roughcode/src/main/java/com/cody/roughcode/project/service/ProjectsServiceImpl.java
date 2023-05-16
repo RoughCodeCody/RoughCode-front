@@ -207,7 +207,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트되었습니다."))
+                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다."))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -218,7 +218,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트되었습니다."))
+                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다."))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -768,7 +768,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         LocalDateTime now = LocalDateTime.now();
         if (projectsInfo.getClosedChecked() == null) { // 처음 닫힌 것이 확인됨
             AlarmReq alarmContent = AlarmReq.builder()
-                    .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "닫힘 확인 요청"))
+                    .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "이 닫혔는지 확인 요청 드립니다"))
                     .userId(project.getProjectWriter().getUsersId())
                     .postId(project.getProjectsId())
                     .section("project")
@@ -879,7 +879,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectsRepository.save(project);
 
         AlarmReq alarmContent = AlarmReq.builder()
-                .content(List.of("작성한", project.getTitle() + " ver" + project.getVersion(), "새 피드백 등록"))
+                .content(List.of("작성한", project.getTitle() + " ver" + project.getVersion(), "새 피드백이 등록되었습니다"))
                 .userId(project.getProjectWriter().getUsersId())
                 .postId(project.getProjectsId())
                 .section("project")

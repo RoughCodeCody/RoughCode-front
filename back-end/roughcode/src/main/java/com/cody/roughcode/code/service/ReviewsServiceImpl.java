@@ -79,7 +79,7 @@ public class ReviewsServiceImpl implements ReviewsService {
 
         // 알람 전송
         AlarmReq alarmContent = AlarmReq.builder()
-                .content(List.of("작성한", code.getTitle() + " ver" + code.getVersion(), "새 리뷰 등록"))
+                .content(List.of("작성한", code.getTitle() + " ver" + code.getVersion(), "새 리뷰가 등록되었습니다"))
                 .userId(code.getCodeWriter().getUsersId())
                 .postId(code.getCodesId())
                 .section("code")
