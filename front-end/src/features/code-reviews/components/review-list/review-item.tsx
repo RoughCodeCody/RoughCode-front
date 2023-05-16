@@ -19,6 +19,7 @@ import { useCodeReviewFeedbacks } from "../../api/get-code-review-feedbacks";
 import { useDeleteCodeReview } from "../../api/delete-code-review";
 import { DeleteCodeReview } from "./delete-code-review";
 import { usePutCodeReviewComplaint } from "../../api";
+import { usePostCodeReviewLike } from "../../api/post-code-review-like";
 
 interface CodeReviewItem {
   review: Review;
@@ -76,25 +77,37 @@ export const CodeReviewItem = ({
   const [codeReviewDeleteModalOpen, setCodeReviewDeleteModalOpen] =
     useState(false);
 
+  // 코드 리뷰 좋아요/좋아요 취소
+  const postCodeReviewLikeQuery = usePostCodeReviewLike();
+
   // 코드 리뷰 삭제하기
   const deleteCodeReviewQuery = useDeleteCodeReview();
   const handleDelete = () => {
     deleteCodeReviewQuery.mutate(reviewId);
     queryClient.invalidateQueries(["codeInfo", codeId]);
+    setCodeReviewDeleteModalOpen(false);
   };
 
   // 코드 리뷰 신고하기
   const putCodeReviewComplaint = usePutCodeReviewComplaint();
+  const handleCodeReviewComplaint = () => {
+    putCodeReviewComplaint.mutate(reviewId, {
+      onSettled: () => setForceClose(true),
+      onSuccess: () => {
+        queryClient.invalidateQueries(["codeInfo", codeId]);
+        alert("신고하였습니다");
+      },
+    });
+    setForceClose(false);
+  };
 
+  // 코드 리뷰 selection list
   const selectionListMine = {
     수정하기: () => router.push(`/code-review/review/modify/${reviewId}`),
     삭제하기: () => setCodeReviewDeleteModalOpen(true),
   };
   const selectionListNotMine = {
-    신고하기: () => {
-      putCodeReviewComplaint.mutate(reviewId);
-      queryClient.invalidateQueries(["codeInfo", codeId]);
-    },
+    신고하기: () => handleCodeReviewComplaint(),
   };
 
   return (
@@ -116,7 +129,12 @@ export const CodeReviewItem = ({
             <Nickname nickname={!userName.length ? "익명" : userName} />
             {!content.length || (
               <FlexDiv pointer={true}>
-                <Count type="like" isChecked={liked} cnt={likeCnt} />
+                <Count
+                  type="like"
+                  isChecked={liked}
+                  cnt={likeCnt}
+                  onClickFunc={() => postCodeReviewLikeQuery.mutate(reviewId)}
+                />
                 <Selection
                   selectionList={
                     isMine ? selectionListMine : selectionListNotMine
