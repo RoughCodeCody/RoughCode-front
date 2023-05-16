@@ -36,6 +36,7 @@ do
     UP=$(curl -s http://localhost:${AFTER_PORT_NUMBER}/actuator/health | grep 'UP')
     if [ -z "${UP}" ] 
         then
+        cnt=$((cnt+1))
 	    sleep 10
 	    continue       
         else
