@@ -54,7 +54,11 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
           >
             {data && (
               <>
-                <CodeInfo data={data} />
+                <CodeInfo
+                  data={data}
+                  isMine={data.mine}
+                  isLatest={Boolean(data.version === data.versions.length)}
+                />
                 <VersionsInfo
                   versions={data.versions}
                   curVersionId={codeId}

@@ -19,6 +19,8 @@ import { DeleteCode } from "./delete-code";
 
 interface CodeInfoProps {
   data: CodeInfoResult | codeForFeedbackModify;
+  isMine: boolean;
+  isLatest: boolean;
 }
 
 export const CodeInfo = ({
@@ -35,6 +37,8 @@ export const CodeInfo = ({
     projectTitle,
     projectId,
   },
+  isMine,
+  isLatest,
 }: CodeInfoProps) => {
   const router = useRouter();
   const isWriting =
@@ -88,16 +92,18 @@ export const CodeInfo = ({
                 isChecked={favorite}
                 onClickFunc={() => codeFavQuery.mutate(codeId)}
               />
-              <Selection
-                selectionList={{
-                  수정하기: () => {},
-                  삭제하기: () => {
-                    setCodeDeleteModalOpen(true);
-                    setForceClose(true);
-                  },
-                }}
-                forceClose={forceClose}
-              />
+              {isMine && isLatest && (
+                <Selection
+                  selectionList={{
+                    수정하기: () => {},
+                    삭제하기: () => {
+                      setCodeDeleteModalOpen(true);
+                      setForceClose(true);
+                    },
+                  }}
+                  forceClose={forceClose}
+                />
+              )}
             </FlexDiv>
           </FlexDiv>
           <FlexDiv width="100%" justify="start">
