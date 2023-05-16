@@ -1,5 +1,6 @@
 export * from "./delete-code";
 export * from "./delete-code-review";
+export * from "./delete-code-review-feedback";
 export * from "./get-code";
 export * from "./get-code-info";
 export * from "./get-code-list";

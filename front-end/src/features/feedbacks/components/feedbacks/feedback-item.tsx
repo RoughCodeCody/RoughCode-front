@@ -21,6 +21,7 @@ import { queryClient } from "@/lib/react-query";
 
 import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 import { usePostCodeReviewFeedbackLike } from "@/features/code-reviews/api/post-code-review-feedback-like";
+import { useDeleteCodeReviewFeedback } from "@/features/code-reviews/api";
 
 interface FeedbackItemProps {
   feedback: ProjectFeedback | CodeReviewFeedback;
@@ -112,10 +113,15 @@ export const FeedbackItem = ({
   };
 
   // 피드백 삭제
-  const deleteFeedbackQuery = useDeleteProjectFeedback();
+  const deleteProjectFeedbackQuery = useDeleteProjectFeedback();
+  const deleteCodeReviewFeedbackQuery = useDeleteCodeReviewFeedback();
   const handleDeleteFeedback = () => {
     if (isProject(feedback)) {
-      deleteFeedbackQuery.mutate(feedback.feedbackId, {
+      deleteProjectFeedbackQuery.mutate(feedback.feedbackId, {
+        onSuccess: invalidateQuery,
+      });
+    } else if (isCode(feedback)) {
+      deleteCodeReviewFeedbackQuery.mutate(feedback.reReviewId, {
         onSuccess: invalidateQuery,
       });
     }
