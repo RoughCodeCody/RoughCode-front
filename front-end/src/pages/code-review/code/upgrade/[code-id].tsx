@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 
-import { CodeUpgrade } from "@/features/code-review";
+import { CodeUpgrade } from "@/features/code-reviews";
 
 export default CodeUpgrade;
 

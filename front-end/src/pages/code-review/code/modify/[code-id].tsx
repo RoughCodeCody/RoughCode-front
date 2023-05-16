@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 
-import { CodeModify } from "@/features/code-review";
+import { CodeModify } from "@/features/code-reviews";
 
 export default CodeModify;
 
