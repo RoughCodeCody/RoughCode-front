@@ -10,6 +10,7 @@ export * from "./nickname";
 export * from "./notice-alarm-item";
 export * from "./selection";
 export * from "./spinner";
+export * from "./not-found";
 export * from "./tag-chip";
 export * from "./tag-chip-sub";
 export * from "./text";

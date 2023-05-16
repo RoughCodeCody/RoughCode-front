@@ -1,4 +1,4 @@
-import { MouseEventHandler } from "react";
+import { Children, MouseEventHandler, ReactNode } from "react";
 import { BtnWrapper } from "./style";
 
 interface BtnProps {
@@ -14,6 +14,7 @@ interface BtnProps {
   justify?: string;
   align?: string;
   disabled?: boolean;
+  children?: ReactNode;
   onClickFunc?: MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -30,6 +31,7 @@ export const Btn = ({
   justify,
   align,
   disabled,
+  children,
   onClickFunc,
 }: BtnProps) => {
   return (
@@ -48,6 +50,7 @@ export const Btn = ({
       onClick={onClickFunc}
     >
       {text}
+      {children}
     </BtnWrapper>
   );
 };

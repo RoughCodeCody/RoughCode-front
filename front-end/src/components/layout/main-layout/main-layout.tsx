@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import * as React from "react";
 import { useState } from "react";
 
@@ -30,6 +31,9 @@ const Logo = () => {
 };
 
 const Menu = () => {
+  const router = useRouter();
+  const isProject = router.asPath.includes("project") ? true : false;
+  const isCode = router.asPath.includes("code") ? true : false;
   const [isHoveredProject, setIsHoveredProject] = useState(false);
   const [isHoveredCode, setIsHoveredCode] = useState(false);
 
@@ -53,7 +57,7 @@ const Menu = () => {
           size="1.3rem"
           bold={true}
           pointer={true}
-          color={isHoveredProject ? "main" : "font"}
+          color={isHoveredProject || isProject ? "main" : "font"}
           onMouseEnter={handleMouseEnterProject}
           onMouseLeave={handleMouseLeaveProject}
         >
@@ -65,7 +69,7 @@ const Menu = () => {
           size="1.3rem"
           bold={true}
           pointer={true}
-          color={isHoveredCode ? "main" : "font"}
+          color={isHoveredCode || isCode ? "main" : "font"}
           onMouseEnter={handleMouseEnterCode}
           onMouseLeave={handleMouseLeaveCode}
         >
@@ -78,6 +82,8 @@ const Menu = () => {
 
 const UserNavigation = () => {
   const userQuery = useUser();
+  const router = useRouter();
+  const isMypage = router.asPath.includes("mypage") ? true : false;
   const [isHoveredLogin, setIsHoveredLogin] = useState(false);
   const [isHoveredMypage, setIsHoveredMypage] = useState(false);
 
@@ -119,7 +125,7 @@ const UserNavigation = () => {
             size="1.3rem"
             bold={true}
             pointer={true}
-            color={isHoveredMypage ? "main" : "font"}
+            color={isHoveredMypage || isMypage ? "main" : "font"}
             onMouseEnter={handleMouseEnterMypage}
             onMouseLeave={handleMouseLeaveMypage}
           >
