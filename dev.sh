@@ -29,11 +29,11 @@ echo "############### change nginx server port #################"
 # sed -i "s/기존문자열/변경할문자열" 파일경로 입니다.
 # 종료되는 포트를 새로 시작되는 포트로 값을 변경해줍니다.  
 # -i.bak 는 백업파일을 만들겠다는 의미입니다.(그래야 변경값이 저장됨)
-sudo sed -i.bak "s/${TERMINATE_PORT}/${START_PORT}/" /etc/nginx/conf.d/service-url.inc
+sed -i.bak "s/${TERMINATE_PORT}/${START_PORT}/" /etc/nginx/conf.d/service-url.inc
 echo "################## ${TERMINATE_PORT} down and ${START_PORT} up ##################"
 
 echo "################ nginx reload.. #########################"
-sudo service nginx reload
+service nginx reload
 
 # 새로운 포트로 nextjs 앱이 구동 되고, nginx의 포트를 변경해주었다면, nginx를 재시작해줍니다.
 
@@ -45,6 +45,6 @@ docker-compose -p blink-${TERMINATE_CONTAINER} -f docker-compose.${TERMINATE_CON
 docker rmi $(docker images -f "dangling=true" -q)
 
 # 도커 캐시 제거
-echo y | sudo docker system prune --volumes
+echo y | docker system prune --volumes
 
 echo "################ end of deployment #################"
