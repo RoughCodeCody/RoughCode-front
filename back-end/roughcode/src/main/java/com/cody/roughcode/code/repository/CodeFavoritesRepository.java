@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface CodeFavoritesRepository extends JpaRepository<CodeFavorites, Long> {
 
     CodeFavorites findByCodesAndUsers(Codes code, Users user);
@@ -20,4 +22,10 @@ public interface CodeFavoritesRepository extends JpaRepository<CodeFavorites, Lo
     @Transactional
     @Query("delete from CodeFavorites c where c.codes.codesId = :codesId")
     void deleteAllByCodesId(@Param("codesId") Long codesId);
+
+    @Modifying
+    @Transactional
+    @Query("delete from CodeFavorites c where c.codes IN :codesList")
+    void deleteAllByCodesList(@Param("codesList") List<Codes> codesList);
+
 }

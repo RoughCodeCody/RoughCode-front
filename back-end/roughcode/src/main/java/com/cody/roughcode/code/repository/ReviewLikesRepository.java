@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.repository;
 
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.entity.ReviewLikes;
 import com.cody.roughcode.code.entity.Reviews;
 import com.cody.roughcode.user.entity.Users;
@@ -9,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface ReviewLikesRepository extends JpaRepository<ReviewLikes, Long> {
 
     ReviewLikes findByReviewsAndUsers(Reviews review, Users user);
@@ -17,6 +20,11 @@ public interface ReviewLikesRepository extends JpaRepository<ReviewLikes, Long> 
     @Transactional
     @Query("DELETE FROM ReviewLikes re WHERE re.reviews IN (SELECT r FROM Reviews r WHERE r.codes.codesId = :codesId)")
     void deleteAllByCodesId(@Param("codesId") Long codesId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ReviewLikes re WHERE re.reviews IN (SELECT r FROM Reviews r WHERE r.codes IN :codesList)")
+    void deleteAllByCodesList(@Param("codesList") List<Codes> codesList);
 
     @Modifying
     @Transactional

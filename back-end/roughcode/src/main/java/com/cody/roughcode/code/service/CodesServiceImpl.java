@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -532,101 +533,6 @@ public class CodesServiceImpl implements CodesService {
         // 삭제 날짜 설정 (30일 후)
         target.setExpireDate();
 
-        return 1;
-
-    }
-
-    @Override
-    @Transactional
-    public int deleteCode(Long codeId, Long userId) {
-        Users user = usersRepository.findByUsersId(userId);
-
-        // 코드 작성자 확인
-        if (user == null) {
-            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-        }
-
-        // 기존 코드 가져오기
-        Codes target = codesRepository.findLatestByCodesIdAndUsersId(codeId, userId);
-        if (target == null) {
-            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
-        }
-        if (!target.getCodeWriter().equals(user)) {
-            // 코드 작성자와 사용자가 일치하지 않는 경우
-            throw new NotMatchException();
-        }
-        if (!target.getCodesId().equals(codeId)) {
-            throw new NotNewestVersionException();
-        }
-
-        log.info(target.getTitle());
-        CodesInfo targetInfo = codesInfoRepository.findByCodes(target);
-        if (targetInfo == null) {
-            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
-        }
-
-        // 연결된 프로젝트에서 코드 제거
-        if (target.getProjects() != null && target.getProjects().getProjectsCodes() != null) {
-            Iterator<Codes> iterator = target.getProjects().getProjectsCodes().iterator();
-            while (iterator.hasNext()) {
-                Codes c = iterator.next();
-                if (c.getCodesId().equals(target.getCodesId())) {
-                    iterator.remove();
-                }
-            }
-        }
-
-        // 기존 태그 삭제
-        List<CodeSelectedTags> selectedTagsList = target.getSelectedTags();
-        if (selectedTagsList != null) {
-            for (CodeSelectedTags tag : selectedTagsList) {
-                CodeTags codeTag = tag.getTags();
-                codeTag.cntDown();
-            }
-            codeSelectedTagsRepository.deleteAll(selectedTagsList);
-        } else {
-            log.info("기존에 선택하였던 태그가 없습니다");
-        }
-
-        // 기존에 선택한 리뷰 삭제
-        List<SelectedReviews> selectedReviewsList = targetInfo.getSelectedReviews();
-        if (selectedReviewsList != null) {
-            for (SelectedReviews review : selectedReviewsList) {
-                Reviews reviews = review.getReviews();
-                reviews.selectedDown();
-            }
-            selectedReviewsRepository.deleteAll(selectedReviewsList);
-        } else {
-            log.info("기존에 선택하였던 리뷰가 없습니다");
-        }
-
-        // 삭제할 코드 아이디
-        Long codesId = target.getCodesId();
-
-        // 코드에 등록된 리뷰에 대한 리뷰 좋아요 삭제
-        reReviewLikesRepository.deleteAllByCodesId(codesId);
-
-        // 코드에 등록된 리뷰에 대한 리뷰 목록 삭제
-        reReviewsRepository.deleteAllByCodesId(codesId);
-
-        // 코드에 등록된 리뷰 좋아요 목록 삭제
-        reviewLikesRepository.deleteAllByCodesId(codesId);
-
-        // 코드에 등록된 리뷰 삭제
-        reviewsRepository.deleteAllByCodesId(codesId);
-
-        // 코드 좋아요 목록 삭제
-        codeLikesRepository.deleteAllByCodesId(codesId);
-
-        // 코드 즐겨찾기 목록 삭제
-        codeFavoritesRepository.deleteAllByCodesId(codesId);
-
-        // 코드 정보 삭제
-        codesInfoRepository.delete(targetInfo);
-
-        // 코드 삭제
-        codesRepository.delete(target);
-
         log.info("버전 : " + target.getNum());
         // 삭제하는 코드 버전이 1이라면 User의 codeCnt값 1 감소
         if (target.getVersion() == 1) {
@@ -634,7 +540,60 @@ public class CodesServiceImpl implements CodesService {
         }
 
         return 1;
+
     }
+
+    @Override
+    @Transactional
+    public void deleteExpiredCode() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Codes> expiredCodes = codesRepository.findByExpireDateBefore(now);
+
+        for(Codes target: expiredCodes){
+            // 연결된 프로젝트에서 코드 제거
+            if (target.getProjects() != null && target.getProjects().getProjectsCodes() != null) {
+                Iterator<Codes> iterator = target.getProjects().getProjectsCodes().iterator();
+                while (iterator.hasNext()) {
+                    Codes c = iterator.next();
+                    if (c.getCodesId().equals(target.getCodesId())) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+
+        // 기존 태그 삭제
+        codeSelectedTagsRepository.deleteAllByCodesList(expiredCodes);
+
+        // 기존에 선택한 리뷰 삭제
+        selectedReviewsRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드에 등록된 리뷰에 대한 리뷰 좋아요 삭제
+        reReviewLikesRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드에 등록된 리뷰에 대한 리뷰 목록 삭제
+        reReviewsRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드에 등록된 리뷰 좋아요 목록 삭제
+        reviewLikesRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드에 등록된 리뷰 삭제
+        reviewsRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드 좋아요 목록 삭제
+        codeLikesRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드 즐겨찾기 목록 삭제
+        codeFavoritesRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드 정보 삭제
+        codesInfoRepository.deleteAllByCodesList(expiredCodes);
+
+        // 코드 삭제
+        codesRepository.deleteAll(expiredCodes);
+
+    }
+
 
     @Override
     @Transactional

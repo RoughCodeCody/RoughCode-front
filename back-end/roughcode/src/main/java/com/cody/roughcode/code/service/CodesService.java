@@ -19,7 +19,7 @@ public interface CodesService {
 
     int putExpireDateCode(Long codeId, Long userId);
 
-    int deleteCode(Long codeId, Long userId);
+    void deleteExpiredCode();
 
     int likeCode(Long codeId, Long userId);
 

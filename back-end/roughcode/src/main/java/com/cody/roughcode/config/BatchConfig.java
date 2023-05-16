@@ -3,6 +3,7 @@ package com.cody.roughcode.config;
 import com.cody.roughcode.alarm.entity.Alarm;
 import com.cody.roughcode.alarm.repository.AlarmRepository;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
+import com.cody.roughcode.code.service.CodesServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -27,6 +28,7 @@ public class BatchConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final AlarmServiceImpl alarmService;
+    private final CodesServiceImpl codesService;
 
     @Bean
     public Job job(){
@@ -41,6 +43,7 @@ public class BatchConfig {
                 .tasklet((contribution, chunkContext) -> {
                     log.info("Step!");
                     alarmService.deleteLimited();
+                    codesService.deleteExpiredCode();
                     return RepeatStatus.FINISHED;
                 })
                 .build();
