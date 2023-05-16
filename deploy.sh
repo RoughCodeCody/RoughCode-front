@@ -10,6 +10,8 @@ function create_docker_image_blue(){
 
   docker build -t app:0.1 .
 
+  cd ..
+  cd ..
 }
 
 function create_docker_image_green(){
@@ -21,6 +23,9 @@ function create_docker_image_green(){
   ./gradlew clean build
 
   docker build -t app:0.2 .
+  
+  cd ..
+  cd ..
 }
 
 function execute_blue(){
