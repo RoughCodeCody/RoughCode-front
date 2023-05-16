@@ -8,8 +8,19 @@ services:
       dockerfile: Dockerfile
     image: frontend
     restart: always
+
+    ######
+    volumes:
+      - /app/node_modules #도커 /app/node_modules는 맵핑을 따로 안해주겠다.
+      - ./:/app # 로컬에 있는 모든 파일을 맵핑
+
+    ########
     ports:
-      - 3000:3000
+      # - 3000:3000
+      - 3001:3001
+    #######
+    stdin_open: true
+
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     networks:
