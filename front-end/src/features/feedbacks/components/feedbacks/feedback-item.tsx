@@ -20,6 +20,7 @@ import { CodeReviewFeedback } from "@/features/code-reviews";
 import { queryClient } from "@/lib/react-query";
 
 import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
+import { usePostCodeReviewFeedbackLike } from "@/features/code-reviews/api/post-code-review-feedback-like";
 
 interface FeedbackItemProps {
   feedback: ProjectFeedback | CodeReviewFeedback;
@@ -80,13 +81,16 @@ export const FeedbackItem = ({
 
   // 피드백 좋아요/좋아요 취소
   const postProjectFeedbackLikeQuery = usePostFeedbackLike();
-  // const postReviewFeedbackLikeQuery =
+  const postCodeReviewFeedbackLikeQuery = usePostCodeReviewFeedbackLike();
   const handleFeedbackLike = () => {
     if (isProject(feedback)) {
       postProjectFeedbackLikeQuery.mutate(feedback.feedbackId, {
         onSuccess: invalidateQuery,
       });
     } else if (isCode(feedback)) {
+      postCodeReviewFeedbackLikeQuery.mutate(feedback.reReviewId, {
+        onSuccess: invalidateQuery,
+      });
     }
   };
 
