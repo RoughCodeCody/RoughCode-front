@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,6 +49,8 @@ public class CodesServiceImpl implements CodesService {
 
     private final AlarmServiceImpl alarmService;
     private final EmailServiceImpl emailService;
+
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -549,6 +552,11 @@ public class CodesServiceImpl implements CodesService {
         LocalDateTime now = LocalDateTime.now();
         List<Codes> expiredCodes = codesRepository.findByExpireDateBefore(now);
 
+        // 삭제될 코드가 없으면 함수 종료
+        if (expiredCodes == null) {
+            return;
+        }
+
         for(Codes target: expiredCodes){
             // 연결된 프로젝트에서 코드 제거
             if (target.getProjects() != null && target.getProjects().getProjectsCodes() != null) {
@@ -562,7 +570,7 @@ public class CodesServiceImpl implements CodesService {
             }
         }
 
-        // 기존 태그 삭제
+        // 기존에 선택한 태그 삭제
         codeSelectedTagsRepository.deleteAllByCodesList(expiredCodes);
 
         // 기존에 선택한 리뷰 삭제
@@ -591,6 +599,9 @@ public class CodesServiceImpl implements CodesService {
 
         // 코드 삭제
         codesRepository.deleteAll(expiredCodes);
+
+        // 영속성 컨텍스트 초기화
+        entityManager.clear();
 
     }
 
