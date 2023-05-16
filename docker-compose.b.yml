@@ -1,8 +1,0 @@
-version: "3.8"
-services:
-  front:
-    build:
-      context: ./front-end
-      dockerfile: Dockerfile
-    ports:
-      - 3001:8080

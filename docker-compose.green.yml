@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  front:
+    image: front:0.2
+    container_name: front_green
+    environment:
+      - "spring_profiles_active=green"
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    ports:
+      - "3003:3000"
