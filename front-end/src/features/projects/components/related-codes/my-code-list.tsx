@@ -1,7 +1,7 @@
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { Btn, FlexDiv } from "@/components/elements";
+import { Btn, FlexDiv, Spinner } from "@/components/elements";
 import { useMyCodeList } from "@/features/user/api/get-code-list";
 import { queryClient } from "@/lib/react-query";
 
@@ -62,7 +62,7 @@ export const MyCodeList = ({
 
   return (
     <FlexDiv width="100%" direction="column" padding="0.5rem" gap="1rem">
-      {status === "loading" && <>loading...</>}
+      {status === "loading" && <Spinner size={500} />}
       {status === "success" &&
         data?.pages[0].list.map((codeListItem, idx, list) => (
           <FlexDiv

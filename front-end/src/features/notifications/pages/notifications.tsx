@@ -8,12 +8,23 @@ import {
 import { Notification } from "../types";
 import { NoticeAlarmItem, Title } from "@/components/elements";
 
+import { Spinner } from "@/components/elements";
+
 export const Notifications = () => {
   const notificationsQuery = useNotifications();
-  console.log(notificationsQuery.data);
 
   if (notificationsQuery.isLoading) {
-    return <>loading...</>;
+    return (
+      <HomeContainer>
+        <HomeContentsContainer>
+          <Title
+            title="새로운 피드"
+            description="나의 피드백을 반영한 코드와 프로젝트를 확인해 보세요"
+          />
+          <Spinner size={700} />;
+        </HomeContentsContainer>
+      </HomeContainer>
+    );
   }
 
   if (notificationsQuery.isError) {
