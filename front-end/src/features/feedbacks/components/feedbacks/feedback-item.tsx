@@ -22,6 +22,10 @@ import { queryClient } from "@/lib/react-query";
 import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 import { usePostCodeReviewFeedbackLike } from "@/features/code-reviews/api/post-code-review-feedback-like";
 import { useDeleteCodeReviewFeedback } from "@/features/code-reviews/api";
+import {
+  putCodeReviewFeedbackComplaint,
+  usePutCodeReviewFeedbackComplaint,
+} from "@/features/code-reviews/api/post-code-review-feedback-complaint";
 
 interface FeedbackItemProps {
   feedback: ProjectFeedback | CodeReviewFeedback;
@@ -128,10 +132,20 @@ export const FeedbackItem = ({
   };
 
   // 피드백 신고
-  const putFeedbackComplaintQuery = usePutFeedbackComplaint();
+  const putProjectFeedbackComplaintQuery = usePutFeedbackComplaint();
+  const putReviewFeedbackComplaintQuery = usePutCodeReviewFeedbackComplaint();
   const handleFeedbackComplaint = () => {
     if (isProject(feedback)) {
-      putFeedbackComplaintQuery.mutate(feedback.feedbackId, {
+      putProjectFeedbackComplaintQuery.mutate(feedback.feedbackId, {
+        onSettled: () => setForceClose(true),
+        onSuccess: () => {
+          invalidateQuery;
+          alert("신고하였습니다");
+        },
+      });
+      setForceClose(false);
+    } else if (isCode(feedback)) {
+      putReviewFeedbackComplaintQuery.mutate(feedback.reReviewId, {
         onSettled: () => setForceClose(true),
         onSuccess: () => {
           invalidateQuery;
