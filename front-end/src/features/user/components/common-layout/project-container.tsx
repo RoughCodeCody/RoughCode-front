@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
 import { useUserProjectList } from "../../api";
-import { FlexDiv, Spinner } from "@/components/elements";
+import { FlexDiv, Spinner, NotFound } from "@/components/elements";
 import { ProjectCardGrid } from "@/features/projects/components/lists/style";
 import { ProjectCard } from "@/features/projects/components/project-card";
 
@@ -50,9 +50,7 @@ export const ProjectContainer = ({ endPoint }: ProjectContainerProps) => {
     >
       {status === "loading" && <Spinner size={500} />}
       {status === "success" && data.pages[0].list.length === 0 && (
-        <FlexDiv width="100%" height="50vh">
-          데이터가 없어요
-        </FlexDiv>
+        <NotFound size={500} />
       )}
       {status === "success" && (
         <>

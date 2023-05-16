@@ -2,7 +2,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import { BackToTop, FlexDiv, Spinner } from "@/components/elements";
+import {
+  BackToTop,
+  FlexDiv,
+  Spinner,
+  NotFound,
+  Text,
+} from "@/components/elements";
 
 import { useUserCodeList } from "../../api/";
 import { CodeListItem } from "@/features/code-reviews/components/code-list-item";
@@ -41,8 +47,8 @@ export const CodeContainer = ({ endPoint }: CodeContainerProps) => {
     >
       {status === "loading" && <Spinner size={500} />}
       {status === "success" && data.pages[0].list.length === 0 && (
-        <FlexDiv width="100%" height="50vh">
-          데이터가 없어요
+        <FlexDiv direction="column">
+          <NotFound size={500} />
         </FlexDiv>
       )}
       {status === "success" && (
