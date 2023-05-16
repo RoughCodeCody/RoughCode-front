@@ -4,4 +4,4 @@ EXPOSE 3001
 
 COPY ./default.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /app/build  /usr/share/nginx/html
+COPY ./service-url.inc /etc/nginx/conf.d/service-url.inc
