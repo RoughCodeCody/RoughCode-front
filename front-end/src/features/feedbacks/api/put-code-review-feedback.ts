@@ -4,7 +4,7 @@ import { axios } from "@/lib/axios";
 import { MutationConfig } from "@/lib/react-query";
 
 export type PutCodeReviewFeedbackDTO = {
-  feedbackId: number;
+  id: number;
   content: string;
 };
 

@@ -114,7 +114,7 @@ export const FeedbackItem = ({
       );
     } else if (isCode(feedback)) {
       putReviewFeedbackQuery.mutate(
-        { feedbackId: feedback.reReviewId, content: newContent },
+        { id: feedback.reReviewId, content: newContent },
         {
           onSuccess: () => {
             setIsModifying(false);
