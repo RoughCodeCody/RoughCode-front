@@ -95,6 +95,7 @@ public class EmailServiceImpl implements EmailService {
         helper.setText(createAlarmEmail(alarmReq), true); // true를 전달하여 HTML을 사용하도록 지정합니다.
 
         mailSender.send(message);
+        log.info("이메일 발송 완료");
     }
 
     private String createAlarmEmail(AlarmReq alarm) {

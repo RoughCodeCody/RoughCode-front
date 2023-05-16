@@ -67,11 +67,13 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectsRepository projectsRepository;
     private final ProjectsInfoRepository projectsInfoRepository;
     private final ProjectSelectedTagsRepository projectSelectedTagsRepository;
+    private final ProjectSelectedTagsQRepository projectSelectedTagsQRepository;
     private final ProjectTagsRepository projectTagsRepository;
     private final CodesRepository codesRepository;
     private final FeedbacksRepository feedbacksRepository;
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final ProjectFavoritesRepository projectFavoritesRepository;
+    private final ProjectFavoritesQRepository projectFavoritesQRepository;
     private final ProjectLikesRepository projectLikesRepository;
     private final FeedbacksLikesRepository feedbacksLikesRepository;
     private final EmailServiceImpl emailService;
@@ -130,7 +132,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             }
 
             // 알람 받을 사람 등록
-            List<Users> favoritedUsers = projectFavoritesRepository.findByProjects(original);
+            List<Users> favoritedUsers = projectFavoritesQRepository.findByProjects(original);
             if(favoritedUsers != null)
                 for (Users u : favoritedUsers) {
                     bookmarkAlarm.add(u.getUsersId());
@@ -207,7 +209,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다."))
+                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다"))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -581,7 +583,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         } else { // tag 검색
             if(closed == 1)
-                projectsPage = projectSelectedTagsRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
+                projectsPage = projectSelectedTagsQRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
             else
                 projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
 
