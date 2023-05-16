@@ -236,7 +236,11 @@ export const FeedbackItem = ({
             align="end"
             style={{ whiteSpace: "pre", marginTop: "0.5rem" }}
           >
-            <Text color={!feedback.content.length ? "red" : "font"}>
+            <Text
+              color={!feedback.content.length ? "red" : "font"}
+              width="80%"
+              whiteSpace="pre-wrap"
+            >
               {!feedback.content.length
                 ? "신고되어 가려진 게시물입니다."
                 : feedback.content}

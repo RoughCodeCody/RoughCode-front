@@ -1,8 +1,10 @@
-import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
+import { useState } from "react";
+
+import { FlexDiv, Spinner, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
+import { useCodeReviewFeedbacks } from "@/features/feedbacks/api";
 import { VersionsInfo } from "@/features/version-info";
-import { useClickedReviewStore } from "@/stores";
 
 import { useCodeInfo, useCode } from "../api";
 import { CodeInfo } from "../components/code-info";
@@ -24,64 +26,89 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
 
-  // 현재 클릭되어 리리뷰를 보여주고 있는 리뷰 관련 스토어
-  const { clickedReview } = useClickedReviewStore();
+  // 코드 리뷰 클릭시 해당 리뷰의 정보를 가져오기 위한 state
+  const [clickedReviewId, setClickedReviewId] = useState(
+    data && data.reviews.length !== 0 ? data.reviews[0].reviewId : -1
+  );
+  const codeReviewFeedbackQuery = useCodeReviewFeedbacks(clickedReviewId);
 
   return (
     <>
-      <FlexDiv direction="column" gap="4rem" padding="2rem 0">
-        <WhiteBoxNoshad
-          width="65%"
-          padding="2.25rem"
-          style={{ minWidth: "850px" }}
-        >
-          {data && (
-            <>
-              <CodeInfo data={data} />
-              <VersionsInfo
-                versions={data.versions}
-                curVersionId={codeId}
-                isMine={data.mine}
-              />
+      {status === "loading" ? (
+        <Spinner size={300} />
+      ) : (
+        <FlexDiv direction="column" gap="4rem" padding="2rem 0">
+          <WhiteBoxNoshad
+            width="60%"
+            padding="2.25rem"
+            style={{ minWidth: "850px" }}
+          >
+            {data && (
+              <>
+                <CodeInfo data={data} />
+                <VersionsInfo
+                  versions={data.versions}
+                  curVersionId={codeId}
+                  isMine={data.mine}
+                />
 
-              {originalCode && (
-                <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
-                  <CodeEditor
-                    headerText="코드 리뷰를 요청한 원본 코드입니다"
-                    lineSelection={false}
+                {originalCode && (
+                  <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
+                    <CodeEditor
+                      headerText="코드 리뷰를 요청한 원본 코드입니다"
+                      lineSelection={false}
+                      height="30rem"
+                      language={"javascript"}
+                      originalCode={originalCode}
+                      selectedLines={codeReviewFeedbackQuery.data?.lineNumbers}
+                      noShad={true}
+                    />
+                  </FlexDiv>
+                )}
+
+                <FlexDiv width="100%" height="100%">
+                  <DiffCodeEditor
+                    headerText="코드 리뷰어가 수정한 코드입니다"
                     height="30rem"
+                    readOnly={true}
                     language={"javascript"}
-                    originalCode={originalCode}
-                    selectedLines={clickedReview.lineNumbers}
-                    noShad={true}
+                    originalCode={originalCode || ""}
+                    modifiedCode={
+                      codeReviewFeedbackQuery.data
+                        ? codeReviewFeedbackQuery.data.codeContent
+                        : ""
+                    }
                   />
                 </FlexDiv>
-              )}
 
-              <FlexDiv width="100%" height="100%">
-                <DiffCodeEditor
-                  headerText="코드 리뷰어가 수정한 코드입니다"
-                  height="30rem"
-                  readOnly={true}
-                  language={"javascript"}
-                  originalCode={originalCode || ""}
-                  modifiedCode={clickedReview.codeContent}
+                <CodeReviewList
+                  reviews={data.reviews}
+                  codeId={Number(codeId)}
+                  clickedReviewId={clickedReviewId}
+                  setClickedReviewId={setClickedReviewId}
                 />
-              </FlexDiv>
 
-              <CodeReviewList reviews={data.reviews} codeId={Number(codeId)} />
-              <ClickedReviewContent content={clickedReview.content} />
-            </>
-          )}
-        </WhiteBoxNoshad>
+                <ClickedReviewContent
+                  content={
+                    codeReviewFeedbackQuery.data?.content || "설명이 없습니다"
+                  }
+                />
+              </>
+            )}
+          </WhiteBoxNoshad>
 
-        <FeedbackRegister type="review" id={clickedReview.reviewId} />
-        <Feedbacks
-          type="review"
-          feedbacks={clickedReview.reReviews}
-          projectOrCodeId={Number(codeId)}
-        />
-      </FlexDiv>
+          <FeedbackRegister type="review" id={clickedReviewId} />
+          <Feedbacks
+            type="review"
+            feedbacks={
+              codeReviewFeedbackQuery.data
+                ? codeReviewFeedbackQuery.data.reReviews
+                : []
+            }
+            projectOrCodeId={Number(codeId)}
+          />
+        </FlexDiv>
+      )}
     </>
   );
 };
