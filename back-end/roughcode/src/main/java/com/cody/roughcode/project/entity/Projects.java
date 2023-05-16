@@ -25,7 +25,7 @@ public class Projects extends BaseTimeEntity {
     @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long projectsId;
 
-    @Column(name = "num", nullable = false)
+    @Column(name = "num", nullable = false, columnDefinition = "BIGINT UNSIGNED")
     private Long num;
 
     @Column(name = "version", nullable = false)
