@@ -11,6 +11,8 @@ function create_docker_image_blue(){
 
   docker build -t front:0.1 .
 
+  cd ..
+
 }
 
 function create_docker_image_green(){
@@ -22,6 +24,8 @@ function create_docker_image_green(){
   pnpm run build
 
   docker build -t front:0.2 .
+
+  cd ..
   
 }
 
