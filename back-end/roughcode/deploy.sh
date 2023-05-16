@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function create_docker_image_blue(){
 
   echo "> blue docker image 만들기"
