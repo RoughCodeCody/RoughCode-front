@@ -4,7 +4,7 @@ function create_docker_image_blue(){
 
   echo "> blue docker image 만들기"
 
-  # cd back-end/roughcode 
+  cd back-end/roughcode 
 
   ./gradlew clean build
 
@@ -16,7 +16,7 @@ function create_docker_image_green(){
 
   echo "> green docker image 만들기"
 
-  # cd back-end/roughcode 
+  cd back-end/roughcode 
 
   ./gradlew clean build
 
