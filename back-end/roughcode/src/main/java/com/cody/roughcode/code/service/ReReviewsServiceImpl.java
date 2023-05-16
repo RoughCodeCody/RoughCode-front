@@ -113,6 +113,9 @@ public class ReReviewsServiceImpl implements ReReviewsService {
 
         if(reReviews.getUsers() == null || !reReviews.getUsers().equals(users)) throw new NotMatchException();
 
+        List<ReReviewLikes> reReviewLikes = reReviewLikesRepository.findByReReviews(reReviews);
+        reReviewLikesRepository.deleteAll(reReviewLikes);
+
         reReviewsRepository.delete(reReviews);
 
         return 1;
