@@ -9,6 +9,15 @@ export type ProjectFeedback = {
   date: Date;
 };
 
+export type ProjectFeedbackForUpdate = {
+  feedbackId: number;
+  userId: number;
+  userName: string;
+  content: string;
+  selected: boolean;
+  version: number;
+};
+
 export type ProjectInfoResult = {
   closed: boolean;
   code: RelatedCode[];
@@ -34,13 +43,13 @@ export type ProjectInfoResult = {
 
 export type ProjectUpdateValues = {
   title: string;
-  notice: string;
   introduction: string;
   content: string;
   url: string;
+  notice: string;
   projectId: number;
-  selectedTagsId?: number[];
-  selectedFeedbacksId?: number[];
+  selectedTagsId: number[] | null;
+  selectedFeedbacksId: number[] | null;
 };
 
 export type ProjectVersion = {

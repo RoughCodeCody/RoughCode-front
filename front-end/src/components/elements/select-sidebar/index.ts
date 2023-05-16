@@ -1,5 +1,22 @@
 import styled from "styled-components";
 
+export const SidebarContainer = styled.div`
+  border-radius: 25px;
+  background-color: var(--white-color);
+  padding: 1.5rem;
+  width: 25%;
+  min-height: 25rem;
+`;
+
+export const SidebarFallback = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  height: 20rem;
+  text-align: center;
+`;
+
 export const ItemContainer = styled.div`
   display: flex;
   flex-flow: column nowrap;
@@ -11,9 +28,7 @@ export const Item = styled.div<{ isSelected: boolean }>`
   flex-flow: column nowrap;
   transition: all 0.3s ease-in-out;
   border: ${(props) =>
-    props.isSelected
-      ? "1px solid var(--main-color)"
-      : "1px solid var(--black-color)"};
+    props.isSelected ? "1px solid var(--main-color)" : "1px solid var(--black-color)"};
   border-radius: 15px;
   box-shadow: ${(props) => {
     if (props.isSelected) return "0 0 5px var(--main-color)";

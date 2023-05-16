@@ -1,13 +1,9 @@
+import type { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
+
 import { useQuery } from "@tanstack/react-query";
-
 import { axios } from "@/lib/axios";
-import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 
-export const checkProjectUrl = ({
-  url,
-}: {
-  url: string;
-}): Promise<boolean | null> => {
+export const checkProjectUrl = ({ url }: { url: string }): Promise<boolean> => {
   return axios.get(`/project/check`, {
     params: {
       url,
@@ -22,10 +18,7 @@ type UseCheckProjectUrlOptions = {
   config?: QueryConfig<QueryFnType>;
 };
 
-export const useCheckProjectUrl = ({
-  url,
-  config,
-}: UseCheckProjectUrlOptions) => {
+export const useCheckProjectUrl = ({ url, config }: UseCheckProjectUrlOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
     queryKey: ["checkProjectUrl", url],
     queryFn: () => checkProjectUrl({ url }),

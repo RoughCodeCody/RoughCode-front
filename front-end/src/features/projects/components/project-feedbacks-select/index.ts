@@ -1,18 +1,31 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { BsPerson } from "react-icons/bs";
+import { useEffect } from "react";
+import {
+  SidebarContainer,
+  SidebarFallback,
+  ItemContainer,
+  Item,
+  ItemUserName,
+  ItemContent,
+} from "@/components/elements";
+import { useIdArrStore } from "@/stores/id-arr";
+import { useProjectFeedbacksForUpdate } from "../../api/get-project-feedbacks-for-update";
+import { ProjectFeedbacksSidebarContent } from "../project-feedbacks-sidebar-content";
 
-import { useProjectFeedbacks } from "../../api";
-import { useProjectFeedbackSelectionStore } from "../../stores";
-import { ItemContainer, Item, ItemUserName, ItemContent } from "./style";
-
-type ProjectFeedbacksSidebarContentProps = {
-  projectId: string;
+export const ProjectFeedbacksSelect = ({ projectId }: { projectId: string }) => {
+  return (
+    <SidebarContainer>
+      {projectId ? (
+        <ProjectFeedbacksSidebarContent projectId={projectId} />
+      ) : (
+        <SidebarFallback>프로젝트 피드백이 있으면 이곳에 나타날 거에요</SidebarFallback>
+      )}
+    </SidebarContainer>
+  );
 };
 
-export const ProjectFeedbacksSidebarContent = ({
-  projectId,
-}: ProjectFeedbacksSidebarContentProps) => {
+const ProjectFeedbacksSelectContent = ({ projectId }: { projectId: string }) => {
   // server states
   const projectFeedbacksQuery = useProjectFeedbacks({ projectId });
 
@@ -25,10 +38,7 @@ export const ProjectFeedbacksSidebarContent = ({
 
   // reset project feedback selection state on route change
   const dynamicRoute = useRouter().asPath;
-  useEffect(
-    () => resetProjectFeedbackSelection(),
-    [dynamicRoute, resetProjectFeedbackSelection]
-  );
+  useEffect(() => resetProjectFeedbackSelection(), [dynamicRoute, resetProjectFeedbackSelection]);
 
   // fill initial selection status on each project feedback
   useEffect(() => {
@@ -59,9 +69,7 @@ export const ProjectFeedbacksSidebarContent = ({
         <Item
           key={`project-feedback-${projectId}-${index}`}
           onClick={() => handleClick(projectFeedback.feedbackId)}
-          isSelected={selectedProjectFeedbackId.includes(
-            projectFeedback.feedbackId
-          )}
+          isSelected={selectedProjectFeedbackId.includes(projectFeedback.feedbackId)}
         >
           <ItemUserName>
             <BsPerson color="var(--font-color)" />

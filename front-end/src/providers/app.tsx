@@ -1,8 +1,7 @@
-import type { ReactNode } from "react";
-
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ErrorBoundary } from "react-error-boundary";
+import type { ReactNode } from "react";
 
 import { ErrorFallback } from "@/components/fallbacks";
 import { queryClient } from "@/lib/react-query";

@@ -1,4 +1,3 @@
-export * from "./check-project-url";
 export * from "./check-url-open";
 export * from "./connect-code-to-project";
 export * from "./delete-feedback";
