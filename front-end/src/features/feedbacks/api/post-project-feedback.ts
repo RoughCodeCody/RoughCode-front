@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { MutationConfig, queryClient } from "@/lib/react-query";
 
-import { ProjectInfoResult } from "../types";
+import { ProjectInfoResult } from "@/features/projects";
 
 export type PostProjectFeedbackDTO = {
   projectId: number;

@@ -24,6 +24,7 @@ export interface ModalProps {
   headerText: string;
   width?: string;
   height?: string;
+  setForceClose?: Dispatch<SetStateAction<boolean>>; // selection 강제 닫기
 }
 
 export const Modal: FunctionComponent<ModalProps> = ({
@@ -33,6 +34,7 @@ export const Modal: FunctionComponent<ModalProps> = ({
   headerText,
   width,
   height,
+  setForceClose,
 }) => {
   const modal = (
     <>
@@ -43,7 +45,14 @@ export const Modal: FunctionComponent<ModalProps> = ({
             <Text color="main" bold={true}>
               {headerText}
             </Text>
-            <CloseButton onClick={() => setIsOpen(false)}>X</CloseButton>
+            <CloseButton
+              onClick={() => {
+                setIsOpen(false);
+                if (setForceClose) setForceClose(false);
+              }}
+            >
+              X
+            </CloseButton>
           </Header>
           <ModalContent>{modalContent}</ModalContent>
         </StyledModal>

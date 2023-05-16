@@ -2,9 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { FlexDiv, Text, WhiteBoxShad, Btn } from "@/components/elements";
-import { usePostCodeReviewFeedback } from "@/features/code-reviews/api";
-import { usePostProjectFeedback } from "@/features/projects/api";
 
+import { usePostCodeReviewFeedback, usePostProjectFeedback } from "../../api";
 import { FeedbackRegisterTextarea } from "./style";
 
 type FeedbackRegisterProps = {

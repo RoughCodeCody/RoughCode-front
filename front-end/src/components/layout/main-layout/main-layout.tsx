@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import * as React from "react";
+import { useState } from "react";
 
-import logo from "@/assets/dog-foot.png";
+import dog from "@/assets/dog.png";
+import duck from "@/assets/duck.png";
 import { NEXT_PUBLIC_REDIRECT_URL } from "@/config";
-import { FlexDiv } from "@/components/elements";
+import { FlexDiv, Text } from "@/components/elements";
 import { useUser } from "@/features/auth";
 
 import {
@@ -19,36 +22,117 @@ const Logo = () => {
   return (
     <Link href="/">
       <LogoDiv>
-        <Image src={logo} alt="Logo image" width={32} height={32} />
+        <Image src={dog} alt="Logo image" width={32} height={32} />
         <LogoText>개발새발</LogoText>
+        <Image src={duck} alt="Logo image" width={32} height={32} />
       </LogoDiv>
     </Link>
   );
 };
 
 const Menu = () => {
+  const router = useRouter();
+  const isProject = router.asPath.includes("project") ? true : false;
+  const isCode = router.asPath.includes("code") ? true : false;
+  const [isHoveredProject, setIsHoveredProject] = useState(false);
+  const [isHoveredCode, setIsHoveredCode] = useState(false);
+
+  const handleMouseEnterProject = () => {
+    setIsHoveredProject(true);
+  };
+  const handleMouseLeaveProject = () => {
+    setIsHoveredProject(false);
+  };
+  const handleMouseEnterCode = () => {
+    setIsHoveredCode(true);
+  };
+  const handleMouseLeaveCode = () => {
+    setIsHoveredCode(false);
+  };
+
   return (
-    <FlexDiv direction="row" justify="center" align="center" gap="5rem">
-      <Link href="/project">프로젝트</Link>
-      <Link href="/code-review">코드 리뷰</Link>
+    <FlexDiv justify="center" align="center" gap="5rem">
+      <Link href="/project">
+        <Text
+          size="1.3rem"
+          bold={true}
+          pointer={true}
+          color={isHoveredProject || isProject ? "main" : "font"}
+          onMouseEnter={handleMouseEnterProject}
+          onMouseLeave={handleMouseLeaveProject}
+        >
+          프로젝트
+        </Text>
+      </Link>
+      <Link href="/code-review">
+        <Text
+          size="1.3rem"
+          bold={true}
+          pointer={true}
+          color={isHoveredCode || isCode ? "main" : "font"}
+          onMouseEnter={handleMouseEnterCode}
+          onMouseLeave={handleMouseLeaveCode}
+        >
+          코드 리뷰
+        </Text>
+      </Link>
     </FlexDiv>
   );
 };
 
 const UserNavigation = () => {
   const userQuery = useUser();
+  const router = useRouter();
+  const isMypage = router.asPath.includes("mypage") ? true : false;
+  const [isHoveredLogin, setIsHoveredLogin] = useState(false);
+  const [isHoveredMypage, setIsHoveredMypage] = useState(false);
+
+  const handleMouseEnterLogin = () => {
+    setIsHoveredLogin(true);
+  };
+  const handleMouseLeaveLogin = () => {
+    setIsHoveredLogin(false);
+  };
+  const handleMouseEnterMypage = () => {
+    setIsHoveredMypage(true);
+  };
+  const handleMouseLeaveMypage = () => {
+    setIsHoveredMypage(false);
+  };
 
   return (
-    <FlexDiv direction="row" justify="center" align="center">
+    <FlexDiv justify="center" align="center">
       {userQuery.isLoading && "Loading..."}
       {userQuery.data && userQuery.data.nickname.length === 0 && (
         <Link
           href={`${NEXT_PUBLIC_REDIRECT_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
         >
-          로그인
+          <Text
+            size="1.3rem"
+            bold={true}
+            pointer={true}
+            color={isHoveredLogin ? "main" : "font"}
+            onMouseEnter={handleMouseEnterLogin}
+            onMouseLeave={handleMouseLeaveLogin}
+          >
+            로그인
+          </Text>
         </Link>
       )}
-      {userQuery.data && <Link href="/mypage/profile">마이 페이지</Link>}
+      {userQuery.data && userQuery.data.nickname.length !== 0 && (
+        <Link href="/mypage/profile">
+          <Text
+            size="1.3rem"
+            bold={true}
+            pointer={true}
+            color={isHoveredMypage || isMypage ? "main" : "font"}
+            onMouseEnter={handleMouseEnterMypage}
+            onMouseLeave={handleMouseLeaveMypage}
+          >
+            마이 페이지
+          </Text>
+        </Link>
+      )}
     </FlexDiv>
   );
 };

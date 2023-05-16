@@ -9,16 +9,21 @@ import {
   Text,
   Selection,
 } from "@/components/elements";
-import {
-  useDeleteProjectFeedback,
-  usePostFeedbackLike,
-  usePutFeedbackComplaint,
-  usePutProjectFeedback,
-} from "@/features/projects/api";
+
 import { ProjectFeedback } from "@/features/projects/types";
 import { CodeReviewFeedback } from "@/features/code-reviews";
 import { queryClient } from "@/lib/react-query";
 
+import {
+  useDeleteProjectFeedback,
+  usePostProjectFeedbackLike,
+  usePutProjectFeedbackComplaint,
+  usePutProjectFeedback,
+  useDeleteCodeReviewFeedback,
+  usePostCodeReviewFeedbackLike,
+  usePutCodeReviewFeedbackComplaint,
+  usePutCodeReviewFeedback,
+} from "../../api";
 import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 
 interface FeedbackItemProps {
@@ -79,52 +84,80 @@ export const FeedbackItem = ({
   };
 
   // 피드백 좋아요/좋아요 취소
-  const postProjectFeedbackLikeQuery = usePostFeedbackLike();
-  // const postReviewFeedbackLikeQuery =
+  const postProjectFeedbackLikeQuery = usePostProjectFeedbackLike();
+  const postCodeReviewFeedbackLikeQuery = usePostCodeReviewFeedbackLike();
   const handleFeedbackLike = () => {
     if (isProject(feedback)) {
       postProjectFeedbackLikeQuery.mutate(feedback.feedbackId, {
-        onSuccess: invalidateQuery,
+        onSuccess: () => invalidateQuery(),
       });
     } else if (isCode(feedback)) {
+      postCodeReviewFeedbackLikeQuery.mutate(feedback.reReviewId, {
+        onSuccess: () => invalidateQuery(),
+      });
     }
   };
 
   // 피드백 수정
-  const putFeedbackQuery = usePutProjectFeedback();
+  const putProjectFeedbackQuery = usePutProjectFeedback();
+  const putReviewFeedbackQuery = usePutCodeReviewFeedback();
   const handlePutFeedback = () => {
     if (isProject(feedback)) {
-      putFeedbackQuery.mutate(
+      putProjectFeedbackQuery.mutate(
         { feedbackId: feedback.feedbackId, content: newContent },
         {
           onSuccess: () => {
             setIsModifying(false);
-            invalidateQuery;
+            invalidateQuery();
           },
         }
       );
     } else if (isCode(feedback)) {
+      putReviewFeedbackQuery.mutate(
+        { id: feedback.reReviewId, content: newContent },
+        {
+          onSuccess: () => {
+            setIsModifying(false);
+            invalidateQuery();
+          },
+        }
+      );
     }
   };
 
   // 피드백 삭제
-  const deleteFeedbackQuery = useDeleteProjectFeedback();
+  const deleteProjectFeedbackQuery = useDeleteProjectFeedback();
+  const deleteCodeReviewFeedbackQuery = useDeleteCodeReviewFeedback();
   const handleDeleteFeedback = () => {
     if (isProject(feedback)) {
-      deleteFeedbackQuery.mutate(feedback.feedbackId, {
-        onSuccess: invalidateQuery,
+      deleteProjectFeedbackQuery.mutate(feedback.feedbackId, {
+        onSuccess: () => invalidateQuery(),
+      });
+    } else if (isCode(feedback)) {
+      deleteCodeReviewFeedbackQuery.mutate(feedback.reReviewId, {
+        onSuccess: () => invalidateQuery(),
       });
     }
   };
 
   // 피드백 신고
-  const putFeedbackComplaintQuery = usePutFeedbackComplaint();
+  const putProjectFeedbackComplaintQuery = usePutProjectFeedbackComplaint();
+  const putReviewFeedbackComplaintQuery = usePutCodeReviewFeedbackComplaint();
   const handleFeedbackComplaint = () => {
     if (isProject(feedback)) {
-      putFeedbackComplaintQuery.mutate(feedback.feedbackId, {
+      putProjectFeedbackComplaintQuery.mutate(feedback.feedbackId, {
         onSettled: () => setForceClose(true),
         onSuccess: () => {
-          invalidateQuery;
+          invalidateQuery();
+          alert("신고하였습니다");
+        },
+      });
+      setForceClose(false);
+    } else if (isCode(feedback)) {
+      putReviewFeedbackComplaintQuery.mutate(feedback.reReviewId, {
+        onSettled: () => setForceClose(true),
+        onSuccess: () => {
+          invalidateQuery();
           alert("신고하였습니다");
         },
       });

@@ -23,17 +23,20 @@ type SearchCriteriaStore = {
   addTagId: (Tag: Tag) => void;
   deleteTagId: (TagId: number) => void;
   setKeyword: (keyword: string) => void;
+  reset: () => void;
+};
+
+const initialState: SearchCriteria = {
+  sort: "createdDate",
+  page: 0,
+  size: 9,
+  keyword: "",
+  tagIdList: [],
+  closed: 1,
 };
 
 export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
-  searchCriteria: {
-    sort: "createdDate",
-    page: 0,
-    size: 9,
-    keyword: "",
-    tagIdList: [],
-    closed: 1,
-  },
+  searchCriteria: initialState,
   setClosedValue: (ClosedValue) => {
     // 전체 프로젝트 보기, 열린 프로젝트만 보기
     set((state) => ({
@@ -101,5 +104,9 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
         keyword: keyword,
       },
     }));
+  },
+
+  reset: () => {
+    set(() => ({ searchCriteria: initialState }));
   },
 }));

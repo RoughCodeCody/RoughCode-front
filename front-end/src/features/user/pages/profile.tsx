@@ -15,7 +15,7 @@ export const Profile = () => {
         <FlexDiv direction="column" width="70%" gap="3rem">
           <Title
             title="프로필"
-            description="나의 스탯 카드를 확인하고 카카오톡 알림을 설정할 수 있습니다."
+            description="나의 스탯 카드를 확인하고 이메일 알림을 설정할 수 있습니다."
           />
           <Welcome />
           <img

@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -5,7 +6,7 @@ import { useProjectList } from "../../api";
 import { ProjectCard } from "../project-card";
 import { ProjectCardGrid } from "./style";
 
-import { FlexDiv } from "@/components/elements";
+import { FlexDiv, NotFound, Spinner } from "@/components/elements";
 import { useSearchCriteriaStore } from "@/stores";
 
 interface ProjectCardProps {
@@ -61,11 +62,9 @@ export const ProjectList = () => {
 
   return (
     <FlexDiv height="100%" width="100%" direction="column" gap="3rem">
-      {status === "loading" && <p>Loading...</p>}
+      {status === "loading" && <Spinner size={700} />}
       {status === "success" && data.pages[0].list.length === 0 && (
-        <FlexDiv width="100%" height="50vh">
-          데이터가 없어요
-        </FlexDiv>
+        <NotFound size={700} />
       )}
       {status === "success" && (
         <>
