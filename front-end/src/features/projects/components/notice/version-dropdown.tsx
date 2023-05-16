@@ -29,7 +29,12 @@ export const VersionDropdown = ({
   return (
     <VersionDropdownWrapper>
       <FlexDiv gap="1.5rem">
-        <Text color="main" size="1.5rem">
+        <Text
+          color="main"
+          size="1.5rem"
+          pointer={true}
+          onClick={() => setVersionsOpen((prev) => !prev)}
+        >
           {`V${currentVersion}`}
         </Text>
         <DropdownArrow
