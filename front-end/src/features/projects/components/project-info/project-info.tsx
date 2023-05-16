@@ -9,6 +9,7 @@ import {
   Count,
   Selection,
   Modal,
+  LoadingSpinner,
 } from "@/components/elements";
 
 import {
@@ -21,7 +22,6 @@ import {
 import { ProjectInfoResult } from "../../types";
 import { DeleteProject } from "./delete-project";
 import { UrlApkBtn } from "./style";
-import { UrlLoading } from "./url-loading";
 
 type ProjectInfoProps = {
   data: ProjectInfoResult;
@@ -155,7 +155,7 @@ export const ProjectInfo = ({
         }
       />
 
-      <UrlLoading isOpen={Boolean(checkURLQuery.status === "loading")} />
+      <LoadingSpinner isOpen={Boolean(checkURLQuery.status === "loading")} />
     </>
   );
 };

@@ -5,6 +5,7 @@ export * from "./btn";
 export * from "./count";
 export * from "./dropdown-arrow";
 export * from "./flexdiv";
+export * from "./loading-spinner";
 export * from "./modal";
 export * from "./nickname";
 export * from "./notice-alarm-item";
