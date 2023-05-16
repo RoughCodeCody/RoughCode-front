@@ -4,7 +4,7 @@ function create_docker_image_blue(){
 
   echo "> blue docker image 만들기"
 
-  cd back-end/roughcode 
+  # cd back-end/roughcode 
 
   ./gradlew clean build
 
@@ -16,7 +16,7 @@ function create_docker_image_green(){
 
   echo "> green docker image 만들기"
 
-  cd back-end/roughcode 
+  # cd back-end/roughcode 
 
   ./gradlew clean build
 
@@ -57,8 +57,8 @@ function execute_green(){
 # 현재 사용중인 어플리케이션 확인
 # 8083포트의 값이 없으면 8082포트 사용 중
 # shellcheck disable=SC2046
-RUNNING_GREEN=$(docker ps -aqf --filter "name=app_green")
-RUNNING_BLUE=$(docker ps -aqf --filter "name=app_blue")
+RUNNING_GREEN=$(docker ps -aqf "name=app_green")
+RUNNING_BLUE=$(docker ps -aqf "name=app_blue")
 
 echo ${RUNNING_GREEN}
 echo ${RUNNING_BLUE}
