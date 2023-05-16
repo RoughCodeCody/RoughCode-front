@@ -33,8 +33,8 @@ export const MyPageContent = ({
         <FlexDiv
           position="relative"
           top={isProject ? "2px" : "1px"}
-          radius="30px 30px 0 0"
-          padding="2rem 2rem 1rem 2rem"
+          radius="20px 20px 0 0"
+          padding="0.7rem 2rem 0.3rem 2rem"
           borderTop={isProject ? "solid 2px var(--main-color)" : "none"}
           borderLeft={isProject ? "solid 2px var(--main-color)" : "none"}
           borderRight={isProject ? "solid 2px var(--main-color)" : "none"}
@@ -48,7 +48,7 @@ export const MyPageContent = ({
         >
           <Text
             pointer={true}
-            size="3rem"
+            size="1.5rem"
             bold={true}
             color={isProject ? "main" : "font"}
           >
@@ -58,8 +58,8 @@ export const MyPageContent = ({
         <FlexDiv
           position="relative"
           top={!isProject ? "2px" : "1px"}
-          radius="30px 30px 0 0"
-          padding="2rem 2rem 1rem 2rem"
+          radius="20px 20px 0 0"
+          padding="0.7rem 2rem 0.3rem 2rem"
           borderTop={!isProject ? "solid 2px var(--main-color)" : "none"}
           borderLeft={!isProject ? "solid 2px var(--main-color)" : "none"}
           borderRight={!isProject ? "solid 2px var(--main-color)" : "none"}
@@ -73,7 +73,7 @@ export const MyPageContent = ({
         >
           <Text
             pointer={true}
-            size="3rem"
+            size="1.5rem"
             bold={true}
             color={isProject ? "font" : "main"}
           >
