@@ -1,50 +1,41 @@
-import { useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 import { FlexDiv, Text } from "@/components/elements";
 import { useUser } from "@/features/auth";
-import { useClickedReviewStore } from "@/stores";
 
 import { Review } from "../../types";
 import { CodeReviewItem } from "./review-item";
+import { ReviewListWrapper } from "./style";
+import { CodeReviewSearch } from "../code-review-search";
 
 interface CodeReviewListProps {
   reviews: Review[];
   codeId: number;
+  clickedReviewId: number;
+  setClickedReviewId: Dispatch<SetStateAction<number>>;
 }
 
-export const CodeReviewList = ({ reviews, codeId }: CodeReviewListProps) => {
+export const CodeReviewList = ({
+  reviews,
+  codeId,
+  clickedReviewId,
+  setClickedReviewId,
+}: CodeReviewListProps) => {
   // 현재 로그인한 유저 정보(피드백이 본인 것인지 확인하기 위함)
   const userQuery = useUser();
 
-  // 현재 클릭되어 리리뷰를 보여주고 있는 리뷰 관련 스토어
-  const { clickedReview, setClickedReviewInfo } = useClickedReviewStore();
-
-  // 최초 렌더시 가장 첫번째 리뷰를 클릭 상태로 함
-  useEffect(() => {
-    if (reviews.length > 0) {
-      const { reviewId, codeContent, lineNumbers, reReviews, content } =
-        reviews[0];
-      setClickedReviewInfo({
-        reviewId,
-        codeContent,
-        lineNumbers,
-        reReviews,
-        content,
-      });
-    }
-  }, []);
-
   return (
-    <>
+    <ReviewListWrapper>
       <FlexDiv direction="column" width="100%" gap="1rem" margin="4rem 0 0 0">
         <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
           이 코드에 대한 코드 리뷰 목록
         </Text>
 
+        <CodeReviewSearch />
         {/* 검색을 만들게 되면 이 자리에 */}
 
         {reviews.length !== 0 && (
-          <FlexDiv wrap="wrap" justify="start" gap="2%">
+          <FlexDiv width="100%" wrap="wrap" justify="start" gap="2%">
             {reviews.map((review) => (
               <CodeReviewItem
                 review={review}
@@ -53,16 +44,15 @@ export const CodeReviewList = ({ reviews, codeId }: CodeReviewListProps) => {
                   review.userName.length !== 0 &&
                     userQuery.data?.nickname === review.userName
                 )}
-                showDetails={Boolean(
-                  review.reviewId === clickedReview.reviewId
-                )}
+                showDetails={Boolean(review.reviewId === clickedReviewId)}
                 codeId={codeId}
+                setClickedReviewId={setClickedReviewId}
                 key={review.reviewId}
               />
             ))}
           </FlexDiv>
         )}
       </FlexDiv>
-    </>
+    </ReviewListWrapper>
   );
 };

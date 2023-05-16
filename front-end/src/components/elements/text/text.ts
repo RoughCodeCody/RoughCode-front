@@ -12,6 +12,7 @@ export const Text = styled.p<{
   height?: string;
   padding?: string;
   margin?: string;
+  whiteSpace?: string;
 }>`
   ${({
     size,
@@ -24,16 +25,18 @@ export const Text = styled.p<{
     height,
     padding,
     margin,
+    whiteSpace,
   }) => css`
     font-size: ${size || "1rem"};
     font-weight: ${bold ? "700" : "400"};
     color: ${color ? "var(--" + color + "-color)" : "var(--font-color)"};
     cursor: ${pointer ? "pointer" : "auto"};
     line-height: ${lineHeight ? lineHeight : "normal"};
-    overflow-wrap: ${wrap ? wrap : "none"};
-    width: ${width ? width : "none"};
-    height: ${height ? height : "none"};
+    overflow-wrap: ${wrap ? wrap : "break-word"};
+    width: ${width ? width : "auto"};
+    height: ${height ? height : "auto"};
     padding: ${padding || "0"};
     margin: ${margin || "0"};
+    white-space: ${whiteSpace || "normal"};
   `}
 `;
