@@ -334,7 +334,7 @@ class CodesServiceTest {
         doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
         doReturn(favorite).when(codeFavoritesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
         doReturn(like).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
-        doReturn(List.of(code, code2)).when(codesRepository).findByNumAndCodeWriterOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(List.of(code, code2)).when(codesRepository).findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
         CodeDetailRes success = codesService.getCode(codeId, 0L);
@@ -660,7 +660,7 @@ class CodesServiceTest {
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
-        doReturn(List.of(code)).when(codesRepository).findByNumAndCodeWriterOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(List.of(code)).when(codesRepository).findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
         List<ReviewInfoRes> result = codesService.getReviewList(1L, 1L);
