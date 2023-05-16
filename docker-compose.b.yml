@@ -1,7 +1,6 @@
 version: "3.8"
 services:
   front:
-    #루트 디렉토리의 dockerfile을 실행
     build:
       context: ./front-end
       dockerfile: Dockerfile
