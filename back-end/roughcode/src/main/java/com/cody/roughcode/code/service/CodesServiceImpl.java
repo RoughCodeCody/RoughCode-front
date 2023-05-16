@@ -7,10 +7,7 @@ import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.email.service.EmailServiceImpl;
-import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.exception.NotNewestVersionException;
-import com.cody.roughcode.exception.SaveFailedException;
-import com.cody.roughcode.exception.UpdateFailedException;
+import com.cody.roughcode.exception.*;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.user.entity.Users;
@@ -247,6 +244,9 @@ public class CodesServiceImpl implements CodesService {
         if (code == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
+        if (code.getExpireDate() != null) {
+            throw new NullPointerException("삭제 처리된 코드입니다");
+        }
         CodesInfo codesInfo = codesInfoRepository.findByCodes(code);
         if (codesInfo == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
@@ -274,7 +274,7 @@ public class CodesServiceImpl implements CodesService {
 
         // 모든 버전 정보 미리보기
         List<Pair<Codes, CodesInfo>> otherVersions = new ArrayList<>();
-        List<Codes> codeList = codesRepository.findByNumAndCodeWriterOrderByVersionDesc(code.getNum(), code.getCodeWriter());
+        List<Codes> codeList = codesRepository.findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(code.getNum(), code.getCodeWriter());
 
         // 최신 버전인지
         Boolean latest = codeList.get(0).getCodesId().equals(codeId);
@@ -333,6 +333,17 @@ public class CodesServiceImpl implements CodesService {
                 Boolean reReviewLiked = reReviewLike != null;
                 reReviewResList.add(ReReviewRes.toDto(reReview, reReviewLiked));
             }
+            // 1. 내가 쓴 리리뷰, 2. 최신순 으로 정렬
+            Collections.sort(reReviewResList, (r1, r2) -> {
+                if ((r1.getUserId() != null && r1.getUserId().equals(userId)) && (r2.getUserId() == null || !r2.getUserId().equals(userId))) {
+                    return -1;
+                } else if ((r1.getUserId() == null || !r1.getUserId().equals(userId)) && (r2.getUserId() != null && r2.getUserId().equals(userId))) {
+                    return 1;
+                } else {
+                    return r2.getDate().compareTo(r1.getDate());
+                }
+            });
+
             reviewResList.get(0).updateReReviews(reReviewResList);
         }
 
@@ -380,7 +391,7 @@ public class CodesServiceImpl implements CodesService {
         }
 
         // 기존 코드 가져오기
-        Codes target = codesRepository.findByCodesId(codeId);
+        Codes target = codesRepository.findByCodesIdAndExpireDateIsNull(codeId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
@@ -501,6 +512,32 @@ public class CodesServiceImpl implements CodesService {
 
     @Override
     @Transactional
+    public int putExpireDateCode(Long codeId, Long userId){
+        Users user = usersRepository.findByUsersId(userId);
+
+        // 코드 작성자 확인
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+        // 기존 코드 가져오기
+        Codes target = codesRepository.findByCodesIdAndExpireDateIsNull(codeId);
+        if (target == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+        if (!target.getCodeWriter().equals(user)) {
+            // 코드 작성자와 사용자가 일치하지 않는 경우
+            throw new NotMatchException();
+        }
+
+        // 삭제 날짜 설정 (30일 후)
+        target.setExpireDate();
+
+        return 1;
+
+    }
+
+    @Override
+    @Transactional
     public int deleteCode(Long codeId, Long userId) {
         Users user = usersRepository.findByUsersId(userId);
 
@@ -609,7 +646,7 @@ public class CodesServiceImpl implements CodesService {
             throw new NullPointerException("일치하는 유저가 없습니다");
         }
 
-        Codes target = codesRepository.findByCodesId(codeId);
+        Codes target = codesRepository.findByCodesIdAndExpireDateIsNull(codeId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드가 없습니다");
         }
@@ -697,13 +734,13 @@ public class CodesServiceImpl implements CodesService {
             throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         }
 
-        Codes code = codesRepository.findByCodesId(codeId);
+        Codes code = codesRepository.findByCodesIdAndExpireDateIsNull(codeId);
         if (code == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
 
         // num이 일치하는 버전들의 모든 코드 리뷰 목록 조회
-        List<Codes> allVersion = codesRepository.findByNumAndCodeWriterOrderByVersionDesc(code.getNum(), user);
+        List<Codes> allVersion = codesRepository.findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(code.getNum(), user);
 
         List<ReviewInfoRes> reviewInfoResList = new ArrayList<>();
         for (Codes c : allVersion) {
@@ -713,7 +750,7 @@ public class CodesServiceImpl implements CodesService {
                     continue;
                 }
                 // 신고 횟수가 5번 이상인 코드 리뷰 제외
-                if (r.getComplained()) {
+                if (Boolean.TRUE.equals(r.getComplained())) {
                     continue;
                 }
 
@@ -729,7 +766,7 @@ public class CodesServiceImpl implements CodesService {
     public List<ReviewSearchRes> getReviewSearchList(Long codeId, Long userId, String keyword) {
         Users user = usersRepository.findByUsersId(userId);
 
-        Codes code = codesRepository.findByCodesId(codeId);
+        Codes code = codesRepository.findByCodesIdAndExpireDateIsNull(codeId);
         if (code == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
@@ -741,7 +778,7 @@ public class CodesServiceImpl implements CodesService {
                 continue;
             }
             // 신고 횟수가 5번 이상인 코드 리뷰 제외
-            if (r.getComplained()) {
+            if (Boolean.TRUE.equals(r.getComplained())) {
                 continue;
             }
 
@@ -755,6 +792,7 @@ public class CodesServiceImpl implements CodesService {
 
             reviewSearchResList.add(new ReviewSearchRes(r, liked));
         }
+        Collections.sort(reviewSearchResList, (r1, r2) -> r2.getDate().compareTo(r1.getDate()));
 
         return reviewSearchResList;
     }

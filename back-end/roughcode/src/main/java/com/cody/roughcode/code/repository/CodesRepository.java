@@ -28,7 +28,8 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
 
     // @Query 어노테이션은 LIMIT 설정 불가능 > Pageable 사용하여 가장 최신 버전의 프로젝트 불러오기 수행
     @Query("SELECT c FROM Codes c WHERE c.num = " +
-            "(SELECT c2.num FROM Codes c2 WHERE c2.codesId = :codeId and c2.codeWriter.usersId = :userId) and c.codeWriter.usersId = :userId ORDER BY c.version DESC")
+            "(SELECT c2.num FROM Codes c2 WHERE c2.codesId = :codeId and c2.codeWriter.usersId = :userId) "+
+            "and c.codeWriter.usersId = :userId and c.expireDate is NULL ORDER BY c.version DESC")
     List<Codes> findLatestCodesByCodesIdAndUsersId(@Param("codeId") Long codeId, @Param("userId") Long userId, Pageable pageable);
 
     default Codes findLatestByCodesIdAndUsersId(Long codeId, Long userId)
@@ -40,9 +41,9 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
         return findLatestCodesByCodesIdAndUsersId(codeId, userId, PageRequest.of(0, 1)).get(0);
     }
 
-    List<Codes> findByNumAndCodeWriterOrderByVersionDesc(Long num, Users codeWriter);
+    List<Codes> findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(Long num, Users codeWriter);
 
-    @Query("SELECT c FROM Codes c WHERE c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter)) " +
+    @Query("SELECT c FROM Codes c WHERE c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter and c2.expireDate is NULL )) " +
             "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%)")
     Page<Codes> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 

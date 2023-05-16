@@ -10,7 +10,7 @@ public interface CodesInfoRepository extends JpaRepository<CodesInfo, Long> {
 
     CodesInfo findByCodes(Codes code);
 
-    @Query("select c from CodesInfo c where c.codes.codesId = :codesId")
+    @Query("select c from CodesInfo c where c.codes.codesId = :codesId and c.codes.expireDate is NULL ")
     CodesInfo findByCodesId(@Param("codesId") Long codesId);
 
 }

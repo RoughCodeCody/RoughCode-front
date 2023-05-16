@@ -16,6 +16,7 @@ public interface CodeSelectedTagsRepository extends JpaRepository<CodeSelectedTa
             "c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter)) AND " +
             "cst.tags.tagsId IN :tagIds " +
             "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%) " +
+            "AND c.expireDate is NULL " +
             "GROUP BY c.codesId " +
             "HAVING COUNT(DISTINCT cst.tags.tagsId) = :tagIdsSize"
     )
