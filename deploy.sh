@@ -17,7 +17,20 @@ fi
 echo "${AFTER_COMPOSE_COLOR} server up(port:${AFTER_PORT_NUMBER})"
 
 # 2
-for cnt in {1..10}
+# for cnt in {1..10}
+# do
+#     echo "서버 응답 확인중..(${cnt}/10)";
+#     UP=$(curl -s http://localhost:${AFTER_PORT_NUMBER}/actuator/health | grep 'UP')
+#     if [ -z "${UP}" ] 
+#         then
+# 	    sleep 10
+# 	    continue       
+#         else
+#             break
+#     fi
+# done
+cnt=1
+while [ $cnt -le 10 ]
 do
     echo "서버 응답 확인중..(${cnt}/10)";
     UP=$(curl -s http://localhost:${AFTER_PORT_NUMBER}/actuator/health | grep 'UP')
@@ -28,7 +41,9 @@ do
         else
             break
     fi
+    cnt=$((cnt+1))
 done
+
 
 if [ $cnt -eq 10 ]
 then
