@@ -30,7 +30,8 @@ services:
     restart: always
     container_name: nginx
     build:
-      context: ./nginx
+      # context: ./nginx
+      context: ./front-end
       dockerfile: Dockerfile
     #
     volumes:

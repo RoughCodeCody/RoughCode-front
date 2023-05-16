@@ -58,3 +58,14 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Note: Don't expose ports here, Compose will handle that for us
 
 CMD ["node", "server.js"]
+
+
+################################################################################
+
+FROM nginx
+
+EXPOSE 3001
+
+COPY ./default.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=builder /app/build  /usr/share/nginx/html
