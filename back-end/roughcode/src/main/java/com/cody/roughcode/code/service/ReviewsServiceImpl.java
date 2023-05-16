@@ -213,7 +213,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         }
 
         // 기존 코드 리뷰 가져오기
-        Reviews target = reviewsRepository.findByReviewsId(reviewId);
+        Reviews target = reviewsRepository.findByReviewsIdAndCodeExpireDateIsNull(reviewId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
         }
@@ -265,7 +265,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         }
 
         // 기존 코드 리뷰 가져오기
-        Reviews target = reviewsRepository.findByReviewsId(reviewId);
+        Reviews target = reviewsRepository.findByReviewsIdAndCodeExpireDateIsNull(reviewId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
         }
@@ -304,7 +304,7 @@ public class ReviewsServiceImpl implements ReviewsService {
             throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
         }
         // 기존 코드 리뷰 가져오기
-        Reviews target = reviewsRepository.findByReviewsId(reviewId);
+        Reviews target = reviewsRepository.findByReviewsIdAndCodeExpireDateIsNull(reviewId);
         if (target == null) {
             throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
         }
