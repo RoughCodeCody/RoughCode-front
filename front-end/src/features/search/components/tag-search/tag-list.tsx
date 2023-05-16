@@ -21,7 +21,7 @@ export const TagList = ({ whichTag, tagKeyword }: TagListProps) => {
   if (!tagsQuery?.data?.length)
     return (
       <TagSelectContainer>
-        <TagSelectItem name={"Not Found"} />
+        <TagSelectItem name={"검색된 태그가 없습니다"} />
       </TagSelectContainer>
     );
   return (
