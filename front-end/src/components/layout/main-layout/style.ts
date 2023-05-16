@@ -7,9 +7,10 @@ export const LogoDiv = styled.div`
 `;
 
 export const LogoText = styled.span`
-  margin-left: 1rem;
+  /* text-align: center; */
+  /* margin-left: 1rem; */
   line-height: 1.75rem;
-  font-size: 1.25rem;
+  font-size: 1.6rem;
   font-weight: 600;
 `;
 
@@ -26,8 +27,8 @@ export const NavbarContainer = styled.div`
   justify-content: space-between;
   z-index: 10;
   background-color: var(--white-color);
-  padding: 1rem;
-  height: 5rem;
+  padding: 1rem 4rem 1rem 2rem;
+  height: 3.3rem;
 `;
 
 export const Main = styled.main`
