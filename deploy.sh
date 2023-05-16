@@ -1,5 +1,8 @@
 #!/bin/bash
 
+BASEDIR=$(dirname "$0")
+
+
 function create_docker_image_blue(){
 
   echo "> blue docker image 만들기"
@@ -33,12 +36,12 @@ function execute_blue(){
 
     sleep 10
 
-    docker-compose -p app-blue -f docker-compose.blue.yml up -d
+    docker-compose -p app-blue -f  ${BASEDIR}/docker-compose.blue.yml up -d
 
     sleep 10
 
     echo "GREEN:8083 종료"
-    docker-compose -p app-green -f docker-compose.green.yml down
+    docker-compose -p app-green -f ${BASEDIR}/docker-compose.green.yml down
 
     #dangling=true : 불필요한 이미지 지우기
     docker rmi -f $(docker images -f "dangling=true" -q) || true
@@ -48,12 +51,12 @@ function execute_green(){
   docker ps -q --filter "name=app_green" || grep -q . && docker stop app_green && docker rm app_green || true
 
     echo "GREEN:8083 실행"
-    docker-compose -p app-green -f docker-compose.green.yml up -d
+    docker-compose -p app-green -f ${BASEDIR}/docker-compose.green.yml up -d
 
     sleep 10
 
     echo "BLUE:8082 종료"
-    docker-compose -p app-blue -f docker-compose.blue.yml down
+    docker-compose -p app-blue -f ${BASEDIR}/docker-compose.blue.yml down
 
     #dangling=true : 불필요한 이미지 지우기
     docker rmi -f $(docker images -f "dangling=true" -q) || true
@@ -80,7 +83,7 @@ if [ -z ${RUNNING_GREEN} ]
 
       sleep 10
 
-      docker-compose -p app-blue -f docker-compose.blue.yml up -d
+      docker-compose -p app-blue -f ${BASEDIR}/docker-compose.blue.yml up -d
 	  
     else
       # 8086포트로 어플리케이션 구동
