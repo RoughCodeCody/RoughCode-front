@@ -1,6 +1,6 @@
-import { axios } from "@/lib/axios";
-import { queryClient } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
+
+import { axios } from "@/lib/axios";
 
 export const postCodeReviewFeedbackLike = (
   feedbackId: number

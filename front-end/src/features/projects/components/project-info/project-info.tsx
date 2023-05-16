@@ -61,7 +61,7 @@ export const ProjectInfo = ({
   // 프로젝트 삭제
   const deleteProjectQuery = useDeleteProject();
   const handleDelete = () => {
-    deleteProjectQuery.mutate(projectId);
+    deleteProjectQuery.mutate(Number(projectId));
     router.replace("/project");
   };
 
@@ -70,7 +70,7 @@ export const ProjectInfo = ({
   const handleURLAPKBtnClick = () => {
     if (closed) return;
 
-    checkURLQuery.mutate(projectId, {
+    checkURLQuery.mutate(Number(projectId), {
       onSuccess: (data) => {
         if (data === 1) window.open(url, "_blank");
         else alert("프로젝트 서버가 닫혀있어요");
@@ -93,13 +93,13 @@ export const ProjectInfo = ({
               type="like"
               cnt={likeCnt}
               isChecked={liked}
-              onClickFunc={() => postProjectLikeQuery.mutate(projectId)}
+              onClickFunc={() => postProjectLikeQuery.mutate(Number(projectId))}
             />
             <Count
               type="bookmark"
               cnt={favoriteCnt}
               isChecked={favorite}
-              onClickFunc={() => postProjectFavQuery.mutate(projectId)}
+              onClickFunc={() => postProjectFavQuery.mutate(Number(projectId))}
             />
             {mine && isLatest && (
               <Selection
@@ -127,7 +127,7 @@ export const ProjectInfo = ({
               pointer={true}
               onClick={() =>
                 putProjectOpenStatusQuery.mutate({
-                  projectId,
+                  projectId: Number(projectId),
                   status: closed ? "open" : "close",
                 })
               }
