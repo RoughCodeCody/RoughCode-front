@@ -7,7 +7,7 @@ const ReviewListWrapper = styled(WhiteBoxNoshad)`
   right: 0;
   width: 18%;
   margin-right: 1%;
-  padding: 0;
+  padding: 1rem 0;
 `;
 
 const ReviewItemWrapper = styled(FlexDiv)`

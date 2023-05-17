@@ -31,6 +31,7 @@ interface FeedbackItemProps {
   type: "project" | "review";
   projectOrCodeId: number;
   isMine: boolean;
+  clickedReviewId?: number;
 }
 
 // export type ProjectFeedback = {
@@ -69,6 +70,7 @@ export const FeedbackItem = ({
   type,
   projectOrCodeId,
   isMine,
+  clickedReviewId,
 }: FeedbackItemProps) => {
   // 피드백 신고 관련 state
   const [forceClose, setForceClose] = useState(false);
@@ -79,8 +81,14 @@ export const FeedbackItem = ({
   const modifyInputRef = useRef<HTMLInputElement | null>(null);
 
   const invalidateQuery = () => {
-    const queryKey = type === "project" ? "projectInfo" : "codeInfo";
-    queryClient.invalidateQueries([queryKey, projectOrCodeId]);
+    if (type === "project") {
+      queryClient.invalidateQueries(["projectInfo", projectOrCodeId]);
+    } else if (type === "review") {
+      Promise.all([
+        queryClient.invalidateQueries(["codeInfo", projectOrCodeId]),
+        queryClient.invalidateQueries(["codeReviewFeedbacks", clickedReviewId]),
+      ]);
+    }
   };
 
   // 피드백 좋아요/좋아요 취소
@@ -218,7 +226,10 @@ export const FeedbackItem = ({
                   type="like"
                   isChecked={feedback.liked}
                   cnt={feedback.like}
-                  onClickFunc={handleFeedbackLike}
+                  onClickFunc={(e) => {
+                    e.stopPropagation();
+                    handleFeedbackLike();
+                  }}
                 />
                 <Selection
                   selectionList={

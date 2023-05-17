@@ -121,11 +121,12 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
             type="review"
             feedbacks={codeReviewInfoQuery.data?.reReviews || []}
             projectOrCodeId={Number(codeId)}
+            clickedReviewId={clickedReviewId}
           />
         </FlexDiv>
       </FlexDiv>
 
-      <LoadingSpinner isOpen={Boolean(status === "loading")} />
+      {/* <LoadingSpinner isOpen={Boolean(status === "loading")} /> */}
     </>
   );
 };

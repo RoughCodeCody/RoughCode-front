@@ -28,11 +28,13 @@ export const CodeReviewList = ({
     <ReviewListWrapper>
       <FlexDiv direction="column" width="100%" gap="1rem">
         <FlexDiv direction="column" gap="0.5rem">
-          <Text color="main" bold={true} padding="1rem 0 0 0" size="0.9rem">
+          <Text color="main" bold={true} size="0.9rem">
             이 코드에 대한 코드 리뷰 목록
           </Text>
           <Text color="font" size="0.5rem">
-            스크롤, 클릭하세요!
+            {reviews.length !== 0
+              ? "스크롤, 클릭하세요!"
+              : "아직 코드 리뷰가 없어요"}
           </Text>
         </FlexDiv>
 
