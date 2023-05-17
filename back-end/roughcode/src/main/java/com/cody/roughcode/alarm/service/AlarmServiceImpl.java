@@ -73,6 +73,17 @@ public class AlarmServiceImpl implements AlarmService {
         alarmRepository.deleteById(new ObjectId(alarmId));
     }
 
+    @Override
+    public void deleteAllAlarm(Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        List<Alarm> alarm = alarmRepository.findByUserId(user.getUsersId());
+        if(alarm == null) throw new NullPointerException("알림을 가져오지 못했습니다");
+
+        alarmRepository.deleteAll(alarm);
+    }
+
     private final EntityManager entityManager;
 
     @Override

@@ -15,6 +15,7 @@ import java.util.List;
 public interface AlarmRepository extends MongoRepository<Alarm, String> {
     List<Alarm> findByUserIdOrderByCreatedDateDesc(Long userId);
 
+    List<Alarm> findByUserId(Long userId);
     Alarm findById(ObjectId alarmId);
     void deleteById(ObjectId alarmId);
 
