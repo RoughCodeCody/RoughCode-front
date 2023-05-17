@@ -34,3 +34,16 @@ export const NavbarContainer = styled.div`
 export const Main = styled.main`
   flex: 1 1 0%;
 `;
+
+export const Footer = styled.footer`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: var(--placeholder-color);
+  position: relative;
+  margin-top: 3rem;
+  width: 100vw;
+  height: 7rem;
+`;

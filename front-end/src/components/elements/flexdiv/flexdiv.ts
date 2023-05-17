@@ -19,10 +19,18 @@ export const FlexDiv = styled.div<{
   margin?: string;
   color?: string;
   border?: string;
+  borderTop?: string;
+  borderRight?: string;
+  borderBottom?: string;
+  borderLeft?: string;
   radius?: string;
   pointer?: boolean;
   overflow?: string;
   shadow?: boolean;
+  top?: string;
+  right?: string;
+  bottom?: string;
+  left?: string;
 }>`
   ${({
     position,
@@ -43,10 +51,18 @@ export const FlexDiv = styled.div<{
     margin,
     color,
     border,
+    borderTop,
+    borderRight,
+    borderBottom,
+    borderLeft,
     radius,
     pointer,
     overflow,
     shadow,
+    top,
+    right,
+    bottom,
+    left,
   }) => css`
     display: flex;
     flex-direction: ${direction || "row"};
@@ -68,10 +84,18 @@ export const FlexDiv = styled.div<{
     padding-bottom: ${paddingY || "none"};
     margin: ${margin || "0"};
     background-color: ${color ? "var(--" + color + "-color)" : "none"};
+    border-top: ${borderTop ? borderTop : "none"};
+    border-right: ${borderRight ? borderRight : "none"};
+    border-bottom: ${borderBottom ? borderBottom : "none"};
+    border-left: ${borderLeft ? borderLeft : "none"};
     border: ${border ? border : "none"};
     border-radius: ${radius ? radius : "0"};
     cursor: ${pointer ? "pointer" : "auto"};
     overflow: ${overflow ? overflow : "none"};
     box-shadow: ${shadow ? "0px 4px 4px rgba(0, 0, 0, 0.05)" : "none"};
+    top: ${top ? top : "none"};
+    right: ${right ? right : "none"};
+    bottom: ${bottom ? bottom : "none"};
+    left: ${left ? left : "none"};
   `}
 `;
