@@ -10,6 +10,7 @@ public interface AlarmService {
     List<AlarmRes> getAlarmList(Long usersId);
 
     void deleteAlarm(String alarmId, Long usersId);
+    void deleteAllAlarm(Long usersId);
 
     void deleteLimited();
 }
