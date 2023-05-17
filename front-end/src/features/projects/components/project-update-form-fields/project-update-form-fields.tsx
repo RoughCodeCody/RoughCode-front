@@ -129,7 +129,7 @@ export const ProjectUpdateFormFields = ({
           initialValue={projectUpdateInitialValues.content}
         />
       ) : null}
-      <TagSearch />
+      <TagSearch whichTag="project" />
       <input id="input-thumbnail" type="file" />
 
       <SubmitButtonWrapper>

@@ -16,7 +16,7 @@ const initialState: ProjectFeedbackSelectionState = {
 export const useProjectFeedbackSelectionStore = create<
   ProjectFeedbackSelectionState & ProjectFeedbackSelectionAction
 >((set) => ({
-  selectedProjectFeedbackId: [],
+  ...initialState,
   toggleProjectFeedbackSelection: (id) => {
     set((state) => ({
       selectedProjectFeedbackId: state.selectedProjectFeedbackId.includes(id)

@@ -19,7 +19,6 @@ export const TiptapEditor = ({
   initialValue,
   minHeight = "10rem",
 }: TiptapEditorProps) => {
-  // console.log(initialValue);
   const editor = useEditor({
     extensions: [
       StarterKit,
