@@ -8,11 +8,9 @@ interface TitleProps {
 
 export const Title = ({ title, description, color }: TitleProps) => {
   return (
-    <>
-      <TitleContainer>
-        <TitleText color={color}>{title}</TitleText>
-        <Description color={color}>{description}</Description>
-      </TitleContainer>
-    </>
+    <TitleContainer>
+      <TitleText color={color}>{title}</TitleText>
+      <Description color={color}>{description}</Description>
+    </TitleContainer>
   );
 };

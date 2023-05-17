@@ -1,3 +1,5 @@
+import { useRouter } from "next/router";
+
 import {
   BottomHeader,
   FlexDiv,
@@ -7,17 +9,52 @@ import {
 import { Head } from "@/components/head";
 import { ProjectFeedbacksSidebar } from "@/features/feedbacks";
 
-import { usePostProject } from "../api";
+import { postProjectThumbnail, usePostProject, useProjectInfo } from "../api";
 import { ProjectUpdateForm } from "../components/project-update-form";
 import { ProjectUpdateValues } from "../types";
 
 export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
-  const projectIdNum = Number(projectId);
+  const router = useRouter();
   const postProjectMutation = usePostProject();
+  const projectInfoQuery = useProjectInfo({ projectId });
+  const projectIdNum = Number(projectId);
+
+  if (!projectInfoQuery.data) {
+    return <>Loading...</>;
+  }
+
+  const projectUpdateInitialValues = {
+    title: projectInfoQuery.data?.title || "",
+    notice: projectInfoQuery.data?.notice || "",
+    introduction: projectInfoQuery.data?.introduction || "",
+    content: projectInfoQuery.data?.content || "",
+    url: projectInfoQuery.data?.url || "",
+    projectId: Number(projectId),
+    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => Number(tag)),
+    selectedFeedbacksId: projectInfoQuery.data?.feedbacks.map((feedback) =>
+      Number(feedback.feedbackId)
+    ),
+  };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
-    const todo = await postProjectMutation.mutateAsync({ data: values });
-    // console.log(todo);
+    const projectIdNum = await postProjectMutation.mutateAsync({
+      data: values,
+    });
+    const projectIdStr = String(projectIdNum);
+
+    const inputThumbnail = document.getElementById(
+      "input-thumbnail"
+    ) as HTMLInputElement;
+
+    const formData = new FormData();
+    formData.append("thumbnail", inputThumbnail?.files?.item(0) as File);
+
+    await postProjectThumbnail({
+      data: formData,
+      projectId: projectIdStr,
+    });
+
+    router.push(`/project/${projectIdStr}`);
   };
 
   return (
@@ -33,7 +70,11 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
             title="프로젝트 버전 업"
             description="프로젝트의 버전을 올립니다."
           />
-          <ProjectUpdateForm projectId={projectIdNum} onSubmit={onSubmit} />
+          <ProjectUpdateForm
+            projectId={projectIdNum}
+            onSubmit={onSubmit}
+            projectUpdateInitialValues={projectUpdateInitialValues}
+          />
         </WhiteBoxNoshad>
         <ProjectFeedbacksSidebar projectId={projectId} />
       </FlexDiv>
