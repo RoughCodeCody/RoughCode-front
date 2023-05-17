@@ -22,10 +22,10 @@ import java.util.Objects;
 public class Projects extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT")
     private Long projectsId;
 
-    @Column(name = "num", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "num", nullable = false, columnDefinition = "BIGINT")
     private Long num;
 
     @Column(name = "version", nullable = false)

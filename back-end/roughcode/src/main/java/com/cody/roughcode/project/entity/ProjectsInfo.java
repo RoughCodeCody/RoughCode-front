@@ -19,7 +19,7 @@ import java.util.List;
 public class ProjectsInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(nullable = false, columnDefinition = "BIGINT")
     private Long id;
 
     @Column(columnDefinition = "text")

@@ -22,7 +22,7 @@ import java.util.List;
 public class Codes extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "codes_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "codes_id", nullable = false, columnDefinition = "BIGINT")
     private Long codesId;
 
     @Column(name = "num", nullable = false)

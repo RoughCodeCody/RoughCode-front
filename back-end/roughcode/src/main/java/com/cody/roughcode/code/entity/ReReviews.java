@@ -20,7 +20,7 @@ import java.util.List;
 public class ReReviews extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT")
     private Long reReviewsId;
 
     @Builder.Default
