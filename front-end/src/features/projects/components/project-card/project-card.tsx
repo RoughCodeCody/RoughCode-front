@@ -113,7 +113,7 @@ export const ProjectCard = ({
           width="100%"
           height="3rem"
           justify="space-between"
-          paddingX="2rem"
+          padding="0 1rem 0 2rem"
           pointer={true}
         >
           <FlexDiv>
@@ -125,6 +125,7 @@ export const ProjectCard = ({
             />
             <Text>{closed ? "닫힘" : "열림"}</Text>
           </FlexDiv>
+          {/* 좋아요 리뷰 아이콘 */}
           <FlexDiv>
             <Count type="like" isChecked={true} cnt={likeCnt} />
             <Count type="code" isChecked={true} cnt={feedbackCnt} />
@@ -182,11 +183,6 @@ export const ProjectCard = ({
                 {title}
               </Text>
             </FlexDiv>
-            {/* 좋아요 리뷰 아이콘 */}
-            {/* <FlexDiv>
-              <Count type={"like"} cnt={likeCnt} setCnt={() => {}} />
-              <Count type={"code"} cnt={feedbackCnt} setCnt={() => {}} />
-            </FlexDiv> */}
           </FlexDiv>
           <FlexDiv
             width="100%"
