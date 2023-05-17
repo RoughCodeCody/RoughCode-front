@@ -7,6 +7,9 @@ import { Text } from "@/components/elements";
 import { TagChipSub } from "@/components/elements";
 import { Count } from "@/components/elements/count";
 
+import dog from "@/assets/dog.png";
+import cryingDuck from "@/assets/crying-duck-face.png";
+
 import {
   ThumbnailContainer,
   ImageContainer,
@@ -91,20 +94,42 @@ export const ProjectCard = ({
     <Link href={`/project/${projectId}`}>
       <FlexDiv
         width="24rem"
-        height="30rem"
+        height="31rem"
         direction="column"
+        color={closed ? "shad" : "white"}
         border={
           isHovered
             ? "solid 2px var(--main-color)"
             : "solid 2px var(--shad-color)"
         }
         radius="32px"
-        padding="2rem 0 1rem 0"
+        padding="2px 0 1rem 0"
         shadow={true}
         pointer={true}
         onMouseEnter={handleMouseEnterCard}
         onMouseLeave={handleMouseLeaveCard}
       >
+        <FlexDiv
+          width="100%"
+          height="3rem"
+          justify="space-between"
+          paddingX="2rem"
+          pointer={true}
+        >
+          <FlexDiv>
+            <Image
+              src={closed ? cryingDuck : dog}
+              width={30}
+              height={30}
+              alt="face"
+            />
+            <Text>{closed ? "닫힘" : "열림"}</Text>
+          </FlexDiv>
+          <FlexDiv>
+            <Count type="like" isChecked={true} cnt={likeCnt} />
+            <Count type="code" isChecked={true} cnt={feedbackCnt} />
+          </FlexDiv>
+        </FlexDiv>
         {/* 썸네일 */}
         <ThumbnailContainer>
           <ImageContainer>
