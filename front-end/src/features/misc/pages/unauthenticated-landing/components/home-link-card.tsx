@@ -13,6 +13,7 @@ import {
 
 import { API_URL } from "@/config";
 import { Text } from "@/components/elements/text";
+import { FlexDiv } from "@/components/elements";
 
 interface HomeLinkCardProps {
   title: string;
@@ -48,13 +49,20 @@ export const HomeLinkCard = ({
           </Link>
         </LinkCardTitle>
         <LinkCardContent>
-          <Text size="1.1rem" bold={true} lineHeight="1.6rem">
+          <Text
+            size="1.1rem"
+            bold={true}
+            lineHeight="1.6rem"
+            whiteSpace="pre-line"
+          >
             {content}
           </Text>
         </LinkCardContent>
-        <LinkCardImage>
-          <Image src={imageUrl} width={400} height={300} alt={title} />
-        </LinkCardImage>
+        <FlexDiv>
+          <LinkCardImage>
+            <Image src={imageUrl} width={250} height={250} alt={title} />
+          </LinkCardImage>
+        </FlexDiv>
       </LinkCard>
     </>
   );

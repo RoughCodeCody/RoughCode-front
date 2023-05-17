@@ -52,7 +52,9 @@ export type CodeInfoResult = {
   projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
   content: string; // 코드 상세 설명
   liked: boolean; // 내가 좋아요 눌렀는지 여부
+  language: string;
   favorite: boolean; // 내가 즐겨찾기 눌렀는지 여부
+  language: string;
   versions: CodeVersion[];
   reviews: Review[];
 };
@@ -90,6 +92,7 @@ export type codeForFeedbackModify = {
   userName: string; // 작성자 이름
   projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
   projectId: number; // 연결된 프로젝트 id(없을 경우 null)
+  language: string;
 };
 
 export type CodeReviewInfoResult = {
@@ -106,4 +109,16 @@ export type CodeReviewInfoResult = {
   date: Date; // 코드 리뷰 수정 날짜
   reReviews: CodeReviewFeedback[];
   code: codeForFeedbackModify;
+  language: string;
+};
+
+export type CodeUpdateValues = {
+  title: string;
+  githubUrl: string;
+  content: string;
+  codeId: number;
+  projectId: number | null;
+  selectedTagsId: number[];
+  selectedReviewsId: number[];
+  language: string;
 };

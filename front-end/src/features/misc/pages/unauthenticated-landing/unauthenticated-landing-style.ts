@@ -3,7 +3,6 @@ import banner from "@/assets/banner.jpg";
 
 const UnauthHomeContainer = styled.div`
   width: 100%;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,6 +85,7 @@ const LinkCardwrapper = styled.div`
   gap: 10px;
   width: 100%;
   height: 100%;
+  margin: 1rem 0;
 `;
 export {
   UnauthHomeContainer,

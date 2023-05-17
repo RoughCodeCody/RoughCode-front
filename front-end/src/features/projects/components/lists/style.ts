@@ -1,12 +1,17 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 export const ProjectCardGrid = styled.div`
   width: 100%;
   max-width: 1440px;
   display: grid;
-  grid-template-columns: repeat(
-    3,
-    1fr
-  ); // 3개의 열을 만듭니다. 각 열의 너비는 같습니다.
-  gap: 3rem; // 그리드 셀 사이의 간격을 지정합니다. 필요에 따라 조정할 수 있습니다.
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+
+  @media (max-width: 1350px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 860px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;

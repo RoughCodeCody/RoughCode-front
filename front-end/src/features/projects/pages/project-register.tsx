@@ -1,3 +1,5 @@
+import { useRouter } from "next/router";
+
 import {
   BottomHeader,
   FlexDiv,
@@ -12,26 +14,28 @@ import { ProjectUpdateForm } from "../components/project-update-form";
 import { ProjectUpdateValues } from "../types";
 
 export const ProjectRegister = () => {
+  const router = useRouter();
   const postProjectMutation = usePostProject();
 
   const onSubmit = async (values: ProjectUpdateValues) => {
-    const postProjectRes = await postProjectMutation.mutateAsync({
+    const projectIdNum = await postProjectMutation.mutateAsync({
       data: values,
     });
+    const projectIdStr = String(projectIdNum);
 
-    // const inputThumbnail = document.getElementById(
-    //   "input-thumbnail"
-    // ) as HTMLInputElement;
+    const inputThumbnail = document.getElementById(
+      "input-thumbnail"
+    ) as HTMLInputElement;
 
-    // const formData = new FormData();
-    // formData.append("thumbnail", inputThumbnail?.files?.item(0) as File);
+    const formData = new FormData();
+    formData.append("thumbnail", inputThumbnail?.files?.item(0) as File);
 
-    console.log(postProjectRes);
+    await postProjectThumbnail({
+      data: formData,
+      projectId: projectIdStr,
+    });
 
-    // const res = await postProjectThumbnail({
-    //   data: { thumbnail: formData },
-    //   projectId: postProjectRes.projectId,
-    // });
+    router.push(`/project/${projectIdStr}`);
   };
 
   return (

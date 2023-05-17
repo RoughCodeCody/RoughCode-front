@@ -8,6 +8,13 @@ const GlobalStyles = createGlobalStyle`
     font-style: normal;
   }
 
+  @font-face {
+    font-family: 'NEXON Lv2 Gothic';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv2 Gothic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   :root {
     /* Color */
     --bg-color: #F8F9FA;
@@ -60,6 +67,7 @@ const GlobalStyles = createGlobalStyle`
   body {
     background-color: var(--bg-color);
     line-height: 1;
+    font-family: 'NEXON Lv2 Gothic', 'Pretendard-Regular', Arial, Helvetica, sans-serif;
   }
 
   ol, ul {
