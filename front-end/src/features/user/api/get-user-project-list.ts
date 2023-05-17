@@ -49,7 +49,7 @@ export const useUserProjectList = ({
     ...config,
     queryKey: ["userProjectList", endPoint],
     queryFn: ({ pageParam = 0 }) => {
-      const params = { size: 3, page: pageParam };
+      const params = { size: 6, page: pageParam };
       return getUserProjectList({ endPoint, params });
     },
   });

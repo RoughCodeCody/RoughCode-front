@@ -10,11 +10,13 @@ import { Editor } from "./style";
 
 type TiptapEditorProps = {
   onChange: (...event: any[]) => void;
+  initialValue?: string;
   minHeight?: string;
 };
 
 export const TiptapEditor = ({
   onChange,
+  initialValue,
   minHeight = "10rem",
 }: TiptapEditorProps) => {
   const editor = useEditor({
@@ -27,6 +29,7 @@ export const TiptapEditor = ({
         limit: 10000,
       }),
     ],
+    content: initialValue,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange(html);

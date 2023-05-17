@@ -31,6 +31,7 @@ interface FeedbackItemProps {
   type: "project" | "review";
   projectOrCodeId: number;
   isMine: boolean;
+  clickedReviewId?: number;
 }
 
 // export type ProjectFeedback = {
@@ -69,6 +70,7 @@ export const FeedbackItem = ({
   type,
   projectOrCodeId,
   isMine,
+  clickedReviewId,
 }: FeedbackItemProps) => {
   // 피드백 신고 관련 state
   const [forceClose, setForceClose] = useState(false);
@@ -79,8 +81,14 @@ export const FeedbackItem = ({
   const modifyInputRef = useRef<HTMLInputElement | null>(null);
 
   const invalidateQuery = () => {
-    const queryKey = type === "project" ? "projectInfo" : "codeInfo";
-    queryClient.invalidateQueries([queryKey, projectOrCodeId]);
+    if (type === "project") {
+      queryClient.invalidateQueries(["projectInfo", projectOrCodeId]);
+    } else if (type === "review") {
+      Promise.all([
+        queryClient.invalidateQueries(["codeInfo", projectOrCodeId]),
+        queryClient.invalidateQueries(["codeReviewFeedbacks", clickedReviewId]),
+      ]);
+    }
   };
 
   // 피드백 좋아요/좋아요 취소
@@ -131,13 +139,16 @@ export const FeedbackItem = ({
   const handleDeleteFeedback = () => {
     if (isProject(feedback)) {
       deleteProjectFeedbackQuery.mutate(feedback.feedbackId, {
+        onSettled: () => setForceClose(true),
         onSuccess: () => invalidateQuery(),
       });
     } else if (isCode(feedback)) {
       deleteCodeReviewFeedbackQuery.mutate(feedback.reReviewId, {
+        onSettled: () => setForceClose(true),
         onSuccess: () => invalidateQuery(),
       });
     }
+    setForceClose(false);
   };
 
   // 피드백 신고
@@ -152,7 +163,6 @@ export const FeedbackItem = ({
           alert("신고하였습니다");
         },
       });
-      setForceClose(false);
     } else if (isCode(feedback)) {
       putReviewFeedbackComplaintQuery.mutate(feedback.reReviewId, {
         onSettled: () => setForceClose(true),
@@ -161,8 +171,8 @@ export const FeedbackItem = ({
           alert("신고하였습니다");
         },
       });
-      setForceClose(false);
     }
+    setForceClose(false);
   };
 
   const selectionListMine = {
@@ -190,11 +200,23 @@ export const FeedbackItem = ({
           <FlexDiv width="100%" justify="space-between">
             <FeedbackModifyInput
               value={newContent}
+              defaultValue={feedback.content}
               ref={modifyInputRef}
               onChange={(e) => setNewContent(e.target.value)}
             />
 
-            <Btn text="수정 완료" onClickFunc={handlePutFeedback} />
+            <Btn
+              text="수정 완료"
+              fontSize="0.8rem"
+              margin="0 0.3rem"
+              onClickFunc={handlePutFeedback}
+            />
+            <Btn
+              text="취소"
+              fontSize="0.8rem"
+              bgColor="red"
+              onClickFunc={() => setIsModifying(false)}
+            />
           </FlexDiv>
         </>
       ) : (
@@ -218,7 +240,10 @@ export const FeedbackItem = ({
                   type="like"
                   isChecked={feedback.liked}
                   cnt={feedback.like}
-                  onClickFunc={handleFeedbackLike}
+                  onClickFunc={(e) => {
+                    e.stopPropagation();
+                    handleFeedbackLike();
+                  }}
                 />
                 <Selection
                   selectionList={

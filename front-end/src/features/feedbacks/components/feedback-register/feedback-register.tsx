@@ -9,9 +9,14 @@ import { FeedbackRegisterTextarea } from "./style";
 type FeedbackRegisterProps = {
   type: "project" | "review";
   id: number;
+  codeId?: number;
 };
 
-export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
+export const FeedbackRegister = ({
+  type,
+  id,
+  codeId,
+}: FeedbackRegisterProps) => {
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
   const postProjectFeedbackQuery = usePostProjectFeedback();
@@ -22,34 +27,27 @@ export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
     if (!content.length) return;
 
     if (type === "project") {
-      postProjectFeedbackQuery.mutate(
-        {
-          projectId: id,
-          content,
-        },
-        {
-          onSuccess: (_, newFeedback) =>
-            queryClient.invalidateQueries([
-              "projectInfo",
-              newFeedback.projectId,
-            ]),
-          onSettled: () => setContent(""),
-        }
-      );
+      postProjectFeedbackQuery.mutate({
+        projectId: id,
+        content,
+      });
     } else if (type === "review") {
       postCodeReviewFeedbackQuery.mutate(
         { id, content },
         {
-          onSuccess: (_, newFeedback) =>
-            queryClient.invalidateQueries(["projectInfo", newFeedback.id]),
-          onSettled: () => setContent(""),
+          onSuccess: (_, { id }) =>
+            Promise.all([
+              queryClient.invalidateQueries(["codeInfo", codeId]),
+              queryClient.invalidateQueries(["codeReviewFeedbacks", id]),
+            ]),
         }
       );
     }
+    setContent("");
   };
 
   return (
-    <FlexDiv direction="column" width="80%" minWidth="850px">
+    <FlexDiv direction="column" width="75%" minWidth="850px">
       <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
         {type === "project"
           ? "이 프로젝트에 피드백을 남겨주세요!"
@@ -69,7 +67,10 @@ export const FeedbackRegister = ({ type, id }: FeedbackRegisterProps) => {
                 : "이 코드 리뷰에 대한 건설적인 의견을 자유롭게 남겨주세요"
             }
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length > 500) return;
+              setContent(e.target.value);
+            }}
             onKeyUp={(e) => {
               if (e.key === "Enter" && !e.shiftKey) postFeedback();
             }}

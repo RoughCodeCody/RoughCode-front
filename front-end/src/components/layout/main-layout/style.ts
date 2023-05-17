@@ -16,6 +16,7 @@ export const LogoText = styled.span`
 
 export const FlexContainer = styled.div`
   display: flex;
+  overflow-x: hidden;
   flex-flow: column nowrap;
 `;
 
@@ -43,7 +44,7 @@ export const Footer = styled.footer`
   gap: 0.3rem;
   background-color: var(--placeholder-color);
   position: relative;
-  margin-top: 3rem;
+  margin-top: 8rem;
   width: 100vw;
   height: 7rem;
 `;

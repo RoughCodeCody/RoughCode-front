@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { FlexDiv, Text } from "@/components/elements";
+import { TabDiv } from "../components/common-layout/style";
 
 import {
   CommonLayout,
@@ -24,20 +25,18 @@ export const MyPageContent = ({
 
   return (
     <CommonLayout title={title} description={description}>
-      <FlexDiv
+      <TabDiv
         width="100%"
         paddingX="4rem"
         justify="start"
         borderBottom="solid 2px var(--main-color)"
       >
-        <FlexDiv
+        <TabDiv
           position="relative"
           top={isProject ? "2px" : "1px"}
           radius="20px 20px 0 0"
           padding="0.7rem 2rem 0.3rem 2rem"
-          borderTop={isProject ? "solid 2px var(--main-color)" : "none"}
-          borderLeft={isProject ? "solid 2px var(--main-color)" : "none"}
-          borderRight={isProject ? "solid 2px var(--main-color)" : "none"}
+          border={isProject ? "solid 2px var(--main-color)" : "none"}
           borderBottom="solid 2px var(--bg-color)"
           pointer={true}
           onClick={() => {
@@ -54,15 +53,13 @@ export const MyPageContent = ({
           >
             프로젝트
           </Text>
-        </FlexDiv>
-        <FlexDiv
+        </TabDiv>
+        <TabDiv
           position="relative"
           top={!isProject ? "2px" : "1px"}
           radius="20px 20px 0 0"
           padding="0.7rem 2rem 0.3rem 2rem"
-          borderTop={!isProject ? "solid 2px var(--main-color)" : "none"}
-          borderLeft={!isProject ? "solid 2px var(--main-color)" : "none"}
-          borderRight={!isProject ? "solid 2px var(--main-color)" : "none"}
+          border={!isProject ? "solid 2px var(--main-color)" : "none"}
           borderBottom="solid 2px var(--bg-color)"
           pointer={true}
           onClick={() => {
@@ -79,30 +76,13 @@ export const MyPageContent = ({
           >
             코드
           </Text>
-        </FlexDiv>
-      </FlexDiv>
+        </TabDiv>
+      </TabDiv>
       {isProject ? (
         <ProjectContainer endPoint={endPoint} />
       ) : (
         <CodeContainer endPoint={endPoint} />
       )}
-
-      {/* {isProject ? (
-        <ContentsWrapper maxWidth="1280px" wrapperTitle="프로젝트">
-          <ProjectContainer endPoint={endPoint} />
-        </ContentsWrapper>
-      ) : (
-        <ContentsWrapper maxWidth="1280px" wrapperTitle="코드">
-          <CodeContainer endPoint={endPoint} />
-        </ContentsWrapper>
-      )} */}
-
-      {/* <ContentsWrapper maxWidth="1280px" wrapperTitle="프로젝트">
-        <ProjectContainer endPoint={endPoint} />
-      </ContentsWrapper>
-      <ContentsWrapper maxWidth="1280px" wrapperTitle="코드">
-        <CodeContainer endPoint={endPoint} />
-      </ContentsWrapper> */}
     </CommonLayout>
   );
 };

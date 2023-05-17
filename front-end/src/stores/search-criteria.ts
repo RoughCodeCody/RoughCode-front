@@ -29,7 +29,7 @@ type SearchCriteriaStore = {
 const initialState: SearchCriteria = {
   sort: "createdDate",
   page: 0,
-  size: 9,
+  size: 6,
   keyword: "",
   tagIdList: [],
   closed: 1,

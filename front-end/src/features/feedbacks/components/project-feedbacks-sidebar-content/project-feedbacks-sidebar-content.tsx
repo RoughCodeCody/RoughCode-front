@@ -14,7 +14,9 @@ export const ProjectFeedbacksSidebarContent = ({
   projectId,
 }: ProjectFeedbacksSidebarContentProps) => {
   // server states
-  const projectFeedbacksQuery = useProjectFeedbacks({ projectId });
+  const projectFeedbacksQuery = useProjectFeedbacks({
+    projectId: Number(projectId),
+  });
 
   // client states
   const {
@@ -33,10 +35,9 @@ export const ProjectFeedbacksSidebarContent = ({
   // fill initial selection status on each project feedback
   useEffect(() => {
     projectFeedbacksQuery.data?.forEach((projectFeedback) => {
-      console.log(projectFeedback, "hmm");
       toggleProjectFeedbackSelection(projectFeedback.feedbackId);
     });
-  }, [projectFeedbacksQuery, toggleProjectFeedbackSelection]);
+  }, [projectFeedbacksQuery.data, toggleProjectFeedbackSelection]);
 
   // isLoading
   if (projectFeedbacksQuery.isLoading) {

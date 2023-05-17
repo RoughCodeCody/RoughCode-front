@@ -68,7 +68,15 @@ export const CodeList = () => {
             type="codeReview"
           />
         </FlexDiv>
-        <FlexDiv direction="column" width="100%" height="100%" gap="1rem">
+        <FlexDiv
+          direction="column"
+          width="100%"
+          height="100%"
+          gap="1rem"
+          paddingX="5rem"
+          maxWidth="1024px"
+          minWidth="720px"
+        >
           {status === "loading" && <Spinner size={700} />}
           {status === "success" && data.pages[0].list.length === 0 && (
             <NotFound size={700} />
@@ -93,7 +101,7 @@ export const CodeList = () => {
           )}
         </FlexDiv>
       </FlexDiv>
-      <WriteFloatBtn navTo="/code-reviews/create" />
+      <WriteFloatBtn navTo="/code-review/code/register" />
       <BackToTop />
     </FlexDiv>
   );

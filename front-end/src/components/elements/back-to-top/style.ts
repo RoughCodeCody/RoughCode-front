@@ -8,6 +8,7 @@ const BackToTopWrapper = styled(WhiteBoxShad)<{ show: boolean }>`
   right: 4rem;
   bottom: 2rem;
   cursor: pointer;
+  z-index: 1000;
   opacity: ${({ show }) => (show ? "1" : "0")};
   transition: all 0.3s ease;
   ${({ theme }) => theme.MIXINS.flexBox()}
