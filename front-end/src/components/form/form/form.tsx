@@ -15,11 +15,11 @@ type FormProps<
   TFormValues extends FieldValues = FieldValues,
   Schema extends ZodTypeAny = ZodTypeAny
 > = {
-  // onSubmit: SubmitHandler<TFormValues>;
   children: (methods: UseFormReturn<TFormValues>) => ReactNode;
   options?: UseFormProps<TFormValues>;
   id?: string;
   schema?: Schema;
+  onSubmit?: SubmitHandler<TFormValues>;
 };
 
 export const Form = <

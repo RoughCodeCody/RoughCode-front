@@ -85,16 +85,19 @@ export const CodeUpdateFormFields = ({
   register("selectedTagsId");
   register("selectedReviewsId");
 
-  const onGitHubBtnClick = async (e) => {
+  const onGitHubBtnClick = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
+    const eventTarget = e.target as HTMLButtonElement;
     const query = await codeQuery.refetch();
-    e.target.disabled = true;
+    eventTarget.disabled = true;
 
     if (query?.status === "success") {
       setIsValidUrl(true);
     }
     if (query?.status === "error") {
-      e.target.disabled = false;
+      eventTarget.disabled = false;
       setIsValidUrl(false);
     }
   };

@@ -93,9 +93,12 @@ export const ProjectUpdateFormFields = ({
   register("selectedTagsId");
   register("selectedFeedbacksId");
 
-  const onUrlInspectionBtnClick = async (e) => {
+  const onUrlInspectionBtnClick = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
-    e.target.disabled = true;
+    const eventTarget = e.target as HTMLButtonElement;
+    eventTarget.disabled = true;
     const query = await checkProjectUrlQuery.refetch();
     if (query.data) {
       console.log(query.data);
@@ -103,7 +106,7 @@ export const ProjectUpdateFormFields = ({
       // setIsFixedUrl(getValues("url"));
     } else {
       setIsValidUrl(false);
-      e.target.disabled = false;
+      eventTarget.disabled = false;
     }
     // console.log(formState.errors);
   };
