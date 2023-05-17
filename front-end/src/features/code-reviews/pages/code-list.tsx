@@ -101,7 +101,7 @@ export const CodeList = () => {
           )}
         </FlexDiv>
       </FlexDiv>
-      <WriteFloatBtn navTo="/code-reviews/create" />
+      <WriteFloatBtn navTo="/code-review/code/register" />
       <BackToTop />
     </FlexDiv>
   );

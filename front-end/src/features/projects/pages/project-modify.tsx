@@ -14,10 +14,10 @@ import { ProjectUpdateForm } from "../components/project-update-form";
 import { ProjectUpdateValues } from "../types";
 
 export const ProjectModify = ({ projectId }: { projectId: string }) => {
+  const projectIdNum = Number(projectId);
   const router = useRouter();
   const putProjectMutation = usePutProject();
-  const projectInfoQuery = useProjectInfo({ projectId });
-  const projectIdNum = Number(projectId);
+  const projectInfoQuery = useProjectInfo({ projectId: projectIdNum });
 
   if (!projectInfoQuery.data) {
     return <>Loading...</>;
