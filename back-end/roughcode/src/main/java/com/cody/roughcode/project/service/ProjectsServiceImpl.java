@@ -73,6 +73,7 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectTagsRepository projectTagsRepository;
     private final CodesRepository codesRepository;
     private final FeedbacksRepository feedbacksRepository;
+    private final FeedbacksComplainsRepository feedbacksComplainsRepository;
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final ProjectFavoritesRepository projectFavoritesRepository;
     private final ProjectFavoritesQRepository projectFavoritesQRepository;
@@ -1026,20 +1027,28 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(feedbacks.getUsers() != null && feedbacks.getUsers().getUsersId().equals(users.getUsersId()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "피드백 작성자와 신고 유저가 동일합니다");
 
-        List<String> complainList = (feedbacks.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
-
         if(feedbacks.getComplained() != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 피드백입니다");
-        if(complainList.contains(String.valueOf(usersId)))
+
+        FeedbacksComplains complains = feedbacksComplainsRepository.findByFeedbacksAndUsers(feedbacks, users);
+        if(complains != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 피드백입니다");
 
+        List<FeedbacksComplains> complainList = feedbacksComplainsRepository.findByFeedbacks(feedbacks);
+
         log.info(complainList.size() + "번 신고된 피드백입니다");
-        complainList.add(String.valueOf(usersId));
-        feedbacks.setComplaint(complainList);
 
-        if(complainList.size() >= 5) feedbacks.setComplained();
+        FeedbacksComplains newComplain = FeedbacksComplains.builder()
+                .feedbacks(feedbacks)
+                .users(users)
+                .build();
 
-        feedbacksRepository.save(feedbacks);
+        feedbacksComplainsRepository.save(newComplain);
+
+        if(complainList.size() + 1 >= 5){
+            feedbacks.setComplained();
+            feedbacksRepository.save(feedbacks);
+        }
 
         return (feedbacks.getComplained() == null)? 0 : 1;
     }

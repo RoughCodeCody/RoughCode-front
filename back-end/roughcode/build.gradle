@@ -88,6 +88,8 @@ dependencies {
     // query dsl 추가
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    compileOnly 'org.hibernate.orm:hibernate-jpamodelgen:6.2.1.Final'
 }
 
 tasks.named('test') {
