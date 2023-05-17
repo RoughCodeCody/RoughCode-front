@@ -7,6 +7,7 @@ import {
   WhiteBoxNoshad,
 } from "@/components/elements";
 import { Head } from "@/components/head";
+import { convertGitHubUrl } from "@/util/convert-github-url";
 
 import { usePostCode } from "../api/post-code";
 import { CodeReviewSidebar } from "../components/code-review-sidebar";
@@ -18,8 +19,12 @@ export const CodeRegister = () => {
   const postCodeMutation = usePostCode();
 
   const onSubmit = async (values: CodeUpdateValues) => {
+    const newValues = {
+      ...values,
+      githubUrl: convertGitHubUrl(values.githubUrl),
+    };
     const codeIdNum = await postCodeMutation.mutateAsync({
-      data: values,
+      data: newValues,
     });
     const codeIdStr = String(codeIdNum);
     router.push(`/code-review/${codeIdStr}`);
@@ -31,7 +36,7 @@ export const CodeRegister = () => {
       <BottomHeader locations={["코드 등록"]} />
       <FlexDiv direction="row" align="flex-start" gap="3rem" padding="2rem 0">
         <WhiteBoxNoshad width="65%" padding="2.25rem">
-          <Title title="프로젝트 등록" description="프로젝트를 등록합니다." />
+          <Title title="코드 등록" description="코드를 등록합니다." />
           <CodeUpdateForm codeId={-1} onSubmit={onSubmit} />
         </WhiteBoxNoshad>
         <CodeReviewSidebar />

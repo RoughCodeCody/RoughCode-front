@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { SubmitHandler, UseFormReturn } from "react-hook-form";
 
 import { useProjectFeedbackSelectionStore } from "@/features/feedbacks";
 import { FlexDiv } from "@/components/elements";
@@ -12,24 +12,41 @@ import { useCheckProjectUrl } from "../../api";
 import { ProjectUpdateValues } from "../../types";
 import { UrlInspectionBtn, SubmitButtonWrapper, SubmitButton } from "./style";
 import { ThumbnailField } from "./thumbnail-field";
+import { InputSuccessMsg, InputErrorMsg } from "@/components/form";
 
 type ProjectUpdateFormFieldsProps = {
   methods: UseFormReturn<ProjectUpdateValues>;
   projectId: number;
   projectUpdateInitialValues?: ProjectUpdateValues & { img: string };
+  onSubmit: SubmitHandler<ProjectUpdateValues>;
 };
 
 export const ProjectUpdateFormFields = ({
   methods,
   projectId,
   projectUpdateInitialValues,
+  onSubmit,
 }: ProjectUpdateFormFieldsProps) => {
-  const { register, formState, control, setValue, getValues } = methods;
+  const {
+    register,
+    formState: { isValid, dirtyFields, errors },
+    control,
+    setValue,
+    getValues,
+    handleSubmit,
+    watch,
+    getFieldState,
+  } = methods;
+
+  const urlFieldState = getFieldState("url");
+
+  const [isValidUrl, setIsValidUrl] = useState(false);
+  const [isFixedUrl, setIsFixedUrl] = useState("");
 
   const { searchCriteria } = useSearchCriteriaStore();
   const { selectedProjectFeedbackId } = useProjectFeedbackSelectionStore();
   const checkProjectUrlQuery = useCheckProjectUrl({
-    url: getValues("url"),
+    url: watch("url"),
     config: { enabled: false },
   });
   const [submitBtnDisabled, setSubmitBtnDisabled] = useState(true);
@@ -76,12 +93,30 @@ export const ProjectUpdateFormFields = ({
   register("selectedTagsId");
   register("selectedFeedbacksId");
 
-  const onUrlInspectionBtnClick = () => {
-    checkProjectUrlQuery.refetch();
-
-    if (checkProjectUrlQuery.data) {
-      setSubmitBtnDisabled(false);
+  const onUrlInspectionBtnClick = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    const eventTarget = e.target as HTMLButtonElement;
+    eventTarget.disabled = true;
+    const query = await checkProjectUrlQuery.refetch();
+    if (query.data) {
+      console.log(query.data);
+      setIsValidUrl(true);
+      // setIsFixedUrl(getValues("url"));
+    } else {
+      setIsValidUrl(false);
+      eventTarget.disabled = false;
     }
+    // console.log(formState.errors);
+  };
+
+  const isThumbnail = () => {
+    const inputThumbnail = document.getElementById(
+      "input-thumbnail"
+    ) as HTMLInputElement;
+
+    return Boolean(inputThumbnail?.files?.item(0));
   };
 
   return (
@@ -89,40 +124,62 @@ export const ProjectUpdateFormFields = ({
       <InputField
         type="text"
         label="제목"
-        isDirty={formState.dirtyFields["title"]}
-        error={formState.errors["title"]}
+        isDirty={dirtyFields["title"]}
+        error={errors["title"]}
         registration={register("title")}
         inputContainerWidth="80%"
       />
       <InputField
         type="text"
         label="공지"
-        isDirty={formState.dirtyFields["notice"]}
-        error={formState.errors["notice"]}
+        isDirty={dirtyFields["notice"]}
+        error={errors["notice"]}
         registration={register("notice")}
         inputContainerWidth="80%"
       />
       <InputField
         type="text"
         label="한 줄 소개"
-        isDirty={formState.dirtyFields["introduction"]}
-        error={formState.errors["introduction"]}
+        isDirty={dirtyFields["introduction"]}
+        error={errors["introduction"]}
         registration={register("introduction")}
         inputContainerWidth="80%"
       />
-      <FlexDiv direction="row" justify="flex-start" width="100%" gap="2rem">
-        <InputField
-          type="text"
-          label="URL"
-          isDirty={formState.dirtyFields["url"]}
-          error={formState.errors["url"]}
-          registration={register("url")}
-          inputContainerWidth="80%"
-        />
-        <UrlInspectionBtn onClick={onUrlInspectionBtnClick}>
-          검사
-        </UrlInspectionBtn>
+      <FlexDiv
+        direction="column"
+        justify="flex-start"
+        align="flex-start"
+        width="100%"
+        gap="0.5rem"
+      >
+        <FlexDiv direction="row" justify="flex-start" width="100%" gap="2rem">
+          <InputField
+            type="text"
+            label="URL"
+            isDirty={dirtyFields["url"]}
+            error={errors["url"]}
+            registration={register("url")}
+            inputContainerWidth="80%"
+          />
+          <UrlInspectionBtn
+            onClick={onUrlInspectionBtnClick}
+            disabled={watch("url") === "" || Boolean(errors.url)}
+          >
+            검사
+          </UrlInspectionBtn>
+        </FlexDiv>
+        {isValidUrl ? (
+          <InputSuccessMsg>
+            검사 성공! 다음은 유효한 URL이에요.
+            <br />
+            {watch("url")}
+          </InputSuccessMsg>
+        ) : (
+          <></>
+        )}
       </FlexDiv>
+
+      <TagSearch whichTag="project" />
       {projectUpdateInitialValues ? (
         <TiptapController<ProjectUpdateValues>
           name="content"
@@ -135,7 +192,6 @@ export const ProjectUpdateFormFields = ({
           control={control}
         />
       )}
-      <TagSearch whichTag="project" />
 
       {projectUpdateInitialValues ? (
         <ThumbnailField key="new" initialSrc={projectUpdateInitialValues.img} />
@@ -147,9 +203,11 @@ export const ProjectUpdateFormFields = ({
         <SubmitButton
           id="submit-btn"
           type="submit"
-          value="확인"
-          disabled={submitBtnDisabled}
-        />
+          onClick={handleSubmit(onSubmit)}
+          disabled={!isValid || !isValidUrl || !isThumbnail()}
+        >
+          확인
+        </SubmitButton>
       </SubmitButtonWrapper>
     </>
   );

@@ -1,4 +1,4 @@
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, SubmitHandler } from "react-hook-form";
 import { useEffect, useState } from "react";
 
 import { CodeEditor } from "@/features/code-editor";
@@ -7,6 +7,7 @@ import { InputField } from "@/components/form";
 import { TiptapController } from "@/features/rich-text-editor";
 import { TagSearch } from "@/features/search";
 import { useSearchCriteriaStore } from "@/stores";
+import { convertGitHubUrl } from "@/util/convert-github-url";
 
 import { useCode } from "../../api/get-code";
 import { useCodeReviewsForCodeUpdateSelection } from "../../stores/code-review-for-code-update-selection";
@@ -16,24 +17,29 @@ import {
   SubmitButtonWrapper,
   SubmitButton,
 } from "./code-update-form-fields-style";
+import { isValid } from "zod";
 
 type CodeUpdateFormFieldsProps = {
   methods: UseFormReturn<CodeUpdateValues>;
   codeId: number;
   codeUpdateInitialValues?: CodeUpdateValues;
+  onSubmit: SubmitHandler<CodeUpdateValues>;
 };
 
 export const CodeUpdateFormFields = ({
   methods,
   codeId,
   codeUpdateInitialValues,
+  onSubmit,
 }: CodeUpdateFormFieldsProps) => {
-  const { register, formState, control, setValue, getValues } = methods;
+  const { register, formState, control, setValue, watch, handleSubmit } =
+    methods;
 
+  const [isValidUrl, setIsValidUrl] = useState(false);
   const { searchCriteria } = useSearchCriteriaStore();
   const { selectedCodeReviewId } = useCodeReviewsForCodeUpdateSelection();
   const codeQuery = useCode({
-    githubUrl: getValues("githubUrl"),
+    githubUrl: convertGitHubUrl(watch("githubUrl")),
     config: { enabled: false },
   });
 
@@ -58,9 +64,9 @@ export const CodeUpdateFormFields = ({
       setValue("content", codeUpdateInitialValues.content, {
         shouldDirty: true,
       });
-      setValue("projectId", codeUpdateInitialValues.projectId, {
-        shouldDirty: true,
-      });
+      // setValue("projectId", codeUpdateInitialValues.projectId, {
+      //   shouldDirty: true,
+      // });
 
       setValue("selectedTagsId", codeUpdateInitialValues.selectedTagsId, {
         shouldDirty: true,
@@ -79,12 +85,21 @@ export const CodeUpdateFormFields = ({
   register("selectedTagsId");
   register("selectedReviewsId");
 
-  const onGitHubBtnClick = () => {
-    codeQuery.refetch();
+  const onGitHubBtnClick = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    const eventTarget = e.target as HTMLButtonElement;
+    const query = await codeQuery.refetch();
+    eventTarget.disabled = true;
 
-    // if (codeQuery.data) {
-    //   setSubmitBtnDisabled(false);
-    // }
+    if (query?.status === "success") {
+      setIsValidUrl(true);
+    }
+    if (query?.status === "error") {
+      eventTarget.disabled = false;
+      setIsValidUrl(false);
+    }
   };
 
   return (
@@ -154,10 +169,11 @@ export const CodeUpdateFormFields = ({
       <SubmitButtonWrapper>
         <SubmitButton
           id="submit-btn"
-          type="submit"
-          value="확인"
-          disabled={false}
-        />
+          onClick={handleSubmit(onSubmit)}
+          disabled={!formState.isValid || !isValidUrl}
+        >
+          확인
+        </SubmitButton>
       </SubmitButtonWrapper>
     </>
   );

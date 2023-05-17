@@ -31,13 +31,17 @@ export const CodeUpdateForm = ({
   return (
     <div>
       <Form<CodeUpdateValues, typeof schema>
-        onSubmit={onSubmit}
         schema={schema}
         options={{
           shouldUnregister: true,
           defaultValues: {
             title: "",
             githubUrl: "",
+            content: "",
+            projectId: null,
+            selectedTagsId: null,
+            selectedReviewsId: null,
+            language: "",
           },
         }}
       >
@@ -46,6 +50,7 @@ export const CodeUpdateForm = ({
             methods={methods}
             codeId={codeId}
             codeUpdateInitialValues={codeUpdateInitialValues}
+            onSubmit={onSubmit}
           />
         )}
       </Form>
