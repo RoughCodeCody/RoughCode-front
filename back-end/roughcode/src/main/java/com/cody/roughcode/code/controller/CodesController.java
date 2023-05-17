@@ -361,4 +361,35 @@ public class CodesController {
         }
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 목록 조회 성공", res.size(), res);
     }
+
+    @Operation(summary = "코드와 프로젝트 연결 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 프로젝트 연결 성공"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 프로젝트 연결 실패")
+    })
+    @PutMapping("/{codeId}/connect")
+    ResponseEntity<?> connectCodeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                         @Parameter(description = "코드 id 값", required = true)
+                                         @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                                         @PathVariable Long codeId,
+                                         @Parameter(description = "연결할 프로젝트 id", example = "1") @RequestParam(required = false) Long projectId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+        }
+
+        int res = -1;
+        try {
+            res = codesService.connectProject(codeId, userId, projectId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res < 0) {
+            return Response.notFound("코드와 프로젝트 연결 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드와 프로젝트 연결 성공", 0, res);
+    }
 }

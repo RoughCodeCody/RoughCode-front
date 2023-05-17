@@ -767,6 +767,33 @@ public class CodesServiceImpl implements CodesService {
         return reviewSearchResList;
     }
 
+    @Override
+    @Transactional
+    public int connectProject(Long codeId, Long userId, Long projectId) {
+        Users user = usersRepository.findByUsersId(userId);
+        if (user == null) {
+            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        }
+
+        Codes code = codesRepository.findByCodesIdAndExpireDateIsNull(codeId);
+        if (code == null) {
+            throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
+        }
+        
+        Projects project = null;
+        if (projectId != null) {
+            project = projectsRepository.findByProjectsIdAndExpireDateIsNull(projectId);
+            if (project == null) {
+                throw new NullPointerException("연결하려는 프로젝트가 존재하지 않습니다");
+            }
+        }
+
+        // project 연결
+        code.setProject(project);
+        
+        return 1;
+    }
+
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {
         List<Codes> codeList = codesPage.getContent();
         List<CodeInfoRes> codeInfoRes = new ArrayList<>();
