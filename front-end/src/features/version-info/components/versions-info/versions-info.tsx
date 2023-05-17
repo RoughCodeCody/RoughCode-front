@@ -3,6 +3,7 @@ import { CodeVersion } from "@/features/code-reviews";
 import { ProjectVersion } from "@/features/projects";
 
 import { VersionInfo } from "./version-info";
+import { useRouter } from "next/router";
 
 type VersionsInfoProps = {
   versions: ProjectVersion[] | CodeVersion[];
@@ -25,11 +26,17 @@ export const VersionsInfo = ({
   curVersionId,
   isMine,
 }: VersionsInfoProps) => {
+  const router = useRouter();
+
   return (
     <Accordion
       title="버전별 업그레이드 정보"
       hasBtn={isMine}
       btnText="+ 새 버전 등록"
+      btnClickFunc={() => {
+        const path = isProject(versions) ? "project" : "code-review";
+        router.push(`/${path}/upgrade/${curVersionId}`);
+      }}
     >
       {isProject(versions) ? (
         <>
