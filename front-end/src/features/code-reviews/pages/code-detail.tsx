@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { FlexDiv, Spinner, WhiteBoxNoshad } from "@/components/elements";
+import { FlexDiv, LoadingSpinner, WhiteBoxNoshad } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { FeedbackRegister, Feedbacks } from "@/features/feedbacks";
 import { useCodeReviewFeedbacks } from "@/features/feedbacks/api";
@@ -43,9 +43,16 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
 
   return (
     <>
-      {status === "loading" ? (
-        <Spinner size={300} />
-      ) : (
+      <FlexDiv align="start" direction="row-reverse" justify="end" gap="1%">
+        {data && (
+          <CodeReviewList
+            reviews={data.reviews}
+            codeId={Number(codeId)}
+            clickedReviewId={clickedReviewId}
+            setClickedReviewId={setClickedReviewId}
+          />
+        )}
+
         <FlexDiv direction="column" gap="4rem" padding="2rem 0">
           <WhiteBoxNoshad
             width="60%"
@@ -54,7 +61,11 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
           >
             {data && (
               <>
-                <CodeInfo data={data} />
+                <CodeInfo
+                  data={data}
+                  isMine={data.mine}
+                  isLatest={Boolean(data.version === data.versions.length)}
+                />
                 <VersionsInfo
                   versions={data.versions}
                   curVersionId={codeId}
@@ -73,7 +84,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                   />
                 </FlexDiv>
 
-                <FlexDiv width="100%" height="100%">
+                <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
                   <DiffCodeEditor
                     headerText="코드 리뷰어가 수정한 코드입니다"
                     height="30rem"
@@ -81,33 +92,36 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                     language={"javascript"}
                     originalCode={originalCode || ""}
                     modifiedCode={codeReviewInfoQuery.data?.codeContent || ""}
+                    noShad={true}
                   />
                 </FlexDiv>
 
-                <CodeReviewList
-                  reviews={data.reviews}
-                  codeId={Number(codeId)}
-                  clickedReviewId={clickedReviewId}
-                  setClickedReviewId={setClickedReviewId}
-                />
-
-                <ClickedReviewContent
-                  content={
-                    codeReviewInfoQuery.data?.content || "설명이 없습니다"
-                  }
-                />
+                <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
+                  <ClickedReviewContent
+                    content={
+                      codeReviewInfoQuery.data?.content || "설명이 없습니다"
+                    }
+                  />
+                </FlexDiv>
               </>
             )}
           </WhiteBoxNoshad>
 
-          <FeedbackRegister type="review" id={clickedReviewId} />
+          <FeedbackRegister
+            type="review"
+            id={clickedReviewId}
+            codeId={Number(codeId)}
+          />
           <Feedbacks
             type="review"
             feedbacks={codeReviewInfoQuery.data?.reReviews || []}
             projectOrCodeId={Number(codeId)}
+            clickedReviewId={clickedReviewId}
           />
         </FlexDiv>
-      )}
+      </FlexDiv>
+
+      {/* <LoadingSpinner isOpen={Boolean(status === "loading")} /> */}
     </>
   );
 };

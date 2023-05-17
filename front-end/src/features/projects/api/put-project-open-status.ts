@@ -4,7 +4,7 @@ import { axios } from "@/lib/axios";
 import { queryClient } from "@/lib/react-query";
 
 export type PutProjectOpenStatusDTO = {
-  projectId: string;
+  projectId: number;
   status: string;
 };
 

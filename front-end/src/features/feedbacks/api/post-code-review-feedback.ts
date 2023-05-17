@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { axios } from "@/lib/axios";
-import { MutationConfig } from "@/lib/react-query";
+import { MutationConfig, queryClient } from "@/lib/react-query";
 
 export type PostCodeReviewFeedbackDTO = {
   id: number;

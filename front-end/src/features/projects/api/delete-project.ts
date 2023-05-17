@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { MutationConfig } from "@/lib/react-query";
 
-export const deleteProject = (projectId: string): Promise<null> => {
+export const deleteProject = (projectId: number): Promise<null> => {
   return axios.delete(`/project/${projectId}`);
 };
 

@@ -1,3 +1,4 @@
+import { MouseEventHandler } from "react";
 import {
   TiHeartFullOutline,
   TiHeartOutline,
@@ -14,7 +15,7 @@ interface CountProps {
   type: "like" | "bookmark" | "code";
   isChecked: boolean | null;
   cnt: number;
-  onClickFunc?: () => void;
+  onClickFunc?: MouseEventHandler;
 }
 
 // like, bookmark, code 카운트 표시

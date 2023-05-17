@@ -9,18 +9,20 @@ interface FeedbacksProps {
   feedbacks: ProjectFeedback[] | CodeReviewFeedback[];
   type: "project" | "review";
   projectOrCodeId: number;
+  clickedReviewId?: number;
 }
 
 export const Feedbacks = ({
   feedbacks,
   type,
   projectOrCodeId,
+  clickedReviewId,
 }: FeedbacksProps) => {
   // 현재 로그인한 유저 정보(피드백이 본인 것인지 확인하기 위함)
   const userQuery = useUser();
 
   return (
-    <FlexDiv direction="column" width="65%" gap="1rem">
+    <FlexDiv direction="column" width="60%" gap="1rem">
       {feedbacks.length !== 0 &&
         feedbacks.map((feedback, idx) => (
           <FeedbackItem
@@ -32,6 +34,7 @@ export const Feedbacks = ({
               feedback.userName.length !== 0 &&
                 userQuery.data?.nickname === feedback.userName
             )}
+            clickedReviewId={clickedReviewId}
             key={idx}
           />
         ))}

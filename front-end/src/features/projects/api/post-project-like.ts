@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { queryClient } from "@/lib/react-query";
 
-export const postProjectLike = (projectId: string): Promise<null> => {
+export const postProjectLike = (projectId: number): Promise<null> => {
   return axios.post(`/project/${projectId}/like`);
 };
 
