@@ -28,7 +28,7 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
 
     // @Query 어노테이션은 LIMIT 설정 불가능 > Pageable 사용하여 가장 최신 버전의 프로젝트 불러오기 수행
     @Query("SELECT c FROM Codes c WHERE c.num = " +
-            "(SELECT c2.num FROM Codes c2 WHERE c2.codesId = :codeId and c2.codeWriter.usersId = :userId) "+
+            "(SELECT c2.num FROM Codes c2 WHERE c2.codesId = :codeId and c2.codeWriter.usersId = :userId and c2.expireDate IS null ) "+
             "and c.codeWriter.usersId = :userId and c.expireDate is NULL ORDER BY c.version DESC")
     List<Codes> findLatestCodesByCodesIdAndUsersId(@Param("codeId") Long codeId, @Param("userId") Long userId, Pageable pageable);
 
@@ -44,20 +44,20 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
     List<Codes> findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(Long num, Users codeWriter);
 
     @Query("SELECT c FROM Codes c WHERE c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter and c2.expireDate is NULL )) " +
-            "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%)")
+            "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%) AND c.expireDate IS NULL")
     Page<Codes> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
 
-    @Query("SELECT c FROM Codes c WHERE c.codeWriter.usersId = :userId AND c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter))")
+    @Query("SELECT c FROM Codes c WHERE c.codeWriter.usersId = :userId AND c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter AND c.expireDate IS null )) AND c.expireDate IS null ")
     Page<Codes> findAllByCodeWriter(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("SELECT cf.codes FROM CodeFavorites cf JOIN cf.codes c WHERE cf.users.usersId = :userId ORDER BY c.createdDate DESC")
+    @Query("SELECT cf.codes FROM CodeFavorites cf JOIN cf.codes c WHERE cf.users.usersId = :userId AND cf.codes.expireDate is NULL ORDER BY c.createdDate DESC")
     Page<Codes> findAllMyFavorite(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("SELECT distinct r.codes FROM Reviews r JOIN r.codes c WHERE r.users.usersId = :userId ORDER BY r.codes.createdDate DESC")
+    @Query("SELECT distinct r.codes FROM Reviews r JOIN r.codes c WHERE r.users.usersId = :userId AND r.codes.expireDate is NULL ORDER BY r.codes.createdDate DESC")
     Page<Codes> findAllMyReviews(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("SELECT count(c) FROM Codes c WHERE c.codeWriter = :user AND c.version > 1")
+    @Query("SELECT count(c) FROM Codes c WHERE c.codeWriter = :user AND c.version > 1 AND c.expireDate IS NULL")
     int countByCodeWriter(@Param("user") Users user);
 
     List<Codes> findByProjects(Projects projects);
