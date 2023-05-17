@@ -10,12 +10,12 @@ import { ProjectUpdateFormFields } from "../project-update-form-fields";
 const schema = z.object({
   title: z.string().min(1, "필요"),
   introduction: z.string().min(1, "필요"),
-  content: z.string().min(1, "필요"),
+  content: z.string(),
   url: z.string().url("필요"),
   notice: z.string().min(1, "필요"),
   projectId: z.number(),
-  selectedTagsId: z.number().array(),
-  selectedFeedbacksId: z.number().array(),
+  selectedTagsId: z.number().array().nullable(),
+  selectedFeedbacksId: z.number().array().nullable(),
 });
 
 type ProjectUpdateFormProps = {
@@ -32,7 +32,7 @@ export const ProjectUpdateForm = ({
   return (
     <div>
       <Form<ProjectUpdateValues, typeof schema>
-        onSubmit={onSubmit}
+        // onSubmit={onSubmit}
         schema={schema}
         options={{
           shouldUnregister: true,
@@ -40,8 +40,12 @@ export const ProjectUpdateForm = ({
             title: "",
             introduction: "",
             url: "",
+            content: "",
             notice: "",
+            selectedTagsId: [],
+            selectedFeedbacksId: [],
           },
+          mode: "onChange",
         }}
       >
         {(methods) => (
@@ -49,6 +53,7 @@ export const ProjectUpdateForm = ({
             methods={methods}
             projectId={projectId}
             projectUpdateInitialValues={projectUpdateInitialValues}
+            onSubmit={onSubmit}
           />
         )}
       </Form>

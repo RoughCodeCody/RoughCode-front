@@ -12,6 +12,7 @@ export const Editor = styled.div<{ minHeight: string }>`
   & .ProseMirror {
     outline: 2px solid transparent;
     outline-offset: 2px;
+    min-height: ${(props) => props.minHeight};
   }
   & .ProseMirror > * + * {
     margin-top: 0.75em;
@@ -94,7 +95,6 @@ export const Editor = styled.div<{ minHeight: string }>`
   & .editor__content {
     flex: 1 1 auto;
     padding: 1.25rem 1rem;
-    min-height: ${(props) => props.minHeight};
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
