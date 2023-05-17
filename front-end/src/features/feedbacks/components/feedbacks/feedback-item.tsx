@@ -173,8 +173,9 @@ export const FeedbackItem = ({
     }
   };
 
+  // 버그 해결 후 수정하기 기능 부활시킬 예정
   const selectionListMine = {
-    수정하기: () => setIsModifying(true),
+    // 수정하기: () => setIsModifying(true),
     삭제하기: handleDeleteFeedback,
   };
 
