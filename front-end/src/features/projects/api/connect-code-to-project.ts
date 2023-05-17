@@ -4,7 +4,7 @@ import { axios } from "@/lib/axios";
 import { queryClient, MutationConfig } from "@/lib/react-query";
 
 export type ConnectCodeToProjectDTO = {
-  projectId: string;
+  projectId: number;
   data: number[];
 };
 

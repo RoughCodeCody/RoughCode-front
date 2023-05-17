@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 
-export const FlexDiv = styled.div<{
+export const TabDiv = styled.div<{
   position?: string;
   width?: string;
   minWidth?: string;
@@ -84,11 +84,8 @@ export const FlexDiv = styled.div<{
     padding-bottom: ${paddingY || "none"};
     margin: ${margin || "0"};
     background-color: ${color ? "var(--" + color + "-color)" : "none"};
-    border-top: ${borderTop ? borderTop : "none"};
-    border-right: ${borderRight ? borderRight : "none"};
-    border-bottom: ${borderBottom ? borderBottom : "none"};
-    border-left: ${borderLeft ? borderLeft : "none"};
     border: ${border ? border : "none"};
+    border-bottom: ${borderBottom ? borderBottom : "none"};
     border-radius: ${radius ? radius : "0"};
     cursor: ${pointer ? "pointer" : "auto"};
     overflow: ${overflow ? overflow : "none"};

@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import dog from "@/assets/dog.png";
 import duck from "@/assets/duck.png";
+import friends from "@/assets/dog-duck.png";
 import { NEXT_PUBLIC_REDIRECT_URL } from "@/config";
 import { FlexDiv, Text } from "@/components/elements";
 import { useUser } from "@/features/auth";
@@ -16,6 +17,7 @@ import {
   FlexContainer,
   NavbarContainer,
   Main,
+  Footer,
 } from "./style";
 
 const Logo = () => {
@@ -150,6 +152,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         <UserNavigation />
       </NavbarContainer>
       <Main>{children}</Main>
+      <Footer>
+        <Text bold={true}>개발새발</Text>
+        <Text>Copyright &copy; 2023 team Cody.</Text>
+        <FlexDiv position="absolute" right="3rem" bottom="calc(7rem - 4px)">
+          <Image src={friends} alt="mascot" width={100} height={60} />
+        </FlexDiv>
+      </Footer>
     </FlexContainer>
   );
 };

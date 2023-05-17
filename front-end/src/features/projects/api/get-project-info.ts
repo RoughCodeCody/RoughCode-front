@@ -6,7 +6,7 @@ import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 import { ProjectInfoResult } from "../types";
 
 export const getProjectInfo = (
-  projectId: string
+  projectId: number
 ): Promise<ProjectInfoResult> => {
   return axios.get(`/project/${projectId}`);
 };
@@ -14,7 +14,7 @@ export const getProjectInfo = (
 type QueryFnType = typeof getProjectInfo;
 
 type UseProjectInfoOptions = {
-  projectId: string;
+  projectId: number;
   config?: QueryConfig<QueryFnType>;
 };
 

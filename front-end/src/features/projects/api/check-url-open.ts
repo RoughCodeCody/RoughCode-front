@@ -4,7 +4,7 @@ import { axios } from "@/lib/axios";
 
 type ProjectInfoResult = {};
 
-export const checkURLOpen = (projectId: string): Promise<ProjectInfoResult> => {
+export const checkURLOpen = (projectId: number): Promise<ProjectInfoResult> => {
   return axios.put(`/project/check/${projectId}`);
 };
 

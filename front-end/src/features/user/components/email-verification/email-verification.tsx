@@ -82,7 +82,6 @@ export const EmailVerification = () => {
               await userQuery.refetch();
               sendEmailAddressQuery.reset();
               sendEmailCodeQuery.reset();
-              console.log(sendEmailAddressQuery);
               if (userQuery.data?.email === "") {
                 setRemainingTime(0);
               }

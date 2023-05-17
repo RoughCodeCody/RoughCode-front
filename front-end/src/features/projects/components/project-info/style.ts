@@ -1,7 +1,5 @@
 import styled, { css } from "styled-components";
 
-const ProjectInfoWrapper = styled.div``;
-
 const UrlApkBtn = styled.button<{ isClosed: boolean }>`
   ${({ isClosed }) => css`
     width: 100%;
@@ -21,4 +19,4 @@ const UrlApkBtn = styled.button<{ isClosed: boolean }>`
   `}
 `;
 
-export { ProjectInfoWrapper, UrlApkBtn };
+export { UrlApkBtn };
