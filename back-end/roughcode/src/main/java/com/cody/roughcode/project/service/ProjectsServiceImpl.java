@@ -583,7 +583,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         } else { // tag 검색
             if(closed == 1)
-                projectsPage = projectSelectedTagsQRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
+                projectsPage = projectSelectedTagsRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
             else
                 projectsPage = projectSelectedTagsRepository.findAllOpenedByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
 
