@@ -8,7 +8,6 @@ import com.cody.roughcode.code.entity.*;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.exception.NotMatchException;
-import com.cody.roughcode.exception.SelectedException;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import java.util.List;
@@ -43,12 +43,20 @@ public class ReviewsServiceTest {
     @Mock
     private ReviewLikesRepository reviewLikesRepository;
     @Mock
+    private ReviewComplainsRepository reviewComplainsRepository;
+    @Mock
     private ReReviewsRepository reReviewsRepository;
     @Mock
     private ReReviewLikesRepository reReviewLikesRepository;
 
     @Mock
     private CodesRepository codesRepository;
+    @Mock
+    private CodesInfoRepository codesInfoRepository;
+    @Mock
+    private CodeFavoritesRepository codeFavoritesRepository;
+    @Mock
+    private CodeLikesRepository codeLikesRepository;
     @Mock
     private UsersRepository usersRepository;
 
@@ -77,6 +85,26 @@ public class ReviewsServiceTest {
             .reviewCnt(2)
             .build();
 
+    final CodesInfo codesInfo = CodesInfo.builder()
+            .id(1L)
+            .githubUrl("githubURL")
+            .favoriteCnt(1)
+            .content("개발새발 코드")
+            .codes(code)
+            .language("Javascript")
+            .build();
+
+    final CodeFavorites codeFavorites = CodeFavorites.builder()
+            .favoritesId(1L)
+            .content("hoho")
+            .codes(code)
+            .build();
+
+    final CodeLikes codeLikes = CodeLikes.builder()
+            .likesId(1L)
+            .codes(code)
+            .build();
+
     final Reviews review = Reviews.builder()
             .reviewsId(1L)
             .lineNumbers("[[1,2],[3,4]]")
@@ -85,7 +113,7 @@ public class ReviewsServiceTest {
             .codes(code)
             .users(user)
             .likeCnt(3)
-            .complaint("2")
+            .complained(false)
             .build();
 
     final ReviewReq req = ReviewReq.builder()
@@ -106,7 +134,7 @@ public class ReviewsServiceTest {
     @Test
     void insertReviewSucceed() throws MessagingException {
         // given
-        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(user2).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
         doReturn(review).when(reviewsRepository).save(any(Reviews.class));
         alarmService.insertAlarm(any(AlarmReq.class));
@@ -180,6 +208,9 @@ public class ReviewsServiceTest {
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
         doReturn(like).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
+        doReturn(codesInfo).when(codesInfoRepository).findByCodes(any(Codes.class));
+        doReturn(codeFavorites).when(codeFavoritesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
+        doReturn(codeLikes).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
 
         // when
         ReviewDetailRes success = reviewsService.getReview(reviewId, 0L);
@@ -277,7 +308,7 @@ public class ReviewsServiceTest {
 
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsIdAndCodeExpireDateIsNull(any(Long.class));
         reviewLikesRepository.deleteAllByReviewId(any(Long.class));
         reReviewsRepository.deleteAllByReviews(any(Reviews.class));
         reReviewLikesRepository.deleteAllByReviewId(any(Long.class));
@@ -294,7 +325,7 @@ public class ReviewsServiceTest {
     void deleteReviewFailUserDiffer() {
         // given
         doReturn(user2).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsIdAndCodeExpireDateIsNull(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -309,7 +340,7 @@ public class ReviewsServiceTest {
     void likeReviewSucceed() {
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsIdAndCodeExpireDateIsNull(any(Long.class));
         doReturn(null).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
 
         int likeCnt = review.getLikeCnt();
@@ -331,7 +362,7 @@ public class ReviewsServiceTest {
 
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(review).when(reviewsRepository).findByReviewsIdAndCodeExpireDateIsNull(any(Long.class));
         doReturn(reviewLikes).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
 
         int likeCnt = code.getLikeCnt();
@@ -363,7 +394,7 @@ public class ReviewsServiceTest {
     void likeReviewFailNotFoundReview() {
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(null).when(reviewsRepository).findByReviewsIdAndCodeExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -376,9 +407,17 @@ public class ReviewsServiceTest {
     @DisplayName("코드 리뷰 신고 성공")
     @Test
     void complainReviewSucceed() {
+        ReviewComplains reviewComplains = ReviewComplains.builder()
+                .complainsId(1L)
+                .reviews(review)
+                .users(user)
+                .build();
+
         // given
-        doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(user2).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
+        doReturn(null).when(reviewComplainsRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
+        doReturn(List.of(reviewComplains, reviewComplains)).when(reviewComplainsRepository).findByReviews(any(Reviews.class));
 
         // when
         int res = reviewsService.complainReview(1L, 1L);
@@ -413,7 +452,7 @@ public class ReviewsServiceTest {
                 NullPointerException.class, () -> reviewsService.complainReview(0L, 1L)
         );
 
-        assertEquals("일치하는 코드 리뷰가 존재하지 않습니다", exception.getMessage());
+        assertEquals("일치하는 리뷰가 존재하지 않습니다", exception.getMessage());
     }
 
     @DisplayName("코드 리뷰 신고 실패 - 이미 삭제된 코드 리뷰")
@@ -422,7 +461,8 @@ public class ReviewsServiceTest {
         Reviews deletedReview = Reviews.builder()
                 .reviewsId(3L)
                 .codeContent("")
-                .users(user)
+                .users(user2)
+                .complained(true)
                 .build();
 
         // given
@@ -430,10 +470,10 @@ public class ReviewsServiceTest {
         doReturn(deletedReview).when(reviewsRepository).findByReviewsId(any(Long.class));
 
         // when & then
-        SelectedException exception = assertThrows(
-                SelectedException.class, () -> reviewsService.complainReview(3L, 1L)
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class, () -> reviewsService.complainReview(3L, 1L)
         );
 
-        assertEquals("이미 삭제된 코드 리뷰입니다", exception.getMessage());
+        assertEquals("이미 삭제된 리뷰입니다", exception.getReason());
     }
 }
