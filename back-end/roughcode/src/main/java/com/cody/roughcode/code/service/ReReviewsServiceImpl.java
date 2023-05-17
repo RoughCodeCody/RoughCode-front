@@ -2,13 +2,17 @@ package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReReviewReq;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
+import com.cody.roughcode.code.entity.ReReviewComplains;
 import com.cody.roughcode.code.entity.ReReviewLikes;
 import com.cody.roughcode.code.entity.ReReviews;
 import com.cody.roughcode.code.entity.Reviews;
+import com.cody.roughcode.code.repository.ReReviewComplainsRepository;
 import com.cody.roughcode.code.repository.ReReviewLikesRepository;
 import com.cody.roughcode.code.repository.ReReviewsRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
 import com.cody.roughcode.exception.NotMatchException;
+import com.cody.roughcode.project.entity.Feedbacks;
+import com.cody.roughcode.project.entity.FeedbacksComplains;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,7 @@ public class ReReviewsServiceImpl implements ReReviewsService {
 
     private final UsersRepository usersRepository;
     private final ReReviewsRepository reReviewsRepository;
+    private final ReReviewComplainsRepository reReviewComplainsRepository;
     private final ReviewsRepository reviewsRepository;
     private final ReReviewLikesRepository reReviewLikesRepository;
 
@@ -161,21 +166,31 @@ public class ReReviewsServiceImpl implements ReReviewsService {
         if(reReviews == null)
             throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
 
-        List<String> complainList = (reReviews.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(reReviews.getComplaint().split(",")));
+        if(reReviews.getUsers() != null && reReviews.getUsers().getUsersId().equals(users.getUsersId()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "리뷰 작성자와 신고 유저가 동일합니다");
 
-        if(reReviews.getContent() == null || reReviews.getContent().equals(""))
+        if(reReviews.getComplained() != null && reReviews.getComplained().equals(true))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 리뷰입니다");
-        if(complainList.contains(String.valueOf(usersId)))
+
+        ReReviewComplains complains = reReviewComplainsRepository.findByReReviewsAndUsers(reReviews, users);
+        if(complains != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 리뷰입니다");
 
+        List<ReReviewComplains> complainList = reReviewComplainsRepository.findByReReviews(reReviews);
+
         log.info(complainList.size() + "번 신고된 리뷰입니다");
-        complainList.add(String.valueOf(usersId));
-        if(complainList.size() >= 5){ // 5명 이상 신고 시 complained true 처리
-            // 신고됨 처리
+
+        ReReviewComplains newComplain = ReReviewComplains.builder()
+                .reReviews(reReviews)
+                .users(users)
+                .build();
+
+        reReviewComplainsRepository.save(newComplain);
+
+        if(complainList.size() + 1 >= 5){
             reReviews.setComplained(true);
+            reReviewsRepository.save(reReviews);
         }
-        reReviews.setComplaint(complainList);
-        reReviewsRepository.save(reReviews);
 
         return 1;
     }

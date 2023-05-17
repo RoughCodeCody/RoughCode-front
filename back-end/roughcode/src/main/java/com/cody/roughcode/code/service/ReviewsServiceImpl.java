@@ -14,8 +14,10 @@ import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class ReviewsServiceImpl implements ReviewsService {
     private final CodeFavoritesRepository codeFavoritesRepository;
     private final ReviewsRepository reviewsRepository;
     private final ReviewLikesRepository reviewLikesRepository;
+    private final ReviewComplainsRepository reviewComplainsRepository;
     private final ReReviewsRepository reReviewsRepository;
     private final ReReviewLikesRepository reReviewLikesRepository;
 
@@ -298,31 +301,37 @@ public class ReviewsServiceImpl implements ReviewsService {
     @Override
     @Transactional
     public int complainReview(Long reviewId, Long userId) {
+        Users users = usersRepository.findByUsersId(userId);
+        if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Reviews reviews = reviewsRepository.findByReviewsId(reviewId);
+        if(reviews == null)
+            throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
 
-        Users user = usersRepository.findByUsersId(userId);
-        if (user == null) {
-            throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
-        }
-        // 기존 코드 리뷰 가져오기
-        Reviews target = reviewsRepository.findByReviewsIdAndCodeExpireDateIsNull(reviewId);
-        if (target == null) {
-            throw new NullPointerException("일치하는 코드 리뷰가 존재하지 않습니다");
-        }
-        List<String> complainList = (target.getComplaint().equals("")) ? new ArrayList<>() : new ArrayList<>(List.of(target.getComplaint().split(",")));
+        if(reviews.getUsers() != null && reviews.getUsers().getUsersId().equals(users.getUsersId()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "리뷰 작성자와 신고 유저가 동일합니다");
 
-        if (target.getCodeContent() == null || target.getCodeContent() == "") {
-            throw new SelectedException("이미 삭제된 코드 리뷰입니다");
+        if(reviews.getComplained() != null && reviews.getComplained().equals(true))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 리뷰입니다");
+
+        ReviewComplains complains = reviewComplainsRepository.findByReviewsAndUsers(reviews, users);
+        if(complains != null)
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 리뷰입니다");
+
+        List<ReviewComplains> complainList = reviewComplainsRepository.findByReviews(reviews);
+
+        log.info(complainList.size() + "번 신고된 리뷰입니다");
+
+        ReviewComplains newComplain = ReviewComplains.builder()
+                .reviews(reviews)
+                .users(users)
+                .build();
+
+        reviewComplainsRepository.save(newComplain);
+
+        if(complainList.size() + 1 >= 5){
+            reviews.setComplained(true);
+            reviewsRepository.save(reviews);
         }
-        if (complainList.contains(String.valueOf(userId))) {
-            throw new SelectedException("이미 신고한 코드 리뷰입니다");
-        }
-        log.info(complainList.size() + "번 신고된 코드 리뷰입니다");
-        complainList.add(String.valueOf(userId));
-        if (complainList.size() >= 5) { // 5명 이상 신고 시 complained true 처리
-            // 신고됨 처리
-            target.setComplained(true);
-        }
-        target.setComplaint(complainList);
 
         return 1;
     }

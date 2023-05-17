@@ -40,12 +40,14 @@ import org.springframework.beans.factory.annotation.Value;
 
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityManager;
 import javax.servlet.ServletContext;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -71,12 +73,15 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectTagsRepository projectTagsRepository;
     private final CodesRepository codesRepository;
     private final FeedbacksRepository feedbacksRepository;
+    private final FeedbacksComplainsRepository feedbacksComplainsRepository;
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final ProjectFavoritesRepository projectFavoritesRepository;
     private final ProjectFavoritesQRepository projectFavoritesQRepository;
     private final ProjectLikesRepository projectLikesRepository;
     private final FeedbacksLikesRepository feedbacksLikesRepository;
     private final EmailServiceImpl emailService;
+
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -564,6 +569,54 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
+    public void deleteExpiredProject() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Projects> expiredProjects = projectsRepository.findByExpireDateBefore(now);
+
+        // 삭제될 프로젝트가 없으면 함수 종료
+        if (expiredProjects == null) {
+            return;
+        }
+
+        for(Projects target: expiredProjects){
+            // 연결된 코드에서 프로젝트 제거
+            if (target.getProjectsCodes() != null) {
+                for (Codes targetCode: target.getProjectsCodes()) {
+                    targetCode.setProject(null);
+                }
+            }
+        }
+
+        // 기존에 선택한 태그 삭제
+        projectSelectedTagsRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 기존에 선택한 피드백 삭제
+        selectedFeedbacksRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트에 등록된 피드백 좋아요 목록 삭제
+        feedbacksLikesRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트에 등록딘 피드백 목록 삭제
+        feedbacksRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 좋아요 목록 삭제
+        projectLikesRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 즐겨찾기 목록 삭제
+        projectFavoritesRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 정보 삭제
+        projectsInfoRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 삭제
+        projectsRepository.deleteAll(expiredProjects);
+
+        // 영속성 컨텍스트 초기화
+        entityManager.clear();
+    }
+
+    @Override
+    @Transactional
     public Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest,
                                                              String keyword, String tagIds, int closed) {
         List<Long> tagIdList = null;
@@ -974,20 +1027,28 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(feedbacks.getUsers() != null && feedbacks.getUsers().getUsersId().equals(users.getUsersId()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "피드백 작성자와 신고 유저가 동일합니다");
 
-        List<String> complainList = (feedbacks.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
-
         if(feedbacks.getComplained() != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 피드백입니다");
-        if(complainList.contains(String.valueOf(usersId)))
+
+        FeedbacksComplains complains = feedbacksComplainsRepository.findByFeedbacksAndUsers(feedbacks, users);
+        if(complains != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 피드백입니다");
 
+        List<FeedbacksComplains> complainList = feedbacksComplainsRepository.findByFeedbacks(feedbacks);
+
         log.info(complainList.size() + "번 신고된 피드백입니다");
-        complainList.add(String.valueOf(usersId));
-        feedbacks.setComplaint(complainList);
 
-        if(complainList.size() >= 5) feedbacks.setComplained();
+        FeedbacksComplains newComplain = FeedbacksComplains.builder()
+                .feedbacks(feedbacks)
+                .users(users)
+                .build();
 
-        feedbacksRepository.save(feedbacks);
+        feedbacksComplainsRepository.save(newComplain);
+
+        if(complainList.size() + 1 >= 5){
+            feedbacks.setComplained();
+            feedbacksRepository.save(feedbacks);
+        }
 
         return (feedbacks.getComplained() == null)? 0 : 1;
     }

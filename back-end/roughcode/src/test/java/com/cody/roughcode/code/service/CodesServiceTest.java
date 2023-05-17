@@ -453,7 +453,7 @@ class CodesServiceTest {
         codeFavoritesRepository.deleteAllByCodesId(any(Long.class));
 
         // when
-        int res = codesService.deleteCode(1L, 1L);
+        int res = codesService.putExpireDateCode(1L, 1L);
 
         // then
         assertThat(res).isEqualTo(1);
@@ -468,7 +468,7 @@ class CodesServiceTest {
 
         // when & then
         NotMatchException exception = assertThrows(
-                NotMatchException.class, () -> codesService.deleteCode(1L, 1L)
+                NotMatchException.class, () -> codesService.putExpireDateCode(1L, 1L)
         );
 
         assertEquals("접근 권한이 없습니다", exception.getMessage());
