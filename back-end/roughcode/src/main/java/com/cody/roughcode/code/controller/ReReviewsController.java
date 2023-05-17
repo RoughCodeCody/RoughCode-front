@@ -108,6 +108,9 @@ public class ReReviewsController {
         int res = 0;
         try {
             res = reReviewsService.insertReReview(reReviewReq, userId);
+        } catch(ResponseStatusException e){
+            log.warn(e.getReason());
+            return Response.makeResponse(e.getStatus(), e.getReason());
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

@@ -45,6 +45,9 @@ public class ReReviewsServiceImpl implements ReReviewsService {
         Reviews reviews = reviewsRepository.findByReviewsId(req.getId());
         if(reviews == null) throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
 
+        if(reviews.getComplained() != null && reviews.getComplained().equals(true))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "신고되어 삭제된 리뷰입니다");
+
         ReReviews savedReReview = reReviewsRepository.save(
                 ReReviews.builder()
                         .users(users)
@@ -165,6 +168,10 @@ public class ReReviewsServiceImpl implements ReReviewsService {
         ReReviews reReviews = reReviewsRepository.findByReReviewsId(reReviewsId);
         if(reReviews == null)
             throw new NullPointerException("일치하는 리뷰가 존재하지 않습니다");
+
+        Reviews reviews = reviewsRepository.findByReReviews(reReviews);
+        if(reviews.getComplained() != null && reviews.getComplained().equals(true))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "리-리뷰가 달린 리뷰가 이미 삭제되었습니다");
 
         if(reReviews.getUsers() != null && reReviews.getUsers().getUsersId().equals(users.getUsersId()))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "리뷰 작성자와 신고 유저가 동일합니다");

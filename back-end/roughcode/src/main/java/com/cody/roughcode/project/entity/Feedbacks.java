@@ -34,10 +34,6 @@ public class Feedbacks extends BaseTimeEntity {
     private int likeCnt = 0;
 
     @Builder.Default
-    @Column(name = "complaint", nullable = true, columnDefinition = "text")
-    private String complaint = "";
-
-    @Builder.Default
     @Column(name = "selected", nullable = true)
     private int selected = 0;
 
@@ -69,10 +65,6 @@ public class Feedbacks extends BaseTimeEntity {
 
     public void editContent(String content) {
         this.content = content;
-    }
-
-    public void setComplaint(List<String> complainList) {
-        this.complaint = String.join(",", complainList);
     }
 
     public void setComplained(){
