@@ -1,0 +1,25 @@
+import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
+import styled from "styled-components";
+
+const ReviewListWrapper = styled(WhiteBoxNoshad)`
+  position: sticky;
+  top: 5.5rem;
+  right: 0;
+  width: 18%;
+  margin-right: 1%;
+  padding: 0;
+`;
+
+const ReviewItemWrapper = styled(FlexDiv)`
+  max-height: 20rem;
+  /* overflow-x: hidden; */
+  overflow-y: auto;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+export { ReviewListWrapper, ReviewItemWrapper };

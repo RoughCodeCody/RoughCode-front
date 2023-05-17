@@ -104,7 +104,7 @@ export const CodeReviewItem = ({
       <WhiteBoxShad
         shadColor={showDetails ? "main" : "shad"}
         onClick={hadleReviewClick}
-        width="32%"
+        width="85%"
         margin="0.5rem 0"
       >
         <FlexDiv
