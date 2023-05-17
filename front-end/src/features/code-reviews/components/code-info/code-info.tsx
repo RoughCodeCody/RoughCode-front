@@ -19,8 +19,8 @@ import { DeleteCode } from "./delete-code";
 
 interface CodeInfoProps {
   data: CodeInfoResult | codeForFeedbackModify;
-  isMine: boolean;
-  isLatest: boolean;
+  isMine?: boolean;
+  isLatest?: boolean;
 }
 
 export const CodeInfo = ({
@@ -36,6 +36,7 @@ export const CodeInfo = ({
     userName,
     projectTitle,
     projectId,
+    language,
   },
   isMine,
   isLatest,
@@ -95,7 +96,8 @@ export const CodeInfo = ({
               {isMine && isLatest && (
                 <Selection
                   selectionList={{
-                    수정하기: () => {},
+                    수정하기: () =>
+                      router.push(`/code-review/modify/${codeId}`),
                     삭제하기: () => {
                       setCodeDeleteModalOpen(true);
                       setForceClose(true);
