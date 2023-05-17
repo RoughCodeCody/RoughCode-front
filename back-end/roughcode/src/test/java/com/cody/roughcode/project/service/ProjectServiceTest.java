@@ -37,6 +37,7 @@ import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,9 +79,13 @@ public class ProjectServiceTest {
     @Mock
     private FeedbacksRepository feedbacksRepository;
     @Mock
+    private FeedbacksComplainsRepository feedbacksComplainsRepository;
+    @Mock
     private SelectedFeedbacksRepository selectedFeedbacksRepository;
     @Mock
     private ProjectFavoritesRepository projectFavoritesRepository;
+    @Mock
+    private ProjectFavoritesQRepository projectFavoritesQRepository;
     @Mock
     private ProjectLikesRepository projectLikesRepository;
     @Mock
@@ -638,26 +643,28 @@ public class ProjectServiceTest {
         assertThat(open).isEqualTo(-1);
     }
 
-    @DisplayName("feedback 신고 성공")
+    @DisplayName("feedback 신고 성공 - 5번 안됨")
     @Test
     void feedbackComplainSucceed(){
         // given
         Feedbacks feedback = Feedbacks.builder()
                 .content("feedback")
                 .selected(0)
-                .users(users)
+                .users(users2)
                 .feedbacksId(1L)
                 .projectsInfo(info)
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+        doReturn(null).when(feedbacksComplainsRepository).findByFeedbacksAndUsers(any(Feedbacks.class), any(Users.class));
+        doReturn(new ArrayList<>()).when(feedbacksComplainsRepository).findByFeedbacks(any(Feedbacks.class));
 
         // when
         int success = projectsService.feedbackComplain(1L, 1L);
 
         // then
-        assertThat(success).isEqualTo(1);
+        assertThat(success).isEqualTo(0);
     }
 
     @DisplayName("feedback 신고 실패 - 이미 삭제된 피드백")
@@ -667,9 +674,10 @@ public class ProjectServiceTest {
         Feedbacks feedback = Feedbacks.builder()
                 .content("")
                 .selected(0)
-                .users(users)
+                .users(users2)
                 .feedbacksId(1L)
                 .projectsInfo(info)
+                .complained(LocalDateTime.now())
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
@@ -689,13 +697,20 @@ public class ProjectServiceTest {
         Feedbacks feedback = Feedbacks.builder()
                 .content("feedback")
                 .selected(0)
-                .users(users)
+                .users(users2)
                 .feedbacksId(1L)
                 .projectsInfo(info)
                 .build();
 
+        FeedbacksComplains complains = FeedbacksComplains.builder()
+                .feedbacksComplainsId(1L)
+                .feedbacks(feedbacks)
+                .users(users)
+                .build();
+
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+        doReturn(complains).when(feedbacksComplainsRepository).findByFeedbacksAndUsers(any(Feedbacks.class), any(Users.class));
 
         // when & then
         ResponseStatusException exception = assertThrows(
@@ -750,7 +765,6 @@ public class ProjectServiceTest {
     void checkProjectUrlSafe() throws IOException {
         // given
         String url = "http://www.google.com";
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
         Boolean success = projectsService.checkProject(url, false);
@@ -764,7 +778,6 @@ public class ProjectServiceTest {
     void checkProjectUrlNotSafe() throws IOException {
         // given
         String url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/";
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
         Boolean success = projectsService.checkProject(url, false);
@@ -778,7 +791,6 @@ public class ProjectServiceTest {
     void checkProjectUrlNotOpened() throws IOException {
         // given
         String url = "http://15.164.198.227:8080";
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when & then
         IOException exception = assertThrows(
@@ -833,7 +845,8 @@ public class ProjectServiceTest {
 
     @DisplayName("피드백 삭제 실패 - 존재하지 않는 피드백입니다")
     @Test
-    void deleteFeedbackFailNoFeedback(){
+    void deleteFeedbackFailNoFeedback()
+    {
         // given
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(null).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
@@ -844,7 +857,6 @@ public class ProjectServiceTest {
         );
         assertEquals("일치하는 피드백이 존재하지 않습니다", exception.getMessage());
     }
-
     @DisplayName("피드백 삭제 실패 - 피드백 작성자 != 로그인 유저")
     @Test
     void deleteFeedbackFailNotMatch(){

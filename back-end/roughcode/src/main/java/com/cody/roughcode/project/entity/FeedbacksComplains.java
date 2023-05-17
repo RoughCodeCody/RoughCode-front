@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class FeedbacksComplains {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedbakcs_complains_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "feedbakcs_complains_id", nullable = false, columnDefinition = "BIGINT")
     private Long feedbacksComplainsId;
 
     @ManyToOne(fetch = FetchType.LAZY)
