@@ -24,7 +24,6 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   const githubUrl = data?.githubUrl ? data?.githubUrl : "";
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
-  console.log(originalCode);
 
   // 코드 리뷰 클릭시 해당 리뷰의 정보를 가져오기 위한 state
   const defaultCilckedReviewId =

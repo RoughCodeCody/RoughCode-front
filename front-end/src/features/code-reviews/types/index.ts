@@ -52,7 +52,6 @@ export type CodeInfoResult = {
   projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
   content: string; // 코드 상세 설명
   liked: boolean; // 내가 좋아요 눌렀는지 여부
-  language: string;
   favorite: boolean; // 내가 즐겨찾기 눌렀는지 여부
   language: string;
   versions: CodeVersion[];

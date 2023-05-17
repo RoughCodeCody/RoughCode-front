@@ -21,7 +21,7 @@ const schema = z.object({
 type ProjectUpdateFormProps = {
   projectId: number;
   onSubmit: SubmitHandler<ProjectUpdateValues>;
-  projectUpdateInitialValues?: ProjectUpdateValues;
+  projectUpdateInitialValues?: ProjectUpdateValues & { img: string };
 };
 
 export const ProjectUpdateForm = ({

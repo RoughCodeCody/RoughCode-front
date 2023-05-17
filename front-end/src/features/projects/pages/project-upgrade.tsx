@@ -14,10 +14,10 @@ import { ProjectUpdateForm } from "../components/project-update-form";
 import { ProjectUpdateValues } from "../types";
 
 export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
+  const projectIdNum = Number(projectId);
   const router = useRouter();
   const postProjectMutation = usePostProject();
-  const projectInfoQuery = useProjectInfo({ projectId });
-  const projectIdNum = Number(projectId);
+  const projectInfoQuery = useProjectInfo({ projectId: projectIdNum });
 
   if (!projectInfoQuery.data) {
     return <>Loading...</>;
@@ -34,6 +34,7 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
     selectedFeedbacksId: projectInfoQuery.data?.feedbacks.map((feedback) =>
       Number(feedback.feedbackId)
     ),
+    img: projectInfoQuery.data?.img,
   };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
