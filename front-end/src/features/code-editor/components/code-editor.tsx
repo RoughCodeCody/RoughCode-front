@@ -244,9 +244,9 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         {lineSelection ? (
           <FlexDiv gap="1rem">
             {CodeReviewFeedbackData.isCompleted.editor ? (
-              <Text>코드 라인 체크가 완료되었습니다</Text>
+              <Text color="main">코드 라인 체크가 완료되었습니다</Text>
             ) : (
-              <></>
+              <Text color="orange">코드 라인 체크가 완료되지 않았습니다</Text>
             )}
             <Btn
               text={CodeReviewFeedbackData.isCompleted.editor ? "변경" : "완료"}
