@@ -74,7 +74,7 @@ public class MypageController {
     }
 
     @Operation(summary = "스탯 카드 가져오기 API")
-    @GetMapping
+    @GetMapping(produces = "image/svg+xml")
     public ResponseEntity<?> makeStatCard(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                           @Parameter(description = "유저 이름")
                                           @RequestParam(required = false) String userName){
