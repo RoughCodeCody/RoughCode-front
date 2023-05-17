@@ -15,6 +15,7 @@ axios.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 409) alert(error.response.data.message);
+    if (error.response?.status === 401) alert("로그인이 필요한 기능입니다.");
     return Promise.reject(error);
   }
 );

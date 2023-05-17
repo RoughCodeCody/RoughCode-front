@@ -1,14 +1,19 @@
-import { Head } from "@/components/head";
-import { useUser } from "@/features/auth";
-import { UnauthenticatedLanding } from "@/features/misc";
+import Head from "next/head";
+
+import { Spinner } from "@/components/elements";
 import { Notifications } from "@/features/notifications";
 
 export default function Home() {
   const userQuery = useUser();
   return (
     <>
-      <Head description="개발새발 홈" />
-      {userQuery.isLoading && "Loading..."}
+      <Head>
+        <title>개발새발</title>
+        <meta name="description" content="개발새발" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      {userQuery.isLoading && <></>}
       {userQuery.data && userQuery.data.nickname.length === 0 && (
         <UnauthenticatedLanding />
       )}

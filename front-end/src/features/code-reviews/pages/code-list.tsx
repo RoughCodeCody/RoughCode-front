@@ -7,6 +7,8 @@ import {
   FlexDiv,
   Title,
   WriteFloatBtn,
+  Spinner,
+  NotFound,
 } from "@/components/elements";
 import { DropLabel, Search } from "@/features/search";
 import { useSearchCriteriaStore } from "@/stores";
@@ -66,12 +68,18 @@ export const CodeList = () => {
             type="codeReview"
           />
         </FlexDiv>
-        <FlexDiv direction="column" width="100%" height="100%" gap="1rem">
-          {status === "loading" && <p>Loading...</p>}
+        <FlexDiv
+          direction="column"
+          width="100%"
+          height="100%"
+          gap="1rem"
+          paddingX="5rem"
+          maxWidth="1024px"
+          minWidth="720px"
+        >
+          {status === "loading" && <Spinner size={700} />}
           {status === "success" && data.pages[0].list.length === 0 && (
-            <FlexDiv width="100%" height="50vh">
-              데이터가 없어요
-            </FlexDiv>
+            <NotFound size={700} />
           )}
           {status === "success" && (
             <>

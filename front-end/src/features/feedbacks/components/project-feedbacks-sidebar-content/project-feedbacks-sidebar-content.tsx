@@ -14,7 +14,9 @@ export const ProjectFeedbacksSidebarContent = ({
   projectId,
 }: ProjectFeedbacksSidebarContentProps) => {
   // server states
-  const projectFeedbacksQuery = useProjectFeedbacks({ projectId });
+  const projectFeedbacksQuery = useProjectFeedbacks({
+    projectId: Number(projectId),
+  });
 
   // client states
   const {

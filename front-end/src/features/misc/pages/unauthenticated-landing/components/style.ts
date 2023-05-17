@@ -27,6 +27,7 @@ const LinkCardTitle = styled.div`
 const LinkCardContent = styled.div`
   width: 100%;
   height: 15%;
+  padding-left: 1rem;
 `;
 
 const LinkCardImage = styled.div`

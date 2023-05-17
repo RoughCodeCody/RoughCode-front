@@ -7,14 +7,16 @@ export const LogoDiv = styled.div`
 `;
 
 export const LogoText = styled.span`
-  margin-left: 1rem;
+  /* text-align: center; */
+  /* margin-left: 1rem; */
   line-height: 1.75rem;
-  font-size: 1.25rem;
+  font-size: 1.6rem;
   font-weight: 600;
 `;
 
 export const FlexContainer = styled.div`
   display: flex;
+  overflow-x: hidden;
   flex-flow: column nowrap;
 `;
 
@@ -26,10 +28,23 @@ export const NavbarContainer = styled.div`
   justify-content: space-between;
   z-index: 10;
   background-color: var(--white-color);
-  padding: 1rem;
-  height: 5rem;
+  padding: 1rem 4rem 1rem 2rem;
+  height: 3.3rem;
 `;
 
 export const Main = styled.main`
   flex: 1 1 0%;
+`;
+
+export const Footer = styled.footer`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: var(--placeholder-color);
+  position: relative;
+  margin-top: 8rem;
+  width: 100vw;
+  height: 7rem;
 `;

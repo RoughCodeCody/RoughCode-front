@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Form, InputField } from "@/components/form";
-import { Btn, FlexDiv, Text } from "@/components/elements";
+import { Btn, FlexDiv, Spinner, Text } from "@/components/elements";
 import {
   useSendEmailAddress,
   useSendEmailCode,
@@ -80,9 +80,11 @@ export const EmailVerification = () => {
             onClickFunc={async () => {
               await deleteEmailAuthQuery.mutateAsync(); // 사용자가 데이터를 가져오기 위해 async/await 추가
               await userQuery.refetch();
+              sendEmailAddressQuery.reset();
+              sendEmailCodeQuery.reset();
               if (userQuery.data?.email === "") {
                 setRemainingTime(0);
-              } // userQuery 다시 요청(refetch)
+              }
             }}
           />
         </FlexDiv>
@@ -106,7 +108,13 @@ export const EmailVerification = () => {
                 registration={register("email")}
               />
               {sendEmailAddressQuery.status === "loading" ? (
-                <Btn text="인증코드 전송 중" />
+                <Btn
+                  text="인증코드 전송"
+                  display="flex"
+                  padding="0.2rem 0.5rem 0.2rem 0.5rem"
+                >
+                  <Spinner size={30} />
+                </Btn>
               ) : sendEmailAddressQuery.status === "success" ? (
                 <Btn
                   bgColor="orange"
@@ -138,7 +146,13 @@ export const EmailVerification = () => {
                   registration={register("code")}
                 />
                 {sendEmailCodeQuery.status === "loading" ? (
-                  <Btn text="전송 중" />
+                  <Btn
+                    text="전송 중"
+                    display="flex"
+                    padding="0.2rem 0.5rem 0.2rem 0.5rem"
+                  >
+                    <Spinner size={30} />
+                  </Btn>
                 ) : (
                   <Btn text="코드 입력" />
                 )}

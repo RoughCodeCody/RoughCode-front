@@ -9,16 +9,21 @@ import {
   Text,
   Selection,
 } from "@/components/elements";
-import {
-  useDeleteProjectFeedback,
-  usePostFeedbackLike,
-  usePutFeedbackComplaint,
-  usePutProjectFeedback,
-} from "@/features/projects/api";
+
 import { ProjectFeedback } from "@/features/projects/types";
 import { CodeReviewFeedback } from "@/features/code-reviews";
 import { queryClient } from "@/lib/react-query";
 
+import {
+  useDeleteProjectFeedback,
+  usePostProjectFeedbackLike,
+  usePutProjectFeedbackComplaint,
+  usePutProjectFeedback,
+  useDeleteCodeReviewFeedback,
+  usePostCodeReviewFeedbackLike,
+  usePutCodeReviewFeedbackComplaint,
+  usePutCodeReviewFeedback,
+} from "../../api";
 import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
 
 interface FeedbackItemProps {
@@ -26,6 +31,7 @@ interface FeedbackItemProps {
   type: "project" | "review";
   projectOrCodeId: number;
   isMine: boolean;
+  clickedReviewId?: number;
 }
 
 // export type ProjectFeedback = {
@@ -64,6 +70,7 @@ export const FeedbackItem = ({
   type,
   projectOrCodeId,
   isMine,
+  clickedReviewId,
 }: FeedbackItemProps) => {
   // 피드백 신고 관련 state
   const [forceClose, setForceClose] = useState(false);
@@ -74,57 +81,91 @@ export const FeedbackItem = ({
   const modifyInputRef = useRef<HTMLInputElement | null>(null);
 
   const invalidateQuery = () => {
-    const queryKey = type === "project" ? "projectInfo" : "codeInfo";
-    queryClient.invalidateQueries([queryKey, projectOrCodeId]);
+    if (type === "project") {
+      queryClient.invalidateQueries(["projectInfo", projectOrCodeId]);
+    } else if (type === "review") {
+      Promise.all([
+        queryClient.invalidateQueries(["codeInfo", projectOrCodeId]),
+        queryClient.invalidateQueries(["codeReviewFeedbacks", clickedReviewId]),
+      ]);
+    }
   };
 
   // 피드백 좋아요/좋아요 취소
-  const postProjectFeedbackLikeQuery = usePostFeedbackLike();
-  // const postReviewFeedbackLikeQuery =
+  const postProjectFeedbackLikeQuery = usePostProjectFeedbackLike();
+  const postCodeReviewFeedbackLikeQuery = usePostCodeReviewFeedbackLike();
   const handleFeedbackLike = () => {
     if (isProject(feedback)) {
       postProjectFeedbackLikeQuery.mutate(feedback.feedbackId, {
-        onSuccess: invalidateQuery,
+        onSuccess: () => invalidateQuery(),
       });
     } else if (isCode(feedback)) {
+      postCodeReviewFeedbackLikeQuery.mutate(feedback.reReviewId, {
+        onSuccess: () => invalidateQuery(),
+      });
     }
   };
 
   // 피드백 수정
-  const putFeedbackQuery = usePutProjectFeedback();
+  const putProjectFeedbackQuery = usePutProjectFeedback();
+  const putReviewFeedbackQuery = usePutCodeReviewFeedback();
   const handlePutFeedback = () => {
     if (isProject(feedback)) {
-      putFeedbackQuery.mutate(
+      putProjectFeedbackQuery.mutate(
         { feedbackId: feedback.feedbackId, content: newContent },
         {
           onSuccess: () => {
             setIsModifying(false);
-            invalidateQuery;
+            invalidateQuery();
           },
         }
       );
     } else if (isCode(feedback)) {
+      putReviewFeedbackQuery.mutate(
+        { id: feedback.reReviewId, content: newContent },
+        {
+          onSuccess: () => {
+            setIsModifying(false);
+            invalidateQuery();
+          },
+        }
+      );
     }
   };
 
   // 피드백 삭제
-  const deleteFeedbackQuery = useDeleteProjectFeedback();
+  const deleteProjectFeedbackQuery = useDeleteProjectFeedback();
+  const deleteCodeReviewFeedbackQuery = useDeleteCodeReviewFeedback();
   const handleDeleteFeedback = () => {
     if (isProject(feedback)) {
-      deleteFeedbackQuery.mutate(feedback.feedbackId, {
-        onSuccess: invalidateQuery,
+      deleteProjectFeedbackQuery.mutate(feedback.feedbackId, {
+        onSuccess: () => invalidateQuery(),
+      });
+    } else if (isCode(feedback)) {
+      deleteCodeReviewFeedbackQuery.mutate(feedback.reReviewId, {
+        onSuccess: () => invalidateQuery(),
       });
     }
   };
 
   // 피드백 신고
-  const putFeedbackComplaintQuery = usePutFeedbackComplaint();
+  const putProjectFeedbackComplaintQuery = usePutProjectFeedbackComplaint();
+  const putReviewFeedbackComplaintQuery = usePutCodeReviewFeedbackComplaint();
   const handleFeedbackComplaint = () => {
     if (isProject(feedback)) {
-      putFeedbackComplaintQuery.mutate(feedback.feedbackId, {
+      putProjectFeedbackComplaintQuery.mutate(feedback.feedbackId, {
         onSettled: () => setForceClose(true),
         onSuccess: () => {
-          invalidateQuery;
+          invalidateQuery();
+          alert("신고하였습니다");
+        },
+      });
+      setForceClose(false);
+    } else if (isCode(feedback)) {
+      putReviewFeedbackComplaintQuery.mutate(feedback.reReviewId, {
+        onSettled: () => setForceClose(true),
+        onSuccess: () => {
+          invalidateQuery();
           alert("신고하였습니다");
         },
       });
@@ -185,7 +226,10 @@ export const FeedbackItem = ({
                   type="like"
                   isChecked={feedback.liked}
                   cnt={feedback.like}
-                  onClickFunc={handleFeedbackLike}
+                  onClickFunc={(e) => {
+                    e.stopPropagation();
+                    handleFeedbackLike();
+                  }}
                 />
                 <Selection
                   selectionList={
@@ -203,7 +247,11 @@ export const FeedbackItem = ({
             align="end"
             style={{ whiteSpace: "pre", marginTop: "0.5rem" }}
           >
-            <Text color={!feedback.content.length ? "red" : "font"}>
+            <Text
+              color={!feedback.content.length ? "red" : "font"}
+              width="80%"
+              whiteSpace="pre-wrap"
+            >
               {!feedback.content.length
                 ? "신고되어 가려진 게시물입니다."
                 : feedback.content}

@@ -15,6 +15,7 @@ export const Search = ({ whichTag }: SearchProps) => {
       direction="column"
       align="center"
       gap="1rem"
+      paddingX="4rem"
     >
       <KeywordSearch />
       <TagSearch whichTag={whichTag} />
