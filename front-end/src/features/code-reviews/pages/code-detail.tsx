@@ -54,12 +54,8 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
           />
         )}
 
-        <FlexDiv direction="column" gap="4rem" padding="2rem 0">
-          <WhiteBoxNoshad
-            width="60%"
-            padding="2.25rem"
-            style={{ minWidth: "850px" }}
-          >
+        <FlexDiv direction="column" gap="4rem" padding="2rem 0" width="60%">
+          <WhiteBoxNoshad padding="2.25rem" style={{ minWidth: "850px" }}>
             {data && (
               <>
                 <CodeInfo
