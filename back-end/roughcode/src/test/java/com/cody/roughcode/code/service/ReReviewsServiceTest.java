@@ -2,10 +2,8 @@ package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.ReReviewReq;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
-import com.cody.roughcode.code.entity.Codes;
-import com.cody.roughcode.code.entity.ReReviewLikes;
-import com.cody.roughcode.code.entity.ReReviews;
-import com.cody.roughcode.code.entity.Reviews;
+import com.cody.roughcode.code.entity.*;
+import com.cody.roughcode.code.repository.ReReviewComplainsRepository;
 import com.cody.roughcode.code.repository.ReReviewLikesRepository;
 import com.cody.roughcode.code.repository.ReReviewsRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
@@ -48,6 +46,8 @@ public class ReReviewsServiceTest {
     private ReReviewsRepository reReviewsRepository;
     @Mock
     private ReReviewLikesRepository reReviewLikesRepository;
+    @Mock
+    private ReReviewComplainsRepository reReviewComplainsRepository;
 
     final Users users = Users.builder()
             .usersId(1L)
@@ -81,14 +81,14 @@ public class ReReviewsServiceTest {
             .reReviewsId(1L)
             .reviews(reviews)
             .users(users)
-            .complaint("1")
+            .complained(true)
             .content("")
             .build();
     final ReReviews reReviews = ReReviews.builder()
             .reReviewsId(1L)
             .reviews(reviews)
             .users(users)
-            .complaint("1")
+            .complained(false)
             .content("리리뷰")
             .build();
     final ReReviews reReviews2 = ReReviews.builder()
@@ -109,13 +109,19 @@ public class ReReviewsServiceTest {
             .users(users)
             .build();
 
+    final ReReviewComplains complains = ReReviewComplains.builder()
+            .complainsId(1L)
+            .reReviews(reReviews)
+            .users(users)
+            .build();
+
     @DisplayName("리-리뷰 신고 성공")
     @Test
     void complainReReviewSucceed() {
         // given
         doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
-
+        doReturn(reviews).when(reviewsRepository).findByReReviews(any(ReReviews.class));
         // when
         int res = reReviewsService.reReviewComplain(1L, 2L);
 
@@ -154,8 +160,10 @@ public class ReReviewsServiceTest {
     @Test
     void complainReReviewFailAlreadyComplained() {
         // given
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(reReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+        doReturn(reviews).when(reviewsRepository).findByReReviews(any(ReReviews.class));
+        doReturn(complains).when(reReviewComplainsRepository).findByReReviewsAndUsers(any(ReReviews.class), any(Users.class));
 
         // when & then
         ResponseStatusException exception = assertThrows(
@@ -170,6 +178,7 @@ public class ReReviewsServiceTest {
         // given
         doReturn(users2).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(deletedReReviews).when(reReviewsRepository).findByReReviewsId(any(Long.class));
+        doReturn(reviews).when(reviewsRepository).findByReReviews(any(ReReviews.class));
 
         // when & then
         ResponseStatusException exception = assertThrows(

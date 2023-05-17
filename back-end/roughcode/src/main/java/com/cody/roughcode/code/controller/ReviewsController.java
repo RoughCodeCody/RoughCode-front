@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -210,8 +211,9 @@ public class ReviewsController {
         int res = 0;
         try {
             res = reviewsService.complainReview(reviewId, userId);
-        } catch(SelectedException e){
-            return Response.conflict(e.getMessage());
+        } catch(ResponseStatusException e){
+            log.warn(e.getReason());
+            return Response.makeResponse(e.getStatus(), e.getReason());
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

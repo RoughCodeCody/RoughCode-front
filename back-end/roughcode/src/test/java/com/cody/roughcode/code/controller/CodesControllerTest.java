@@ -70,6 +70,7 @@ class CodesControllerTest {
             .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
             .content("시간초과 뜹니다")
             .projectId(1L)
+            .language("Javascript")
             .build();
 
     Users users = Users.builder()
@@ -85,6 +86,7 @@ class CodesControllerTest {
             .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
             .content("시간초과 뜹니다!!!!")
             .projectId(3L)
+            .language("Javascript")
             .build();
 
     private List<CodeTagsRes> tagsResInit() {
@@ -319,7 +321,7 @@ class CodesControllerTest {
 
         // CodeService deleteCode 대한 stub 필요
         doReturn(1).when(codesService)
-                .deleteCode(any(Long.class), any(Long.class));
+                .putExpireDateCode(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
@@ -345,7 +347,7 @@ class CodesControllerTest {
 
         // CodeService deleteCode 대한 stub 필요
         doReturn(0).when(codesService)
-                .deleteCode(any(Long.class), any(Long.class));
+                .putExpireDateCode(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
@@ -539,6 +541,7 @@ class CodesControllerTest {
                 .selected(true)
                 .build();
 
+        doReturn(1L).when(jwtTokenProvider).getId(accessToken);
         doReturn(List.of(reviewInfoRes)).when(codesService)
                 .getReviewList(any(Long.class), any(Long.class));
 
@@ -563,6 +566,7 @@ class CodesControllerTest {
         // given
         final String url = "/api/v1/code/{codeId}/review";
 
+        doReturn(1L).when(jwtTokenProvider).getId(accessToken);
         doReturn(null).when(codesService)
                 .getReviewList(any(Long.class), any(Long.class));
 

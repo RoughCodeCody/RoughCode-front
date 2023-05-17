@@ -16,7 +16,7 @@ public class ReReviewComplains {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "complains_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "complains_id", nullable = false, columnDefinition = "BIGINT")
     private Long complainsId;
 
     @ManyToOne(fetch = FetchType.LAZY)

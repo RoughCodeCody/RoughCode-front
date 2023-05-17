@@ -164,11 +164,6 @@ class CodesServiceTest {
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(user).when(usersRepository).save(any(Users.class));
         doReturn(code).when(codesRepository).save(any(Codes.class));
-        doReturn(tagsList.get(0)).when(codeTagsRepository).findByTagsId(any(Long.class));
-        doReturn(selectedTags)
-                .when(codeSelectedTagsRepository)
-                .save(any(CodeSelectedTags.class));
-        doReturn(tagsList.get(0)).when(codeTagsRepository).save(any(CodeTags.class));
         doReturn(info).when(codesInfoRepository).save(any(CodesInfo.class));
         doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
 
@@ -218,16 +213,10 @@ class CodesServiceTest {
                 .build();
 
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-//        doReturn(user).when(usersRepository).save(any(Users.class));
         doReturn(updatedCode).when(codesRepository).save(any(Codes.class));
         doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
-        doReturn(tagsList.get(0)).when(codeTagsRepository).findByTagsId(any(Long.class));
-        doReturn(selectedTags).when(codeSelectedTagsRepository).save(any(CodeSelectedTags.class));
-        doReturn(selectedReviews).when(selectedReviewsRepository).save(any(SelectedReviews.class));
-        doReturn(tagsList.get(0)).when(codeTagsRepository).save(any(CodeTags.class));
         doReturn(info).when(codesInfoRepository).save(any(CodesInfo.class));
         doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
-        doReturn(review).when(reviewsRepository).findByReviewsId(any(Long.class));
         alarmService.insertAlarm(any(AlarmReq.class));
         emailService.sendAlarm("이메일 전송", alarmReq);
 
@@ -337,7 +326,7 @@ class CodesServiceTest {
         doReturn(List.of(code, code2)).when(codesRepository).findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
-        CodeDetailRes success = codesService.getCode(codeId, 0L);
+        CodeDetailRes success = codesService.getCode(codeId, 1L);
 
         // then
         assertThat(success.getCodeId()).isEqualTo(1L);
@@ -354,6 +343,7 @@ class CodesServiceTest {
                 .title("개발새발 코드")
                 .selectedTagsId(List.of(1L))
                 .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
+                .language("Javasript")
                 .content("시간초과 뜹니다")
                 .projectId(1L)
                 .selectedTagsId(List.of(1L, 2L))
@@ -378,7 +368,7 @@ class CodesServiceTest {
                 .build();
 
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
         doReturn(tagsList).when(codeTagsRepository).findByTagsIdIn(Mockito.<Long>anyList());
         doReturn(List.of(review)).when(reviewsRepository).findByReviewsIdIn(Mockito.<Long>anyList());
@@ -414,7 +404,7 @@ class CodesServiceTest {
                 .build();
 
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(original).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
+        doReturn(original).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -443,8 +433,7 @@ class CodesServiceTest {
 
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
-        doReturn(info).when(codesInfoRepository).findByCodes(any(Codes.class));
+        doReturn(code).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
         reReviewsRepository.deleteAllByCodesId(any(Long.class));
         reviewsRepository.deleteAllByCodesId(any(Long.class));
         reviewLikesRepository.deleteAllByCodesId(any(Long.class));
@@ -464,7 +453,7 @@ class CodesServiceTest {
     void deleteCodeFailUserDiffer() {
         // given
         doReturn(user2).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findLatestByCodesIdAndUsersId(any(Long.class), any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NotMatchException exception = assertThrows(
@@ -479,7 +468,7 @@ class CodesServiceTest {
     void likeCodeSucceed() {
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
         doReturn(null).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
 
         int likeCnt = code.getLikeCnt();
@@ -501,7 +490,7 @@ class CodesServiceTest {
 
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
         doReturn(codeLikes).when(codeLikesRepository).findByCodesAndUsers(any(Codes.class), any(Users.class));
 
         int likeCnt = code.getLikeCnt();
@@ -533,7 +522,7 @@ class CodesServiceTest {
     void likeCodeFailNotFoundCode() {
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(null).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(null).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
 
         // when & then
         NullPointerException exception = assertThrows(
@@ -632,7 +621,7 @@ class CodesServiceTest {
         List<CodeTagsRes> result = codesService.searchTags("");
 
         // then
-        AssertionsForClassTypes.assertThat(result.size()).isEqualTo(3);
+        AssertionsForClassTypes.assertThat(result.size()).isEqualTo(10);
     }
 
     @DisplayName("코드 리뷰 목록 조회 성공 - 코드 등록/수정 시 사용")
@@ -646,7 +635,7 @@ class CodesServiceTest {
                 .codes(code)
                 .users(user)
                 .likeCnt(3)
-                .complaint("2")
+                .complained(false)
                 .build();
 
         Codes code = Codes.builder()
@@ -659,7 +648,7 @@ class CodesServiceTest {
 
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
         doReturn(List.of(code)).when(codesRepository).findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
@@ -680,7 +669,7 @@ class CodesServiceTest {
                 .codes(code)
                 .users(user)
                 .likeCnt(3)
-                .complaint("2")
+                .complained(false)
                 .build();
 
         Codes code = Codes.builder()
@@ -698,7 +687,7 @@ class CodesServiceTest {
 
         // given
         doReturn(user).when(usersRepository).findByUsersId(any(Long.class));
-        doReturn(code).when(codesRepository).findByCodesId(any(Long.class));
+        doReturn(code).when(codesRepository).findByCodesIdAndExpireDateIsNull(any(Long.class));
         doReturn(reviewLike).when(reviewLikesRepository).findByReviewsAndUsers(any(Reviews.class), any(Users.class));
 
         // when

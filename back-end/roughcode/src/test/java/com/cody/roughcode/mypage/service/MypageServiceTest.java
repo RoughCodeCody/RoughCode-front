@@ -25,13 +25,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,7 +129,7 @@ public class MypageServiceTest {
 
     @DisplayName("스탯 카드에 유저 아이디를 가지고 정보 넣기 성공")
     @Test
-    void makeStackCardWithUserIdSucceed() throws FileNotFoundException {
+    void makeStackCardWithUserIdSucceed() throws IOException {
         // given
         doReturn(users).when(usersRepository).findByUsersId(1L);
         doReturn(1).when(feedbackRepository).countByUsers(any(Users.class));
@@ -136,77 +141,32 @@ public class MypageServiceTest {
 
         // when
         String completeCard = mypageService.makeStatCardWithUserId(users.getUsersId());
+        HashMap<String, String> stats = new HashMap<>();
+
+        stats.put("feedbackCnt", String.valueOf(1));
+        stats.put("codeReviewCnt", String.valueOf(2));
+        stats.put("includedFeedbackCnt", String.valueOf(3));
+        stats.put("includedCodeReviewCnt", String.valueOf(4));
+        stats.put("projectRefactorCnt", String.valueOf(5));
+        stats.put("codeRefactorCnt", String.valueOf(6));
+        stats.put("name", users.getName());
+
+        ClassPathResource cpr = new ClassPathResource("statcard.txt");
+        byte[] bdata = FileCopyUtils.copyToByteArray(cpr.getInputStream());
+        String lines = new String(bdata, StandardCharsets.UTF_8);
+
+        String completeStatCard = String.join("\n", lines);
+        for (String key : stats.keySet()) {
+            completeStatCard = completeStatCard.replace("${" + key + "}", String.valueOf(stats.get(key)));
+        }
 
         // then
-        assertThat(completeCard).isEqualTo("<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
-                "    <style>\n" +
-                "      .small {\n" +
-                "        font: italic 13px sans-serif;\n" +
-                "      }\n" +
-                "      .heavy {\n" +
-                "        font: bold 30px sans-serif;\n" +
-                "      }\n" +
-                "  \n" +
-                "      /* Note that the color of the text is set with the    *\n" +
-                "       * fill property, the color property is for HTML only */\n" +
-                "      .Rrrrr {\n" +
-                "        font: italic 40px serif;\n" +
-                "        fill: red;\n" +
-                "      }\n" +
-                "      .title {\n" +
-                "        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
-                "        fill: #319795;\n" +
-                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
-                "      }\n" +
-                "      .content {\n" +
-                "        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
-                "        fill: #45474F;\n" +
-                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
-                "      }\n" +
-                "    </style>\n" +
-                "    <rect\n" +
-                "        data-testid=\"card-bg\"\n" +
-                "        x=\"1%\"\n" +
-                "        y=\"0.5%\"\n" +
-                "        rx=\"25\"\n" +
-                "        height=\"99%\"\n" +
-                "        stroke=\"#319795\"\n" +
-                "        width=\"98%\"\n" +
-                "        fill=\"#ffffff\"\n" +
-                "      />\n" +
-                "\n" +
-                "      <rect\n" +
-                "      data-testid=\"card-bg\"\n" +
-                "      x=\"7%\"\n" +
-                "      y=\"20%\"\n" +
-                "      rx=\"5\"\n" +
-                "      height=\"70%\"\n" +
-                "      width=\"86%\"\n" +
-                "      fill=\"#EFF8FF\"\n" +
-                "    /> \n" +
-                "  \n" +
-                "    <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>\n" +
-                "\n" +
-                "    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>\n" +
-                "    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>\n" +
-                "    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>\n" +
-                "    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>\n" +
-                "    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>\n" +
-                "    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>\n" +
-                "\n" +
-                "    <text x=\"64%\" y=\"32%\" class=\"content\">1</text>\n" +
-                "    <text x=\"64%\" y=\"42%\" class=\"content\">2</text>\n" +
-                "    <text x=\"64%\" y=\"52%\" class=\"content\">3</text>\n" +
-                "    <text x=\"64%\" y=\"62%\" class=\"content\">4</text>\n" +
-                "    <text x=\"64%\" y=\"72%\" class=\"content\">5</text>\n" +
-                "    <text x=\"64%\" y=\"82%\" class=\"content\">6</text>\n" +
-                "\n" +
-                "  </svg>");
+        assertThat(completeCard).isEqualTo(completeStatCard);
     }
 
     @DisplayName("스탯 카드에 유저 이름을 가지고 정보 넣기 성공")
     @Test
-    void makeStackCardWithUserNameSucceed() throws FileNotFoundException {
+    void makeStackCardWithUserNameSucceed() throws IOException {
         // given
         doReturn(Optional.of(users)).when(usersRepository).findByName(any(String.class));
         doReturn(1).when(feedbackRepository).countByUsers(any(Users.class));
@@ -218,72 +178,27 @@ public class MypageServiceTest {
 
         // when
         String completeCard = mypageService.makeStatCardWithUserName(users.getName());
+        HashMap<String, String> stats = new HashMap<>();
+
+        stats.put("feedbackCnt", String.valueOf(1));
+        stats.put("codeReviewCnt", String.valueOf(2));
+        stats.put("includedFeedbackCnt", String.valueOf(3));
+        stats.put("includedCodeReviewCnt", String.valueOf(4));
+        stats.put("projectRefactorCnt", String.valueOf(5));
+        stats.put("codeRefactorCnt", String.valueOf(6));
+        stats.put("name", users.getName());
+
+        ClassPathResource cpr = new ClassPathResource("statcard.txt");
+        byte[] bdata = FileCopyUtils.copyToByteArray(cpr.getInputStream());
+        String lines = new String(bdata, StandardCharsets.UTF_8);
+
+        String completeStatCard = String.join("\n", lines);
+        for (String key : stats.keySet()) {
+            completeStatCard = completeStatCard.replace("${" + key + "}", String.valueOf(stats.get(key)));
+        }
 
         // then
-        assertThat(completeCard).isEqualTo("<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">\n" +
-                "    <style>\n" +
-                "      .small {\n" +
-                "        font: italic 13px sans-serif;\n" +
-                "      }\n" +
-                "      .heavy {\n" +
-                "        font: bold 30px sans-serif;\n" +
-                "      }\n" +
-                "  \n" +
-                "      /* Note that the color of the text is set with the    *\n" +
-                "       * fill property, the color property is for HTML only */\n" +
-                "      .Rrrrr {\n" +
-                "        font: italic 40px serif;\n" +
-                "        fill: red;\n" +
-                "      }\n" +
-                "      .title {\n" +
-                "        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
-                "        fill: #319795;\n" +
-                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
-                "      }\n" +
-                "      .content {\n" +
-                "        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;\n" +
-                "        fill: #45474F;\n" +
-                "        animation: fadeInAnimation 0.8s ease-in-out forwards;\n" +
-                "      }\n" +
-                "    </style>\n" +
-                "    <rect\n" +
-                "        data-testid=\"card-bg\"\n" +
-                "        x=\"1%\"\n" +
-                "        y=\"0.5%\"\n" +
-                "        rx=\"25\"\n" +
-                "        height=\"99%\"\n" +
-                "        stroke=\"#319795\"\n" +
-                "        width=\"98%\"\n" +
-                "        fill=\"#ffffff\"\n" +
-                "      />\n" +
-                "\n" +
-                "      <rect\n" +
-                "      data-testid=\"card-bg\"\n" +
-                "      x=\"7%\"\n" +
-                "      y=\"20%\"\n" +
-                "      rx=\"5\"\n" +
-                "      height=\"70%\"\n" +
-                "      width=\"86%\"\n" +
-                "      fill=\"#EFF8FF\"\n" +
-                "    /> \n" +
-                "  \n" +
-                "    <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>\n" +
-                "\n" +
-                "    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>\n" +
-                "    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>\n" +
-                "    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>\n" +
-                "    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>\n" +
-                "    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>\n" +
-                "    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>\n" +
-                "\n" +
-                "    <text x=\"64%\" y=\"32%\" class=\"content\">1</text>\n" +
-                "    <text x=\"64%\" y=\"42%\" class=\"content\">2</text>\n" +
-                "    <text x=\"64%\" y=\"52%\" class=\"content\">3</text>\n" +
-                "    <text x=\"64%\" y=\"62%\" class=\"content\">4</text>\n" +
-                "    <text x=\"64%\" y=\"72%\" class=\"content\">5</text>\n" +
-                "    <text x=\"64%\" y=\"82%\" class=\"content\">6</text>\n" +
-                "\n" +
-                "  </svg>");
+        assertThat(completeCard).isEqualTo(completeStatCard);
     }
 
     @DisplayName("즐겨찾기한 코드 목록 조회 성공")
