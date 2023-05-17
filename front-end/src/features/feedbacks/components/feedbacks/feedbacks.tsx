@@ -35,7 +35,7 @@ export const Feedbacks = ({
                 userQuery.data?.nickname === feedback.userName
             )}
             clickedReviewId={clickedReviewId}
-            key={idx}
+            key={`${feedback.content} + ${idx}`}
           />
         ))}
     </FlexDiv>
