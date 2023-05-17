@@ -1,4 +1,11 @@
-import { FlexDiv, Text, WhiteBoxShad } from "@/components/elements";
+import { FaRegLightbulb } from "react-icons/fa";
+
+import { FlexDiv, Text } from "@/components/elements";
+import {
+  EditorBottom,
+  EditorHeader,
+  EditorWrapper,
+} from "@/features/code-editor/components/style";
 
 interface ClickedReviewContentProps {
   content: string;
@@ -8,7 +15,14 @@ export const ClickedReviewContent = ({
   content,
 }: ClickedReviewContentProps) => {
   return (
-    <WhiteBoxShad shadColor="main">
+    <EditorWrapper noShad={true}>
+      <EditorHeader>
+        <FlexDiv>
+          <FaRegLightbulb />
+          <Text padding="0 0 0 0.5rem">코드 리뷰어가 작성한 설명입니다</Text>
+        </FlexDiv>
+      </EditorHeader>
+
       <FlexDiv
         width="100%"
         justify="space-between"
@@ -25,6 +39,8 @@ export const ClickedReviewContent = ({
           ></div>
         )}
       </FlexDiv>
-    </WhiteBoxShad>
+
+      <EditorBottom />
+    </EditorWrapper>
   );
 };

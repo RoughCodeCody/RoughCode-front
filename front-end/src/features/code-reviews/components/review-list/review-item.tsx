@@ -68,6 +68,11 @@ export const CodeReviewItem = ({
 
   // 코드 리뷰 좋아요/좋아요 취소
   const postCodeReviewLikeQuery = usePostCodeReviewLike();
+  const handleLike = () => {
+    postCodeReviewLikeQuery.mutate(reviewId, {
+      onSuccess: () => queryClient.invalidateQueries(["codeInfo", codeId]),
+    });
+  };
 
   // 코드 리뷰 삭제하기
   const deleteCodeReviewQuery = useDeleteCodeReview();
@@ -104,7 +109,7 @@ export const CodeReviewItem = ({
       <WhiteBoxShad
         shadColor={showDetails ? "main" : "shad"}
         onClick={hadleReviewClick}
-        width="32%"
+        width="85%"
         margin="0.5rem 0"
       >
         <FlexDiv
@@ -122,7 +127,7 @@ export const CodeReviewItem = ({
                   type="like"
                   isChecked={liked}
                   cnt={likeCnt}
-                  onClickFunc={() => postCodeReviewLikeQuery.mutate(reviewId)}
+                  onClickFunc={handleLike}
                 />
                 <Selection
                   selectionList={

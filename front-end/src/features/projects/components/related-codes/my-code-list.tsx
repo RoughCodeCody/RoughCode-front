@@ -37,7 +37,10 @@ export const MyCodeList = ({
   // 프로젝트에 코드 연결
   const connectCodeToProjectQuery = useConnectCodeToProject();
   const connectCodeToProject = () => {
-    connectCodeToProjectQuery.mutate({ projectId, data: selectedCodeIds });
+    connectCodeToProjectQuery.mutate({
+      projectId: Number(projectId),
+      data: selectedCodeIds,
+    });
     setModalOpen(false);
   };
 

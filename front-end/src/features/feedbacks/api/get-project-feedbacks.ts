@@ -8,7 +8,7 @@ import { ProjectFeedbackInfo } from "../types";
 export const getProjectFeedbacks = ({
   projectId,
 }: {
-  projectId: string;
+  projectId: number;
 }): Promise<ProjectFeedbackInfo[]> => {
   return axios.get(`/project/${projectId}/feedback`);
 };
@@ -16,7 +16,7 @@ export const getProjectFeedbacks = ({
 type QueryFnType = typeof getProjectFeedbacks;
 
 type UseProjectFeedbacksOptions = {
-  projectId: string;
+  projectId: number;
   config?: QueryConfig<QueryFnType>;
 };
 

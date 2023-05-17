@@ -14,7 +14,7 @@ type ProjectDetailProps = {
 
 export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
   // 프로젝트 정보 가져오기
-  const { isLoading, data } = useProjectInfo({ projectId });
+  const { isLoading, data } = useProjectInfo({ projectId: Number(projectId) });
 
   if (isLoading) return <>loading</>;
 
@@ -31,7 +31,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
             />
 
             <WhiteBoxNoshad
-              width="65%"
+              width="60%"
               padding="2.25rem"
               style={{ minWidth: "850px" }}
             >
