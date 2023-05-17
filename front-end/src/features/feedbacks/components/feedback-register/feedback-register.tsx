@@ -67,7 +67,10 @@ export const FeedbackRegister = ({
                 : "이 코드 리뷰에 대한 건설적인 의견을 자유롭게 남겨주세요"
             }
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length > 500) return;
+              setContent(e.target.value);
+            }}
             onKeyUp={(e) => {
               if (e.key === "Enter" && !e.shiftKey) postFeedback();
             }}

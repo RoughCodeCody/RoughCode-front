@@ -7,7 +7,7 @@ const LoadingSpinnerBackdrop = styled.div`
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 500;
+  z-index: 1100;
 `;
 
 const LoadingSpinnerWrapper = styled.div`
@@ -15,7 +15,7 @@ const LoadingSpinnerWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 700;
+  z-index: 1200;
 `;
 
 export { LoadingSpinnerBackdrop, LoadingSpinnerWrapper };

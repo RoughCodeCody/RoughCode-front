@@ -139,13 +139,16 @@ export const FeedbackItem = ({
   const handleDeleteFeedback = () => {
     if (isProject(feedback)) {
       deleteProjectFeedbackQuery.mutate(feedback.feedbackId, {
+        onSettled: () => setForceClose(true),
         onSuccess: () => invalidateQuery(),
       });
     } else if (isCode(feedback)) {
       deleteCodeReviewFeedbackQuery.mutate(feedback.reReviewId, {
+        onSettled: () => setForceClose(true),
         onSuccess: () => invalidateQuery(),
       });
     }
+    setForceClose(false);
   };
 
   // 피드백 신고
@@ -160,7 +163,6 @@ export const FeedbackItem = ({
           alert("신고하였습니다");
         },
       });
-      setForceClose(false);
     } else if (isCode(feedback)) {
       putReviewFeedbackComplaintQuery.mutate(feedback.reReviewId, {
         onSettled: () => setForceClose(true),
@@ -169,8 +171,8 @@ export const FeedbackItem = ({
           alert("신고하였습니다");
         },
       });
-      setForceClose(false);
     }
+    setForceClose(false);
   };
 
   const selectionListMine = {
@@ -198,11 +200,23 @@ export const FeedbackItem = ({
           <FlexDiv width="100%" justify="space-between">
             <FeedbackModifyInput
               value={newContent}
+              defaultValue={feedback.content}
               ref={modifyInputRef}
               onChange={(e) => setNewContent(e.target.value)}
             />
 
-            <Btn text="수정 완료" onClickFunc={handlePutFeedback} />
+            <Btn
+              text="수정 완료"
+              fontSize="0.8rem"
+              margin="0 0.3rem"
+              onClickFunc={handlePutFeedback}
+            />
+            <Btn
+              text="취소"
+              fontSize="0.8rem"
+              bgColor="red"
+              onClickFunc={() => setIsModifying(false)}
+            />
           </FlexDiv>
         </>
       ) : (
