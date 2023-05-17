@@ -15,7 +15,7 @@ type FormProps<
   TFormValues extends FieldValues = FieldValues,
   Schema extends ZodTypeAny = ZodTypeAny
 > = {
-  onSubmit: SubmitHandler<TFormValues>;
+  // onSubmit: SubmitHandler<TFormValues>;
   children: (methods: UseFormReturn<TFormValues>) => ReactNode;
   options?: UseFormProps<TFormValues>;
   id?: string;
@@ -26,7 +26,7 @@ export const Form = <
   TFormValues extends FieldValues = FieldValues,
   Schema extends ZodTypeAny = ZodTypeAny
 >({
-  onSubmit,
+  // onSubmit,
   children,
   options,
   id,
@@ -37,7 +37,10 @@ export const Form = <
     resolver: schema && zodResolver(schema),
   });
   return (
-    <StyledForm onSubmit={methods.handleSubmit(onSubmit)} id={id}>
+    <StyledForm
+      // onSubmit={methods.handleSubmit(onSubmit)}
+      id={id}
+    >
       {children(methods)}
     </StyledForm>
   );

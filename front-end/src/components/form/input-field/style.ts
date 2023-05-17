@@ -52,3 +52,10 @@ export const InputErrorMsg = styled.div`
   font-size: 0.875rem;
   font-weight: 600;
 `;
+
+export const InputSuccessMsg = styled.div`
+  line-height: 1.25rem;
+  color: var(--main-color);
+  font-size: 0.875rem;
+  font-weight: 600;
+`;
