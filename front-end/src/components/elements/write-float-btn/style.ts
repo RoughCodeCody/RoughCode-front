@@ -6,7 +6,7 @@ const WriteFloatBtnWrapper = styled(Link)`
   position: fixed;
   bottom: 5rem;
   right: 5rem;
-  z-index: 5000;
+  z-index: 1000;
   cursor: pointer;
 `;
 

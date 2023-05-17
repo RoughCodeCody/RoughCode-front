@@ -6,6 +6,7 @@ const ReviewListWrapper = styled(WhiteBoxNoshad)`
   top: 5.5rem;
   right: 0;
   width: 18%;
+  min-width: 16rem;
   margin-right: 1%;
   padding: 1rem 0;
 `;
