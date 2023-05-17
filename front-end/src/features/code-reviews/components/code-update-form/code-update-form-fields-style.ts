@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const UrlInspectionBtn = styled.button`
+export const GitHubBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;

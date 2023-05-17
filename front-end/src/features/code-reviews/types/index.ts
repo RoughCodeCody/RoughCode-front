@@ -110,3 +110,14 @@ export type CodeReviewInfoResult = {
   code: codeForFeedbackModify;
   language: string;
 };
+
+export type CodeUpdateValues = {
+  title: string;
+  githubUrl: string;
+  content: string;
+  codeId: number;
+  projectId: number | null;
+  selectedTagsId: number[];
+  selectedReviewsId: number[];
+  language: string;
+};

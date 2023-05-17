@@ -2,8 +2,8 @@ import Head from "next/head";
 
 import { Spinner } from "@/components/elements";
 import { Notifications } from "@/features/notifications";
-import { UnauthenticatedLanding } from "@/features/misc";
 import { useUser } from "@/features/auth";
+import { UnauthenticatedLanding } from "@/features/misc";
 
 export default function Home() {
   const userQuery = useUser();

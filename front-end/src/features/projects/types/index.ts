@@ -19,6 +19,7 @@ export type ProjectInfoResult = {
   feedbackCnt: number;
   feedbacks: ProjectFeedback[];
   img: string;
+  introduction: string;
   likeCnt: number;
   liked: boolean;
   mine: boolean;

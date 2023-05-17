@@ -7,7 +7,7 @@ import { useState } from "react";
 import dog from "@/assets/dog.png";
 import duck from "@/assets/duck.png";
 import friends from "@/assets/dog-duck.png";
-import { NEXT_PUBLIC_REDIRECT_URL } from "@/config";
+import { REDIRECT_URL } from "@/config";
 import { FlexDiv, Text } from "@/components/elements";
 import { useUser } from "@/features/auth";
 
@@ -107,7 +107,7 @@ const UserNavigation = () => {
       {userQuery.isLoading && "Loading..."}
       {userQuery.data && userQuery.data.nickname.length === 0 && (
         <Link
-          href={`${NEXT_PUBLIC_REDIRECT_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
+          href={`${REDIRECT_URL}/oauth2/authorization/github?redirect_uri=${window.location.href}`}
         >
           <Text
             size="1.3rem"
