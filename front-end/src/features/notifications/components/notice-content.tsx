@@ -11,6 +11,7 @@ export const NoticeContent = ({
   data: { alarmId, section, content, postId, userId, createdDate },
 }: NoticeContentProps) => {
   const router = useRouter();
+  const path = section === "code" ? "code-review" : section
   return (
     <FlexDiv>
       <Text size="1.3rem" bold={true}>
@@ -21,7 +22,7 @@ export const NoticeContent = ({
           bold={true}
           color="main"
           pointer={true}
-          onClick={() => router.push(`/${section}/${postId}`)}
+          onClick={() => router.push(`/${path}/${postId}`)}
         >
           {content[1]}{" "}
           <Text as="span" size="1.3rem" bold={true}>
