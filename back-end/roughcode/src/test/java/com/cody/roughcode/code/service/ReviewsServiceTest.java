@@ -85,7 +85,7 @@ public class ReviewsServiceTest {
             .codes(code)
             .users(user)
             .likeCnt(3)
-            .complaint("2")
+            .complained(false)
             .build();
 
     final ReviewReq req = ReviewReq.builder()
