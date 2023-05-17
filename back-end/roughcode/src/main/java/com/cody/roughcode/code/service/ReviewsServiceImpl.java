@@ -158,7 +158,7 @@ public class ReviewsServiceImpl implements ReviewsService {
                 .projectId(connectedProjectId)
                 .build();
 
-        return ReviewDetailRes.toDto(codesInfo.getGithubUrl(), review, reviewLiked, reReviewResList, reviewCodeRes);
+        return ReviewDetailRes.toDto(codesInfo.getGithubUrl(), codesInfo.getLanguage(), review, reviewLiked, reReviewResList, reviewCodeRes);
     }
 
     @Override
