@@ -108,7 +108,7 @@ export const CodeInfo = ({
               )}
             </FlexDiv>
           </FlexDiv>
-          <FlexDiv width="100%" justify="start">
+          <FlexDiv width="100%" justify="start" wrap="wrap" gap="0.5rem">
             {tags.map((val, idx) => (
               <TagChipSub tag={val} key={idx} />
             ))}
