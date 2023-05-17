@@ -48,8 +48,33 @@ public class MypageController {
     private final MypageServiceImpl mypageService;
     private final EmailServiceImpl emailService;
 
+    @Operation(summary = "스탯 카드 가져오기 API - 기존 형태")
+    @GetMapping("/stat")
+    public ResponseEntity<?> makeStatCardFormat(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                          @Parameter(description = "유저 이름")
+                                          @RequestParam(required = false) String userName){
+        if(accessToken == null && (userName == null || userName.equals(""))) return Response.badRequest("유저의 정보를 입력해주세요");
+
+        String statCard = "";
+        try {
+            if (accessToken != null) {
+                Long userId = jwtTokenProvider.getId(accessToken);
+                if(userId <= 0) return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+                statCard = mypageService.makeStatCardWithUserId(userId);
+            } else {
+                statCard = mypageService.makeStatCardWithUserName(userName);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "스탯 카드 정보 만들기 성공", 1, statCard);
+    }
+
     @Operation(summary = "스탯 카드 가져오기 API")
-    @GetMapping
+    @GetMapping(produces = "image/svg+xml")
     public ResponseEntity<?> makeStatCard(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                           @Parameter(description = "유저 이름")
                                           @RequestParam(required = false) String userName){
@@ -349,5 +374,21 @@ public class MypageController {
             return Response.badRequest(e.getMessage());
         }
         return Response.ok("알림 삭제 성공");
+    }
+
+    @Operation(summary = "알림 전체 삭제 API")
+    @DeleteMapping("/alarm")
+    ResponseEntity<?> deleteAllAlarm(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        try {
+            alarmService.deleteAllAlarm(usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+        return Response.ok("알림 전체 삭제 성공");
     }
 }
