@@ -21,6 +21,9 @@ public class ReviewDetailRes {
     @Schema(description = "기존 코드를 불러올 github URL", example = "https://api.github.com/repos/cody/hello-world/contents/src/main.py?ref=594e05aee256df9e4e826ff56ea2a8c38e9e7972")
     private String githubUrl;
 
+    @Schema(description = "코드 언어", example = "Javascript")
+    private String language;
+
     @Schema(description = "리뷰 id", example = "1")
     private Long reviewId;
 
@@ -57,7 +60,7 @@ public class ReviewDetailRes {
     @Schema(description = "리뷰에 대한 리뷰 목록")
     private ReviewCodeRes code;
 
-    public static ReviewDetailRes toDto(String githubUrl, Reviews review, Boolean liked, List<ReReviewRes> reReviews, ReviewCodeRes code) {
+    public static ReviewDetailRes toDto(String githubUrl, String language, Reviews review, Boolean liked, List<ReReviewRes> reReviews, ReviewCodeRes code) {
 
         Long userId;
         String userName;
@@ -83,6 +86,7 @@ public class ReviewDetailRes {
 
         return ReviewDetailRes.builder()
                 .githubUrl(githubUrl)
+                .language(language)
                 .reviewId(review.getReviewsId())
                 .userId(userId)
                 .userName(userName)
