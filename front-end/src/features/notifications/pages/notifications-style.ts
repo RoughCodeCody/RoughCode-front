@@ -3,7 +3,7 @@ import footPrintPic from "@/assets/foot-print.png";
 
 const HomeContainer = styled.div`
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 18.3rem);
   padding-top: 10rem;
   padding-bottom: 10rem;
   display: flex;
