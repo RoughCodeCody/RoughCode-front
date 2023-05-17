@@ -375,4 +375,20 @@ public class MypageController {
         }
         return Response.ok("알림 삭제 성공");
     }
+
+    @Operation(summary = "알림 전체 삭제 API")
+    @DeleteMapping("/alarm")
+    ResponseEntity<?> deleteAllAlarm(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+
+        try {
+            alarmService.deleteAllAlarm(usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+        return Response.ok("알림 전체 삭제 성공");
+    }
 }
