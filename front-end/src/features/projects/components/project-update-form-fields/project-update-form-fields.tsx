@@ -11,11 +11,12 @@ import { useSearchCriteriaStore } from "@/stores";
 import { useCheckProjectUrl } from "../../api";
 import { ProjectUpdateValues } from "../../types";
 import { UrlInspectionBtn, SubmitButtonWrapper, SubmitButton } from "./style";
+import { ThumbnailField } from "./thumbnail-field";
 
 type ProjectUpdateFormFieldsProps = {
   methods: UseFormReturn<ProjectUpdateValues>;
   projectId: number;
-  projectUpdateInitialValues?: ProjectUpdateValues;
+  projectUpdateInitialValues?: ProjectUpdateValues & { img: string };
 };
 
 export const ProjectUpdateFormFields = ({
@@ -122,15 +123,25 @@ export const ProjectUpdateFormFields = ({
           검사
         </UrlInspectionBtn>
       </FlexDiv>
-      {projectUpdateInitialValues?.content ? (
+      {projectUpdateInitialValues ? (
         <TiptapController<ProjectUpdateValues>
           name="content"
           control={control}
           initialValue={projectUpdateInitialValues.content}
         />
-      ) : null}
+      ) : (
+        <TiptapController<ProjectUpdateValues>
+          name="content"
+          control={control}
+        />
+      )}
       <TagSearch whichTag="project" />
-      <input id="input-thumbnail" type="file" />
+
+      {projectUpdateInitialValues ? (
+        <ThumbnailField key="new" initialSrc={projectUpdateInitialValues.img} />
+      ) : (
+        <ThumbnailField key="old" />
+      )}
 
       <SubmitButtonWrapper>
         <SubmitButton

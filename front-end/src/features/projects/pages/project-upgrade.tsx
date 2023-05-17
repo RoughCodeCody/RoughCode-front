@@ -19,7 +19,11 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
   const projectInfoQuery = useProjectInfo({ projectId });
   const projectIdNum = Number(projectId);
 
-  let projectUpdateInitialValues = {
+  if (!projectInfoQuery.data) {
+    return <>Loading...</>;
+  }
+
+  const projectUpdateInitialValues = {
     title: projectInfoQuery.data?.title || "",
     notice: projectInfoQuery.data?.notice || "",
     introduction: projectInfoQuery.data?.introduction || "",

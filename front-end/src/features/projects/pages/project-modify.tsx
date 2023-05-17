@@ -19,7 +19,10 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
   const projectInfoQuery = useProjectInfo({ projectId });
   const projectIdNum = Number(projectId);
 
-  let projectUpdateInitialValues = {
+  if (!projectInfoQuery.data) {
+    return <>Loading...</>;
+  }
+  const projectUpdateInitialValues = {
     title: projectInfoQuery.data?.title || "",
     notice: projectInfoQuery.data?.notice || "",
     introduction: projectInfoQuery.data?.introduction || "",
@@ -30,6 +33,7 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
     selectedFeedbacksId: projectInfoQuery.data?.feedbacks.map((feedback) =>
       Number(feedback.feedbackId)
     ),
+    img: projectInfoQuery.data?.img,
   };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
