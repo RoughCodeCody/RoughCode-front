@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.repository;
 
+import com.cody.roughcode.code.entity.ReReviews;
 import com.cody.roughcode.code.entity.Reviews;
 import com.cody.roughcode.user.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,7 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     @Query("SELECT r FROM Reviews r WHERE r.reviewsId = :id AND r.codes.expireDate IS null")
     Reviews findByReviewsIdAndCodeExpireDateIsNull(@Param("id") Long id);
 
+    Reviews findByReReviews(ReReviews reReviews);
     List<Reviews> findByReviewsIdIn(List<Long> ids);
 
     @Modifying
