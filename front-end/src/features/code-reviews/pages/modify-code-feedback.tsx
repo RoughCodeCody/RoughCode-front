@@ -134,7 +134,8 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
       {/* 등록 버튼 : 서버에 put 요청*/}
       <Btn
         text={"수정"}
-        fontSize="2rem"
+        padding="0.6rem 1rem 0.6rem 1rem"
+        fontSize="1.5rem"
         onClickFunc={() => {
           putCodeFeedback();
         }}
