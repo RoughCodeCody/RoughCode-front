@@ -154,7 +154,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <Main>{children}</Main>
       <Footer>
         <Text bold={true}>개발새발</Text>
-        <Text>Copyright &copy; 2023 Cody team.</Text>
+        <Text>Copyright &copy; 2023 team Cody.</Text>
         <FlexDiv position="absolute" right="3rem" bottom="calc(7rem - 4px)">
           <Image src={friends} alt="mascot" width={100} height={60} />
         </FlexDiv>
