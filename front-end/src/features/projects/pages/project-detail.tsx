@@ -56,6 +56,7 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
                 }}
               />
               <ProjectDescription content={data.content} />
+
               <RelatedCodes
                 codes={data.code}
                 isMine={data.mine}
