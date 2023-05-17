@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
 import { ExtractFnReturnType, InfiniteQueryConfig } from "@/lib/react-query";
 
+// 프로젝트에 코드 연결할 때 내 코드 목록 가져오기 위한 쿼리
 interface MyCodeListResult {
   nextPage: number | undefined; // 다음 페이지
   list: {

@@ -16,6 +16,7 @@ import {
 import { usePostCodeLike, usePostCodeFav, useDeleteCode } from "../../api";
 import { CodeInfoResult, codeForFeedbackModify } from "../../types";
 import { DeleteCode } from "./delete-code";
+import { MyProjectList } from "./my-project-list";
 
 interface CodeInfoProps {
   data: CodeInfoResult | codeForFeedbackModify;
@@ -47,6 +48,9 @@ export const CodeInfo = ({
 
   // 삭제 확인 모달 관련 state
   const [codeDeleteModalOpen, setCodeDeleteModalOpen] = useState(false);
+
+  // 프로젝트 연결 모달 관련 state
+  const [projectLinkModalOpen, setProjectLinkModalOpen] = useState(false);
 
   // selection 선택시 닫기 위한 state
   const [forceClose, setForceClose] = useState(false);
@@ -132,6 +136,13 @@ export const CodeInfo = ({
             />
           )}
 
+          {isMine && (
+            <Btn
+              text="+ 새 프로젝트 연결"
+              onClickFunc={() => setProjectLinkModalOpen(true)}
+            />
+          )}
+
           {projectId && (
             <FlexDiv justify="start">
               <AiOutlineLink fontSize={24} />
@@ -165,6 +176,20 @@ export const CodeInfo = ({
             setModalOpen={setCodeDeleteModalOpen}
             handleDelete={handleDelete}
             setForceClose={setForceClose}
+          />
+        }
+      />
+
+      <Modal
+        headerText={"나의 프로젝트 목록"}
+        width="80%"
+        isOpen={projectLinkModalOpen}
+        setIsOpen={setProjectLinkModalOpen}
+        modalContent={
+          <MyProjectList
+            relatedProjectId={projectId}
+            codeId={codeId}
+            setModalOpen={setProjectLinkModalOpen}
           />
         }
       />
