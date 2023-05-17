@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Accordion, FlexDiv, Modal } from "@/components/elements";
+import { Accordion, FlexDiv, Modal, Text } from "@/components/elements";
 
 import { RelatedCode } from "../../types";
 import { MiniFeedbackItem } from "../mini-feedback-item";
@@ -21,7 +21,7 @@ export const RelatedCodes = ({
 
   return (
     <>
-      {codes.length !== 0 && (
+      {isMine || codes.length !== 0 ? (
         <Accordion
           title={`이 프로젝트와 연결된 코드 리뷰  ${codes.length}개`}
           hasBtn={isMine}
@@ -34,6 +34,17 @@ export const RelatedCodes = ({
             ))}
           </FlexDiv>
         </Accordion>
+      ) : (
+        isMine && (
+          <Accordion
+            title={`이 프로젝트와 연결된 코드 리뷰  ${codes.length}개`}
+            hasBtn={isMine}
+            btnText="+ 새 코드 연결"
+            btnClickFunc={() => setCodeLinkModalOpen(true)}
+          >
+            <Text>연결된 코드가 없습니다</Text>
+          </Accordion>
+        )
       )}
 
       <Modal
