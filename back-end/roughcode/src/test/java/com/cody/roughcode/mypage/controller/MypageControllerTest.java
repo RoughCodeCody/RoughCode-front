@@ -114,11 +114,11 @@ public class MypageControllerTest {
             .reviewCnt(1)
             .build();
 
-    @DisplayName("스탯 카드 정보 가져오기 성공 - cookie")
+    @DisplayName("스탯 카드 정보 가져오기 성공 - 기존 포맷 - cookie")
     @Test
-    public void makeStatCardWithCookieSucceed() throws Exception {
+    public void makeStatCardFormatWithCookieSucceed() throws Exception {
         // given
-        final String url = "/api/v1/mypage";
+        final String url = "/api/v1/mypage/stat";
         doReturn(users.getUsersId()).when(jwtTokenProvider).getId(any(String.class));
         doReturn("string").when(mypageService).makeStatCardWithUserId(eq(users.getUsersId()));
 
@@ -139,11 +139,11 @@ public class MypageControllerTest {
         assertThat(result).isEqualTo("string");
     }
 
-    @DisplayName("스탯 카드 정보 가져오기 성공 - userName")
+    @DisplayName("스탯 카드 정보 가져오기 성공 - 기존 포맷 - userName")
     @Test
-    public void makeStatCardWithUserNameSucceed() throws Exception {
+    public void makeStatCardFormatWithUserNameSucceed() throws Exception {
         // given
-        final String url = "/api/v1/mypage";
+        final String url = "/api/v1/mypage/stat";
         doReturn("string").when(mypageService).makeStatCardWithUserName(eq(users.getName()));
 
         // when
@@ -161,6 +161,47 @@ public class MypageControllerTest {
         String result = jsonObject.get("result").getAsString();
         assertThat(message).isEqualTo("스탯 카드 정보 만들기 성공");
         assertThat(result).isEqualTo("string");
+    }
+
+    @DisplayName("스탯 카드 정보 가져오기 성공 - cookie")
+    @Test
+    public void makeStatCardWithCookieSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage";
+        doReturn(users.getUsersId()).when(jwtTokenProvider).getId(any(String.class));
+        doReturn("string").when(mypageService).makeStatCardWithUserId(eq(users.getUsersId()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertThat(responseBody).isEqualTo("string");
+    }
+
+    @DisplayName("스탯 카드 정보 가져오기 성공 - userName")
+    @Test
+    public void makeStatCardWithUserNameSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/mypage";
+        doReturn("string").when(mypageService).makeStatCardWithUserName(eq(users.getName()));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .param("userName", users.getName())
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertThat(responseBody).isEqualTo("string");
     }
 
     @DisplayName("이메일 정보 삭제 실패 - 존재하지 않는 유저")
@@ -304,6 +345,7 @@ public class MypageControllerTest {
                         .build()
         );
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(Pair.of(codeInfoRes, false)).when(mypageService)
                 .getFavoriteCodeList(any(PageRequest.class), any(Long.class));
 
@@ -344,6 +386,7 @@ public class MypageControllerTest {
                         .build()
         );
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(Pair.of(codeInfoRes, false)).when(mypageService)
                 .getReviewCodeList(any(PageRequest.class), any(Long.class));
 
@@ -383,6 +426,7 @@ public class MypageControllerTest {
                         .userName(code.getCodeWriter().getName())
                         .build()
         );
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(Pair.of(codeInfoRes, false)).when(mypageService)
                 .getCodeList(any(PageRequest.class), any(Long.class));
 
@@ -433,6 +477,7 @@ public class MypageControllerTest {
                         .version(project.getVersion())
                         .build()
         );
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(Pair.of(projectInfoRes, false)).when(mypageService)
                 .getFeedbackProjectList(any(PageRequest.class), any(Long.class));
 
@@ -483,6 +528,7 @@ public class MypageControllerTest {
                         .version(project.getVersion())
                         .build()
         );
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(Pair.of(projectInfoRes, false)).when(mypageService)
                 .getFavoriteProjectList(any(PageRequest.class), any(Long.class));
 
@@ -533,6 +579,7 @@ public class MypageControllerTest {
                         .version(project.getVersion())
                         .build()
         );
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(Pair.of(projectInfoRes, false)).when(mypageService)
                 .getProjectList(any(PageRequest.class), any(Long.class));
 
@@ -558,6 +605,7 @@ public class MypageControllerTest {
     public void deleteAlarmSucceed() throws Exception {
         // given
         final String url = "/api/v1/mypage/alarm/{alarmId}";
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -578,6 +626,7 @@ public class MypageControllerTest {
     public void getAlarmListSucceed() throws Exception {
         // given
         final String url = "/api/v1/mypage/alarm";
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(List.of(alarm1, alarm2)).when(alarmService).getAlarmList(any(Long.class));
 
         // when

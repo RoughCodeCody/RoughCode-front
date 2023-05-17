@@ -692,7 +692,6 @@ public class ProjectServiceTest {
                 .users(users)
                 .feedbacksId(1L)
                 .projectsInfo(info)
-                .complaint("1")
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
