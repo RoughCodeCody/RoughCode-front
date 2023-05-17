@@ -96,18 +96,13 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                   />
                 </FlexDiv>
 
-                {/* <CodeReviewList
-                  reviews={data.reviews}
-                  codeId={Number(codeId)}
-                  clickedReviewId={clickedReviewId}
-                  setClickedReviewId={setClickedReviewId}
-                /> */}
-
-                <ClickedReviewContent
-                  content={
-                    codeReviewInfoQuery.data?.content || "설명이 없습니다"
-                  }
-                />
+                <FlexDiv width="100%" height="100%" margin="2.5rem 0 0 0">
+                  <ClickedReviewContent
+                    content={
+                      codeReviewInfoQuery.data?.content || "설명이 없습니다"
+                    }
+                  />
+                </FlexDiv>
               </>
             )}
           </WhiteBoxNoshad>
