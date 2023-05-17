@@ -1,6 +1,5 @@
 package com.cody.roughcode.project.repository;
 
-import com.cody.roughcode.project.entity.ProjectFavorites;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.user.entity.Users;
 import org.springframework.data.domain.Page;
@@ -9,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ProjectsRepository extends JpaRepository<Projects, Long> {
@@ -38,4 +38,6 @@ public interface ProjectsRepository extends JpaRepository<Projects, Long> {
 
     @Query("SELECT count(p) FROM Projects p WHERE p.projectWriter = :user AND p.version > 1 AND p.expireDate IS NULL")
     int countByProjectWriter(@Param("user") Users user);
+
+    List<Projects> findByExpireDateBefore(LocalDateTime currentDate);
 }

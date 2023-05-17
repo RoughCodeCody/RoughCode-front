@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CodesRepository extends JpaRepository<Codes, Long> {
@@ -61,5 +62,7 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
     int countByCodeWriter(@Param("user") Users user);
 
     List<Codes> findByProjects(Projects projects);
+
+    List<Codes> findByExpireDateBefore(LocalDateTime currentDate);
 
 }
