@@ -117,7 +117,7 @@ export type CodeUpdateValues = {
   content: string;
   codeId: number;
   projectId: number | null;
-  selectedTagsId: number[];
-  selectedReviewsId: number[];
+  selectedTagsId: number[] | null;
+  selectedReviewsId: number[] | null;
   language: string;
 };
