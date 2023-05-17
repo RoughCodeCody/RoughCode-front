@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.repository;
 
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.entity.ReReviews;
 import com.cody.roughcode.code.entity.Reviews;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,11 @@ public interface ReReviewsRepository extends JpaRepository<ReReviews, Long> {
     @Transactional
     @Query("DELETE FROM ReReviews re WHERE re.reviews IN (SELECT r FROM Reviews r WHERE r.codes.codesId = :codesId)")
     void deleteAllByCodesId(@Param("codesId") Long codesId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ReReviews re WHERE re.reviews IN (SELECT r FROM Reviews r WHERE r.codes IN :codesList)")
+    void deleteAllByCodesList(@Param("codesList") List<Codes> codesList);
 
     @Modifying
     @Transactional

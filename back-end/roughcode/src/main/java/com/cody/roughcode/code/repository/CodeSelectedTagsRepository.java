@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.cody.roughcode.code.entity.Codes;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,4 +24,8 @@ public interface CodeSelectedTagsRepository extends JpaRepository<CodeSelectedTa
     )
     Page<Codes> findAllByKeywordAndTag(@Param("keyword") String keyword, @Param("tagIds") List<Long> tagIds, @Param("tagIdsSize") Long tagIdsSize, Pageable pageable);
 
+    @Modifying
+    @Transactional
+    @Query("delete from CodeSelectedTags c where c.codes IN :codesList")
+    void deleteAllByCodesList(@Param("codesList") List<Codes> codesList);
 }
