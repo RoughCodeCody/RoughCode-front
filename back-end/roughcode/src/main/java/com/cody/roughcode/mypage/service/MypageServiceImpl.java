@@ -1,11 +1,13 @@
 package com.cody.roughcode.mypage.service;
 
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.entity.CodeLikes;
 import com.cody.roughcode.code.entity.CodeSelectedTags;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.entity.ProjectLikes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.Projects;
@@ -156,11 +158,17 @@ public class MypageServiceImpl implements MypageService{
         return Pair.of(getCodeInfoRes(codesPage, user), codesPage.hasNext());
     }
 
-    private static List<String> getTagNames(Codes code) {
-        List<String> tagList = new ArrayList<>();
+    private static List<CodeTagsRes> getTags(Codes code) {
+        List<CodeTagsRes> tagList = new ArrayList<>();
         if (code.getSelectedTags() != null)
             for (CodeSelectedTags selected : code.getSelectedTags()) {
-                tagList.add(selected.getTags().getName());
+                tagList.add(
+                        CodeTagsRes.builder()
+                                .name(selected.getTags().getName())
+                                .tagId(selected.getTags().getTagsId())
+                                .cnt(selected.getTags().getCnt())
+                                .build()
+                );
             }
         return tagList;
     }
@@ -169,7 +177,7 @@ public class MypageServiceImpl implements MypageService{
         List<Codes> codeList = codesPage.getContent();
         List<CodeInfoRes> codeInfoRes = new ArrayList<>();
         for (Codes c : codeList) {
-            List<String> tagList = getTagNames(c);
+            List<CodeTagsRes> tagList = getTags(c);
 
             // 내가 좋아요 눌렀는지 여부
             CodeLikes codeLikes = codeLikesRepository.findByCodesAndUsers(c, user);
@@ -225,7 +233,7 @@ public class MypageServiceImpl implements MypageService{
         List<Projects> projectList = projectsPage.getContent();
         List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
         for (Projects p : projectList) {
-            List<String> tagList = getTagNames(p);
+            List<ProjectTagsRes> tagList = getTags(p);
             ProjectLikes projectLikes = projectLikesRepository.findByProjectsAndUsers(p, user);
 
             projectInfoRes.add(ProjectInfoRes.builder()
@@ -246,11 +254,16 @@ public class MypageServiceImpl implements MypageService{
         return projectInfoRes;
     }
 
-    private static List<String> getTagNames(Projects p) {
-        List<String> tagList = new ArrayList<>();
+    private static List<ProjectTagsRes> getTags(Projects p) {
+        List<ProjectTagsRes> tagList = new ArrayList<>();
         if(p.getSelectedTags() != null)
             for (ProjectSelectedTags selected : p.getSelectedTags()) {
-                tagList.add(selected.getTags().getName());
+                tagList.add(ProjectTagsRes.builder()
+                        .name(selected.getTags().getName())
+                        .tagId(selected.getTags().getTagsId())
+                        .cnt(selected.getTags().getCnt())
+                        .build()
+                );
             }
         return tagList;
     }
