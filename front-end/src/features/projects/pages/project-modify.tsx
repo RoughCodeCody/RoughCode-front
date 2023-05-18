@@ -35,9 +35,11 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
         Number(feedback.feedbackId)
       ) || [],
     img: projectInfoQuery.data?.img,
+    tags: projectInfoQuery.data?.tags,
   };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
+    console.log(values);
     await putProjectMutation.mutateAsync({
       data: values,
     });

@@ -7,15 +7,14 @@ import { CodeUpdateValues } from "../../types";
 import { CodeUpdateFormFields } from "./code-update-form-fields";
 
 const schema = z.object({
-  title: z.string().min(1, "필요"),
-  githubUrl: z.string().url("필요"),
+  title: z.string().min(1, "필수 입력란이에요."),
+  githubUrl: z.string().url("URL 형식에 맞게 입력해주세요."),
   content: z.string(),
   codeId: z.number(),
   projectId: z.number().nullable(),
   selectedTagsId: z.number().array().nullable(),
   selectedReviewsId: z.number().array().nullable(),
-  // language: z.string().min(1, "필요"),
-  language: z.string(),
+  language: z.number().array(),
 });
 
 type CodeUpdateFormProps = {
@@ -43,7 +42,6 @@ export const CodeUpdateForm = ({
             projectId: null,
             selectedTagsId: null,
             selectedReviewsId: null,
-            language: "java",
           },
         }}
       >

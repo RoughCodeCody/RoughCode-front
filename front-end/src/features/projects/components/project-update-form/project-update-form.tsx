@@ -8,11 +8,11 @@ import { ProjectUpdateValues } from "../../types";
 import { ProjectUpdateFormFields } from "../project-update-form-fields";
 
 const schema = z.object({
-  title: z.string().min(1, "필요"),
-  introduction: z.string().min(1, "필요"),
+  title: z.string().min(1, "필수 입력란이에요."),
+  introduction: z.string().min(1, "필수 입력란이에요."),
   content: z.string(),
-  url: z.string().url("필요"),
-  notice: z.string().min(1, "필요"),
+  url: z.string().url("URL 형식에 맞게 입력해주세요."),
+  notice: z.string().min(1, "필수 입력란이에요."),
   projectId: z.number(),
   selectedTagsId: z.number().array().nullable(),
   selectedFeedbacksId: z.number().array().nullable(),
@@ -21,7 +21,14 @@ const schema = z.object({
 type ProjectUpdateFormProps = {
   projectId: number;
   onSubmit: SubmitHandler<ProjectUpdateValues>;
-  projectUpdateInitialValues?: ProjectUpdateValues & { img: string };
+  projectUpdateInitialValues?: ProjectUpdateValues & {
+    img: string;
+    tags: {
+      tagId: number;
+      name: string;
+      cnt: number;
+    }[];
+  };
 };
 
 export const ProjectUpdateForm = ({

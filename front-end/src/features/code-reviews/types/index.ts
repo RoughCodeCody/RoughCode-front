@@ -44,7 +44,8 @@ export type CodeInfoResult = {
   reviewCnt: number; // 리뷰 수
   favoriteCnt: number; // 즐겨찾기 수
   githubUrl: string; // 코드를 불러올 github URL
-  tags: { tagId: number; name: string; cnt: number }[]; // 등록한 태그 이름들
+  githubApiUrl: string;
+  tags: CodeTag[]; // 등록한 태그 이름들
   userId: number; // 작성자 id
   userName: string; // 작성자 이름
   mine: boolean; // 내 코드인지 여부
@@ -56,6 +57,7 @@ export type CodeInfoResult = {
   language: string;
   versions: CodeVersion[];
   reviews: Review[];
+  latest: boolean;
 };
 
 type _links = {
@@ -95,7 +97,7 @@ export type codeForFeedbackModify = {
 };
 
 export type CodeReviewInfoResult = {
-  githubUrl: string;
+  githubApiUrl: string;
   reviewId: number; // 코드 리뷰 아이디
   userId: number; // 코드 리뷰 작성자 id (0이면 익명)
   userName: string; // 코드 리뷰 작성자 닉네임 (빈 문자열이면 익명)
@@ -114,10 +116,16 @@ export type CodeReviewInfoResult = {
 export type CodeUpdateValues = {
   title: string;
   githubUrl: string;
-  content: string;
+  content: string | null;
   codeId: number;
   projectId: number | null;
   selectedTagsId: number[] | null;
   selectedReviewsId: number[] | null;
-  language: string;
+  language: number[];
+};
+
+export type CodeTag = {
+  tagId: number;
+  name: string;
+  cnt: number;
 };
