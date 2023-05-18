@@ -127,9 +127,9 @@ test {
 
 jacocoTestReport {
     reports {
-        html.enabled true
-        csv.enabled true
-        xml.enabled false
+        html.enabled false
+        csv.enabled false
+        xml.enabled true
     }
     finalizedBy 'jacocoTestCoverageVerification' // 커버리지 작동 이후 검증하도록 설정
 }
