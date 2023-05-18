@@ -25,6 +25,10 @@ public class CodesInfo {
     private String githubUrl = "";
 
     @Builder.Default
+    @Column(name = "github_api_url", nullable = false)
+    private String githubApiUrl = "";
+
+    @Builder.Default
     @Column(name = "content", nullable = true, columnDefinition = "text")
     private String content = "";
 
@@ -32,9 +36,13 @@ public class CodesInfo {
     @Column(name = "favorite_cnt", nullable = true)
     private int favoriteCnt = 0;
 
-    @Builder.Default
-    @Column(name = "language", nullable = true)
-    private String language = "";
+//    @Builder.Default
+//    @Column(name = "language", nullable = true)
+//    private String language = "";
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "languages_id", nullable = false)
+    private CodeLanguages language;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_id", nullable = false)
@@ -65,7 +73,11 @@ public class CodesInfo {
         this.githubUrl = githubUrl;
     }
 
-    public void updateLanguage(String language){
+    public void updateGithubApiUrl(String githubApiUrl){
+        this.githubApiUrl = githubApiUrl;
+    }
+
+    public void updateLanguage(CodeLanguages language){
         this.language = language;
     }
 }

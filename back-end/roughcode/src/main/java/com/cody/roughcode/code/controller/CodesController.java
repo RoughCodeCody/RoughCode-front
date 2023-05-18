@@ -55,8 +55,8 @@ public class CodesController {
                                   @Parameter(description = "정렬 기준 ('createdDate':최신순, 'likeCnt':좋아요수 많은순, 'reviewCnt':리뷰수 많은순)", example = "createdDate") @RequestParam(defaultValue = "createdDate") String sort,
                                   @Parameter(description = "페이지 수", example = "0") @RequestParam(defaultValue = "0") int page,
                                   @Parameter(description = "한 페이지에 담기는 개수", example = "10") @RequestParam(defaultValue = "10") int size,
-                                  @Parameter(description = "검색어", example = "개발새발") @RequestParam(defaultValue = "") String keyword,
-                                  @Parameter(description = "태그 아이디 리스트", example = "1,2,3,4") @RequestParam(defaultValue = "") String tagIdList) {
+                                  @Parameter(description = "검색어", example = "") @RequestParam(defaultValue = "") String keyword,
+                                  @Parameter(description = "언어 아이디 리스트", example = "") @RequestParam(defaultValue = "") String tagIdList) {
         Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
         List<String> sortList = List.of("createdDate", "likeCnt", "reviewCnt");
@@ -277,12 +277,12 @@ public class CodesController {
 
     @Operation(summary = "코드 태그 목록 조회 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
+            @ApiResponse(responseCode = "200", description = "코드 태그 목록 조회 성공", content = {
                     @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = CodeTagsRes.class)))
             }),
-            @ApiResponse(responseCode = "400", description = "코드 리뷰 목록 조회 실패")
+            @ApiResponse(responseCode = "400", description = "코드 태그 목록 조회 실패")
     })
     @GetMapping("/tag")
     ResponseEntity<?> searchTags(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
@@ -394,5 +394,27 @@ public class CodesController {
             return Response.notFound("코드와 프로젝트 연결 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드와 프로젝트 연결 성공", 0, res);
+    }
+
+    @Operation(summary = "코드 언어 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 언어 목록 조회 성공", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CodeTagsRes.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "코드 언어 목록 조회 실패")
+    })
+    @GetMapping("/language")
+    ResponseEntity<?> searchLanguages(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
+        List<CodeLanguagesRes> res;
+        try {
+            res = codesService.searchLanguages(keyword);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest("코드 언어 목록 조회 실패");
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "코드 언어 목록 조회 성공", res.size(), res);
     }
 }

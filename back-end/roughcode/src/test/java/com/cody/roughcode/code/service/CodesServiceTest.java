@@ -343,7 +343,7 @@ class CodesServiceTest {
                 .title("개발새발 코드")
                 .selectedTagsId(List.of(1L))
                 .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
-                .language("Javasript")
+                .language(List.of(1L, 2L))
                 .content("시간초과 뜹니다")
                 .projectId(1L)
                 .selectedTagsId(List.of(1L, 2L))

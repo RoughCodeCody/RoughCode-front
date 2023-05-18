@@ -3,10 +3,12 @@ package com.cody.roughcode.mypage.controller;
 import com.cody.roughcode.alarm.entity.Alarm;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.mypage.service.MypageServiceImpl;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -35,6 +37,7 @@ import javax.servlet.http.Cookie;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
@@ -113,6 +116,20 @@ public class MypageControllerTest {
             .title("title")
             .reviewCnt(1)
             .build();
+
+    private List<ProjectTagsRes> projectTagsResInit() {
+        List<String> list = List.of("SpringBoot", "React", "AWS");
+        List<ProjectTagsRes> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(ProjectTagsRes.builder()
+                    .tagId(i)
+                    .name(list.get((int)i-1))
+                    .cnt(0)
+                    .build());
+        }
+
+        return tagsList;
+    }
 
     @DisplayName("스탯 카드 정보 가져오기 성공 - 기존 포맷 - cookie")
     @Test
@@ -472,7 +489,7 @@ public class MypageControllerTest {
                         .feedbackCnt(project.getFeedbackCnt())
                         .introduction(project.getIntroduction())
                         .likeCnt(project.getLikeCnt())
-                        .tags(List.of("springboot"))
+                        .tags(projectTagsResInit())
                         .title(project.getTitle())
                         .version(project.getVersion())
                         .build()
@@ -523,7 +540,7 @@ public class MypageControllerTest {
                         .feedbackCnt(project.getFeedbackCnt())
                         .introduction(project.getIntroduction())
                         .likeCnt(project.getLikeCnt())
-                        .tags(List.of("springboot"))
+                        .tags(projectTagsResInit())
                         .title(project.getTitle())
                         .version(project.getVersion())
                         .build()
@@ -574,7 +591,7 @@ public class MypageControllerTest {
                         .feedbackCnt(project.getFeedbackCnt())
                         .introduction(project.getIntroduction())
                         .likeCnt(project.getLikeCnt())
-                        .tags(List.of("springboot"))
+                        .tags(projectTagsResInit())
                         .title(project.getTitle())
                         .version(project.getVersion())
                         .build()

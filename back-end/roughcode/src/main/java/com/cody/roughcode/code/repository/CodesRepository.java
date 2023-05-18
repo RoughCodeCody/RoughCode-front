@@ -48,6 +48,11 @@ public interface CodesRepository extends JpaRepository<Codes, Long> {
             "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%) AND c.expireDate IS NULL")
     Page<Codes> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
+    @Query("SELECT c FROM Codes c JOIN CodesInfo ci ON c = ci.codes WHERE " +
+            "ci.language.languagesId IN :langIds " +
+            "AND (LOWER(c.title) LIKE %:keyword% OR LOWER(c.codeWriter.name) LIKE %:keyword%) " +
+            "AND c.expireDate is NULL ")
+    Page<Codes> findAllByKeywordAndLanguage(@Param("keyword") String keyword, @Param("langIds") List<Long> langIds, Pageable pageable);
 
     @Query("SELECT c FROM Codes c WHERE c.codeWriter.usersId = :userId AND c.version = (SELECT MAX(c2.version) FROM Codes c2 WHERE (c2.num = c.num AND c2.codeWriter = c.codeWriter AND c.expireDate IS null )) AND c.expireDate IS null ")
     Page<Codes> findAllByCodeWriter(@Param("userId") Long userId, Pageable pageable);

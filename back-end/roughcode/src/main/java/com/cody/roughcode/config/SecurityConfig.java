@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/api/v1/code/rereview/{reviewId}") // 코드 리뷰에 대한 리뷰 목록 조회
                 .antMatchers(HttpMethod.POST, "/api/v1/code/rereview") // 코드 리뷰에 대한 리뷰 등록
                 .antMatchers(HttpMethod.GET, "/api/v1/code/tag") // 코드 태그 검색
+                .antMatchers(HttpMethod.GET, "/api/v1/code/language") // 코드 언어 검색
                 .antMatchers(HttpMethod.GET, "/api/v1/mypage") // stat card 조회
                 .antMatchers(HttpMethod.POST, "/api/v1/project/feedback") // 프로젝트 피드백 작성
                 .antMatchers(HttpMethod.POST, "/api/v1/project/{projectId}/image") // 프로젝트 이미지 to url
