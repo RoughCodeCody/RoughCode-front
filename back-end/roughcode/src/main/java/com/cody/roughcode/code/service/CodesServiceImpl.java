@@ -78,7 +78,8 @@ public class CodesServiceImpl implements CodesService {
         if (tagIdList == null || tagIdList.size() == 0) {
             codesPage = codesRepository.findAllByKeyword(keyword, pageRequest);
         } else {
-            codesPage = codeSelectedTagsRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest);
+//            codesPage = codeSelectedTagsRepository.findAllByKeywordAndTag(keyword, tagIdList, (long) tagIdList.size(), pageRequest); // 태그 필터링 (AND)
+            codesPage = codesRepository.findAllByKeywordAndLanguage(keyword, tagIdList, pageRequest); // 언어 필터링 (OR)
         }
 
         return getCodeInfoRes(codesPage, user);

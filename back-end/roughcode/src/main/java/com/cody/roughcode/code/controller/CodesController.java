@@ -55,8 +55,8 @@ public class CodesController {
                                   @Parameter(description = "정렬 기준 ('createdDate':최신순, 'likeCnt':좋아요수 많은순, 'reviewCnt':리뷰수 많은순)", example = "createdDate") @RequestParam(defaultValue = "createdDate") String sort,
                                   @Parameter(description = "페이지 수", example = "0") @RequestParam(defaultValue = "0") int page,
                                   @Parameter(description = "한 페이지에 담기는 개수", example = "10") @RequestParam(defaultValue = "10") int size,
-                                  @Parameter(description = "검색어", example = "개발새발") @RequestParam(defaultValue = "") String keyword,
-                                  @Parameter(description = "태그 아이디 리스트", example = "1,2,3,4") @RequestParam(defaultValue = "") String tagIdList) {
+                                  @Parameter(description = "검색어", example = "") @RequestParam(defaultValue = "") String keyword,
+                                  @Parameter(description = "언어 아이디 리스트", example = "") @RequestParam(defaultValue = "") String tagIdList) {
         Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
         List<String> sortList = List.of("createdDate", "likeCnt", "reviewCnt");
