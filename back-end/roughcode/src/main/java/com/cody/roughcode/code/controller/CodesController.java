@@ -277,12 +277,12 @@ public class CodesController {
 
     @Operation(summary = "코드 태그 목록 조회 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
+            @ApiResponse(responseCode = "200", description = "코드 태그 목록 조회 성공", content = {
                     @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = CodeTagsRes.class)))
             }),
-            @ApiResponse(responseCode = "400", description = "코드 리뷰 목록 조회 실패")
+            @ApiResponse(responseCode = "400", description = "코드 태그 목록 조회 실패")
     })
     @GetMapping("/tag")
     ResponseEntity<?> searchTags(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
@@ -394,5 +394,27 @@ public class CodesController {
             return Response.notFound("코드와 프로젝트 연결 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드와 프로젝트 연결 성공", 0, res);
+    }
+
+    @Operation(summary = "코드 언어 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 언어 목록 조회 성공", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CodeTagsRes.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "코드 언어 목록 조회 실패")
+    })
+    @GetMapping("/language")
+    ResponseEntity<?> searchLanguages(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
+        List<CodeLanguagesRes> res;
+        try {
+            res = codesService.searchLanguages(keyword);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest("코드 언어 목록 조회 실패");
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "코드 언어 목록 조회 성공", res.size(), res);
     }
 }

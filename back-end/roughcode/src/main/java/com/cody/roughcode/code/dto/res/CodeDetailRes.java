@@ -40,10 +40,13 @@ public class CodeDetailRes {
     @Schema(description = "즐겨찾기 수", example = "13")
     private int favoriteCnt;
 
-    @Schema(description = "코드를 불러올 github URL", example = "https://api.github.com/repos/cody/hello-world/contents/src/main.py?ref=594e05aee256df9e4e826ff56ea2a8c38e9e7972")
+    @Schema(description = "코드 등록 시 입력했던 github URL (파싱 전 URL)", example = "https://github.com/calcom/cal.com/blob/main/.prettierrc.js")
     private String githubUrl;
 
-    @Schema(description = "등록한 태그 이름들", example = "[TypeScript, React]")
+    @Schema(description = "코드를 불러올 github URL", example = "https://api.github.com/repos/calcom/cal.com/contents/.prettierrc.js?ref=main")
+    private String githubApiUrl;
+
+    @Schema(description = "등록한 태그 정보", example = "[CodeTags]")
     private List<CodeTagsRes> tags;
 
     @Schema(description = "코드 정보 작성자 id", example = "1")
@@ -67,8 +70,8 @@ public class CodeDetailRes {
     @Schema(description = "내가 즐겨찾기 눌렀는지 여부", example = "true")
     private Boolean favorite;
 
-    @Schema(description = "코드 언어", example = "Javascript")
-    private String language;
+    @Schema(description = "코드 언어", example = "[CodeLanguages]")
+    private CodeLanguagesRes language;
 
     @Schema(description = "코드가 최신 버전인지 여부", example = "true")
     private Boolean latest;
