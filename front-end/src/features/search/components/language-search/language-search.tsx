@@ -26,8 +26,14 @@ export const LanguageSearch = ({ whichTag }: LanguageSearchProps) => {
         justify="start"
         wrap="wrap"
       >
-        {selectedLanguage.map(({ tagId, name }) => {
-          return <LanguageChip key={tagId} tagId={tagId} name={name} />;
+        {selectedLanguage.map(({ languageId, name }) => {
+          return (
+            <LanguageChip
+              key={languageId}
+              languageId={languageId}
+              name={name}
+            />
+          );
         })}
       </FlexDiv>
       {/* <SeletedLanguage /> */}

@@ -4,12 +4,12 @@ import { TagChipContainer } from "./style";
 import { Text } from "../text";
 import { useSelectedLanguageStore } from "@/stores";
 
-type TagChipProps = {
-  tagId: number;
+type LanguageChipProps = {
+  languageId: number;
   name: string;
 };
 
-export const LanguageChip = ({ tagId, name }: TagChipProps) => {
+export const LanguageChip = ({ languageId, name }: LanguageChipProps) => {
   const { reset } = useSelectedLanguageStore();
 
   return (

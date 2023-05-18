@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useRouter } from "next/router";
 
 import { useSelectedLanguageStore } from "@/stores";
 
@@ -27,6 +28,9 @@ interface LanguageType {
 
 export const LanguageSelectItem = ({ languageId, name, cnt }: LanguageType) => {
   const { setSelectedLanguage } = useSelectedLanguageStore();
+  const router = useRouter();
+  const endPoint = router.asPath;
+  console.log(endPoint);
 
   const handleClick = () => {
     console.log(languageId, name);
