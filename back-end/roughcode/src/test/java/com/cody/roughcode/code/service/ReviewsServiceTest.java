@@ -74,6 +74,10 @@ public class ReviewsServiceTest {
             .roles(List.of(String.valueOf(ROLE_USER)))
             .build();
 
+    final CodeLanguages codeLanguages = CodeLanguages.builder()
+            .languagesId(1L)
+            .name("Javascript")
+            .cnt(5).build();
 
     final Codes code = Codes.builder()
             .codesId(1L)
@@ -91,7 +95,7 @@ public class ReviewsServiceTest {
             .favoriteCnt(1)
             .content("개발새발 코드")
             .codes(code)
-            .language("Javascript")
+            .language(codeLanguages)
             .build();
 
     final CodeFavorites codeFavorites = CodeFavorites.builder()

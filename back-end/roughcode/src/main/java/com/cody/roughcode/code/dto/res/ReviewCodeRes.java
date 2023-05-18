@@ -36,7 +36,7 @@ public class ReviewCodeRes {
     @Schema(description = "내가 즐겨찾기 눌렀는지 여부", example = "false")
     private boolean favorite;
 
-    @Schema(description = "등록한 태그 이름들", example = "[TypeScript, React]")
+    @Schema(description = "등록한 태그 이름들", example = "[CodeTagsRes]")
     private List<CodeTagsRes> tags;
 
     @Schema(description = "코드 정보 작성자 닉네임", example = "아이유")

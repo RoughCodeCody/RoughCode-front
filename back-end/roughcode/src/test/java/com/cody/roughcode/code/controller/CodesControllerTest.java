@@ -6,6 +6,7 @@ import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.dto.res.ReviewInfoRes;
+import com.cody.roughcode.code.entity.CodeLanguages;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
@@ -70,7 +71,7 @@ class CodesControllerTest {
             .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
             .content("시간초과 뜹니다")
             .projectId(1L)
-            .language("Javascript")
+            .language(List.of(1L, 2L))
             .build();
 
     Users users = Users.builder()
@@ -86,7 +87,7 @@ class CodesControllerTest {
             .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
             .content("시간초과 뜹니다!!!!")
             .projectId(3L)
-            .language("Javascript")
+            .language(List.of(1L, 2L))
             .build();
 
     private List<CodeTagsRes> tagsResInit() {
@@ -127,7 +128,7 @@ class CodesControllerTest {
                         .date(code.getCreatedDate())
                         .likeCnt(code.getLikeCnt())
                         .reviewCnt(code.getReviewCnt())
-                        .tags(List.of("java", "javascript"))
+                        .tags(tagsResInit())
                         .userName(users.getName())
                         .liked(true)
                         .build()

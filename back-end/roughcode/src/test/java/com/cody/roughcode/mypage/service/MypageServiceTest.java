@@ -1,6 +1,7 @@
 package com.cody.roughcode.mypage.service;
 
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.entity.CodeSelectedTags;
 import com.cody.roughcode.code.entity.CodeTags;
 import com.cody.roughcode.code.entity.Codes;
@@ -9,6 +10,7 @@ import com.cody.roughcode.code.repository.CodesRepository;
 import com.cody.roughcode.code.repository.ReviewsRepository;
 import com.cody.roughcode.code.repository.SelectedReviewsRepository;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
+import com.cody.roughcode.project.dto.res.ProjectTagsRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
@@ -123,6 +125,34 @@ public class MypageServiceTest {
         return tagsList;
     }
 
+    private List<ProjectTagsRes> projectTagsResInit() {
+        List<String> list = List.of("SpringBoot", "React", "AWS");
+        List<ProjectTagsRes> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(ProjectTagsRes.builder()
+                    .tagId(i)
+                    .name(list.get((int)i-1))
+                    .cnt(0)
+                    .build());
+        }
+
+        return tagsList;
+    }
+
+    private List<CodeTagsRes> codeTagsResInit() {
+        List<String> list = List.of("Javascript", "Python", "Java", "C++");
+        List<CodeTagsRes> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(CodeTagsRes.builder()
+                    .tagId(i)
+                    .name(list.get((int)i-1))
+                    .cnt(0)
+                    .build());
+        }
+
+        return tagsList;
+    }
+
     final String statCard = "<svg viewBox=\"0 0 1030 445\" xmlns=\"http://www.w3.org/2000/svg\">    <style>      .small {        font: italic 13px sans-serif;      }      .heavy {        font: bold 30px sans-serif;      }              .Rrrrr {        font: italic 40px serif;        fill: red;      }      .title {        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #319795;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }      .content {        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;        fill: #45474F;        animation: fadeInAnimation 0.8s ease-in-out forwards;      }    </style>    <rect        data-testid=\"card-bg\"        x=\"1%\"        y=\"0.5%\"        rx=\"25\"        height=\"99%\"        stroke=\"#319795\"        width=\"98%\"        fill=\"#ffffff\"      />      <rect      data-testid=\"card-bg\"      x=\"7%\"      y=\"20%\"      rx=\"5\"      height=\"70%\"      width=\"86%\"      fill=\"#EFF8FF\"    />       <text x=\"7%\" y=\"13%\" class=\"title\">${title}</text>    <text x=\"14%\" y=\"32%\" class=\"content\">1. 프로젝트 피드백 횟수:</text>    <text x=\"14%\" y=\"42%\" class=\"content\">2. 코드 리뷰 횟수:</text>    <text x=\"14%\" y=\"52%\" class=\"content\">3. 반영된 프로젝트 피드백 수:</text>    <text x=\"14%\" y=\"62%\" class=\"content\">4. 반영된 코드 리뷰 수:</text>    <text x=\"14%\" y=\"72%\" class=\"content\">5. 프로젝트 리팩토링 횟수:</text>    <text x=\"14%\" y=\"82%\" class=\"content\">6. 코드 리팩토링 횟수:</text>    <text x=\"64%\" y=\"32%\" class=\"content\">${feedbackCnt}</text>    <text x=\"64%\" y=\"42%\" class=\"content\">${codeReviewCnt}</text>    <text x=\"64%\" y=\"52%\" class=\"content\">${includedFeedbackCnt}</text>    <text x=\"64%\" y=\"62%\" class=\"content\">${includedCodeReviewCnt}</text>    <text x=\"64%\" y=\"72%\" class=\"content\">${projectRefactorCnt}</text>    <text x=\"64%\" y=\"82%\" class=\"content\">${codeRefactorCnt}</text>  </svg>";
 
     @DisplayName("스탯 카드에 유저 아이디를 가지고 정보 넣기 성공")
@@ -231,7 +261,7 @@ public class MypageServiceTest {
                         .date(codesList.get(0).getCreatedDate())
                         .likeCnt(codesList.get(0).getLikeCnt())
                         .reviewCnt(codesList.get(0).getReviewCnt())
-                        .tags(List.of("2"))
+                        .tags(codeTagsResInit())
                         .userName(codesList.get(0).getCodeWriter().getName())
                         .liked(false)
                         .build()
@@ -284,7 +314,7 @@ public class MypageServiceTest {
                         .date(codesList.get(0).getCreatedDate())
                         .likeCnt(codesList.get(0).getLikeCnt())
                         .reviewCnt(codesList.get(0).getReviewCnt())
-                        .tags(List.of("2"))
+                        .tags(codeTagsResInit())
                         .userName(codesList.get(0).getCodeWriter().getName())
                         .liked(false)
                         .build()
@@ -336,7 +366,7 @@ public class MypageServiceTest {
                         .date(codesList.get(0).getCreatedDate())
                         .likeCnt(codesList.get(0).getLikeCnt())
                         .reviewCnt(codesList.get(0).getReviewCnt())
-                        .tags(List.of("2"))
+                        .tags(codeTagsResInit())
                         .userName(codesList.get(0).getCodeWriter().getName())
                         .liked(false)
                         .build()
@@ -390,7 +420,7 @@ public class MypageServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(projectTagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -444,7 +474,7 @@ public class MypageServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(projectTagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -514,7 +544,7 @@ public class MypageServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(projectTagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()

@@ -161,6 +161,20 @@ public class ProjectServiceTest {
         return tagsList;
     }
 
+    private List<ProjectTagsRes> tagsResInit() {
+        List<String> list = List.of("SpringBoot", "React", "AWS");
+        List<ProjectTagsRes> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(ProjectTagsRes.builder()
+                    .tagId(i)
+                    .name(list.get((int)i-1))
+                    .cnt(0)
+                    .build());
+        }
+
+        return tagsList;
+    }
+
     private List<ProjectSelectedTags> selectedTagsInit() {
         List<ProjectTags> tags = tagsInit();
         List<ProjectSelectedTags> tagsList = new ArrayList<>();
@@ -1247,7 +1261,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1307,7 +1321,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1365,7 +1379,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1417,7 +1431,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1475,7 +1489,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1533,7 +1547,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1598,7 +1612,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1657,7 +1671,7 @@ public class ProjectServiceTest {
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()

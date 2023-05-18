@@ -24,7 +24,7 @@ public class ReviewDetailRes {
     @Schema(description = "코드를 불러올 github URL", example = "https://api.github.com/repos/calcom/cal.com/contents/.prettierrc.js?ref=main")
     private String githubApiUrl;
 
-    @Schema(description = "코드 언어", example = "Javascript")
+    @Schema(description = "코드 언어", example = "{CodeLanguageRes}")
     private CodeLanguagesRes language;
 
     @Schema(description = "리뷰 id", example = "1")
