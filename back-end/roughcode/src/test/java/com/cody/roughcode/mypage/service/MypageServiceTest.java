@@ -12,10 +12,7 @@ import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.ProjectTags;
 import com.cody.roughcode.project.entity.Projects;
-import com.cody.roughcode.project.repository.FeedbacksRepository;
-import com.cody.roughcode.project.repository.ProjectFavoritesRepository;
-import com.cody.roughcode.project.repository.ProjectsRepository;
-import com.cody.roughcode.project.repository.SelectedFeedbacksRepository;
+import com.cody.roughcode.project.repository.*;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.user.repository.UsersRepository;
 import org.apache.commons.lang3.tuple.Pair;
@@ -59,6 +56,8 @@ public class MypageServiceTest {
     private ProjectsRepository projectsRepository;
     @Mock
     private ProjectFavoritesRepository projectFavoritesRepository;
+    @Mock
+    private ProjectLikesRepository projectLikesRepository;
     @Mock
     private CodesRepository codesRepository;
     @Mock
