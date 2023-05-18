@@ -1093,7 +1093,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         List<Projects> projectList = projectsPage.getContent();
         List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
         for (Projects p : projectList) {
-            List<String> tagList = getTagNames(p);
+            List<ProjectTagsRes> tagList = getTags(p);
             ProjectLikes projectLikes = null;
             if(user != null) projectLikes = projectLikesRepository.findByProjectsAndUsers(p, user);
 
@@ -1125,15 +1125,6 @@ public class ProjectsServiceImpl implements ProjectsService{
                                 .name(selected.getTags().getName())
                                 .cnt(selected.getTags().getCnt())
                                 .build());
-            }
-        return tagList;
-    }
-
-    private static List<String> getTagNames(Projects p) {
-        List<String> tagList = new ArrayList<>();
-        if(p.getSelectedTags() != null)
-            for (ProjectSelectedTags selected : p.getSelectedTags()) {
-                tagList.add(selected.getTags().getName());
             }
         return tagList;
     }

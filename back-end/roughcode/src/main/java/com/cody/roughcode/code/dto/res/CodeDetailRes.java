@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.dto.res;
 
+import com.cody.roughcode.code.entity.CodeTags;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +44,7 @@ public class CodeDetailRes {
     private String githubUrl;
 
     @Schema(description = "등록한 태그 이름들", example = "[TypeScript, React]")
-    private List<String> tags;
+    private List<CodeTagsRes> tags;
 
     @Schema(description = "코드 정보 작성자 id", example = "1")
     private Long userId;
