@@ -12,6 +12,13 @@ plugins {
 
     // query dsl plugin 추가
     id("com.ewerk.gradle.plugins.querydsl") version "1.0.10"
+
+    id 'jacoco'
+}
+
+jacoco {
+    // JaCoCo 버전
+    toolVersion = '0.8.10'
 }
 
 group = 'com.cody'
@@ -92,10 +99,6 @@ dependencies {
     compileOnly 'org.hibernate.orm:hibernate-jpamodelgen:6.2.1.Final'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
 // query dsl 설정 추가
 def querydslDir = "$buildDir/generated/querydsl"
 
@@ -115,4 +118,18 @@ compileQuerydsl{
 // query dsl이 compileClassPath를 상속하도록 설정
 configurations {
     querydsl.extendsFrom compileClasspath
+}
+
+test {
+    useJUnitPlatform() // JUnit5를 사용하기 위한 설정
+    finalizedBy 'jacocoTestReport' // Test 이후 커버리지가 동작하도록 finalizedBy 추가
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+        csv.enabled true
+        xml.enabled false
+    }
+    finalizedBy 'jacocoTestCoverageVerification' // 커버리지 작동 이후 검증하도록 설정
 }
