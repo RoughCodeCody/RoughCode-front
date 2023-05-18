@@ -26,7 +26,7 @@ public interface ProjectsService {
     int putExpireDateProject(Long projectsId, Long usersId);
     int deleteProject(Long projectsId, Long usersId);
     void deleteExpiredProject();
-    Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
+    Pair<List<ProjectInfoRes>, Boolean> getProjectList(Long usersId, String sort, PageRequest pageRequest, String keyword, String tagIds, int closed);
     ProjectDetailRes getProject(Long projectId, Long usersId);
     int likeProject(Long projectsId, Long usersId);
     int favoriteProject(Long projectsId, Long usersId);

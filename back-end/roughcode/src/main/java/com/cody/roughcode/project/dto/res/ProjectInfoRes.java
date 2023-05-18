@@ -32,6 +32,10 @@ public class ProjectInfoRes {
     @Schema(description = "좋아요수", example = "1")
     private int likeCnt;
 
+    @Builder.Default
+    @Schema(description = "좋아요 여부", example = "1")
+    private boolean liked = false;
+
     @Schema(description = "피드백수", example = "2")
     private int feedbackCnt;
 

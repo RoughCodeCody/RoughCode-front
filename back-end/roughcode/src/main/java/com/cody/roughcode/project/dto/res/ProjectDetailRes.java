@@ -30,7 +30,7 @@ public class ProjectDetailRes {
     private Boolean closed;
     private String url;
     private List<CodeInfoRes> code;
-    private List<String> tags;
+    private List<ProjectTagsRes> tags;
     private Boolean liked;
     private Boolean favorite;
     private List<VersionRes> versions;
@@ -39,7 +39,7 @@ public class ProjectDetailRes {
     private String notice;
     private String introduction;
 
-    public ProjectDetailRes(Projects project, ProjectsInfo projectsInfo, List<String> tagList,
+    public ProjectDetailRes(Projects project, ProjectsInfo projectsInfo, List<ProjectTagsRes> tagList,
                             Boolean liked, Boolean favorite, Users user) {
         this.projectId = project.getProjectsId();
         this.userName = project.getProjectWriter().getName();

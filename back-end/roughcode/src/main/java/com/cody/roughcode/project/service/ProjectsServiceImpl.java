@@ -208,7 +208,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다"))
+                    .content(List.of("북마크한 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다"))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -219,7 +219,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다."))
+                    .content(List.of("작성한 피드백이 반영된 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다."))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -611,7 +611,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest,
+    public Pair<List<ProjectInfoRes>, Boolean> getProjectList(Long usersId, String sort, PageRequest pageRequest,
                                                              String keyword, String tagIds, int closed) {
         List<Long> tagIdList = null;
         if(tagIds.length() > 0)
@@ -636,7 +636,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         }
 
-        Pair<List<ProjectInfoRes>, Boolean> res = Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+        Pair<List<ProjectInfoRes>, Boolean> res = Pair.of(getProjectInfoRes(projectsPage, usersRepository.findByUsersId(usersId)), projectsPage.hasNext());
         return res;
     }
 
@@ -649,7 +649,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
         if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
 
-        List<String> tagList = getTagNames(project);
+        List<ProjectTagsRes> tagList = getTags(project);
         ProjectFavorites myFavorite = (user != null)? projectFavoritesRepository.findByProjectsAndUsers(project, user) : null;
         ProjectLikes myLike = (user != null) ? projectLikesRepository.findByProjectsAndUsers(project, user) : null;
         Boolean liked = myLike != null;
@@ -831,7 +831,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         } else { // 전에도 닫혀있음이 확인됐었음
             if (now.isAfter(projectsInfo.getClosedChecked().plusMinutes(60))) { // 1시간 이상 지났으면
                 AlarmReq alarmContent = AlarmReq.builder()
-                        .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "확인 요청 후 1시간이 초과되어 닫힘 상태로 변경"))
+                        .content(List.of("프로젝트 ", project.getTitle() + " ver" + project.getVersion(), "확인 요청 후 1시간이 초과되어 닫힘 상태로 변경"))
                         .userId(project.getProjectWriter().getUsersId())
                         .postId(project.getProjectsId())
                         .section("project")
@@ -928,7 +928,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectsRepository.save(project);
 
         AlarmReq alarmContent = AlarmReq.builder()
-                .content(List.of("작성한", project.getTitle() + " ver" + project.getVersion(), "새 피드백이 등록되었습니다"))
+                .content(List.of("작성한 프로젝트, ", project.getTitle() + " ver" + project.getVersion(), "새 피드백이 등록되었습니다"))
                 .userId(project.getProjectWriter().getUsersId())
                 .postId(project.getProjectsId())
                 .section("project")
@@ -1089,11 +1089,13 @@ public class ProjectsServiceImpl implements ProjectsService{
         return result;
     }
 
-    private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {
+    private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage, Users user) {
         List<Projects> projectList = projectsPage.getContent();
         List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
         for (Projects p : projectList) {
             List<String> tagList = getTagNames(p);
+            ProjectLikes projectLikes = null;
+            if(user != null) projectLikes = projectLikesRepository.findByProjectsAndUsers(p, user);
 
             projectInfoRes.add(ProjectInfoRes.builder()
                     .date(p.getCreatedDate())
@@ -1102,6 +1104,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .feedbackCnt(p.getFeedbackCnt())
                     .introduction(p.getIntroduction())
                     .likeCnt(p.getLikeCnt())
+                    .liked(projectLikes != null)
                     .tags(tagList)
                     .title(p.getTitle())
                     .version(p.getVersion())
@@ -1110,6 +1113,20 @@ public class ProjectsServiceImpl implements ProjectsService{
             );
         }
         return projectInfoRes;
+    }
+
+    private static List<ProjectTagsRes> getTags(Projects p) {
+        List<ProjectTagsRes> tagList = new ArrayList<>();
+        if(p.getSelectedTags() != null)
+            for (ProjectSelectedTags selected : p.getSelectedTags()) {
+                tagList.add(
+                        ProjectTagsRes.builder()
+                                .tagId(selected.getTags().getTagsId())
+                                .name(selected.getTags().getName())
+                                .cnt(selected.getTags().getCnt())
+                                .build());
+            }
+        return tagList;
     }
 
     private static List<String> getTagNames(Projects p) {
