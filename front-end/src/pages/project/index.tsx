@@ -24,6 +24,8 @@ export default function Project() {
     ) {
       reset();
     }
+    console.log(asPath);
+    console.log(asPathInfo.currentAsPath);
   }, [asPath, asPathInfo.currentAsPath]);
 
   return (

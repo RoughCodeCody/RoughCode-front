@@ -10,7 +10,7 @@ const FileInputContainer = styled.div`
   & img {
     width: 100%;
     display: block;
-    /* margin-bottom: 30px; */
+    margin-top: 3rem;
   }
 
   & input {

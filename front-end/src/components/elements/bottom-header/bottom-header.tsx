@@ -14,7 +14,7 @@ export const BottomHeader = ({ locations, menus }: BottomHeaderProps) => {
   const currentPage = routerPath.includes("/mypage/profile")
     ? "프로필"
     : routerPath.includes("/mypage/mypost")
-    ? "내가 쓴 글"
+    ? "나의 게시물"
     : routerPath.includes("/mypage/myreview")
     ? "나의 리뷰"
     : "즐겨찾기";
@@ -40,7 +40,7 @@ export const BottomHeader = ({ locations, menus }: BottomHeaderProps) => {
               href={
                 menu === "프로필"
                   ? "/mypage/profile"
-                  : menu === "내가 쓴 글"
+                  : menu === "나의 게시물"
                   ? "/mypage/mypost"
                   : menu === "나의 리뷰"
                   ? "/mypage/myreview"

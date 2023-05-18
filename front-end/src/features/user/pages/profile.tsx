@@ -21,7 +21,7 @@ export const Profile = () => {
     <FlexDiv direction="column" gap="2rem">
       <BottomHeader
         locations={["마이 페이지"]}
-        menus={["프로필", "내가 쓴 글", "나의 리뷰", "즐겨찾기"]}
+        menus={["프로필", "나의 게시물", "나의 리뷰", "즐겨찾기"]}
       />
       <FlexDiv direction="column" width="100%" gap="8rem">
         <FlexDiv direction="column" width="70%" gap="3rem">

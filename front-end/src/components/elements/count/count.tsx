@@ -24,7 +24,11 @@ export const Count = ({ type, isChecked, cnt, onClickFunc }: CountProps) => {
   return (
     <FlexDiv padding="0 0.5rem">
       {type === "like" ? (
-        <IconWrapper color="red" pointer={true} onClick={onClickFunc}>
+        <IconWrapper
+          color="red"
+          pointer={onClickFunc ? true : false}
+          onClick={onClickFunc}
+        >
           {isChecked ? <TiHeartFullOutline /> : <TiHeartOutline />}
         </IconWrapper>
       ) : type === "bookmark" ? (
