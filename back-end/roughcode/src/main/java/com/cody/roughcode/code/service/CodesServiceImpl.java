@@ -39,6 +39,7 @@ public class CodesServiceImpl implements CodesService {
     private final CodesRepository codesRepository;
     private final CodesInfoRepository codesInfoRepository;
     private final CodeTagsRepository codeTagsRepository;
+    private final CodeLanguagesRepository codeLanguagesRepository;
     private final CodeSelectedTagsRepository codeSelectedTagsRepository;
     private final ProjectsRepository projectsRepository;
     private final ReviewsRepository reviewsRepository;
@@ -806,6 +807,17 @@ public class CodesServiceImpl implements CodesService {
         code.setProject(project);
 
         return 1;
+    }
+
+    @Override
+    @Transactional
+    public List<CodeLanguagesRes> searchLanguages(String keyword) {
+        List<CodeLanguages> languages = codeLanguagesRepository.findAllByNameContaining(keyword, Sort.by(Sort.Direction.ASC, "name"));
+        List<CodeLanguagesRes> result = new ArrayList<>();
+        for (CodeLanguages language : languages) {
+            result.add(new CodeLanguagesRes(language));
+        }
+        return result;
     }
 
     private List<CodeInfoRes> getCodeInfoRes(Page<Codes> codesPage, Users user) {

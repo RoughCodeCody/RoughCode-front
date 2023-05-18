@@ -42,4 +42,8 @@ public class CodeReq {
     @Schema(description = "선택한 review의 id", example = "[1, 2, 3]")
     @EachPositive(message = "selectedReviewsId 리스트 안의 값은 1 이상이어야 합니다")
     private List<Long> selectedReviewsId;
+
+    @Schema(description = "선택한 language의 id", example = "[1]")
+    @EachPositive(message = "language 리스트 안의 값은 1 이상이어야 합니다")
+    private List<Long> language;
 }

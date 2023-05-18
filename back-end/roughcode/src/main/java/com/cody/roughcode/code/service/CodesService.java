@@ -32,4 +32,6 @@ public interface CodesService {
     List<ReviewSearchRes> getReviewSearchList(Long codeId, Long userId, String keyword);
 
     int connectProject(Long codeId, Long userId, Long projectId);
+
+    List<CodeLanguagesRes> searchLanguages(String keyword);
 }
