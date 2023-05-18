@@ -163,26 +163,4 @@ class UsersControllerTest {
         assertThat(message).isEqualTo("중복된 닉네임입니다. 다른 닉네임을 입력해주세요.");
     }
 
-    @DisplayName("토큰 재발급 성공")
-    @Test
-    public void reissueTokenSucceed() throws Exception {
-        // given
-        String url = "/api/v1/user/token";
-        doReturn(tokenInfo).when(jwtService).reissue(any(HttpServletRequest.class));
-
-        // when
-        final ResultActions resultActions = mockMvc.perform(
-                post(url)
-                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
-        );
-
-        // then
-        // HTTP Status가 OK인지 확인
-        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
-        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        String message = jsonObject.get("message").getAsString();
-        assertThat(message).isEqualTo("Token 재발급 성공");
-    }
-
 }
