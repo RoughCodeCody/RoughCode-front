@@ -90,7 +90,7 @@ public class CodesController {
                                  @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         if (codeReq.getCodeId() == 0 || codeReq.getCodeId() < -1) {
@@ -154,7 +154,7 @@ public class CodesController {
                                  @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -185,7 +185,7 @@ public class CodesController {
                                  @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -216,7 +216,7 @@ public class CodesController {
                                @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -251,7 +251,7 @@ public class CodesController {
                                    @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         String content = codeFavoriteReq != null ? codeFavoriteReq.getContent() : null;
@@ -313,7 +313,7 @@ public class CodesController {
                                     @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         List<ReviewInfoRes> res = null;
@@ -376,7 +376,7 @@ public class CodesController {
                                          @Parameter(description = "연결할 프로젝트 id", example = "1") @RequestParam(required = false) Long projectId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = -1;

@@ -69,4 +69,8 @@ public class Response {
     public static ResponseEntity<?> serverError(String message) {
         return makeResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, 0, null);
     }
+
+    public static ResponseEntity<?> badRequestNoUser(){
+        return badRequest("일치하는 유저가 존재하지 않습니다");
+    }
 }
