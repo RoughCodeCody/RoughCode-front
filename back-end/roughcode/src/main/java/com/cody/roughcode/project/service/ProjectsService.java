@@ -37,7 +37,8 @@ public interface ProjectsService {
 
     int insertFeedback(FeedbackInsertReq req, Long usersId) throws MessagingException;
     Boolean updateFeedback(FeedbackUpdateReq req, Long userId);
-    List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId);
+    List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId, boolean versionUp);
+
     int deleteFeedback(Long feedbackId, Long usersId);
     int feedbackComplain(Long feedbackId, Long usersId);
     int likeProjectFeedback(Long feedbackId, Long usersId);

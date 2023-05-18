@@ -239,14 +239,16 @@ public class ProjectsController {
     ResponseEntity<?> getFeedbackList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                      @Parameter(description = "프로젝트 아이디")
                                      @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
-                                     @PathVariable Long projectId){
+                                     @PathVariable Long projectId,
+                                      @Parameter(description = "버전 업 여부")
+                                      @RequestParam(defaultValue = "true") boolean versionUp){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         List<FeedbackInfoRes> res = null;
         try {
-            res = projectsService.getFeedbackList(projectId, userId);
+            res = projectsService.getFeedbackList(projectId, userId, versionUp);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
