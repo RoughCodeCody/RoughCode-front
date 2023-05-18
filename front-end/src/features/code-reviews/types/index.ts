@@ -54,7 +54,7 @@ export type CodeInfoResult = {
   content: string; // 코드 상세 설명
   liked: boolean; // 내가 좋아요 눌렀는지 여부
   favorite: boolean; // 내가 즐겨찾기 눌렀는지 여부
-  language: string;
+  language: CodeLanguage;
   versions: CodeVersion[];
   reviews: Review[];
   latest: boolean;
@@ -94,7 +94,7 @@ export type codeForFeedbackModify = {
   userName: string; // 작성자 이름
   projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
   projectId: number; // 연결된 프로젝트 id(없을 경우 null)
-  language: string;
+  language: CodeLanguage;
 };
 
 export type CodeReviewInfoResult = {
@@ -127,6 +127,12 @@ export type CodeUpdateValues = {
 
 export type CodeTag = {
   tagId: number;
+  name: string;
+  cnt: number;
+};
+
+export type CodeLanguage = {
+  languageId: number;
   name: string;
   cnt: number;
 };

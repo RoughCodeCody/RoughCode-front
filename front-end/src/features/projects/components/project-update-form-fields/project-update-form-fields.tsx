@@ -38,16 +38,17 @@ export const ProjectUpdateFormFields = ({
     control,
     setValue,
     handleSubmit,
-
     watch,
   } = methods;
+
   const router = useRouter();
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [fixedUrl, setFixedUrl] = useState("");
   const [isThumb, setIsThumb] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const { searchCriteria, addTagId, reset } = useSearchCriteriaStore();
-  const { selectedProjectFeedbackId } = useProjectFeedbackSelectionStore();
+  const { selectedProjectFeedbackId, resetProjectFeedbackSelection } =
+    useProjectFeedbackSelectionStore();
   const checkProjectUrlQuery = useCheckProjectUrl({
     url: watch("url"),
     config: { enabled: false },

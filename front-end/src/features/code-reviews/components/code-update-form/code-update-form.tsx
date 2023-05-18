@@ -3,7 +3,7 @@ import * as z from "zod";
 
 import { Form } from "@/components/form";
 
-import { CodeUpdateValues } from "../../types";
+import { CodeUpdateValues, CodeTag, CodeLanguage } from "../../types";
 import { CodeUpdateFormFields } from "./code-update-form-fields";
 
 const schema = z.object({
@@ -20,7 +20,11 @@ const schema = z.object({
 type CodeUpdateFormProps = {
   codeId: number;
   onSubmit: SubmitHandler<CodeUpdateValues>;
-  codeUpdateInitialValues?: CodeUpdateValues;
+  codeUpdateInitialValues?: CodeUpdateValues & {
+    language: number[];
+    tags: CodeTag[];
+    languages: CodeLanguage[];
+  };
 };
 
 export const CodeUpdateForm = ({

@@ -83,7 +83,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                       headerText="코드 리뷰를 요청한 원본 코드입니다"
                       lineSelection={false}
                       height="30rem"
-                      language={"javascript"}
+                      language={{ languageId: 1, name: "plaintext", cnt: 1 }}
                       originalCode={originalCode || ""}
                       selectedLines={codeReviewInfoQuery.data?.lineNumbers}
                       noShad={true}
@@ -97,7 +97,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                       headerText="코드 리뷰어가 수정한 코드입니다"
                       height="30rem"
                       readOnly={true}
-                      language={"javascript"}
+                      language={{ languageId: 1, name: "plaintext", cnt: 1 }}
                       originalCode={originalCode}
                       modifiedCode={codeReviewInfoQuery.data?.codeContent || ""}
                       noShad={true}

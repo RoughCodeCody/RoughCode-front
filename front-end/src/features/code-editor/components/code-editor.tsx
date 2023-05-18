@@ -8,6 +8,7 @@ import { EditorWrapper, EditorHeader, EditorBottom } from "./style";
 import { FlexDiv, Text } from "@/components/elements";
 import { Btn } from "@/components/elements";
 import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
+import { CodeLanguage } from "@/features/code-reviews";
 
 function isOverlap(a: number, b: number, c: number, d: number) {
   // a와 b의 위치를 정렬합니다.
@@ -33,7 +34,7 @@ interface CodeEditorProps {
   originalCode: string;
   height: string;
   lineSelection: boolean;
-  language: string;
+  language: CodeLanguage;
   selectedLines?: number[][];
   noShad?: boolean;
 }
@@ -235,7 +236,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       <Editor
         key={editorKey}
         height={height}
-        defaultLanguage={language}
+        defaultLanguage={language.name}
         defaultValue={decodedString}
         onMount={handleEditorDidMount}
       />

@@ -6,18 +6,19 @@ import { MutationConfig, queryClient } from "@/lib/react-query";
 import { CodeUpdateValues } from "../types";
 
 export type PutCodeDTO = {
-  data: CodeUpdateValues;
+  data: Omit<CodeUpdateValues, "codeId">;
+  codeId: number;
 };
 
-export const putCode = ({ data }: PutCodeDTO): Promise<{ codeId: number }> => {
-  return axios.put(`/code`, data);
+export const putCode = ({ data, codeId }: PutCodeDTO): Promise<null> => {
+  return axios.put(`/code/${codeId}`, data);
 };
 
-type usePutCodeOptions = {
+type UsePutCodeOptions = {
   config?: MutationConfig<typeof putCode>;
 };
 
-export const usePutCode = ({ config }: usePutCodeOptions = {}) => {
+export const usePutCode = ({ config }: UsePutCodeOptions = {}) => {
   return useMutation({
     // onMutate
     // onError
