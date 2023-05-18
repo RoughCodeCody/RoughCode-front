@@ -63,3 +63,8 @@ export const SubmitButton = styled.button`
     font-size: 1rem;
   }
 `;
+
+export const SubHeading = styled.div`
+  margin-top: 4rem !important;
+  font-size: 2rem;
+`;

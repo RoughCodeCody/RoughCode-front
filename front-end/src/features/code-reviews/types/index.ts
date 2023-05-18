@@ -117,7 +117,7 @@ export type CodeReviewInfoResult = {
 export type CodeUpdateValues = {
   title: string;
   githubUrl: string;
-  content: string | null;
+  content: string;
   codeId: number;
   projectId: number | null;
   selectedTagsId: number[] | null;
