@@ -4,7 +4,6 @@ type Tag = {
   tagId: number;
   name: string;
 };
-
 type SortOption = "createdDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
 
 type SearchCriteria = {

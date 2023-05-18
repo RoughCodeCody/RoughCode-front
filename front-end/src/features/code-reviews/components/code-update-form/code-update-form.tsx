@@ -38,7 +38,7 @@ export const CodeUpdateForm = ({
           defaultValues: {
             title: "",
             githubUrl: "",
-            content: "",
+            content: " ",
             projectId: null,
             selectedTagsId: null,
             selectedReviewsId: null,

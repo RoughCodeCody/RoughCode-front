@@ -42,7 +42,7 @@ export const Profile = () => {
                 <Text>{"Github 또는 Gitlab README.md 파일에서"}</Text>
                 <Text color="main">
                   {
-                    "!(개발새발 스탯카드!)[http://k8a306.p.ssafy.io:8080/api/v1/mypage?userName={당신의 깃허브 아이디}]"
+                    '<img src="http://k8a306.p.ssafy.io:8080/api/v1/mypage?userName={당신의 깃허브 아이디} width="원하는 너비"/>'
                   }
                 </Text>
                 <Text>{"를 입력하여 활동 업적을 표현해보세요!"}</Text>

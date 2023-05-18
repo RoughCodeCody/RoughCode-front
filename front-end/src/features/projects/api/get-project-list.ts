@@ -13,7 +13,7 @@ interface ProjectListResult {
     likeCnt: number;
     feedbackCnt: number;
     img: string;
-    tags: string[];
+    tags: { tagId: number; name: string; cnt: number }[];
     introduction: string;
     closed: boolean;
   }[];

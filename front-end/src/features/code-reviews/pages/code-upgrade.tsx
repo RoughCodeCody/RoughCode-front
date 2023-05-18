@@ -30,7 +30,7 @@ export const CodeUpgrade = ({ codeId }: { codeId: string }) => {
     content: codeInfoQuery.data?.content,
     codeId: codeInfoQuery.data?.codeId,
     projectId: codeInfoQuery.data?.projectId,
-    selectedTagsId: codeInfoQuery.data?.tags.map((tag) => Number(tag)),
+    selectedTagsId: null,
     selectedReviewsId: codeInfoQuery.data?.reviews.map((review) =>
       Number(review.reviewId)
     ),

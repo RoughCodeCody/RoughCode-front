@@ -115,11 +115,9 @@ export const ProjectInfo = ({
         </FlexDiv>
 
         <FlexDiv width="100%" justify="start" wrap="wrap" gap="0.5rem">
-          {tags
-            .map((el) => el.name)
-            .map((val, idx) => (
-              <TagChipSub tag={val} key={idx} />
-            ))}
+          {tags.map(({ name, tagId }) => (
+            <TagChipSub tag={name} key={tagId} />
+          ))}
         </FlexDiv>
 
         <FlexDiv
