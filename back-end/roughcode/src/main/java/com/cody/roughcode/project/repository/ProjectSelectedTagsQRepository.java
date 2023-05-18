@@ -2,23 +2,7 @@ package com.cody.roughcode.project.repository;
 
 import com.cody.roughcode.config.Querydsl4RepositorySupport;
 import com.cody.roughcode.project.entity.*;
-import com.cody.roughcode.user.entity.Users;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.cody.roughcode.project.entity.QProjectFavorites.projectFavorites;
-import static com.cody.roughcode.project.entity.QProjectSelectedTags.projectSelectedTags;
-import static com.cody.roughcode.project.entity.QProjectTags.projectTags;
-import static com.cody.roughcode.project.entity.QProjects.*;
-import static com.querydsl.jpa.JPAExpressions.selectDistinct;
 
 @Repository
 public class ProjectSelectedTagsQRepository extends Querydsl4RepositorySupport {

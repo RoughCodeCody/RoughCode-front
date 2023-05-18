@@ -72,9 +72,9 @@ public class S3FileServiceImpl implements S3FileService {
     // multipartFile -> File 형식으로 변환 및 로컬에 저장
     private Optional<File> convertToFile(MultipartFile file) throws IOException {
         File uploadFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        FileOutputStream fos = new FileOutputStream(uploadFile);
-        fos.write(file.getBytes());
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(uploadFile)) {
+            fos.write(file.getBytes());
+        }
 
         return Optional.of(uploadFile);
     }

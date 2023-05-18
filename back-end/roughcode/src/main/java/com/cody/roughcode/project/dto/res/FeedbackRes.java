@@ -1,14 +1,12 @@
 package com.cody.roughcode.project.dto.res;
 
 import com.cody.roughcode.project.entity.Feedbacks;
-import com.cody.roughcode.user.entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder

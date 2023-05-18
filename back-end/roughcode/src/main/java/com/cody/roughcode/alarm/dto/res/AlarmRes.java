@@ -1,11 +1,10 @@
-package com.cody.roughcode.alarm.entity;
+package com.cody.roughcode.alarm.dto.res;
 
-import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.entity.Alarm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
 
 import javax.persistence.Id;
 import java.time.LocalDateTime;
