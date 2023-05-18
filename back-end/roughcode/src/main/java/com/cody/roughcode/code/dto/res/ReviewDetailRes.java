@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.apache.bcel.classfile.Code;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class ReviewDetailRes {
     private String githubApiUrl;
 
     @Schema(description = "코드 언어", example = "Javascript")
-    private String language;
+    private CodeLanguagesRes language;
 
     @Schema(description = "리뷰 id", example = "1")
     private Long reviewId;
@@ -88,7 +89,7 @@ public class ReviewDetailRes {
 
         return ReviewDetailRes.builder()
                 .githubApiUrl(githubApiUrl)
-                .language(language.getName())
+                .language(new CodeLanguagesRes(language))
                 .reviewId(review.getReviewsId())
                 .userId(userId)
                 .userName(userName)

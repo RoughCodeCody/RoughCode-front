@@ -3,6 +3,7 @@ package com.cody.roughcode.code.service;
 import com.cody.roughcode.alarm.dto.req.AlarmReq;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.req.ReviewReq;
+import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.dto.res.ReReviewRes;
 import com.cody.roughcode.code.dto.res.ReviewCodeRes;
 import com.cody.roughcode.code.dto.res.ReviewDetailRes;
@@ -131,7 +132,7 @@ public class ReviewsServiceImpl implements ReviewsService {
         // 코드에 등록된 태그 목록
         Codes code = review.getCodes();
         CodesInfo codesInfo = codesInfoRepository.findByCodes(code);
-        List<String> tagList = getTagNames(code);
+        List<CodeTagsRes> tagList = getTagInfo(code);
 
         // 내가 즐겨찾기/좋아요 눌렀는지 여부
         CodeFavorites myFavorite = (user != null) ? codeFavoritesRepository.findByCodesAndUsers(code, user) : null;
@@ -341,6 +342,20 @@ public class ReviewsServiceImpl implements ReviewsService {
         if (code.getSelectedTags() != null)
             for (CodeSelectedTags selected : code.getSelectedTags()) {
                 tagList.add(selected.getTags().getName());
+            }
+        return tagList;
+    }
+
+    private static List<CodeTagsRes> getTagInfo(Codes code) {
+        List<CodeTagsRes> tagList = new ArrayList<>();
+        if (code.getSelectedTags() != null)
+            for (CodeSelectedTags selected : code.getSelectedTags()) {
+                CodeTags codeTags = selected.getTags();
+                tagList.add(CodeTagsRes.builder()
+                        .tagId(codeTags.getTagsId())
+                        .name(codeTags.getName())
+                        .cnt(codeTags.getCnt())
+                        .build());
             }
         return tagList;
     }
