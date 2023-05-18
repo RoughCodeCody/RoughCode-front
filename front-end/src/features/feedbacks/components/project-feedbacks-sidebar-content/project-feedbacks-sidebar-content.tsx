@@ -9,14 +9,17 @@ import { ItemContainer, Item, ItemUserName, ItemContent } from "./style";
 
 type ProjectFeedbacksSidebarContentProps = {
   projectId: string;
+  versionUp: string;
 };
 
 export const ProjectFeedbacksSidebarContent = ({
   projectId,
+  versionUp,
 }: ProjectFeedbacksSidebarContentProps) => {
   // server states
   const projectFeedbacksQuery = useProjectFeedbacks({
     projectId: Number(projectId),
+    versionUp: versionUp,
   });
 
   // client states

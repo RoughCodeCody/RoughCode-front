@@ -25,17 +25,17 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
 
   const projectUpdateInitialValues = {
     title: projectInfoQuery.data?.title || "",
-    notice: projectInfoQuery.data?.notice || "",
+    notice: "",
     introduction: projectInfoQuery.data?.introduction || "",
-    content: projectInfoQuery.data?.content || "",
+    content: "",
     url: projectInfoQuery.data?.url || "",
     projectId: Number(projectId),
-    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => Number(tag)) || [],
+    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => tag.tagId) || [],
     selectedFeedbacksId:
       projectInfoQuery.data?.feedbacks.map((feedback) =>
         Number(feedback.feedbackId)
       ) || [],
-    img: projectInfoQuery.data?.img,
+    img: "",
   };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
@@ -82,7 +82,7 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
             projectUpdateInitialValues={projectUpdateInitialValues}
           />
         </WhiteBoxNoshad>
-        <ProjectFeedbacksSidebar projectId={projectId} />
+        <ProjectFeedbacksSidebar projectId={projectId} versionUp="true" />
       </FlexDiv>
     </>
   );

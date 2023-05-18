@@ -50,7 +50,7 @@ export const ProjectRegister = () => {
           <Title title="프로젝트 등록" description="프로젝트를 등록합니다." />
           <ProjectUpdateForm projectId={-1} onSubmit={onSubmit} />
         </WhiteBoxNoshad>
-        <ProjectFeedbacksSidebar />
+        <ProjectFeedbacksSidebar versionUp="false" />
       </FlexDiv>
     </>
   );
