@@ -12,6 +12,9 @@ plugins {
 
     // query dsl plugin 추가
     id("com.ewerk.gradle.plugins.querydsl") version "1.0.10"
+    
+    #
+    id 'jacoco'
 }
 
 group = 'com.cody'
@@ -116,3 +119,6 @@ compileQuerydsl{
 configurations {
     querydsl.extendsFrom compileClasspath
 }
+
+
+jacocoTestReport { dependsOn bootJar reports { html.enabled true xml.enabled true csv.enabled false html.destination file("src/jacoco/jacoco.html") xml.destination file("src/jacoco/jacoco.xml") } afterEvaluate { classDirectories.setFrom(files(classDirectories.files.collect { fileTree(dir: it, exclude: [ '**/TyfServerApplication*' ]) })) } finalizedBy 'jacocoTestCoverageVerification' } jacocoTestCoverageVerification { violationRules { rule { enabled = true element = 'CLASS' limit { counter = 'METHOD' value = 'COVEREDRATIO' minimum = 0.6 } excludes = [ '**.*TyfServerApplication*' ] } }
