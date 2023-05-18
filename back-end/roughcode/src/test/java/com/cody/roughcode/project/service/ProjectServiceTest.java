@@ -39,8 +39,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -110,6 +109,17 @@ public class ProjectServiceTest {
             .projectsId(1L)
             .num(1L)
             .version(1)
+            .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+            .introduction("intro")
+            .title("title")
+            .projectWriter(users)
+            .feedbackCnt(1)
+            .build();
+
+    final Projects project2 = Projects.builder()
+            .projectsId(1L)
+            .num(1L)
+            .version(2)
             .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
             .introduction("intro")
             .title("title")
@@ -903,13 +913,43 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when
-        List<FeedbackInfoRes> success = projectsService.getFeedbackList(1L, 1L);
+        List<FeedbackInfoRes> success = projectsService.getFeedbackList(1L, 1L, true);
 
         // then
         assertThat(success.size()).isEqualTo(1);
     }
 
-    @DisplayName("피드백 수정 성공")
+
+    @DisplayName("피드백 목록 조회 성공 - 수정")
+    @Test
+    void getFeedbackListSucceedModify(){
+        // given
+        Feedbacks feedbacks = Feedbacks.builder()
+                .feedbacksId(1L)
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .build();
+
+        final ProjectsInfo info = ProjectsInfo.builder()
+                .url("www.google.com")
+                .notice("notice")
+                .feedbacks(List.of(feedbacks))
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project2).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
+        doReturn(Arrays.asList(project2, project)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when
+        List<FeedbackInfoRes> success = projectsService.getFeedbackList(1L, 1L, false); // 수정인 경우
+
+        // then
+        assertThat(success.size()).isEqualTo(1);
+    }
+
+    @DisplayName("피드백 수정 성공 - 버전업")
     @Test
     void updateFeedbackSucceed(){
         // given
@@ -1162,7 +1202,7 @@ public class ProjectServiceTest {
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(List.of(project, project2)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(Arrays.asList(project, project2)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
         ProjectDetailRes success = projectsService.getProject(projectId, 0L);
@@ -2111,6 +2151,7 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(original).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(original).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+        doReturn(new ArrayList<>()).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
 

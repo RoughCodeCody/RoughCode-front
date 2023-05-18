@@ -763,7 +763,7 @@ public class ProjectControllerTest {
 
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(List.of(feedbackInfoRes)).when(projectsService)
-                .getFeedbackList(any(Long.class), any(Long.class));
+                .getFeedbackList(any(Long.class), any(Long.class), any(Boolean.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -788,7 +788,7 @@ public class ProjectControllerTest {
 
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(null).when(projectsService)
-                .getFeedbackList(any(Long.class), any(Long.class));
+                .getFeedbackList(any(Long.class), any(Long.class), any(Boolean.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
