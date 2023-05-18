@@ -40,7 +40,7 @@ public class ProjectInfoRes {
     private String img;
 
     @Schema(description = "태그 이름 리스트", example = "[springboot, react]")
-    private List<String> tags;
+    private List<ProjectTagsRes> tags;
 
     @Schema(description = "한줄 설명", example = "개발새발 프로젝트입니다")
     private String introduction;

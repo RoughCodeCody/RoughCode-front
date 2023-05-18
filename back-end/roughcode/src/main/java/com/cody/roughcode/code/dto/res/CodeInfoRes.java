@@ -34,7 +34,7 @@ public class CodeInfoRes {
     private int reviewCnt;
 
     @Schema(description = "등록한 태그 이름들", example = "[TypeScript, React]")
-    private List<String> tags;
+    private List<CodeTagsRes> tags;
 
     @Schema(description = "코드 정보 작성자 닉네임", example = "아이유")
     private String userName;

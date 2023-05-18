@@ -260,7 +260,7 @@ public class CodesServiceImpl implements CodesService {
         Boolean mine = code.getCodeWriter().equals(user);
 
         // 코드에 등록된 태그 목록
-        List<String> tagList = getTagNames(code);
+        List<CodeTagsRes> tagList = getTags(code);
 
         // 내가 즐겨찾기/좋아요 눌렀는지 여부
         CodeFavorites myFavorite = (user != null) ? codeFavoritesRepository.findByCodesAndUsers(code, user) : null;
@@ -798,7 +798,7 @@ public class CodesServiceImpl implements CodesService {
         List<Codes> codeList = codesPage.getContent();
         List<CodeInfoRes> codeInfoRes = new ArrayList<>();
         for (Codes c : codeList) {
-            List<String> tagList = getTagNames(c);
+            List<CodeTagsRes> tagList = getTags(c);
 
             // 내가 좋아요 눌렀는지 여부
             CodeLikes codeLikes = codeLikesRepository.findByCodesAndUsers(c, user);
@@ -820,11 +820,17 @@ public class CodesServiceImpl implements CodesService {
         return codeInfoRes;
     }
 
-    private static List<String> getTagNames(Codes code) {
-        List<String> tagList = new ArrayList<>();
+    private static List<CodeTagsRes> getTags(Codes code) {
+        List<CodeTagsRes> tagList = new ArrayList<>();
         if (code.getSelectedTags() != null)
             for (CodeSelectedTags selected : code.getSelectedTags()) {
-                tagList.add(selected.getTags().getName());
+                tagList.add(
+                        CodeTagsRes.builder()
+                                .name(selected.getTags().getName())
+                                .tagId(selected.getTags().getTagsId())
+                                .cnt(selected.getTags().getCnt())
+                                .build()
+                );
             }
         return tagList;
     }
