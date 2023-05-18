@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 type Language = {
-  tagId: number;
+  languageId: number;
   name: string;
 };
 

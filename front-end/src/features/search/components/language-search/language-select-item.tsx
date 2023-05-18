@@ -20,17 +20,18 @@ const LanguageText = styled.span`
 `;
 
 interface LanguageType {
-  tagId?: number;
+  languageId?: number;
   name: string;
   cnt?: number;
 }
 
-export const LanguageSelectItem = ({ tagId, name, cnt }: LanguageType) => {
+export const LanguageSelectItem = ({ languageId, name, cnt }: LanguageType) => {
   const { setSelectedLanguage } = useSelectedLanguageStore();
 
   const handleClick = () => {
-    if (tagId) {
-      setSelectedLanguage([{ tagId, name }]);
+    console.log(languageId, name);
+    if (languageId) {
+      setSelectedLanguage([{ languageId, name }]);
     }
   };
 

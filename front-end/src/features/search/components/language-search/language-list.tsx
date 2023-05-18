@@ -1,20 +1,20 @@
 import { LanguageSelectContainer } from "./style";
 import { LanguageSelectItem } from "./language-select-item";
 
-import { useTags } from "../../api";
+import { useLanguageTags } from "../../api";
 
 type LanguageListProps = {
   whichTag: string;
   tagKeyword: string;
 };
 type tagResult = {
-  tagId: number;
+  languageId: number;
   name: string;
   cnt: number;
 };
 
 export const LanguageList = ({ whichTag, tagKeyword }: LanguageListProps) => {
-  const languagesQuery = useTags({ whichTag, tagKeyword });
+  const languagesQuery = useLanguageTags({ whichTag, tagKeyword });
   if (languagesQuery.isLoading) {
     return <div></div>;
   }
@@ -26,8 +26,13 @@ export const LanguageList = ({ whichTag, tagKeyword }: LanguageListProps) => {
     );
   return (
     <LanguageSelectContainer>
-      {languagesQuery?.data?.map(({ tagId, name, cnt }: tagResult) => (
-        <LanguageSelectItem key={tagId} tagId={tagId} name={name} cnt={cnt} />
+      {languagesQuery?.data?.map(({ languageId, name, cnt }: tagResult) => (
+        <LanguageSelectItem
+          key={languageId}
+          languageId={languageId}
+          name={name}
+          cnt={cnt}
+        />
       ))}
     </LanguageSelectContainer>
   );
