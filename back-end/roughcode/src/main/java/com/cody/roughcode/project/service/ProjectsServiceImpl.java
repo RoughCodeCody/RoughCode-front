@@ -25,7 +25,6 @@ import com.google.webrisk.v1.SearchUrisRequest;
 import com.google.webrisk.v1.SearchUrisResponse;
 import com.google.webrisk.v1.ThreatType;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
@@ -41,21 +40,16 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletContext;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Service
 @Slf4j
@@ -968,7 +962,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId) {
+    public List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId, boolean versionUp) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
@@ -977,13 +971,14 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         List<Projects> allVersion = projectsRepository.findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(project.getNum(), users);
 
+        int idx = (versionUp)? 0 : 1;
         List<FeedbackInfoRes> feedbackInfoResList = new ArrayList<>();
-        for (Projects p : allVersion) {
-            ProjectsInfo info = projectsInfoRepository.findByProjects(p);
+        for (; idx < allVersion.size(); idx++) {
+            ProjectsInfo info = projectsInfoRepository.findByProjects(allVersion.get(idx));
             List<Feedbacks> feedbacksList = info.getFeedbacks();
             for (Feedbacks f : feedbacksList) {
                 if(f.getComplained() != null) continue; // 신고된 피드백
-                feedbackInfoResList.add(new FeedbackInfoRes(f, p.getVersion(), f.getUsers()));
+                feedbackInfoResList.add(new FeedbackInfoRes(f, allVersion.get(idx).getVersion(), f.getUsers()));
             }
         }
 
