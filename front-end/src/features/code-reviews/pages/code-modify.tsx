@@ -21,7 +21,7 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
   const router = useRouter();
   const putCodeMutation = usePutCode();
   const codeInfoQuery = useCodeInfo(codeIdNum);
-  const { language, setLanguage } = useSearchCriteriaStore();
+  const { searchCriteria, setLanguage } = useSearchCriteriaStore();
   useEffect(() => {
     if (codeInfoQuery.data) {
       setLanguage(codeInfoQuery.data.tags);
@@ -31,7 +31,6 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
   if (!codeInfoQuery.data) {
     return <>Loading...</>;
   }
-
   const codeUpdateInitialValues = {
     title: codeInfoQuery.data?.title,
     githubUrl: codeInfoQuery.data?.githubUrl,
@@ -47,8 +46,10 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
 
   console.log(codeInfoQuery.data);
   const onSubmit = async (values: CodeUpdateValues) => {
+    const newValues = { ...values, language: searchCriteria.tagIdList[0].name };
+
     const codeIdNum = await putCodeMutation.mutateAsync({
-      data: values,
+      data: newValues,
     });
     const codeIdStr = String(codeIdNum);
     router.push(`/code-review/${codeIdStr}`);
