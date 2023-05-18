@@ -28,7 +28,7 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
     introduction: projectInfoQuery.data?.introduction || "",
     content: projectInfoQuery.data?.content || "",
     url: projectInfoQuery.data?.url || "",
-    projectId: Number(projectId),
+    projectId: projectIdNum,
     selectedTagsId: projectInfoQuery.data?.tags.map((tag) => Number(tag)) || [],
     selectedFeedbacksId:
       projectInfoQuery.data?.feedbacks.map((feedback) =>

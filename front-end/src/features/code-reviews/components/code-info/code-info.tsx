@@ -97,7 +97,7 @@ export const CodeInfo = ({
                 <Selection
                   selectionList={{
                     수정하기: () =>
-                      router.push(`/code-review/modify/${codeId}`),
+                      router.push(`/code-review/code/modify/${codeId}`),
                     삭제하기: () => {
                       setCodeDeleteModalOpen(true);
                       setForceClose(true);

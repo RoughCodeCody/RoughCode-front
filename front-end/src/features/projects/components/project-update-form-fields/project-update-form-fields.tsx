@@ -38,7 +38,7 @@ export const ProjectUpdateFormFields = ({
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [fixedUrl, setFixedUrl] = useState("");
   const [isThumb, setIsThumb] = useState(false);
-  const { searchCriteria, reset } = useSearchCriteriaStore();
+  const { searchCriteria, addTagId, reset } = useSearchCriteriaStore();
   const { selectedProjectFeedbackId } = useProjectFeedbackSelectionStore();
   const checkProjectUrlQuery = useCheckProjectUrl({
     url: watch("url"),
@@ -91,6 +91,9 @@ export const ProjectUpdateFormFields = ({
         shouldDirty: true,
         shouldValidate: true,
       });
+      // projectUpdateInitialValues.selectedTagsId?.forEach((id) =>
+      //   addTagId({})
+      // );
     }
   }, [projectUpdateInitialValues, setValue]);
 
