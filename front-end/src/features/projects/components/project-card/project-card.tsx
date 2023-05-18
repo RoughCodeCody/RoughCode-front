@@ -26,7 +26,7 @@ interface ProjectCardProps {
     likeCnt: number;
     feedbackCnt: number;
     img: string;
-    tags: string[];
+    tags: { tagId: number; name: string; cnt: number }[];
     introduction: string;
     closed: boolean;
   };
@@ -204,7 +204,7 @@ export const ProjectCard = ({
               onWheel={handleWheel}
             >
               {tags.map((tag, idx) => (
-                <TagChipSub tag={tag} key={idx} />
+                <TagChipSub tag={tag.name} key={idx} />
               ))}
             </TagContainer>
           </FlexDiv>
