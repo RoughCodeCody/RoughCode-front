@@ -22,7 +22,7 @@ export const Feedbacks = ({
   const userQuery = useUser();
 
   return (
-    <FlexDiv direction="column" width="60%" gap="1rem">
+    <FlexDiv direction="column" width="60%" minWidth="36rem" gap="1rem">
       {feedbacks.length !== 0 &&
         feedbacks.map((feedback, idx) => (
           <FeedbackItem

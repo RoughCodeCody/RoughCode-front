@@ -6,7 +6,7 @@ import { useUser } from "@/features/auth";
 // import { CodeReviewSearch } from "../code-review-search";
 import { Review } from "../../types";
 import { CodeReviewItem } from "./review-item";
-import { ReviewListWrapper, ReviewItemWrapper } from "./style";
+import { ReviewListWrapper, ReviewItemsWrapper } from "./style";
 
 interface CodeReviewListProps {
   reviews: Review[];
@@ -42,7 +42,7 @@ export const CodeReviewList = ({
         {/* 검색을 만들게 되면 이 자리에 */}
 
         {reviews.length !== 0 && (
-          <ReviewItemWrapper
+          <ReviewItemsWrapper
             width="100%"
             direction="column"
             padding="1rem"
@@ -56,13 +56,17 @@ export const CodeReviewList = ({
                   review.userName.length !== 0 &&
                     userQuery.data?.nickname === review.userName
                 )}
-                showDetails={Boolean(review.reviewId === clickedReviewId)}
+                // 클릭된 리뷰이고 신고된 리뷰가 아닐 때
+                showDetails={Boolean(
+                  review.reviewId === clickedReviewId &&
+                    review.content.length !== 0
+                )}
                 codeId={codeId}
                 setClickedReviewId={setClickedReviewId}
                 key={review.reviewId}
               />
             ))}
-          </ReviewItemWrapper>
+          </ReviewItemsWrapper>
         )}
       </FlexDiv>
     </ReviewListWrapper>
