@@ -25,6 +25,10 @@ public class CodesInfo {
     private String githubUrl = "";
 
     @Builder.Default
+    @Column(name = "github_api_url", nullable = false)
+    private String githubApiUrl = "";
+
+    @Builder.Default
     @Column(name = "content", nullable = true, columnDefinition = "text")
     private String content = "";
 
@@ -63,6 +67,10 @@ public class CodesInfo {
 
     public void updateGithubUrl(String githubUrl){
         this.githubUrl = githubUrl;
+    }
+
+    public void updateGithubApiUrl(String githubApiUrl){
+        this.githubApiUrl = githubApiUrl;
     }
 
     public void updateLanguage(String language){

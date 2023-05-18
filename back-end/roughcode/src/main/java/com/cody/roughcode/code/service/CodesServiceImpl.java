@@ -24,6 +24,8 @@ import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityManager;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -147,6 +149,7 @@ public class CodesServiceImpl implements CodesService {
             savedCode = codesRepository.save(code);
             codeId = savedCode.getCodesId();
 
+            String codeLanguage = null;
             // tag 등록
             if (req.getSelectedTagsId() != null) {
                 List<CodeSelectedTags> selectedTagsList = new ArrayList<>();
@@ -159,19 +162,27 @@ public class CodesServiceImpl implements CodesService {
                                     .build());
                     // 태그 사용 수 증가
                     codeTag.cntUp();
+                    codeLanguage = codeTag.getName();
                 }
                 codeSelectedTagsRepository.saveAll(selectedTagsList);
             } else {
                 log.info("등록한 태그가 없습니다.");
             }
 
+            // 파싱한 github api url
+//            String parsedGithubUrl = parseGithubLink(req.getGithubUrl());
+            // 역파싱한 github url
+            String reverseParseGithubUrl = reverseParseGithubLink(req.getGithubUrl());
+            log.info("github URL 파싱 전!!!! " + reverseParseGithubUrl);
+
             // 코드 정보 저장
             CodesInfo codesInfo = CodesInfo.builder()
                     .codes(savedCode)
-                    .githubUrl(req.getGithubUrl())
+                    .githubUrl(reverseParseGithubUrl)
+                    .githubApiUrl(req.getGithubUrl())
                     .content(req.getContent())
-                    .favoriteCnt(0)
-                    .language(req.getLanguage()).build();
+                    .language(codeLanguage)
+                    .favoriteCnt(0).build();
             codesInfoRepository.save(codesInfo);
 
             // 반영한 review 저장
@@ -260,7 +271,7 @@ public class CodesServiceImpl implements CodesService {
         Boolean mine = code.getCodeWriter().equals(user);
 
         // 코드에 등록된 태그 목록
-        List<String> tagList = getTagNames(code);
+        List<CodeTagsRes> tagList = getTagInfo(code);
 
         // 내가 즐겨찾기/좋아요 눌렀는지 여부
         CodeFavorites myFavorite = (user != null) ? codeFavoritesRepository.findByCodesAndUsers(code, user) : null;
@@ -371,6 +382,7 @@ public class CodesServiceImpl implements CodesService {
                 .reviewCnt(code.getReviewCnt())
                 .favoriteCnt(codesInfo.getFavoriteCnt())
                 .githubUrl(codesInfo.getGithubUrl())
+                .githubApiUrl(codesInfo.getGithubApiUrl())
                 .tags(tagList)
                 .userId(codeWriterId)
                 .userName(codeWriterName)
@@ -427,6 +439,7 @@ public class CodesServiceImpl implements CodesService {
                 log.info("기존에 선택하였던 태그가 없습니다");
             }
 
+            String codeLanguage = null;
             // 업데이트한 Tag 등록
             if (req.getSelectedTagsId() != null) {
                 List<CodeSelectedTags> updatedSelectedTagsList = new ArrayList<>();
@@ -437,7 +450,9 @@ public class CodesServiceImpl implements CodesService {
                             .codes(target)
                             .build());
                     codeTag.cntUp();
+                    codeLanguage = codeTag.getName();
                 }
+                targetInfo.updateLanguage(codeLanguage);
                 codeSelectedTagsRepository.saveAll(updatedSelectedTagsList);
             } else {
                 log.info("새로 선택한 태그가 없습니다");
@@ -498,12 +513,9 @@ public class CodesServiceImpl implements CodesService {
 
             if (StringUtils.hasText(req.getGithubUrl())) {
                 log.info("코드 정보 수정(github URL): " + req.getGithubUrl());
-                targetInfo.updateGithubUrl(req.getGithubUrl());
-            }
-
-            if (StringUtils.hasText(req.getLanguage())) {
-                log.info("코드 정보 수정(코드 언어): " + req.getLanguage());
-                targetInfo.updateLanguage(req.getLanguage());
+                String updateReverseParsedUrl = reverseParseGithubLink(req.getGithubUrl());
+                targetInfo.updateGithubUrl(updateReverseParsedUrl);
+                targetInfo.updateGithubApiUrl(req.getGithubUrl());
             }
 
             target.setProject(connectedProject); // 코드와 연결된 프로젝트 수정
@@ -829,5 +841,50 @@ public class CodesServiceImpl implements CodesService {
                 tagList.add(selected.getTags().getName());
             }
         return tagList;
+    }
+
+    private static List<CodeTagsRes> getTagInfo(Codes code) {
+        List<CodeTagsRes> tagList = new ArrayList<>();
+        if (code.getSelectedTags() != null)
+            for (CodeSelectedTags selected : code.getSelectedTags()) {
+                CodeTags codeTags = selected.getTags();
+                tagList.add(CodeTagsRes.builder()
+                        .tagId(codeTags.getTagsId())
+                        .name(codeTags.getName())
+                        .cnt(codeTags.getCnt())
+                        .build());
+            }
+        return tagList;
+    }
+
+    public static String parseGithubLink(String link) {
+        link = link.replace("https://github.com/", "");
+        String[] splitUrl = link.split("/blob/");
+        String ownerRepo = splitUrl[0];
+        String subUrl = splitUrl[1];
+        String[] subUrlParts = subUrl.split("/");
+        String branchName = subUrlParts[0];
+        String filePath = subUrl.substring(branchName.length());
+
+        String parsedLink = "https://api.github.com/repos/" + ownerRepo + "/contents" + filePath + "?ref=" + branchName;
+
+        return parsedLink;
+    }
+
+
+    public static String reverseParseGithubLink(String parsedLink) {
+        parsedLink = parsedLink.replace("https://api.github.com/repos/", "");
+
+        String[] splitUrl = parsedLink.split("/contents/");
+        String ownerRepo = splitUrl[0];
+        String subUrl = splitUrl[1];
+
+        String[] subUrlParts = subUrl.split("ref=");
+        String filePath = subUrlParts[0].substring(0, subUrlParts[0].length()-1);
+
+        String branchName = subUrlParts[1];
+
+        String reversedLink = "https://github.com/" + ownerRepo + "/blob/" + branchName + "/" +filePath;
+        return reversedLink;
     }
 }
