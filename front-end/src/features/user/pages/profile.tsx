@@ -1,11 +1,10 @@
-import { BottomHeader, FlexDiv, Title } from "@/components/elements";
-
-import { StatCard3 } from "../components/stat-card";
-import { Welcome } from "../components/welcome";
-import { EmailVerification } from "../components";
-import { useUser } from "@/features/auth";
-import { useStatCard } from "../api/get-stat-card";
 import { useEffect, useState } from "react";
+
+import { BottomHeader, FlexDiv, Title, Text } from "@/components/elements";
+import { useUser } from "@/features/auth";
+
+import { useStatCard } from "../api";
+import { EmailVerification, Welcome } from "../components";
 
 export const Profile = () => {
   // 유저네임을 확인하여 스탯카드 요청하기 위함
@@ -31,15 +30,24 @@ export const Profile = () => {
           />
           <Welcome />
           {statCardQuery.data && (
-            <img
-              // src={statCardQuery.data}
-              src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                statCardQuery.data
-              )}`}
-              // src={`data:image/svg+xml;utf8,${encodeURIComponent(StatCard3())}`}
-              alt="stat-card"
-              width="70%"
-            />
+            <FlexDiv direction="column" width="100%" gap="2rem">
+              <img
+                src={`data:image/svg+xml;utf8,${encodeURIComponent(
+                  statCardQuery.data
+                )}`}
+                alt="stat-card"
+                width="70%"
+              />
+              <FlexDiv direction="column" align="start" gap="1rem">
+                <Text>{"Github 또는 Gitlab README.md 파일에서"}</Text>
+                <Text color="main">
+                  {
+                    "!(개발새발 스탯카드!)[http://k8a306.p.ssafy.io:8080/api/v1/mypage?userName={당신의 깃허브 아이디}]"
+                  }
+                </Text>
+                <Text>{"를 입력하여 활동 업적을 표현해보세요!"}</Text>
+              </FlexDiv>
+            </FlexDiv>
           )}
         </FlexDiv>
         <FlexDiv direction="column" width="70%" gap="3rem" align="start">
