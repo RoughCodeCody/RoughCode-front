@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { SubmitHandler, UseFormReturn } from "react-hook-form";
-
-import { useProjectFeedbackSelectionStore } from "@/features/feedbacks";
+import { useEffect, useState } from "react";
 import { FlexDiv } from "@/components/elements";
-import { InputField } from "@/components/form";
+import { InputField, InputSuccessMsg, InputErrorMsg } from "@/components/form";
+import { useProjectFeedbackSelectionStore } from "@/features/feedbacks";
 import { TiptapController } from "@/features/rich-text-editor";
 import { TagSearch } from "@/features/search";
 import { useSearchCriteriaStore } from "@/stores";
-
 import { useCheckProjectUrl } from "../../api";
 import { ProjectUpdateValues } from "../../types";
 import { UrlInspectionBtn, SubmitButtonWrapper, SubmitButton } from "./style";
 import { ThumbnailField } from "./thumbnail-field";
-import { InputSuccessMsg, InputErrorMsg } from "@/components/form";
 
 type ProjectUpdateFormFieldsProps = {
   methods: UseFormReturn<ProjectUpdateValues>;
@@ -29,27 +27,27 @@ export const ProjectUpdateFormFields = ({
 }: ProjectUpdateFormFieldsProps) => {
   const {
     register,
-    formState: { isValid, dirtyFields, errors },
+    formState: { isValid, dirtyFields, errors, isSubmitting },
     control,
     setValue,
-    getValues,
     handleSubmit,
+
     watch,
-    getFieldState,
   } = methods;
-
-  const urlFieldState = getFieldState("url");
-
+  const router = useRouter();
   const [isValidUrl, setIsValidUrl] = useState(false);
-  const [isFixedUrl, setIsFixedUrl] = useState("");
-
-  const { searchCriteria } = useSearchCriteriaStore();
+  const [fixedUrl, setFixedUrl] = useState("");
+  const [isThumb, setIsThumb] = useState(false);
+  const { searchCriteria, reset } = useSearchCriteriaStore();
   const { selectedProjectFeedbackId } = useProjectFeedbackSelectionStore();
   const checkProjectUrlQuery = useCheckProjectUrl({
     url: watch("url"),
     config: { enabled: false },
   });
-  const [submitBtnDisabled, setSubmitBtnDisabled] = useState(true);
+  const dynamicRoute = router.asPath;
+
+  console.log(isThumb);
+
   useEffect(() => {
     setValue("projectId", projectId);
     setValue(
@@ -67,27 +65,44 @@ export const ProjectUpdateFormFields = ({
     if (projectUpdateInitialValues) {
       setValue("title", projectUpdateInitialValues.title, {
         shouldDirty: true,
+        shouldValidate: true,
       });
       setValue("notice", projectUpdateInitialValues.notice, {
         shouldDirty: true,
+        shouldValidate: true,
       });
       setValue("introduction", projectUpdateInitialValues.introduction, {
         shouldDirty: true,
+        shouldValidate: true,
       });
-      setValue("url", projectUpdateInitialValues.url, { shouldDirty: true });
+      setValue("url", projectUpdateInitialValues.url, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
       setValue("projectId", projectUpdateInitialValues.projectId, {
         shouldDirty: true,
+        shouldValidate: true,
       });
-      setValue(
-        "selectedFeedbacksId",
-        projectUpdateInitialValues.selectedFeedbacksId,
-        { shouldDirty: true }
-      );
-      setValue("selectedTagsId", projectUpdateInitialValues.selectedTagsId, {
+      setValue("selectedFeedbacksId", [], {
         shouldDirty: true,
+        shouldValidate: true,
+      });
+      setValue("content", projectUpdateInitialValues.content, {
+        shouldDirty: true,
+        shouldValidate: true,
       });
     }
   }, [projectUpdateInitialValues, setValue]);
+
+  useEffect(() => reset(), [dynamicRoute, reset]);
+
+  // useEffect(() => {
+  //   const inputThumbnail = document.getElementById(
+  //     "input-thumbnail"
+  //   ) as HTMLInputElement;
+  //   setIsThumb(Boolean(inputThumbnail?.files?.item(0)));
+  //   console.log(isThumb);
+  // }, []);
 
   register("projectId");
   register("selectedTagsId");
@@ -103,20 +118,12 @@ export const ProjectUpdateFormFields = ({
     if (query.data) {
       console.log(query.data);
       setIsValidUrl(true);
-      // setIsFixedUrl(getValues("url"));
+      setFixedUrl(watch("url"));
     } else {
       setIsValidUrl(false);
       eventTarget.disabled = false;
     }
     // console.log(formState.errors);
-  };
-
-  const isThumbnail = () => {
-    const inputThumbnail = document.getElementById(
-      "input-thumbnail"
-    ) as HTMLInputElement;
-
-    return Boolean(inputThumbnail?.files?.item(0));
   };
 
   return (
@@ -172,31 +179,29 @@ export const ProjectUpdateFormFields = ({
           <InputSuccessMsg>
             검사 성공! 다음은 유효한 URL이에요.
             <br />
-            {watch("url")}
+            {fixedUrl}
           </InputSuccessMsg>
         ) : (
-          <></>
+          <InputSuccessMsg>검사를 완료해야 업로드할 수 있어요.</InputSuccessMsg>
         )}
       </FlexDiv>
 
       <TagSearch whichTag="project" />
-      {projectUpdateInitialValues ? (
-        <TiptapController<ProjectUpdateValues>
-          name="content"
-          control={control}
-          initialValue={projectUpdateInitialValues.content}
-        />
-      ) : (
-        <TiptapController<ProjectUpdateValues>
-          name="content"
-          control={control}
-        />
-      )}
+      {/* {projectUpdateInitialValues ? ( */}
+      <TiptapController<ProjectUpdateValues>
+        name="content"
+        control={control}
+        initialValue={projectUpdateInitialValues?.content || ""}
+      />
 
       {projectUpdateInitialValues ? (
-        <ThumbnailField key="new" initialSrc={projectUpdateInitialValues.img} />
+        <ThumbnailField
+          key="new"
+          initialSrc={projectUpdateInitialValues.img}
+          setIsThumb={setIsThumb}
+        />
       ) : (
-        <ThumbnailField key="old" />
+        <ThumbnailField key="old" setIsThumb={setIsThumb} />
       )}
 
       <SubmitButtonWrapper>
@@ -204,7 +209,7 @@ export const ProjectUpdateFormFields = ({
           id="submit-btn"
           type="submit"
           onClick={handleSubmit(onSubmit)}
-          disabled={!isValid || !isValidUrl || !isThumbnail()}
+          disabled={!isValid || !isValidUrl || !isThumb || isSubmitting}
         >
           확인
         </SubmitButton>

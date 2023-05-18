@@ -32,7 +32,7 @@ export const ProjectUpdateForm = ({
   return (
     <div>
       <Form<ProjectUpdateValues, typeof schema>
-        // onSubmit={onSubmit}
+        onSubmit={onSubmit}
         schema={schema}
         options={{
           shouldUnregister: true,
@@ -42,8 +42,8 @@ export const ProjectUpdateForm = ({
             url: "",
             content: "",
             notice: "",
-            selectedTagsId: [],
-            selectedFeedbacksId: [],
+            selectedTagsId: null,
+            selectedFeedbacksId: null,
           },
           mode: "onChange",
         }}

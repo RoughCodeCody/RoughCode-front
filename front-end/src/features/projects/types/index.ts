@@ -39,8 +39,8 @@ export type ProjectUpdateValues = {
   content: string;
   url: string;
   projectId: number;
-  selectedTagsId?: number[];
-  selectedFeedbacksId?: number[];
+  selectedTagsId: number[] | null;
+  selectedFeedbacksId: number[] | null;
 };
 
 export type ProjectVersion = {
