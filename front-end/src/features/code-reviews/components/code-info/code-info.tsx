@@ -120,7 +120,12 @@ export const CodeInfo = ({
         </FlexDiv>
 
         <FlexDiv width="100%" direction="row-reverse" justify="space-between">
-          {isWriting ? (
+          {isMine ? (
+            <Btn
+              text="+ 내 프로젝트 연결"
+              onClickFunc={() => setProjectLinkModalOpen(true)}
+            />
+          ) : isWriting ? (
             <Btn
               bgColor="orange"
               color="bg"
@@ -133,13 +138,6 @@ export const CodeInfo = ({
               onClickFunc={() =>
                 router.push(`/code-review/review/create/${codeId}`)
               }
-            />
-          )}
-
-          {isMine && (
-            <Btn
-              text="+ 새 프로젝트 연결"
-              onClickFunc={() => setProjectLinkModalOpen(true)}
             />
           )}
 

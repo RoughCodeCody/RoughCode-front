@@ -3,7 +3,6 @@ import { useInView } from "react-intersection-observer";
 
 import { Btn, FlexDiv, Spinner } from "@/components/elements";
 import { useMyProjectList } from "@/features/user/api";
-import { queryClient } from "@/lib/react-query";
 
 import { useConnectProjectToCode } from "../../api";
 import { ProjectListItem } from "./project-list-item";
@@ -44,10 +43,10 @@ export const MyProjectList = ({
   };
 
   // 컴포넌트 언마운트 될 때 캐싱한 데이터 삭제
-  useEffect(() => {
-    queryClient.removeQueries(["myProjectList"]);
-    return () => queryClient.removeQueries(["myProjectList"]);
-  }, []);
+  // useEffect(() => {
+  //   queryClient.removeQueries(["myProjectList"]);
+  //   return () => queryClient.removeQueries(["myProjectList"]);
+  // }, []);
 
   // 스크롤 트리거, 마지막 item에 inView ref 달아둠
   useEffect(() => {
