@@ -32,12 +32,18 @@ export const MyProjectList = ({
     },
   });
 
+  // 프로젝트 클릭시 selectedProjectId에 저장
+  const handleProjectItemClick = (projectId: number) => {
+    if (projectId === selectedProjectId) setSelectedProjectId(-1);
+    else setSelectedProjectId(projectId);
+  };
+
   // 코드에 프로젝트 연결
   const connectProjectToCodeQuery = useConnectProjectToCode();
   const connectProjectToCode = () => {
     connectProjectToCodeQuery.mutate({
       codeId,
-      data: { projectId: selectedProjectId },
+      projectId: selectedProjectId,
     });
     setModalOpen(false);
   };
@@ -65,7 +71,7 @@ export const MyProjectList = ({
           >
             <ProjectListItem
               projectListItem={projectListItem}
-              setSelectedProjectId={setSelectedProjectId}
+              handleProjectItemClick={handleProjectItemClick}
               selected={selectedProjectId === projectListItem.projectId}
             />
           </FlexDiv>

@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import ReactDOM from "react-dom";
 
-import { Text } from "@/components/elements";
+import { FlexDiv, Text } from "@/components/elements";
 
 import {
   Backdrop,
@@ -22,6 +22,7 @@ export interface ModalProps {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   modalContent: ReactNode;
   headerText: string;
+  headerDescription?: string;
   width?: string;
   height?: string;
   setForceClose?: Dispatch<SetStateAction<boolean>>; // selection 강제 닫기
@@ -32,6 +33,7 @@ export const Modal: FunctionComponent<ModalProps> = ({
   setIsOpen,
   modalContent,
   headerText,
+  headerDescription,
   width,
   height,
   setForceClose,
@@ -42,9 +44,16 @@ export const Modal: FunctionComponent<ModalProps> = ({
       <ModalWrapper width={width || "40%"} height={height || "auto"}>
         <StyledModal>
           <Header>
-            <Text color="main" bold={true}>
-              {headerText}
-            </Text>
+            <FlexDiv>
+              <Text color="main" bold={true}>
+                {headerText}
+              </Text>
+              {headerDescription && (
+                <Text size="0.8rem" padding="0 1rem">
+                  {headerDescription}
+                </Text>
+              )}
+            </FlexDiv>
             <CloseButton
               onClick={() => {
                 setIsOpen(false);

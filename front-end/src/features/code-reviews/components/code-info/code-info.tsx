@@ -180,7 +180,10 @@ export const CodeInfo = ({
 
       <Modal
         headerText={"나의 프로젝트 목록"}
-        width="80%"
+        headerDescription={
+          "연결할 프로젝트를 선택 또는 선택 해제한 뒤 연결하기 버튼을 클릭하세요"
+        }
+        width="70%"
         isOpen={projectLinkModalOpen}
         setIsOpen={setProjectLinkModalOpen}
         modalContent={

@@ -18,7 +18,7 @@ type ProjectListItemProps = {
     title: string;
     version: number;
   };
-  setSelectedProjectId: Dispatch<SetStateAction<number>>;
+  handleProjectItemClick: (projectId: number) => void;
   selected: boolean;
 };
 
@@ -35,12 +35,12 @@ export const ProjectListItem = ({
     title,
     version,
   },
-  setSelectedProjectId,
+  handleProjectItemClick,
   selected,
 }: ProjectListItemProps) => {
   return (
     <CodeListItemWrapper
-      onClick={() => setSelectedProjectId(projectId)}
+      onClick={() => handleProjectItemClick(projectId)}
       shadColor={selected ? "main" : ""}
     >
       <FlexDiv width="100%" justify="space-between" pointer={true}>
