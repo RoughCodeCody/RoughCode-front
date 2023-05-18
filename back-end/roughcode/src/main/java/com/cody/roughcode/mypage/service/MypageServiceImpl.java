@@ -6,9 +6,11 @@ import com.cody.roughcode.code.entity.CodeSelectedTags;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.repository.*;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
+import com.cody.roughcode.project.entity.ProjectLikes;
 import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.repository.FeedbacksRepository;
+import com.cody.roughcode.project.repository.ProjectLikesRepository;
 import com.cody.roughcode.project.repository.ProjectsRepository;
 import com.cody.roughcode.project.repository.SelectedFeedbacksRepository;
 import com.cody.roughcode.user.entity.Users;
@@ -37,6 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MypageServiceImpl implements MypageService{
     private final ProjectsRepository projectsRepository;
+    private final ProjectLikesRepository projectLikesRepository;
     private final CodesRepository codesRepository;
     private final CodeSelectedTagsRepository codeSelectedTagsRepository;
     private final CodeLikesRepository codeLikesRepository;
@@ -46,9 +49,11 @@ public class MypageServiceImpl implements MypageService{
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final SelectedReviewsRepository selectedReviewsRepository;
 
-    private void findUser(Long usersId) {
+    private Users findUser(Long usersId) {
         Users user = usersRepository.findByUsersId(usersId);
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        return user;
     }
 
     @Value("${filepath.stat-card}")
@@ -126,31 +131,31 @@ public class MypageServiceImpl implements MypageService{
     @Override
     @Transactional
     public Pair<List<CodeInfoRes>, Boolean> getCodeList(PageRequest pageRequest, Long usersId) {
-        findUser(usersId);
+        Users user = findUser(usersId);
 
         Page<Codes> codesPage = codesRepository.findAllByCodeWriter(usersId, pageRequest);
 
-        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+        return Pair.of(getCodeInfoRes(codesPage, user), codesPage.hasNext());
     }
 
     @Override
     @Transactional
     public Pair<List<CodeInfoRes>, Boolean> getFavoriteCodeList(PageRequest pageRequest, Long usersId) {
-        findUser(usersId);
+        Users user = findUser(usersId);
 
         Page<Codes> codesPage = codesRepository.findAllMyFavorite(usersId, pageRequest);
 
-        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+        return Pair.of(getCodeInfoRes(codesPage, user), codesPage.hasNext());
     }
 
     @Override
     @Transactional
     public Pair<List<CodeInfoRes>, Boolean> getReviewCodeList(PageRequest pageRequest, Long usersId) {
-        findUser(usersId);
+        Users user = findUser(usersId);
 
         Page<Codes> codesPage = codesRepository.findAllMyReviews(usersId, pageRequest);
 
-        return Pair.of(getCodeInfoRes(codesPage, usersRepository.findByUsersId(usersId)), codesPage.hasNext());
+        return Pair.of(getCodeInfoRes(codesPage, user), codesPage.hasNext());
     }
 
     private static List<String> getTagNames(Codes code) {
@@ -191,38 +196,39 @@ public class MypageServiceImpl implements MypageService{
     @Override
     @Transactional
     public Pair<List<ProjectInfoRes>, Boolean> getProjectList(PageRequest pageRequest, Long usersId) {
-        findUser(usersId);
+        Users user = findUser(usersId);
 
         Page<Projects> projectsPage = projectsRepository.findAllByProjectWriter(usersId, pageRequest);
 
-        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+        return Pair.of(getProjectInfoRes(projectsPage, user), projectsPage.hasNext());
     }
 
     @Override
     @Transactional
     public Pair<List<ProjectInfoRes>, Boolean> getFavoriteProjectList(PageRequest pageRequest, Long usersId) {
-        findUser(usersId);
+        Users user = findUser(usersId);
 
         Page<Projects> projectsPage = projectsRepository.findAllMyFavorite(usersId, pageRequest);
 
-        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+        return Pair.of(getProjectInfoRes(projectsPage, user), projectsPage.hasNext());
     }
 
     @Override
     @Transactional
     public Pair<List<ProjectInfoRes>, Boolean> getFeedbackProjectList(PageRequest pageRequest, Long usersId) {
-        findUser(usersId);
+        Users user = findUser(usersId);
 
         Page<Projects> projectsPage = projectsRepository.findAllMyFeedbacks(usersId, pageRequest);
 
-        return Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+        return Pair.of(getProjectInfoRes(projectsPage, user), projectsPage.hasNext());
     }
 
-    private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {
+    private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage, Users user) {
         List<Projects> projectList = projectsPage.getContent();
         List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
         for (Projects p : projectList) {
             List<String> tagList = getTagNames(p);
+            ProjectLikes projectLikes = projectLikesRepository.findByProjectsAndUsers(p, user);
 
             projectInfoRes.add(ProjectInfoRes.builder()
                     .date(p.getCreatedDate())
@@ -231,6 +237,7 @@ public class MypageServiceImpl implements MypageService{
                     .feedbackCnt(p.getFeedbackCnt())
                     .introduction(p.getIntroduction())
                     .likeCnt(p.getLikeCnt())
+                    .liked(projectLikes != null)
                     .tags(tagList)
                     .title(p.getTitle())
                     .version(p.getVersion())
