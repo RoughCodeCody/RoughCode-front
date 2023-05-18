@@ -14,11 +14,14 @@ const FeedbackItemWrapper = styled.div<{ bgColor?: string; isMine: boolean }>`
   `}
 `;
 
-const FeedbackModifyInput = styled.input`
-  width: 80%;
+const FeedbackModifyTextarea = styled.textarea`
+  width: 75%;
   height: 100%;
+  resize: none;
   border: none;
   outline: none;
+  font-family: "NEXON Lv2 Gothic", "Pretendard-Regular", Arial, Helvetica,
+    sans-serif;
 `;
 
-export { FeedbackItemWrapper, FeedbackModifyInput };
+export { FeedbackItemWrapper, FeedbackModifyTextarea };
