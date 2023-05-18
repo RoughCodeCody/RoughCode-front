@@ -1,10 +1,12 @@
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { useCode, useCodeReviewInfo, useModifyCodeReview } from "../api";
 import { CodeInfo } from "../components/code-info";
 import { BottomHeader, Btn, FlexDiv, Title, Text } from "@/components/elements";
 import { CodeEditor, DiffCodeEditor } from "@/features/code-editor";
 import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
+import { TiptapEditor } from "@/features/rich-text-editor/components/tiptap-editor";
 
 type ModifyCodeReviewProps = {
   codeReviewId: number;
@@ -12,6 +14,8 @@ type ModifyCodeReviewProps = {
 
 export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
   const router = useRouter();
+  const [feedbackContent, setFeedbackContent] = useState("");
+
   const codeFeedbackQuery = useModifyCodeReview();
   const { CodeReviewFeedbackData, reset } = useCodeReviewFeedbackDataStore();
 
@@ -26,6 +30,10 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
     : "";
   const codeQuery = useCode({ githubUrl });
   const originalCode = codeQuery.data?.content;
+
+  const handleEditorChange = (content: string) => {
+    setFeedbackContent(content);
+  };
 
   // 여기서 put 요청 보냄
   // 만들고 수정해야 함
@@ -42,7 +50,8 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
           codeId: codeId,
           selectedRange: CodeReviewFeedbackData.selectedLines,
           codeContent: CodeReviewFeedbackData.modifiedCode,
-          content: CodeReviewFeedbackData.feedbackContent,
+          content: feedbackContent,
+          // content: CodeReviewFeedbackData.feedbackContent,
         };
         codeFeedbackQuery.mutate(
           { data, codeReviewId },
@@ -130,11 +139,13 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
         />
         {/* 여기가 md에디터 자리 */}
       </FlexDiv>
+      <TiptapEditor onChange={handleEditorChange} minHeight="30rem" />
 
       {/* 등록 버튼 : 서버에 put 요청*/}
       <Btn
         text={"수정"}
-        fontSize="2rem"
+        padding="0.6rem 1rem 0.6rem 1rem"
+        fontSize="1.5rem"
         onClickFunc={() => {
           putCodeFeedback();
         }}

@@ -24,7 +24,7 @@ import {
   usePutCodeReviewFeedbackComplaint,
   usePutCodeReviewFeedback,
 } from "../../api";
-import { FeedbackItemWrapper, FeedbackModifyInput } from "./style";
+import { FeedbackItemWrapper, FeedbackModifyTextarea } from "./style";
 
 interface FeedbackItemProps {
   feedback: ProjectFeedback | CodeReviewFeedback;
@@ -33,27 +33,6 @@ interface FeedbackItemProps {
   isMine: boolean;
   clickedReviewId?: number;
 }
-
-// export type ProjectFeedback = {
-//   feedbackId: number;
-//   userId: number; // 피드백 남긴 사람 id (0이면 익명)
-//   userName: string; // 빈 문자열이면 익명
-//   content: string; // 피드백 내용, 신고당해서 삭제된 피드백은 빈 문자열로 내보내집니다!!
-//   like: number;
-//   selected: number; // 선택 받은 횟수
-//   liked: boolean; // 내가 좋아요 눌렀는지 여부
-//   date: Date;
-// };
-
-// export type ReviewFeedback = {
-//   reReviewId: number; // 코드 리리뷰(리뷰에 대한 리뷰) id
-//   userId: number; // 코드 리리뷰 작성자 id (0이면 익명)
-//   userName: string; // 리리뷰 남긴 사람 닉네임(빈 문자열이면 익명)
-//   liked: boolean; // 내가 좋아요 눌렀는지 여부
-//   like: number; // 코드 리리뷰 좋아요 수
-//   content: string; // 리리뷰 내용
-//   date: Date
-// };
 
 // 프로젝트 버전인지 여부를 판별
 function isProject(arg: any): arg is ProjectFeedback {
@@ -78,7 +57,7 @@ export const FeedbackItem = ({
   // 피드백 수정 관련 state
   const [isModifying, setIsModifying] = useState(false);
   const [newContent, setNewContent] = useState(feedback.content);
-  const modifyInputRef = useRef<HTMLInputElement | null>(null);
+  const modifyInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const invalidateQuery = () => {
     if (type === "project") {
@@ -198,7 +177,7 @@ export const FeedbackItem = ({
       {isModifying ? (
         <>
           <FlexDiv width="100%" justify="space-between">
-            <FeedbackModifyInput
+            <FeedbackModifyTextarea
               value={newContent}
               defaultValue={feedback.content}
               ref={modifyInputRef}

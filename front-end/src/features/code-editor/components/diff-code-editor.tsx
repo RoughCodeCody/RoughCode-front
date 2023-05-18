@@ -94,9 +94,9 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
         ) : (
           <FlexDiv gap="1rem">
             {CodeReviewFeedbackData.isCompleted.diffEditor ? (
-              <Text>코드 수정이 완료되었습니다</Text>
+              <Text color="main">코드 수정이 완료되었습니다</Text>
             ) : (
-              <></>
+              <Text color="orange">코드 수정이 완료되지 않았습니다</Text>
             )}
             <Btn
               text={

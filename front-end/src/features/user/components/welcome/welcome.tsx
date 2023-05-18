@@ -24,8 +24,8 @@ export const Welcome = () => {
       <Btn
         text="로그아웃"
         bgColor="orange"
-        onClickFunc={() => {
-          logoutQuery.mutateAsync();
+        onClickFunc={async () => {
+          await logoutQuery.mutateAsync();
           router.push("/");
         }}
       />

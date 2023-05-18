@@ -139,7 +139,8 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
       {/* 등록 버튼 : 서버에 post 요청*/}
       <Btn
         text={"등록"}
-        fontSize="2rem"
+        padding="0.6rem 1rem 0.6rem 1rem"
+        fontSize="1.5rem"
         onClickFunc={() => {
           postCodeFeedback();
         }}
