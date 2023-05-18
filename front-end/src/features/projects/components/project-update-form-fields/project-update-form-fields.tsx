@@ -45,6 +45,7 @@ export const ProjectUpdateFormFields = ({
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [fixedUrl, setFixedUrl] = useState("");
   const [isThumb, setIsThumb] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   const { searchCriteria, addTagId, reset } = useSearchCriteriaStore();
   const { selectedProjectFeedbackId } = useProjectFeedbackSelectionStore();
   const checkProjectUrlQuery = useCheckProjectUrl({
@@ -85,7 +86,6 @@ export const ProjectUpdateFormFields = ({
       });
       setValue("url", projectUpdateInitialValues.url, {
         shouldDirty: true,
-        shouldValidate: true,
       });
       setValue("projectId", projectUpdateInitialValues.projectId, {
         shouldDirty: true,
@@ -121,6 +121,7 @@ export const ProjectUpdateFormFields = ({
   const onUrlInspectionBtnClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
+    setIsClicked(true);
     e.preventDefault();
     const eventTarget = e.target as HTMLButtonElement;
     eventTarget.disabled = true;
@@ -129,8 +130,8 @@ export const ProjectUpdateFormFields = ({
       setIsValidUrl(true);
       setFixedUrl(watch("url"));
     } else {
-      setIsValidUrl(false);
       eventTarget.disabled = false;
+      setIsValidUrl(false);
     }
     // console.log(formState.errors);
   };
@@ -190,8 +191,10 @@ export const ProjectUpdateFormFields = ({
             <br />
             {fixedUrl}
           </InputSuccessMsg>
+        ) : isClicked && !isValidUrl ? (
+          <InputErrorMsg>서버 상태를 확인해 주세요.</InputErrorMsg>
         ) : (
-          <InputErrorMsg>서버를 다시 확인해 주세요.</InputErrorMsg>
+          <></>
         )}
       </FlexDiv>
 

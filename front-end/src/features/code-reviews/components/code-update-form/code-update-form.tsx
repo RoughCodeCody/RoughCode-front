@@ -14,7 +14,7 @@ const schema = z.object({
   projectId: z.number().nullable(),
   selectedTagsId: z.number().array().nullable(),
   selectedReviewsId: z.number().array().nullable(),
-  language: z.number().array(),
+  language: z.number().array().nonempty("언어를 선택해주세요"),
 });
 
 type CodeUpdateFormProps = {
@@ -42,7 +42,9 @@ export const CodeUpdateForm = ({
             projectId: null,
             selectedTagsId: null,
             selectedReviewsId: null,
+            language: [1],
           },
+          mode: "onChange",
         }}
       >
         {(methods) => (

@@ -21,8 +21,8 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   const { status, data } = useCodeInfo(Number(codeId));
 
   // 깃허브 코드 내용 가져오기
-  const githubUrl = data?.githubUrl ? data?.githubUrl : "";
-  const codeQuery = useCode({ githubUrl });
+  const githubApiUrl = data?.githubApiUrl ? data?.githubApiUrl : "";
+  const codeQuery = useCode({ githubApiUrl });
   const originalCode = codeQuery.data?.content;
 
   // 코드 리뷰 클릭시 해당 리뷰의 정보를 가져오기 위한 state

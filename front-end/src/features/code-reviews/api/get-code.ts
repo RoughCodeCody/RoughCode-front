@@ -6,25 +6,25 @@ import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 import { Code } from "../types";
 
 export const getCode = ({
-  githubUrl,
+  githubApiUrl,
 }: {
-  githubUrl: string;
+  githubApiUrl: string;
 }): Promise<Code> => {
-  return axiosExternal.get(githubUrl);
+  return axiosExternal.get(githubApiUrl);
 };
 
 type QueryFnType = typeof getCode;
 
 type UseCodeOptions = {
-  githubUrl: string;
+  githubApiUrl: string;
   config?: QueryConfig<QueryFnType>;
 };
 
-export const useCode = ({ githubUrl, config }: UseCodeOptions) => {
+export const useCode = ({ githubApiUrl, config }: UseCodeOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ["code", githubUrl],
-    queryFn: () => getCode({ githubUrl }),
-    enabled: !!githubUrl,
+    queryKey: ["code", githubApiUrl],
+    queryFn: () => getCode({ githubApiUrl }),
+    enabled: !!githubApiUrl,
     ...config,
   });
 };
