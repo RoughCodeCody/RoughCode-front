@@ -21,7 +21,6 @@ import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +49,6 @@ import java.util.Map;
 public class ProjectsController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectsServiceImpl projectsService;
-    private final RedisTemplate<String, String> redisTemplate;
 
     @Operation(summary = "프로젝트 열기 API")
     @PutMapping("/{projectId}/open")
@@ -351,7 +349,7 @@ public class ProjectsController {
 
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping
-    ResponseEntity<?> getProjectList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+    ResponseEntity<?> getProjectList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                      @Parameter(description = "정렬 기준")
                                      @Pattern(regexp = "createdDate|likeCnt|feedbackCnt", message = "sort 값은 createdDate, likeCnt, feedbackCnt 중 하나여야 합니다")
                                      @RequestParam(defaultValue = "createdDate") String sort,
@@ -420,34 +418,21 @@ public class ProjectsController {
         if(userId <= 0)
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
-
-        String key = "insertProject" + userId; // 사용자 ID를 포함한 키 생성
-
-        // 존재하는지 확인
-        String isSet = redisTemplate.opsForValue().get(key);
-        // SETNX 명령어를 사용하여 키가 존재하지 않을 경우만 실행
-        redisTemplate.opsForValue().set(key, "lock", Duration.ofSeconds(1));
-
-        if (isSet == null) { // 키가 존재 안함
-            if (req == null) {
-                req = new ArrayList<>();
-                log.info("코드 연결 전체 해제");
-            }
-
-            int res = -1;
-            try {
-                res = projectsService.connect(projectId, userId, req);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                return Response.badRequest(e.getMessage());
-            }
-
-            if(res < 0) return Response.notFound("프로젝트 코드 연결 실패");
-            else return Response.makeResponse(HttpStatus.OK, "프로젝트 코드 연결 성공", 1, res);
-        } else {
-            // 이미 다른 요청이 처리 중인 경우
-            return Response.makeResponse(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많습니다");
+        if (req == null) {
+            req = new ArrayList<>();
+            log.info("코드 연결 전체 해제");
         }
+
+        int res = -1;
+        try {
+            res = projectsService.connect(projectId, userId, req);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(res < 0) return Response.notFound("프로젝트 코드 연결 실패");
+        else return Response.makeResponse(HttpStatus.OK, "프로젝트 코드 연결 성공", 1, res);
     }
 
     @Operation(summary = "프로젝트 수정 API")
@@ -455,7 +440,8 @@ public class ProjectsController {
     ResponseEntity<?> updateProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                     @Parameter(description = "프로젝트 정보 값", required = true) @Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
-//        Long userId = 1L;
+        if(userId <= 0)
+            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
         int res = 0;
         try{
@@ -533,30 +519,16 @@ public class ProjectsController {
         if(userId <= 0)
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
-
-
-        String key = "updateProjectThumbnail" + userId; // 사용자 ID를 포함한 키 생성
-
-        // 존재하는지 확인
-        String isSet = redisTemplate.opsForValue().get(key);
-        // SETNX 명령어를 사용하여 키가 존재하지 않을 경우만 실행
-        redisTemplate.opsForValue().set(key, "lock", Duration.ofSeconds(1));
-
-        if (isSet == null) { // 키가 존재 안함
-            int res = 0;
-            try{
-                res = projectsService.updateProjectThumbnail(thumbnail, projectId, userId);
-            } catch (Exception e){
-                log.error(e.getMessage());
-                return Response.badRequest(e.getMessage());
-            }
-
-            if(res <= 0) return Response.notFound("프로젝트 썸네일 등록 실패");
-            return Response.ok("프로젝트 썸네일 등록 성공");
-        } else {
-            // 이미 다른 요청이 처리 중인 경우
-            return Response.makeResponse(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많습니다");
+        int res = 0;
+        try{
+            res = projectsService.updateProjectThumbnail(thumbnail, projectId, userId);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
         }
+
+        if(res <= 0) return Response.notFound("프로젝트 썸네일 등록 실패");
+        return Response.ok("프로젝트 썸네일 등록 성공");
     }
 
     @Operation(summary = "프로젝트 정보 등록 API")
@@ -567,27 +539,15 @@ public class ProjectsController {
         if(userId <= 0)
             return Response.badRequest("일치하는 유저가 존재하지 않습니다");
 
-        String key = "insertProject" + userId; // 사용자 ID를 포함한 키 생성
-
-        // 존재하는지 확인
-        String isSet = redisTemplate.opsForValue().get(key);
-        // SETNX 명령어를 사용하여 키가 존재하지 않을 경우만 실행
-        redisTemplate.opsForValue().set(key, "lock", Duration.ofSeconds(1));
-
-        if (isSet == null) { // 키가 존재 안함
-            Long res = 0L;
-            try{
-                res = projectsService.insertProject(req, userId);
-            } catch (Exception e){
-                log.error(e.getMessage());
-                return Response.badRequest(e.getMessage());
-            }
-
-            if(res <= 0) return Response.notFound("프로젝트 정보 등록 실패");
-            return Response.makeResponse(HttpStatus.OK, "프로젝트 정보 등록 성공", 1, res);
-        } else {
-            // 이미 다른 요청이 처리 중인 경우
-            return Response.makeResponse(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많습니다");
+        Long res = 0L;
+        try{
+            res = projectsService.insertProject(req, userId);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
         }
+
+        if(res <= 0) return Response.notFound("프로젝트 정보 등록 실패");
+        return Response.makeResponse(HttpStatus.OK, "프로젝트 정보 등록 성공", 1, res);
     }
 }
