@@ -35,8 +35,10 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   useEffect(() => {
     if (data && data.reviews.length !== 0) {
       for (let i = 0; i < data.reviews.length; i++) {
-        if (data.reviews[i].content.length)
+        if (data.reviews[i].content.length) {
           setClickedReviewId(data.reviews[i].reviewId);
+          break;
+        }
       }
     }
     // setClickedReviewId(defaultCilckedReviewId);
