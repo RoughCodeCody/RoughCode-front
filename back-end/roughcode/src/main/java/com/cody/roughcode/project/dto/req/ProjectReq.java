@@ -1,6 +1,5 @@
 package com.cody.roughcode.project.dto.req;
 
-import com.cody.roughcode.project.entity.ProjectSelectedTags;
 import com.cody.roughcode.validation.EachPositive;
 import com.cody.roughcode.validation.NotZero;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,9 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.Column;
 import javax.validation.constraints.*;
 import java.util.List;
 

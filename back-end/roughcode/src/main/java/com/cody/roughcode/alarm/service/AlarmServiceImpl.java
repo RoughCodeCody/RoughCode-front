@@ -2,8 +2,8 @@ package com.cody.roughcode.alarm.service;
 
 
 import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.dto.res.AlarmRes;
 import com.cody.roughcode.alarm.entity.Alarm;
-import com.cody.roughcode.alarm.entity.AlarmRes;
 import com.cody.roughcode.alarm.repository.AlarmRepository;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.user.entity.Users;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

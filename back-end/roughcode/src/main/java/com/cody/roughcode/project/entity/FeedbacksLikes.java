@@ -2,7 +2,6 @@ package com.cody.roughcode.project.entity;
 
 import com.cody.roughcode.user.entity.Users;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;

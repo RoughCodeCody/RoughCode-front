@@ -5,7 +5,6 @@ import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.project.entity.ProjectsInfo;
 import com.cody.roughcode.user.entity.Users;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
