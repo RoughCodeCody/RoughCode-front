@@ -32,6 +32,7 @@
     "react-intersection-observer": "^9.4.3",
     "remixicon": "^3.2.0",
     "sharp": "^0.32.1",
+    "simple-zustand-devtools": "^1.1.0",
     "styled-components": "^5.3.9",
     "zod": "^3.21.4",
     "zustand": "^4.3.7"

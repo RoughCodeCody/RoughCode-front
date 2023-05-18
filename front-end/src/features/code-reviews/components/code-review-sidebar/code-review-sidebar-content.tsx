@@ -19,7 +19,10 @@ export const CodeReviewSidebarContent = ({
   codeId,
 }: CodeReviewSidebarContentProps) => {
   // server states
-  const codeReviewsForCodeUpdateQuery = useCodeReviewsForCodeUpdate({ codeId });
+  const codeReviewsForCodeUpdateQuery = useCodeReviewsForCodeUpdate({
+    codeId,
+    config: { cacheTime: 0 },
+  });
 
   // client states
   const {
