@@ -24,7 +24,11 @@ export type ProjectInfoResult = {
   liked: boolean;
   mine: boolean;
   notice: string;
-  tags: Tag[];
+  tags: {
+    tagId: number;
+    name: string;
+    cnt: number;
+  }[];
   title: string;
   url: string;
   userName: string;
@@ -58,10 +62,4 @@ export type RelatedCode = {
   codeId: number;
   title: string;
   tags: string[]; // 태그 이름들
-};
-
-export type Tag = {
-  tagId: number;
-  name: string;
-  cnt: number;
 };

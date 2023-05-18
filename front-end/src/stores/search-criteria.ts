@@ -67,6 +67,7 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
   },
   addTagId: (Tag) => {
     // 이미 있는 태그는 추가하지 않음
+    console.log("ccc", Tag);
     set((state) => {
       if (state.searchCriteria.tagIdList.find((el) => el.tagId === Tag.tagId))
         return state;

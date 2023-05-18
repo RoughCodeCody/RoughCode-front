@@ -15,7 +15,14 @@ import { ThumbnailField } from "./thumbnail-field";
 type ProjectUpdateFormFieldsProps = {
   methods: UseFormReturn<ProjectUpdateValues>;
   projectId: number;
-  projectUpdateInitialValues?: ProjectUpdateValues & { img: string };
+  projectUpdateInitialValues?: ProjectUpdateValues & {
+    img: string;
+    tags: {
+      tagId: number;
+      name: string;
+      cnt: number;
+    }[];
+  };
   onSubmit: SubmitHandler<ProjectUpdateValues>;
 };
 
@@ -85,29 +92,28 @@ export const ProjectUpdateFormFields = ({
         shouldDirty: true,
         shouldValidate: true,
       });
+      setValue("selectedTagsId", projectUpdateInitialValues.selectedTagsId);
       setValue("content", projectUpdateInitialValues.content, {
         shouldDirty: true,
         shouldValidate: true,
       });
-      // projectUpdateInitialValues.selectedTagsId?.forEach((id) =>
-      //   addTagId({})
-      // );
     }
-  }, [projectUpdateInitialValues, setValue]);
+  }, [projectUpdateInitialValues, setValue, addTagId, searchCriteria]);
 
   useEffect(() => reset(), [dynamicRoute, reset]);
-
-  // useEffect(() => {
-  //   const inputThumbnail = document.getElementById(
-  //     "input-thumbnail"
-  //   ) as HTMLInputElement;
-  //   setIsThumb(Boolean(inputThumbnail?.files?.item(0)));
-  //   console.log(isThumb);
-  // }, []);
 
   register("projectId");
   register("selectedTagsId");
   register("selectedFeedbacksId");
+
+  useEffect(() => {
+    if (projectUpdateInitialValues) {
+      projectUpdateInitialValues.tags?.forEach((tag) => {
+        const arg = { tagId: tag.tagId, name: tag.name };
+        addTagId(arg);
+      });
+    }
+  }, [addTagId, projectUpdateInitialValues]);
 
   const onUrlInspectionBtnClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
