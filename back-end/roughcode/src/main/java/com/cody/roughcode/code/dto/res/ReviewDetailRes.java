@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.dto.res;
 
+import com.cody.roughcode.code.entity.CodeLanguages;
 import com.cody.roughcode.code.entity.Reviews;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -61,7 +62,7 @@ public class ReviewDetailRes {
     @Schema(description = "리뷰에 대한 리뷰 목록")
     private ReviewCodeRes code;
 
-    public static ReviewDetailRes toDto(String githubApiUrl, String language, Reviews review, Boolean liked, List<ReReviewRes> reReviews, ReviewCodeRes code) {
+    public static ReviewDetailRes toDto(String githubApiUrl, CodeLanguages language, Reviews review, Boolean liked, List<ReReviewRes> reReviews, ReviewCodeRes code) {
 
         Long userId;
         String userName;
@@ -87,7 +88,7 @@ public class ReviewDetailRes {
 
         return ReviewDetailRes.builder()
                 .githubApiUrl(githubApiUrl)
-                .language(language)
+                .language(language.getName())
                 .reviewId(review.getReviewsId())
                 .userId(userId)
                 .userName(userName)

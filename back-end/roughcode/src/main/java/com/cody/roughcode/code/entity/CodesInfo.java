@@ -36,9 +36,13 @@ public class CodesInfo {
     @Column(name = "favorite_cnt", nullable = true)
     private int favoriteCnt = 0;
 
-    @Builder.Default
-    @Column(name = "language", nullable = true)
-    private String language = "";
+//    @Builder.Default
+//    @Column(name = "language", nullable = true)
+//    private String language = "";
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "languages_id", nullable = false)
+    private CodeLanguages language;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_id", nullable = false)
@@ -73,7 +77,7 @@ public class CodesInfo {
         this.githubApiUrl = githubApiUrl;
     }
 
-    public void updateLanguage(String language){
+    public void updateLanguage(CodeLanguages language){
         this.language = language;
     }
 }

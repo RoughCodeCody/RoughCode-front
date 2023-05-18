@@ -150,7 +150,6 @@ public class CodesServiceImpl implements CodesService {
             savedCode = codesRepository.save(code);
             codeId = savedCode.getCodesId();
 
-            String codeLanguage = null;
             // tag 등록
             if (req.getSelectedTagsId() != null) {
                 List<CodeSelectedTags> selectedTagsList = new ArrayList<>();
@@ -163,15 +162,21 @@ public class CodesServiceImpl implements CodesService {
                                     .build());
                     // 태그 사용 수 증가
                     codeTag.cntUp();
-                    codeLanguage = codeTag.getName();
                 }
                 codeSelectedTagsRepository.saveAll(selectedTagsList);
             } else {
                 log.info("등록한 태그가 없습니다.");
             }
 
+            log.info("코드 등록 : "+req.getLanguage());
+            // 새로운 코드 언어 등록 (한개만 받음!)
+            CodeLanguages newLanguage = codeLanguagesRepository.findByLanguagesId(req.getLanguage().get(0));
+            log.info("코드 등록 : "+newLanguage.getName());
+            newLanguage.cntUp();
+
             // 파싱한 github api url
 //            String parsedGithubUrl = parseGithubLink(req.getGithubUrl());
+            log.info("코드 등록 : "+req.getGithubUrl());
             // 역파싱한 github url
             String reverseParseGithubUrl = reverseParseGithubLink(req.getGithubUrl());
             log.info("github URL 파싱 전!!!! " + reverseParseGithubUrl);
@@ -182,7 +187,7 @@ public class CodesServiceImpl implements CodesService {
                     .githubUrl(reverseParseGithubUrl)
                     .githubApiUrl(req.getGithubUrl())
                     .content(req.getContent())
-                    .language(codeLanguage)
+                    .language(newLanguage)
                     .favoriteCnt(0).build();
             codesInfoRepository.save(codesInfo);
 
@@ -392,7 +397,7 @@ public class CodesServiceImpl implements CodesService {
                 .content(codesInfo.getContent())
                 .liked(liked)
                 .favorite(favorite)
-                .language(codesInfo.getLanguage())
+                .language(new CodeLanguagesRes(codesInfo.getLanguage()))
                 .latest(latest)
                 .versions(versionResList)
                 .reviews(reviewResList)
@@ -440,7 +445,6 @@ public class CodesServiceImpl implements CodesService {
                 log.info("기존에 선택하였던 태그가 없습니다");
             }
 
-            String codeLanguage = null;
             // 업데이트한 Tag 등록
             if (req.getSelectedTagsId() != null) {
                 List<CodeSelectedTags> updatedSelectedTagsList = new ArrayList<>();
@@ -451,13 +455,19 @@ public class CodesServiceImpl implements CodesService {
                             .codes(target)
                             .build());
                     codeTag.cntUp();
-                    codeLanguage = codeTag.getName();
                 }
-                targetInfo.updateLanguage(codeLanguage);
                 codeSelectedTagsRepository.saveAll(updatedSelectedTagsList);
             } else {
                 log.info("새로 선택한 태그가 없습니다");
             }
+
+            // 기존 코드 언어 제거
+            targetInfo.getLanguage().cntDown();
+
+            // 새로운 코드 언어 등록 (한개만 받음!)
+            CodeLanguages newLanguage = codeLanguagesRepository.findByLanguagesId(req.getLanguage().get(0));
+            targetInfo.updateLanguage(newLanguage);
+            newLanguage.cntUp();
 
             // 기존에 선택한 review 삭제
             List<SelectedReviews> selectedReviewsList = targetInfo.getSelectedReviews();
