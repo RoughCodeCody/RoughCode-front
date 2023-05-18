@@ -32,7 +32,6 @@ export const Profile = () => {
           {statCardQuery.data && (
             <FlexDiv direction="column" width="100%" gap="2rem">
               <img
-                // src={statCardQuery.data}
                 src={`data:image/svg+xml;utf8,${encodeURIComponent(
                   statCardQuery.data
                 )}`}
