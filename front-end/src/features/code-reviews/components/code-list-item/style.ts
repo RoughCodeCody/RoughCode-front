@@ -7,6 +7,11 @@ const CodeListItemWrapper = styled(WhiteBoxShad)`
   cursor: pointer;
   ${({ theme }) => theme.MIXINS.flexBox("column")}
   gap: 1rem;
+  border: 1px solid transparent;
+
+  &:hover {
+    border: 1px solid var(--main-color);
+  }
 `;
 
 export { CodeListItemWrapper };
