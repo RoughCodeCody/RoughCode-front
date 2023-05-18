@@ -22,13 +22,13 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
   const codeFeedbackInfoQuery = useCodeReviewInfo(codeReviewId);
 
-  const githubUrl = codeFeedbackInfoQuery.data?.githubUrl
-    ? codeFeedbackInfoQuery.data?.githubUrl
+  const githubApiUrl = codeFeedbackInfoQuery.data?.githubApiUrl
+    ? codeFeedbackInfoQuery.data?.githubApiUrl
     : "";
   const language = codeFeedbackInfoQuery.data?.language
     ? codeFeedbackInfoQuery.data?.language
     : "";
-  const codeQuery = useCode({ githubUrl });
+  const codeQuery = useCode({ githubApiUrl });
   const originalCode = codeQuery.data?.content;
 
   const handleEditorChange = (content: string) => {

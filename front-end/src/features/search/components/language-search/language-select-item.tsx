@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 
 import { useSelectedLanguageStore } from "@/stores";
+import { useSearchCriteriaStore } from "@/stores";
 
 const BorderLineDiv = styled.div`
   width: 100%;
@@ -28,14 +29,21 @@ interface LanguageType {
 
 export const LanguageSelectItem = ({ languageId, name, cnt }: LanguageType) => {
   const { setSelectedLanguage } = useSelectedLanguageStore();
+  const { addTagId } = useSearchCriteriaStore();
   const router = useRouter();
   const endPoint = router.asPath;
   console.log(endPoint);
 
   const handleClick = () => {
     console.log(languageId, name);
-    if (languageId) {
-      setSelectedLanguage([{ languageId, name }]);
+    if (endPoint === "/code-review") {
+      if (languageId) {
+        addTagId({ tagId: languageId, name });
+      }
+    } else {
+      if (languageId) {
+        setSelectedLanguage([{ languageId, name }]);
+      }
     }
   };
 

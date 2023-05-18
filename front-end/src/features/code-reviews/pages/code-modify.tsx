@@ -21,12 +21,7 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
   const router = useRouter();
   const putCodeMutation = usePutCode();
   const codeInfoQuery = useCodeInfo(codeIdNum);
-  const { searchCriteria, setLanguage } = useSearchCriteriaStore();
-  useEffect(() => {
-    if (codeInfoQuery.data) {
-      setLanguage(codeInfoQuery.data.tags);
-    }
-  }, [codeInfoQuery.data]);
+  const { searchCriteria } = useSearchCriteriaStore();
 
   if (!codeInfoQuery.data) {
     return <>Loading...</>;

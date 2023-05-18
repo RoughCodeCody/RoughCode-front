@@ -56,7 +56,7 @@ export const CodeUpdateFormFields = ({
   const { searchCriteria, reset } = useSearchCriteriaStore();
   const { selectedCodeReviewId } = useCodeReviewsForCodeUpdateSelection();
   const codeQuery = useCode({
-    githubUrl: convertGitHubUrl(watch("githubUrl")),
+    githubApiUrl: convertGitHubUrl(watch("githubUrl")),
     config: { enabled: false },
   });
   const dynamicRoute = router.asPath;

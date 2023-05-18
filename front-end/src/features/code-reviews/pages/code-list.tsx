@@ -15,6 +15,7 @@ import { useSearchCriteriaStore } from "@/stores";
 
 import { useCodeList } from "../api";
 import { CodeListItem } from "../components/code-list-item";
+import { CodeSearch } from "@/features/search/components/code-search/code-search";
 
 export const CodeList = () => {
   const { ref, inView } = useInView();
@@ -60,7 +61,7 @@ export const CodeList = () => {
       <FlexDiv direction="column" width="100%" maxWidth="70%" gap="3rem">
         <Title title="코드 리뷰" description="코드를 보고 리뷰해보세요" />
       </FlexDiv>
-      <Search whichTag="code" />
+      <CodeSearch whichTag="code" />
       <FlexDiv direction="column" width="100%" maxWidth="1024px" gap="1rem">
         <FlexDiv width="100%" justify="end" gap="2rem" paddingX="5rem">
           <DropLabel
