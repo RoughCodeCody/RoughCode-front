@@ -89,7 +89,8 @@ export type codeForFeedbackModify = {
   liked: boolean; // 내가 좋아요 눌렀는지 여부
   favoriteCnt: number; // 즐겨찾기 수
   favorite: boolean; // 내가 즐겨찾기 눌렀는지 여부
-  tags: string[]; // 등록한 태그 이름들
+  // tags: string[]; // 등록한 태그 이름들
+  tags: { tagId: number; name: string; cnt: number }[];
   userName: string; // 작성자 이름
   projectTitle: string; // 연결된 프로젝트 제목(없을 경우 null)
   projectId: number; // 연결된 프로젝트 id(없을 경우 null)
