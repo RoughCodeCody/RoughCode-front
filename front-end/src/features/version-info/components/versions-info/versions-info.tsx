@@ -34,7 +34,7 @@ export const VersionsInfo = ({
       hasBtn={isMine}
       btnText="+ 새 버전 등록"
       btnClickFunc={() => {
-        const path = isProject(versions) ? "project" : "code-review";
+        const path = isProject(versions) ? "project" : "code-review/code";
         router.push(`/${path}/upgrade/${curVersionId}`);
       }}
     >

@@ -49,7 +49,8 @@ export const RelatedCodes = ({
 
       <Modal
         headerText={"나의 코드 목록"}
-        width="80%"
+        headerDescription="연결할 코드들을 선택 또는 선택 해제한 뒤 연결하기 버튼을 클릭하세요"
+        width="70%"
         isOpen={codeLinkModalOpen}
         setIsOpen={setCodeLinkModalOpen}
         modalContent={

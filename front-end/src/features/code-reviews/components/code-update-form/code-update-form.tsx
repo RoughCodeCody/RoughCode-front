@@ -32,6 +32,7 @@ export const CodeUpdateForm = ({
     <div>
       <Form<CodeUpdateValues, typeof schema>
         schema={schema}
+        onSubmit={onSubmit}
         options={{
           shouldUnregister: true,
           defaultValues: {

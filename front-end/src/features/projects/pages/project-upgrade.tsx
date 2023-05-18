@@ -30,32 +30,37 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
     content: projectInfoQuery.data?.content || "",
     url: projectInfoQuery.data?.url || "",
     projectId: Number(projectId),
-    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => Number(tag)),
-    selectedFeedbacksId: projectInfoQuery.data?.feedbacks.map((feedback) =>
-      Number(feedback.feedbackId)
-    ),
+    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => Number(tag)) || [],
+    selectedFeedbacksId:
+      projectInfoQuery.data?.feedbacks.map((feedback) =>
+        Number(feedback.feedbackId)
+      ) || [],
     img: projectInfoQuery.data?.img,
   };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
-    const projectIdNum = await postProjectMutation.mutateAsync({
+    const resProjectIdNum = await postProjectMutation.mutateAsync({
       data: values,
     });
-    const projectIdStr = String(projectIdNum);
+    const resProjectIdStr = String(resProjectIdNum);
 
     const inputThumbnail = document.getElementById(
       "input-thumbnail"
     ) as HTMLInputElement;
 
     const formData = new FormData();
-    formData.append("thumbnail", inputThumbnail?.files?.item(0) as File);
+    const thumbnail = inputThumbnail?.files?.item(0) as File;
+    if (thumbnail !== null) {
+      formData.append("thumbnail", thumbnail);
+      console.log("thumnail", thumbnail);
 
-    await postProjectThumbnail({
-      data: formData,
-      projectId: projectIdStr,
-    });
+      await postProjectThumbnail({
+        data: formData,
+        projectId: resProjectIdStr,
+      });
+    }
 
-    router.push(`/project/${projectIdStr}`);
+    router.push(`/project/${resProjectIdStr}`);
   };
 
   return (

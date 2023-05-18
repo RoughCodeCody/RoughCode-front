@@ -22,7 +22,8 @@ export const FlexContainer = styled.div`
 
 export const NavbarContainer = styled.div`
   display: flex;
-  position: relative;
+  width: 100%;
+  position: fixed;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
@@ -34,6 +35,7 @@ export const NavbarContainer = styled.div`
 
 export const Main = styled.main`
   flex: 1 1 0%;
+  padding-top: 3.3rem;
 `;
 
 export const Footer = styled.footer`

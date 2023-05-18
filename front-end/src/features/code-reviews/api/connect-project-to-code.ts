@@ -1,18 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { axios } from "@/lib/axios";
-import { queryClient, MutationConfig } from "@/lib/react-query";
+import { queryClient } from "@/lib/react-query";
 
 export type ConnectProjectToCodeDTO = {
   codeId: number;
-  data: { projectId: number };
+  projectId: number;
 };
 
 export const connectProjectToCode = ({
   codeId,
-  data,
+  projectId,
 }: ConnectProjectToCodeDTO): Promise<null> => {
-  return axios.put(`/code/${codeId}/connect`, data);
+  return axios.put(`/code/${codeId}/connect/${projectId}`);
 };
 
 export const useConnectProjectToCode = () => {
