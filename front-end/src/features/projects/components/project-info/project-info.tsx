@@ -140,7 +140,7 @@ export const ProjectInfo = ({
             </Text>
           )}
           <UrlApkBtn isClosed={closed} onClick={handleURLAPKBtnClick}>
-            {url}
+            {url.length <= 15 ? url : `${url.substring(0, 15)}...`}
           </UrlApkBtn>
         </FlexDiv>
       </FlexDiv>
