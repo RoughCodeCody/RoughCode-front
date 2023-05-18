@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styled from "styled-components";
 
 export const LogoDiv = styled.div`
@@ -49,4 +50,12 @@ export const Footer = styled.footer`
   margin-top: 8rem;
   width: 100vw;
   height: 7rem;
+`;
+
+export const FooterFriends = styled(Image)`
+  &:hover {
+    transform: scale(2);
+    /* transition: all ease-in-out 0.5s; */
+    transform-origin: bottom right;
+  }
 `;
