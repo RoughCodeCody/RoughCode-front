@@ -48,11 +48,19 @@ export const FeedbackRegister = ({
 
   return (
     <FlexDiv direction="column" width="75%" minWidth="850px">
-      <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
-        {type === "project"
-          ? "이 프로젝트에 피드백을 남겨주세요!"
-          : "이 코드 리뷰에 의견을 남겨주세요!"}
-      </Text>
+      <FlexDiv position="relative" width="100%">
+        <Text color="main" bold={true} padding="1rem 0" size="1.2rem">
+          {type === "project"
+            ? "이 프로젝트에 피드백을 남겨주세요!"
+            : "이 코드 리뷰에 의견을 남겨주세요!"}
+        </Text>
+        <Text
+          size="0.8rem"
+          style={{ position: "absolute", right: "0.5rem", bottom: "0.5rem" }}
+        >
+          Shift + Enter로 줄바꿈!
+        </Text>
+      </FlexDiv>
       <WhiteBoxShad height="10rem" shadColor="main">
         <FlexDiv
           width="100%"
