@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
 const TagChipSubWrapper = styled.div`
+  width: fit-content;
+  white-space: nowrap;
   background-color: var(--sub-one-color);
   padding: 0.2rem 0.7rem;
   border-radius: 1rem;
