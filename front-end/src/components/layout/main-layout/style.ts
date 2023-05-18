@@ -16,7 +16,7 @@ export const LogoText = styled.span`
 
 export const FlexContainer = styled.div`
   display: flex;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   flex-flow: column nowrap;
 `;
 

@@ -191,7 +191,7 @@ export const ProjectUpdateFormFields = ({
             {fixedUrl}
           </InputSuccessMsg>
         ) : (
-          <InputSuccessMsg>검사를 완료해야 업로드할 수 있어요.</InputSuccessMsg>
+          <InputErrorMsg>서버를 다시 확인해 주세요.</InputErrorMsg>
         )}
       </FlexDiv>
 

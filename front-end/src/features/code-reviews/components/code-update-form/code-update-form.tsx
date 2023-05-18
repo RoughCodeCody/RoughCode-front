@@ -14,7 +14,7 @@ const schema = z.object({
   projectId: z.number().nullable(),
   selectedTagsId: z.number().array().nullable(),
   selectedReviewsId: z.number().array().nullable(),
-  language: z.string().min(1, "필수 입력란이에요."),
+  language: z.number().array(),
 });
 
 type CodeUpdateFormProps = {
@@ -42,7 +42,6 @@ export const CodeUpdateForm = ({
             projectId: null,
             selectedTagsId: null,
             selectedReviewsId: null,
-            language: "",
           },
         }}
       >

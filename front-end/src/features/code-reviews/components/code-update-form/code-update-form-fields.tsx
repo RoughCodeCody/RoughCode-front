@@ -17,7 +17,6 @@ import {
   SubmitButtonWrapper,
   SubmitButton,
 } from "./code-update-form-fields-style";
-import { isValid } from "zod";
 
 type CodeUpdateFormFieldsProps = {
   methods: UseFormReturn<CodeUpdateValues>;
@@ -125,14 +124,7 @@ export const CodeUpdateFormFields = ({
 
         <GitHubBtn onClick={onGitHubBtnClick}>불러오기</GitHubBtn>
       </FlexDiv>
-      <InputField
-        type="text"
-        label="Language"
-        isDirty={formState.dirtyFields["language"]}
-        error={formState.errors["language"]}
-        registration={register("language")}
-        inputContainerWidth="80%"
-      />
+
       <TagSearch whichTag="code" />
       {codeQuery.data ? (
         <CodeEditor
