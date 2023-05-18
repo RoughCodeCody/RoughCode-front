@@ -15,7 +15,14 @@ import { ThumbnailField } from "./thumbnail-field";
 type ProjectUpdateFormFieldsProps = {
   methods: UseFormReturn<ProjectUpdateValues>;
   projectId: number;
-  projectUpdateInitialValues?: ProjectUpdateValues & { img: string };
+  projectUpdateInitialValues?: ProjectUpdateValues & {
+    img: string;
+    tags: {
+      tagId: number;
+      name: string;
+      cnt: number;
+    }[];
+  };
   onSubmit: SubmitHandler<ProjectUpdateValues>;
 };
 
@@ -48,10 +55,7 @@ export const ProjectUpdateFormFields = ({
 
   useEffect(() => {
     setValue("projectId", projectId);
-    setValue(
-      "selectedTagsId",
-      searchCriteria.tagIdList.map((el) => el.tagId)
-    );
+
     setValue("selectedFeedbacksId", selectedProjectFeedbackId);
   }, [
     setValue,
@@ -60,6 +64,13 @@ export const ProjectUpdateFormFields = ({
     selectedProjectFeedbackId,
   ]);
   useEffect(() => {
+    setValue(
+      "selectedTagsId",
+      searchCriteria.tagIdList.map((el) => el.tagId)
+    );
+  }, [setValue, searchCriteria]);
+
+  useEffect(() => {
     if (projectUpdateInitialValues) {
       setValue("title", projectUpdateInitialValues.title, {
         shouldDirty: true,
@@ -67,7 +78,6 @@ export const ProjectUpdateFormFields = ({
       });
       setValue("notice", projectUpdateInitialValues.notice, {
         shouldDirty: true,
-        shouldValidate: true,
       });
       setValue("introduction", projectUpdateInitialValues.introduction, {
         shouldDirty: true,
@@ -85,29 +95,28 @@ export const ProjectUpdateFormFields = ({
         shouldDirty: true,
         shouldValidate: true,
       });
+      setValue("selectedTagsId", projectUpdateInitialValues.selectedTagsId);
       setValue("content", projectUpdateInitialValues.content, {
         shouldDirty: true,
         shouldValidate: true,
       });
-      // projectUpdateInitialValues.selectedTagsId?.forEach((id) =>
-      //   addTagId({})
-      // );
     }
-  }, [projectUpdateInitialValues, setValue]);
+  }, []);
 
   useEffect(() => reset(), [dynamicRoute, reset]);
-
-  // useEffect(() => {
-  //   const inputThumbnail = document.getElementById(
-  //     "input-thumbnail"
-  //   ) as HTMLInputElement;
-  //   setIsThumb(Boolean(inputThumbnail?.files?.item(0)));
-  //   console.log(isThumb);
-  // }, []);
 
   register("projectId");
   register("selectedTagsId");
   register("selectedFeedbacksId");
+
+  useEffect(() => {
+    if (projectUpdateInitialValues) {
+      projectUpdateInitialValues.tags?.forEach((tag) => {
+        const arg = { tagId: tag.tagId, name: tag.name };
+        addTagId(arg);
+      });
+    }
+  }, [addTagId, projectUpdateInitialValues]);
 
   const onUrlInspectionBtnClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
