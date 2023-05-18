@@ -1,3 +1,4 @@
+import Image from "next/image";
 import styled from "styled-components";
 
 export const LogoDiv = styled.div`
@@ -22,7 +23,8 @@ export const FlexContainer = styled.div`
 
 export const NavbarContainer = styled.div`
   display: flex;
-  position: relative;
+  width: 100%;
+  position: fixed;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
@@ -34,6 +36,7 @@ export const NavbarContainer = styled.div`
 
 export const Main = styled.main`
   flex: 1 1 0%;
+  padding-top: 3.3rem;
 `;
 
 export const Footer = styled.footer`
@@ -47,4 +50,12 @@ export const Footer = styled.footer`
   margin-top: 8rem;
   width: 100vw;
   height: 7rem;
+`;
+
+export const FooterFriends = styled(Image)`
+  &:hover {
+    transform: scale(2);
+    /* transition: all ease-in-out 0.5s; */
+    transform-origin: bottom right;
+  }
 `;

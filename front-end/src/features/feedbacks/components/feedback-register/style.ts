@@ -11,6 +11,11 @@ const FeedbackRegisterTextarea = styled.textarea.attrs(({ placeholder }) => ({
   font-size: 1rem;
   line-height: 1.8rem;
   font-family: Arial, Helvetica, sans-serif;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   &::placeholder {
     color: var(--shad-color);

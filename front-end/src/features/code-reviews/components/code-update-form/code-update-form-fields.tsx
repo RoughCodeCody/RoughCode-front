@@ -52,6 +52,7 @@ export const CodeUpdateFormFields = ({
       searchCriteria.tagIdList.map((el) => el.tagId)
     );
     setValue("selectedReviewsId", selectedCodeReviewId);
+    // setValue("language", codeUpdateInitialValues.language);
   }, [setValue, codeId, searchCriteria.tagIdList, selectedCodeReviewId]);
   useEffect(() => {
     if (codeUpdateInitialValues) {
@@ -77,6 +78,9 @@ export const CodeUpdateFormFields = ({
       setValue("language", codeUpdateInitialValues.language, {
         shouldDirty: true,
       });
+      // setValue("language", "java", {
+      //   shouldDirty: true,
+      // });
     }
   }, [codeUpdateInitialValues, setValue]);
 
@@ -84,6 +88,7 @@ export const CodeUpdateFormFields = ({
   register("projectId");
   register("selectedTagsId");
   register("selectedReviewsId");
+  register("language");
 
   const onGitHubBtnClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -125,14 +130,6 @@ export const CodeUpdateFormFields = ({
 
         <GitHubBtn onClick={onGitHubBtnClick}>불러오기</GitHubBtn>
       </FlexDiv>
-      <InputField
-        type="text"
-        label="Language"
-        isDirty={formState.dirtyFields["language"]}
-        error={formState.errors["language"]}
-        registration={register("language")}
-        inputContainerWidth="80%"
-      />
       <TagSearch whichTag="code" />
       {codeQuery.data ? (
         <CodeEditor

@@ -16,6 +16,7 @@ import {
 import { usePostCodeLike, usePostCodeFav, useDeleteCode } from "../../api";
 import { CodeInfoResult, codeForFeedbackModify } from "../../types";
 import { DeleteCode } from "./delete-code";
+import { MyProjectList } from "./my-project-list";
 
 interface CodeInfoProps {
   data: CodeInfoResult | codeForFeedbackModify;
@@ -47,6 +48,9 @@ export const CodeInfo = ({
 
   // 삭제 확인 모달 관련 state
   const [codeDeleteModalOpen, setCodeDeleteModalOpen] = useState(false);
+
+  // 프로젝트 연결 모달 관련 state
+  const [projectLinkModalOpen, setProjectLinkModalOpen] = useState(false);
 
   // selection 선택시 닫기 위한 state
   const [forceClose, setForceClose] = useState(false);
@@ -97,7 +101,7 @@ export const CodeInfo = ({
                 <Selection
                   selectionList={{
                     수정하기: () =>
-                      router.push(`/code-review/modify/${codeId}`),
+                      router.push(`/code-review/code/modify/${codeId}`),
                     삭제하기: () => {
                       setCodeDeleteModalOpen(true);
                       setForceClose(true);
@@ -116,7 +120,12 @@ export const CodeInfo = ({
         </FlexDiv>
 
         <FlexDiv width="100%" direction="row-reverse" justify="space-between">
-          {isWriting ? (
+          {isMine ? (
+            <Btn
+              text="+ 내 프로젝트 연결"
+              onClickFunc={() => setProjectLinkModalOpen(true)}
+            />
+          ) : isWriting ? (
             <Btn
               bgColor="orange"
               color="bg"
@@ -165,6 +174,23 @@ export const CodeInfo = ({
             setModalOpen={setCodeDeleteModalOpen}
             handleDelete={handleDelete}
             setForceClose={setForceClose}
+          />
+        }
+      />
+
+      <Modal
+        headerText={"나의 프로젝트 목록"}
+        headerDescription={
+          "연결할 프로젝트를 선택 또는 선택 해제한 뒤 연결하기 버튼을 클릭하세요"
+        }
+        width="70%"
+        isOpen={projectLinkModalOpen}
+        setIsOpen={setProjectLinkModalOpen}
+        modalContent={
+          <MyProjectList
+            relatedProjectId={projectId}
+            codeId={codeId}
+            setModalOpen={setProjectLinkModalOpen}
           />
         }
       />

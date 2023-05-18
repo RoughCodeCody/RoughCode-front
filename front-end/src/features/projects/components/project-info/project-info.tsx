@@ -115,8 +115,8 @@ export const ProjectInfo = ({
         </FlexDiv>
 
         <FlexDiv width="100%" justify="start" wrap="wrap" gap="0.5rem">
-          {tags.map((val, idx) => (
-            <TagChipSub tag={val} key={idx} />
+          {tags.map(({ name, tagId }) => (
+            <TagChipSub tag={name} key={tagId} />
           ))}
         </FlexDiv>
 
@@ -140,7 +140,7 @@ export const ProjectInfo = ({
             </Text>
           )}
           <UrlApkBtn isClosed={closed} onClick={handleURLAPKBtnClick}>
-            {url}
+            {url.length <= 35 ? url : `${url.substring(0, 35)}...`}
           </UrlApkBtn>
         </FlexDiv>
       </FlexDiv>

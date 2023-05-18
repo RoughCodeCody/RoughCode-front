@@ -18,6 +18,7 @@ import {
   NavbarContainer,
   Main,
   Footer,
+  FooterFriends,
 } from "./style";
 
 const Logo = () => {
@@ -144,14 +145,6 @@ type MainLayoutProps = {
 };
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
-  const [isHoveredFriends, setIsHoveredFriends] = useState(false);
-  const handleMouseEnterFreinds = () => {
-    setIsHoveredFriends(true);
-  };
-  const handleMouseLeaveFreinds = () => {
-    setIsHoveredFriends(false);
-  };
-
   return (
     <FlexContainer>
       <NavbarContainer>
@@ -163,18 +156,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <Footer>
         <Text bold={true}>개발새발</Text>
         <Text>Copyright &copy; 2023 team Cody.</Text>
-        <FlexDiv
-          position="absolute"
-          right="3rem"
-          bottom="calc(7rem - 4px)"
-          onMouseEnter={handleMouseEnterFreinds}
-          onMouseLeave={handleMouseLeaveFreinds}
-        >
-          {isHoveredFriends ? (
-            <Image src={friends} alt="mascot" width={150} height={90} />
-          ) : (
-            <Image src={friends} alt="mascot" width={100} height={60} />
-          )}
+        <FlexDiv position="absolute" right="3rem" bottom="calc(7rem - 4px)">
+          <FooterFriends src={friends} alt="mascot" width={100} height={60} />
         </FlexDiv>
       </Footer>
     </FlexContainer>

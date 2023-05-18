@@ -47,11 +47,10 @@ export const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
               />
               <img
                 src={data.img}
-                alt="project"
+                alt="project image"
                 style={{
                   width: "100%",
-                  aspectRatio: "3 / 2",
-                  objectFit: "cover",
+                  objectFit: "contain",
                   marginTop: "2.5rem",
                 }}
               />

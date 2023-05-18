@@ -21,6 +21,7 @@ import {
 } from "../../api";
 import { Review } from "../../types";
 import { DeleteCodeReview } from "./delete-code-review";
+import { ReviewItemWrapper } from "./style";
 
 interface CodeReviewItemPops {
   review: Review;
@@ -59,6 +60,9 @@ export const CodeReviewItem = ({
   const { refetch } = useCodeReviewFeedbacks(reviewId);
 
   const hadleReviewClick = () => {
+    // 신고된 리뷰이면 클릭 안 됨
+    if (!content.length) return;
+
     refetch();
     setClickedReviewId(reviewId);
   };
@@ -106,11 +110,12 @@ export const CodeReviewItem = ({
 
   return (
     <>
-      <WhiteBoxShad
+      <ReviewItemWrapper
         shadColor={showDetails ? "main" : "shad"}
         onClick={hadleReviewClick}
         width="85%"
         margin="0.5rem 0"
+        isComplainted={Boolean(!content.length)}
       >
         <FlexDiv
           direction="column"
@@ -121,7 +126,7 @@ export const CodeReviewItem = ({
         >
           <FlexDiv width="100%" justify="space-between" pointer={true}>
             <Nickname nickname={!userName.length ? "익명" : userName} />
-            {!content.length || (
+            {content.length ? (
               <FlexDiv pointer={true}>
                 <Count
                   type="like"
@@ -136,6 +141,10 @@ export const CodeReviewItem = ({
                   forceClose={forceClose}
                 />
               </FlexDiv>
+            ) : (
+              <Text color="red" bold={true} lineHeight="1.8rem">
+                신고됨
+              </Text>
             )}
           </FlexDiv>
 
@@ -148,7 +157,7 @@ export const CodeReviewItem = ({
             )}
           </FlexDiv>
         </FlexDiv>
-      </WhiteBoxShad>
+      </ReviewItemWrapper>
 
       <Modal
         headerText={"코드 리뷰 삭제"}

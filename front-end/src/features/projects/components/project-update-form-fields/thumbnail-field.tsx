@@ -33,8 +33,17 @@ const FileInputContainer = styled.div`
   }
 `;
 
-export const ThumbnailField = ({ initialSrc }: { initialSrc?: string }) => {
+export const ThumbnailField = ({
+  initialSrc,
+  setIsThumb,
+}: {
+  initialSrc?: string;
+  setIsThumb: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [imageSrc, setImageSrc] = useState(initialSrc);
+  if (initialSrc) {
+    setIsThumb(true);
+  }
   const showPreview = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target?.files?.length && event.target?.files?.length > 0) {
       let src = URL.createObjectURL(event.target.files[0]);
@@ -49,7 +58,10 @@ export const ThumbnailField = ({ initialSrc }: { initialSrc?: string }) => {
         type="file"
         id="input-thumbnail"
         accept="image/*"
-        onChange={showPreview}
+        onChange={(e) => {
+          showPreview(e);
+          setIsThumb(true);
+        }}
       />
       <img src={imageSrc} id="input-thumbnail-preview" />
     </FileInputContainer>

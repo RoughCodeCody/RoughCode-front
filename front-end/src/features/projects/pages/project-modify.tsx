@@ -28,33 +28,37 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
     introduction: projectInfoQuery.data?.introduction || "",
     content: projectInfoQuery.data?.content || "",
     url: projectInfoQuery.data?.url || "",
-    projectId: Number(projectId),
-    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => Number(tag)),
-    selectedFeedbacksId: projectInfoQuery.data?.feedbacks.map((feedback) =>
-      Number(feedback.feedbackId)
-    ),
+    projectId: projectIdNum,
+    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => tag.tagId) || [],
+    selectedFeedbacksId:
+      projectInfoQuery.data?.feedbacks.map((feedback) =>
+        Number(feedback.feedbackId)
+      ) || [],
     img: projectInfoQuery.data?.img,
   };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
-    const projectIdNum = await putProjectMutation.mutateAsync({
+    await putProjectMutation.mutateAsync({
       data: values,
     });
-    const projectIdStr = String(projectIdNum);
 
     const inputThumbnail = document.getElementById(
       "input-thumbnail"
     ) as HTMLInputElement;
 
     const formData = new FormData();
-    formData.append("thumbnail", inputThumbnail?.files?.item(0) as File);
+    const thumbnail = inputThumbnail?.files?.item(0) as File;
+    if (thumbnail !== null) {
+      formData.append("thumbnail", thumbnail);
+      console.log("thumnail", thumbnail);
 
-    await postProjectThumbnail({
-      data: formData,
-      projectId: projectIdStr,
-    });
+      await postProjectThumbnail({
+        data: formData,
+        projectId: projectId,
+      });
+    }
 
-    router.push(`/project/${projectIdStr}`);
+    router.push(`/project/${projectId}`);
   };
 
   return (
@@ -73,7 +77,7 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
             projectUpdateInitialValues={projectUpdateInitialValues}
           />
         </WhiteBoxNoshad>
-        <ProjectFeedbacksSidebar projectId={projectId} />
+        <ProjectFeedbacksSidebar projectId={projectId} versionUp="false" />
       </FlexDiv>
     </>
   );

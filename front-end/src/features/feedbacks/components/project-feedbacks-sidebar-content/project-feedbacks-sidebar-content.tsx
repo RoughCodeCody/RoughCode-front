@@ -2,20 +2,24 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { BsPerson } from "react-icons/bs";
 
+import { SidebarFallback } from "../project-feedbacks-sidebar/style";
 import { useProjectFeedbacks } from "../../api";
 import { useProjectFeedbackSelectionStore } from "../../stores";
 import { ItemContainer, Item, ItemUserName, ItemContent } from "./style";
 
 type ProjectFeedbacksSidebarContentProps = {
   projectId: string;
+  versionUp: string;
 };
 
 export const ProjectFeedbacksSidebarContent = ({
   projectId,
+  versionUp,
 }: ProjectFeedbacksSidebarContentProps) => {
   // server states
   const projectFeedbacksQuery = useProjectFeedbacks({
     projectId: Number(projectId),
+    versionUp: versionUp,
   });
 
   // client states
@@ -34,9 +38,11 @@ export const ProjectFeedbacksSidebarContent = ({
 
   // fill initial selection status on each project feedback
   useEffect(() => {
-    projectFeedbacksQuery.data?.forEach((projectFeedback) => {
-      toggleProjectFeedbackSelection(projectFeedback.feedbackId);
-    });
+    projectFeedbacksQuery.data
+      ?.filter((feedback) => feedback.selected)
+      .forEach((projectFeedback) => {
+        toggleProjectFeedbackSelection(projectFeedback.feedbackId);
+      });
   }, [projectFeedbacksQuery.data, toggleProjectFeedbackSelection]);
 
   // isLoading
@@ -55,6 +61,13 @@ export const ProjectFeedbacksSidebarContent = ({
     toggleProjectFeedbackSelection(projectFeedbackId);
   };
 
+  if (projectFeedbacks.length === 0) {
+    return (
+      <SidebarFallback>
+        프로젝트 피드백이 있으면 이곳에 나타날 거에요
+      </SidebarFallback>
+    );
+  }
   return (
     <ItemContainer>
       {projectFeedbacks.map((projectFeedback, index) => (

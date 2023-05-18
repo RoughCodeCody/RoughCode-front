@@ -1,4 +1,4 @@
-import { FlexDiv, WhiteBoxNoshad } from "@/components/elements";
+import { FlexDiv, WhiteBoxNoshad, WhiteBoxShad } from "@/components/elements";
 import styled from "styled-components";
 
 const ReviewListWrapper = styled(WhiteBoxNoshad)`
@@ -11,7 +11,7 @@ const ReviewListWrapper = styled(WhiteBoxNoshad)`
   padding: 1rem 0;
 `;
 
-const ReviewItemWrapper = styled(FlexDiv)`
+const ReviewItemsWrapper = styled(FlexDiv)`
   max-height: 20rem;
   /* overflow-x: hidden; */
   overflow-y: auto;
@@ -23,4 +23,18 @@ const ReviewItemWrapper = styled(FlexDiv)`
   }
 `;
 
-export { ReviewListWrapper, ReviewItemWrapper };
+const ReviewItemWrapper = styled(WhiteBoxShad)<{ isComplainted: boolean }>`
+  position: relative;
+
+  &::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: ${({ isComplainted }) =>
+      isComplainted ? "#000000" : "none"};
+    opacity: 0.4;
+  }
+`;
+
+export { ReviewListWrapper, ReviewItemsWrapper, ReviewItemWrapper };

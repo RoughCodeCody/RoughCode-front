@@ -44,7 +44,7 @@ export type CodeInfoResult = {
   reviewCnt: number; // 리뷰 수
   favoriteCnt: number; // 즐겨찾기 수
   githubUrl: string; // 코드를 불러올 github URL
-  tags: string[]; // 등록한 태그 이름들
+  tags: { tagId: number; name: string; cnt: number }[]; // 등록한 태그 이름들
   userId: number; // 작성자 id
   userName: string; // 작성자 이름
   mine: boolean; // 내 코드인지 여부

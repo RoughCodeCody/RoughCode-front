@@ -14,7 +14,8 @@ const schema = z.object({
   projectId: z.number().nullable(),
   selectedTagsId: z.number().array().nullable(),
   selectedReviewsId: z.number().array().nullable(),
-  language: z.string().min(1, "필요"),
+  // language: z.string().min(1, "필요"),
+  language: z.string(),
 });
 
 type CodeUpdateFormProps = {
@@ -32,16 +33,17 @@ export const CodeUpdateForm = ({
     <div>
       <Form<CodeUpdateValues, typeof schema>
         schema={schema}
+        onSubmit={onSubmit}
         options={{
           shouldUnregister: true,
           defaultValues: {
             title: "",
             githubUrl: "",
-            content: "",
+            content: " ",
             projectId: null,
             selectedTagsId: null,
             selectedReviewsId: null,
-            language: "",
+            language: "java",
           },
         }}
       >

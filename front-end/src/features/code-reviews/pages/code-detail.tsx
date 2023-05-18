@@ -26,18 +26,23 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   const originalCode = codeQuery.data?.content;
 
   // 코드 리뷰 클릭시 해당 리뷰의 정보를 가져오기 위한 state
-  const defaultCilckedReviewId =
-    data && data.reviews.length !== 0 ? data.reviews[0].reviewId : -1;
+  // let defaultCilckedReviewId =
+  // data && data.reviews.length !== 0 ? data.reviews[0].reviewId : -1;
 
-  const [clickedReviewId, setClickedReviewId] = useState(
-    defaultCilckedReviewId
-  );
+  const [clickedReviewId, setClickedReviewId] = useState(-1);
 
-  // 최초 렌더시 가장 앞의 리뷰를 선택
-  useEffect(
-    () => setClickedReviewId(defaultCilckedReviewId),
-    [defaultCilckedReviewId]
-  );
+  // 최초 렌더시 신고되지 않은 가장 앞의 리뷰를 선택
+  useEffect(() => {
+    if (data && data.reviews.length !== 0) {
+      for (let i = 0; i < data.reviews.length; i++) {
+        if (data.reviews[i].content.length) {
+          setClickedReviewId(data.reviews[i].reviewId);
+          break;
+        }
+      }
+    }
+    // setClickedReviewId(defaultCilckedReviewId);
+  }, [status]);
 
   // 선택된 리뷰의 정보를 가져옴
   const codeReviewInfoQuery = useCodeReviewFeedbacks(clickedReviewId);
