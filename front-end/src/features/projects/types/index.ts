@@ -24,7 +24,7 @@ export type ProjectInfoResult = {
   liked: boolean;
   mine: boolean;
   notice: string;
-  tags: Tag[];
+  tags: { tagId: number; name: string; cnt: number }[];
   title: string;
   url: string;
   userName: string;

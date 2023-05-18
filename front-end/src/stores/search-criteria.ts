@@ -4,7 +4,6 @@ type Tag = {
   tagId: number;
   name: string;
 };
-
 type SortOption = "createdDate" | "likeCnt" | "feedbackCnt" | "reviewCnt";
 
 type SearchCriteria = {
@@ -18,11 +17,13 @@ type SearchCriteria = {
 
 type SearchCriteriaStore = {
   searchCriteria: SearchCriteria;
+  language: Tag[];
   setClosedValue: (closed: 0 | 1) => void;
   setSort: (sortOption: string, type: "project" | "codeReview") => void;
   addTagId: (Tag: Tag) => void;
   deleteTagId: (TagId: number) => void;
   setKeyword: (keyword: string) => void;
+  setLanguage: (selectedLanguage: Tag[]) => void;
   reset: () => void;
 };
 
@@ -37,6 +38,7 @@ const initialState: SearchCriteria = {
 
 export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
   searchCriteria: initialState,
+  language: [],
   setClosedValue: (ClosedValue) => {
     // 전체 프로젝트 보기, 열린 프로젝트만 보기
     set((state) => ({
@@ -104,6 +106,16 @@ export const useSearchCriteriaStore = create<SearchCriteriaStore>((set) => ({
         keyword: keyword,
       },
     }));
+  },
+
+  setLanguage: (selectedLanguage) => {
+    set(() => ({
+      language: selectedLanguage,
+    }));
+  },
+
+  resetLanguage: () => {
+    set(() => ({ language: [] }));
   },
 
   reset: () => {
