@@ -271,7 +271,9 @@ public class CodesServiceImpl implements CodesService {
         // 연결된 프로젝트 정보(id, 제목) 저장
         Long connectedProjectId = null;
         String connectedProjectTitle = null;
+        log.info("연결된 프로젝트정보 : "+code.getProjects());
         if (code.getProjects() != null) {
+            log.info("연결된 프로젝트정보 : "+code.getProjects().getProjectsId());
             connectedProjectId = code.getProjects().getProjectsId();
             connectedProjectTitle = code.getProjects().getTitle();
         }
@@ -781,7 +783,7 @@ public class CodesServiceImpl implements CodesService {
         }
         
         Projects project = null;
-        if (projectId != null) {
+        if (projectId != -1L) {
             project = projectsRepository.findByProjectsIdAndExpireDateIsNull(projectId);
             if (project == null) {
                 throw new NullPointerException("연결하려는 프로젝트가 존재하지 않습니다");
@@ -790,7 +792,7 @@ public class CodesServiceImpl implements CodesService {
 
         // project 연결
         code.setProject(project);
-        
+
         return 1;
     }
 

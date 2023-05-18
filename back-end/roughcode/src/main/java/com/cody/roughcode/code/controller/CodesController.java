@@ -28,6 +28,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Validated
 @RestController
@@ -368,12 +369,14 @@ public class CodesController {
             @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
             @ApiResponse(responseCode = "404", description = "코드 프로젝트 연결 실패")
     })
-    @PutMapping("/{codeId}/connect")
+    @PutMapping("/{codeId}/connect/{projectId}")
     ResponseEntity<?> connectCodeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                          @Parameter(description = "코드 id 값", required = true)
                                          @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
                                          @PathVariable Long codeId,
-                                         @Parameter(description = "연결할 프로젝트 id", example = "1") @RequestParam(required = false) Long projectId) {
+                                         @Parameter(description = "연결하려는 프로젝트 id 값")
+                                         @Range(min = -1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                         @PathVariable Long projectId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
             return Response.badRequestNoUser();
