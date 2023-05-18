@@ -1,4 +1,5 @@
-import { create } from "zustand";
+import create from "zustand";
+import { mountStoreDevtool } from "simple-zustand-devtools";
 
 type CodeReviewForCodeUpdateSelectionState = {
   selectedCodeReviewId: number[];
@@ -28,3 +29,10 @@ export const useCodeReviewsForCodeUpdateSelection = create<
     set(initialState);
   },
 }));
+
+if (process.env.NODE_ENV === "development") {
+  mountStoreDevtool(
+    "CodeReviewsForCodeUpdateSelection",
+    useCodeReviewsForCodeUpdateSelection
+  );
+}

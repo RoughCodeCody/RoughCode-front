@@ -46,8 +46,6 @@ export const ProjectUpdateFormFields = ({
   });
   const dynamicRoute = router.asPath;
 
-  console.log(isThumb);
-
   useEffect(() => {
     setValue("projectId", projectId);
     setValue(
@@ -119,7 +117,6 @@ export const ProjectUpdateFormFields = ({
     eventTarget.disabled = true;
     const query = await checkProjectUrlQuery.refetch();
     if (query.data) {
-      console.log(query.data);
       setIsValidUrl(true);
       setFixedUrl(watch("url"));
     } else {

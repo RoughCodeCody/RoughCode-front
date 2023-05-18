@@ -29,7 +29,7 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
     content: projectInfoQuery.data?.content || "",
     url: projectInfoQuery.data?.url || "",
     projectId: projectIdNum,
-    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => Number(tag)) || [],
+    selectedTagsId: projectInfoQuery.data?.tags.map((tag) => tag.tagId) || [],
     selectedFeedbacksId:
       projectInfoQuery.data?.feedbacks.map((feedback) =>
         Number(feedback.feedbackId)
@@ -77,7 +77,7 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
             projectUpdateInitialValues={projectUpdateInitialValues}
           />
         </WhiteBoxNoshad>
-        <ProjectFeedbacksSidebar projectId={projectId} />
+        <ProjectFeedbacksSidebar projectId={projectId} versionUp="false" />
       </FlexDiv>
     </>
   );

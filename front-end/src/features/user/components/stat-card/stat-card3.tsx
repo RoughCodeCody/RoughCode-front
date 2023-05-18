@@ -1,4 +1,6 @@
 import { encodeHTML } from "./utils";
+// import dogAndDuck from "@/assets/dog-duck.png";
+import dogAndDuck from "@/assets/dog-duck.svg";
 
 export const StatCard3 = () => {
   // 더미데이터
@@ -12,28 +14,15 @@ export const StatCard3 = () => {
   const codeRefactorCnt = encodeHTML(`${3}`);
 
   return `
-    <svg viewBox="0 0 1030 445" xmlns="http://www.w3.org/2000/svg">
-    <style>
-      .small {
-        font: italic 13px sans-serif;
-      }
-      .heavy {
-        font: bold 30px sans-serif;
-      }
-  
-      /* Note that the color of the text is set with the    *
-       * fill property, the color property is for HTML only */
-      .Rrrrr {
-        font: italic 40px serif;
-        fill: red;
-      }
+    <svg viewBox="0 0 500 216" xmlns="http://www.w3.org/2000/svg">
+    <style>  
       .title {
-        font: 800 30px 'Segoe UI', Ubuntu, Sans-Serif;
+        font: 800 15px 'Segoe UI', Ubuntu, Sans-Serif;
         fill: #319795;
         animation: fadeInAnimation 0.8s ease-in-out forwards;
       }
       .content {
-        font: 800 20px 'Segoe UI', Ubuntu, Sans-Serif;
+        font: 800 10px 'Segoe UI', Ubuntu, Sans-Serif;
         fill: #45474F;
         animation: fadeInAnimation 0.8s ease-in-out forwards;
       }
@@ -42,7 +31,7 @@ export const StatCard3 = () => {
         data-testid="card-bg"
         x="1%"
         y="0.5%"
-        rx="25"
+        rx="15"
         height="99%"
         stroke="#319795"
         width="98%"
@@ -58,7 +47,8 @@ export const StatCard3 = () => {
       width="86%"
       fill="#EFF8FF"
     /> 
-  
+
+    <image href="@/assets/dog-duck.svg" width="10%" height="5%" />
     <text x="7%" y="13%" class="title">${title}</text>
 
     <text x="14%" y="32%" class="content">1. 프로젝트 피드백 횟수:</text>
