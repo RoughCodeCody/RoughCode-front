@@ -208,7 +208,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("북마크한 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다"))
+                    .content(List.of("북마크한 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "가 업데이트 되었습니다"))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -219,7 +219,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("작성한 피드백이 반영된 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트 되었습니다."))
+                    .content(List.of("작성한 피드백이 반영된 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "가 업데이트 되었습니다."))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -928,7 +928,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectsRepository.save(project);
 
         AlarmReq alarmContent = AlarmReq.builder()
-                .content(List.of("작성한 프로젝트, ", project.getTitle() + " ver" + project.getVersion(), "새 피드백이 등록되었습니다"))
+                .content(List.of("작성한 프로젝트, ", project.getTitle() + " ver" + project.getVersion(), "에 새 피드백이 등록되었습니다"))
                 .userId(project.getProjectWriter().getUsersId())
                 .postId(project.getProjectsId())
                 .section("project")

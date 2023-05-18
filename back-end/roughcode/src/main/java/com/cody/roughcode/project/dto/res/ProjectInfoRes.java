@@ -1,7 +1,5 @@
 package com.cody.roughcode.project.dto.res;
 
-import com.cody.roughcode.project.entity.Projects;
-import com.cody.roughcode.project.entity.ProjectsInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
