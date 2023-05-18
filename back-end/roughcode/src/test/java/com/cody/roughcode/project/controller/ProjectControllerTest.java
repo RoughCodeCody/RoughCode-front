@@ -122,10 +122,6 @@ public class ProjectControllerTest {
     private ProjectsServiceImpl projectsService;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
-    @Mock
-    private RedisTemplate<String, String> redisTemplate;
-    @Mock
-    private ValueOperations operations;
 
     @DisplayName("프로젝트 닫기 성공")
     @Test
@@ -1036,7 +1032,7 @@ public class ProjectControllerTest {
                         .build()
         );
         doReturn(Pair.of(projectInfoRes, false)).when(projectsService)
-                .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
+                .getProjectList(any(Long.class), any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
         String keyword = "title";
         String tagIds = "2";
@@ -1090,7 +1086,7 @@ public class ProjectControllerTest {
                         .build()
         );
         doReturn(Pair.of(projectInfoRes, false)).when(projectsService)
-                .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
+                .getProjectList(any(Long.class), any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -1328,61 +1324,6 @@ public class ProjectControllerTest {
         assertThat(message).isEqualTo("프로젝트 썸네일 등록 실패");
     }
 
-    @DisplayName("프로젝트 정보 등록 성공 - n번 연속 클릭")
-    @Test
-    public void insertProjectSucceedN() throws Exception {
-        // given
-        final String url = "/api/v1/project/content";
-
-        // ProjectService insertProject 대한 stub필요
-        doReturn(1L).when(projectsService)
-                .insertProject(any(ProjectReq.class), any(Long.class));
-        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
-        doReturn(operations).when(redisTemplate).opsForValue();
-
-        // when
-        doReturn(null).when(operations).get(any(String.class));
-        final ResultActions resultActions1 = mockMvc.perform(
-                MockMvcRequestBuilders.post(url)
-                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(req))
-        );
-        doReturn("lock").when(operations).get(any(String.class));
-        final ResultActions resultActions2 = mockMvc.perform(
-                MockMvcRequestBuilders.post(url)
-                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(req))
-        );
-        final ResultActions resultActions3 = mockMvc.perform(
-                MockMvcRequestBuilders.post(url)
-                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(req))
-        );
-
-        // then
-        // HTTP Status가 OK인지 확인
-        MvcResult mvcResult = resultActions1.andExpect(status().isOk()).andReturn();
-        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        String message = jsonObject.get("message").getAsString();
-        assertThat(message).isEqualTo("프로젝트 정보 등록 성공");
-
-        MvcResult mvcResult2 = resultActions2.andExpect(status().isTooManyRequests()).andReturn();
-        responseBody = mvcResult2.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        message = jsonObject.get("message").getAsString();
-        assertThat(message).isEqualTo("요청이 너무 많습니다");
-
-        MvcResult mvcResult3 = resultActions2.andExpect(status().isTooManyRequests()).andReturn();
-        responseBody = mvcResult3.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
-        message = jsonObject.get("message").getAsString();
-        assertThat(message).isEqualTo("요청이 너무 많습니다");
-    }
-
     @DisplayName("프로젝트 정보 등록 성공")
     @Test
     public void insertProjectSucceed() throws Exception {
@@ -1393,8 +1334,6 @@ public class ProjectControllerTest {
         doReturn(1L).when(projectsService)
                 .insertProject(any(ProjectReq.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
-        doReturn(operations).when(redisTemplate).opsForValue();
-        doReturn(null).when(operations).get(any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -1423,8 +1362,6 @@ public class ProjectControllerTest {
         doReturn(-1L).when(projectsService)
                 .insertProject(any(ProjectReq.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
-        doReturn(operations).when(redisTemplate).opsForValue();
-        doReturn(null).when(operations).get(any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(

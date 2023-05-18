@@ -1264,7 +1264,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
@@ -1321,7 +1321,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1379,7 +1379,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1437,7 +1437,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1495,7 +1495,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1553,7 +1553,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1612,7 +1612,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectSelectedTagsRepository).findAllByKeywordAndTag(keyword, List.of(2L), 1L, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1671,7 +1671,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectSelectedTagsRepository).findAllOpenedByKeywordAndTag(keyword, List.of(2L), 1L, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
