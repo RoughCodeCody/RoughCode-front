@@ -5,13 +5,14 @@ import { EditorWrapper, EditorHeader, EditorBottom } from "./style";
 import { FlexDiv, Text, Btn } from "@/components/elements";
 import { DiffEditor } from "@monaco-editor/react";
 import { useCodeReviewFeedbackDataStore } from "@/stores/code-review-feedback";
+import { CodeLanguage } from "@/features/code-reviews";
 
 interface DiffCodeEditorProps {
   headerText: string;
   originalCode: string;
   modifiedCode: string;
   height: string;
-  language: string;
+  language: CodeLanguage;
   readOnly?: boolean;
   noShad?: boolean;
 }
@@ -83,7 +84,7 @@ export const DiffCodeEditor: React.FC<DiffCodeEditorProps> = ({
       </EditorHeader>
       <DiffEditor
         height={height}
-        language={language}
+        language={language.name}
         original={decodedOriginalString}
         modified={decodedmodifiedString}
         onMount={handleEditorDidMount}

@@ -13,6 +13,7 @@ import { convertGitHubUrl } from "@/util/convert-github-url";
 
 import { useCode } from "../../api/get-code";
 import { useCodeReviewsForCodeUpdateSelection } from "../../stores/code-review-for-code-update-selection";
+import { useSelectedLanguageStore } from "@/stores/selected-language";
 import { CodeUpdateValues } from "../../types";
 import {
   GitHubBtn,
@@ -27,10 +28,16 @@ import {
   InputErrorMsg,
 } from "@/components/form/input-field/style";
 
+import { CodeTag, CodeLanguage } from "../../types";
+
 type CodeUpdateFormFieldsProps = {
   methods: UseFormReturn<CodeUpdateValues>;
   codeId: number;
-  codeUpdateInitialValues?: CodeUpdateValues;
+  codeUpdateInitialValues?: CodeUpdateValues & {
+    language: number[];
+    tags: CodeTag[];
+    languages: CodeLanguage[];
+  };
   onSubmit: SubmitHandler<CodeUpdateValues>;
 };
 
@@ -53,18 +60,27 @@ export const CodeUpdateFormFields = ({
   const [isValidUrl, setIsValidUrl] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [fixedUrl, setFixedUrl] = useState("");
-  const { searchCriteria, reset } = useSearchCriteriaStore();
-  const { selectedCodeReviewId } = useCodeReviewsForCodeUpdateSelection();
+  const { searchCriteria, addTagId, reset } = useSearchCriteriaStore();
+  const {
+    selectedCodeReviewId,
+    toggleCodeReviewForCodeUpdateSelection,
+    resetCodeReviewForCodeUpdateSelection,
+  } = useCodeReviewsForCodeUpdateSelection();
+  const {
+    selectedLanguage,
+    setSelectedLanguage,
+    reset: resetLang,
+  } = useSelectedLanguageStore();
+
   const codeQuery = useCode({
-    githubUrl: convertGitHubUrl(watch("githubUrl")),
+    githubApiUrl: convertGitHubUrl(watch("githubUrl")),
     config: { enabled: false },
   });
   const dynamicRoute = router.asPath;
 
-  // const [submitBtnDisabled, setSubmitBtnDisabled] = useState(true);
   useEffect(() => {
-    setValue("codeId", codeId);
     setValue("projectId", null);
+    setValue("codeId", codeId);
     setValue("selectedReviewsId", selectedCodeReviewId);
   }, [setValue, codeId, selectedCodeReviewId]);
 
@@ -74,6 +90,15 @@ export const CodeUpdateFormFields = ({
       searchCriteria.tagIdList.map((el) => el.tagId)
     );
   }, [setValue, searchCriteria]);
+
+  useEffect(() => {
+    setValue(
+      "language",
+      selectedLanguage?.[0]?.languageId
+        ? [selectedLanguage?.[0].languageId]
+        : [1]
+    );
+  }, [setValue, selectedLanguage]);
 
   useEffect(() => {
     if (codeUpdateInitialValues) {
@@ -115,6 +140,33 @@ export const CodeUpdateFormFields = ({
   register("selectedTagsId");
   register("selectedReviewsId");
   register("language");
+
+  useEffect(() => {
+    if (codeUpdateInitialValues) {
+      codeUpdateInitialValues.tags?.forEach((tag) => {
+        const arg = { tagId: tag.tagId, name: tag.name };
+        addTagId(arg);
+      });
+    }
+  }, [addTagId, codeUpdateInitialValues]);
+
+  useEffect(() => {
+    if (codeUpdateInitialValues) {
+      console.log("holy", codeUpdateInitialValues.languages);
+      setSelectedLanguage(
+        [
+          {
+            languageId: codeUpdateInitialValues.languages?.[0]?.languageId,
+            name: codeUpdateInitialValues.languages?.[0]?.name,
+          },
+        ]
+        // codeUpdateInitialValues?.languages.((el) => ({
+        //   languageId: el.languageId,
+        //   name: el.name,
+        // }))
+      );
+    }
+  }, [setSelectedLanguage, codeUpdateInitialValues]);
 
   const onGitHubBtnClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -190,7 +242,7 @@ export const CodeUpdateFormFields = ({
           lineSelection={false}
           height="30rem"
           // language={getLanguageName(watch("language"))}
-          language="plaintext"
+          language={{ languageId: 1, name: "plaintext", cnt: 1 }}
           originalCode={codeQuery.data.content || ""}
           noShad={true}
         />
@@ -201,7 +253,7 @@ export const CodeUpdateFormFields = ({
           lineSelection={false}
           height="30rem"
           // language={getLanguageName(watch("language"))}
-          language="plaintext"
+          language={{ languageId: 1, name: "plaintext", cnt: 1 }}
           originalCode={""}
           noShad={true}
         />

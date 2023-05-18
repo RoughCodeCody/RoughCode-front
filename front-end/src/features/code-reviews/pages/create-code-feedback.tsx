@@ -21,13 +21,13 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
   // 여기서 정보 조회하고 하위 컴포넌트에 정보를 prop줌
   const codeInfoQuery = useCodeInfo(codeId);
 
-  const githubUrl = codeInfoQuery.data?.githubUrl
-    ? codeInfoQuery.data?.githubUrl
+  const githubApiUrl = codeInfoQuery.data?.githubApiUrl
+    ? codeInfoQuery.data?.githubApiUrl
     : "";
   const language = codeInfoQuery.data?.language
     ? codeInfoQuery.data?.language
-    : "";
-  const codeQuery = useCode({ githubUrl });
+    : { tagId: 1, name: "plaintext", cnt: 1 };
+  const codeQuery = useCode({ githubApiUrl });
   const originalCode = codeQuery.data?.content;
 
   const handleEditorChange = (content: string) => {
@@ -100,7 +100,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
                   headerText="피드백할 라인들을 드래그 한 후 선택 버튼을 눌러주세요"
                   lineSelection={true}
                   height="30rem"
-                  language={language}
+                  language={{ languageId: 1, name: "plaintext", cnt: 1 }}
                   originalCode={originalCode}
                 />
               </FlexDiv>
@@ -109,7 +109,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
                   headerText="코드를 수정해 주세요"
                   height="30rem"
                   readOnly={false}
-                  language={language}
+                  language={{ languageId: 1, name: "plaintext", cnt: 1 }}
                   originalCode={originalCode}
                   modifiedCode={originalCode}
                 />

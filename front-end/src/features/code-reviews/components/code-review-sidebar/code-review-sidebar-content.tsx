@@ -10,6 +10,7 @@ import {
   ItemUserName,
   ItemContent,
 } from "./code-review-sidebar-content-style";
+import { SidebarFallback } from "./code-review-sidebar-style";
 
 type CodeReviewSidebarContentProps = {
   codeId: string;
@@ -63,6 +64,14 @@ export const CodeReviewSidebarContent = ({
   const handleClick = (codeReviewId: number) => {
     toggleCodeReviewForCodeUpdateSelection(codeReviewId);
   };
+
+  if (codeReviewsForCodeUpdateQuery.data.length === 0) {
+    return (
+      <SidebarFallback>
+        프로젝트 피드백이 있으면 이곳에 나타날 거에요
+      </SidebarFallback>
+    );
+  }
 
   return (
     <ItemContainer>

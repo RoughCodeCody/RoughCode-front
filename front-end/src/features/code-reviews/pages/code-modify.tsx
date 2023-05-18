@@ -14,42 +14,39 @@ import { useCodeInfo } from "../api/get-code-info";
 import { usePutCode } from "../api/put-code";
 import { CodeReviewSidebar } from "../components/code-review-sidebar";
 import { CodeUpdateForm } from "../components/code-update-form";
-import { CodeUpdateValues } from "../types";
+import { CodeUpdateValues, CodeLanguage } from "../types";
 
 export const CodeModify = ({ codeId }: { codeId: string }) => {
   const codeIdNum = Number(codeId);
   const router = useRouter();
   const putCodeMutation = usePutCode();
   const codeInfoQuery = useCodeInfo(codeIdNum);
-  const { searchCriteria, setLanguage } = useSearchCriteriaStore();
-  useEffect(() => {
-    if (codeInfoQuery.data) {
-      setLanguage(codeInfoQuery.data.tags);
-    }
-  }, [codeInfoQuery.data]);
 
   if (!codeInfoQuery.data) {
     return <>Loading...</>;
   }
   const codeUpdateInitialValues = {
-    title: codeInfoQuery.data?.title,
-    githubUrl: codeInfoQuery.data?.githubUrl,
-    content: codeInfoQuery.data?.content,
-    codeId: codeInfoQuery.data?.codeId,
-    projectId: codeInfoQuery.data?.projectId,
-    selectedTagsId: null,
-    selectedReviewsId: codeInfoQuery.data?.reviews.map((review) =>
-      Number(review.reviewId)
-    ),
-    language: codeInfoQuery.data?.language,
+    title: codeInfoQuery.data?.title || "",
+    githubUrl: codeInfoQuery.data?.githubUrl || "",
+    content: codeInfoQuery.data?.content || "",
+    codeId: codeIdNum,
+    projectId: codeInfoQuery.data?.projectId || null,
+    selectedTagsId: codeInfoQuery.data?.tags.map((tag) => Number(tag.tagId)),
+    selectedReviewsId: codeInfoQuery.data?.versions
+      .filter((el) => el.version === codeInfoQuery.data?.version)[0]
+      .selectedReviews.map((el) => el.reviewId),
+    language: [codeInfoQuery.data?.language.languageId],
+    languages: [codeInfoQuery.data?.language],
+    tags: codeInfoQuery.data?.tags,
   };
 
-  console.log(codeInfoQuery.data);
   const onSubmit = async (values: CodeUpdateValues) => {
-    const newValues = { ...values, language: searchCriteria.tagIdList[0].name };
+    // console.log(values);
+    const { codeId, ...newValues } = values;
 
     const codeIdNum = await putCodeMutation.mutateAsync({
       data: newValues,
+      codeId: Number(codeId),
     });
     const codeIdStr = String(codeIdNum);
     router.push(`/code-review/${codeIdStr}`);
@@ -68,7 +65,7 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
             codeUpdateInitialValues={codeUpdateInitialValues}
           />
         </WhiteBoxNoshad>
-        <CodeReviewSidebar />
+        <CodeReviewSidebar codeId={codeId} />
       </FlexDiv>
     </>
   );
