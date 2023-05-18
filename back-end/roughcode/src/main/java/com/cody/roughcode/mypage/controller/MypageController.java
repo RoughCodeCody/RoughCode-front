@@ -53,7 +53,7 @@ public class MypageController {
         try {
             if (accessToken != null) {
                 Long userId = jwtTokenProvider.getId(accessToken);
-                if(userId <= 0) return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+                if(userId <= 0) return Response.badRequestNoUser();
 
                 statCard = mypageService.makeStatCardWithUserId(userId);
             } else {
@@ -78,7 +78,7 @@ public class MypageController {
         try {
             if (accessToken != null) {
                 Long userId = jwtTokenProvider.getId(accessToken);
-                if(userId <= 0) return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+                if(userId <= 0) return Response.badRequestNoUser();
 
                 statCard = mypageService.makeStatCardWithUserId(userId);
             } else {
@@ -98,7 +98,7 @@ public class MypageController {
     public ResponseEntity<?> deleteEmailInfo(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         String res = "result";
         try {
@@ -123,7 +123,7 @@ public class MypageController {
                                         @RequestParam String code) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         try {
             boolean checked = emailService.checkEmail(email, code, usersId);
@@ -142,7 +142,7 @@ public class MypageController {
                                                      @RequestParam String email) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         try {
             emailService.sendCertificationEmail(email, usersId);
@@ -164,7 +164,7 @@ public class MypageController {
                                           @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -194,7 +194,7 @@ public class MypageController {
                                         @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -224,7 +224,7 @@ public class MypageController {
                                   @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -254,7 +254,7 @@ public class MypageController {
                                              @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
@@ -284,7 +284,7 @@ public class MypageController {
                                      @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
@@ -314,7 +314,7 @@ public class MypageController {
                                      @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
 
         Pair<List<ProjectInfoRes>, Boolean> res;
@@ -339,7 +339,7 @@ public class MypageController {
     ResponseEntity<?> getAlarmList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         List<AlarmRes> res = new ArrayList<>();
         try {
@@ -359,7 +359,7 @@ public class MypageController {
                                    @PathVariable String alarmId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         try {
             alarmService.deleteAlarm(alarmId, usersId);
@@ -375,7 +375,7 @@ public class MypageController {
     ResponseEntity<?> deleteAllAlarm(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         try {
             alarmService.deleteAllAlarm(usersId);

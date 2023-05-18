@@ -82,7 +82,7 @@ public class ReReviewsController {
                                    @Valid @RequestBody ReReviewReq reReviewReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {
@@ -130,7 +130,7 @@ public class ReReviewsController {
                                   @PathVariable Long reReviewId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -152,7 +152,7 @@ public class ReReviewsController {
                                        @PathVariable Long reReviewId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {

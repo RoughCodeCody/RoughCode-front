@@ -53,7 +53,7 @@ public class ProjectsController {
                             @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {
@@ -75,7 +75,7 @@ public class ProjectsController {
                                   @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {
@@ -97,7 +97,7 @@ public class ProjectsController {
                                           @PathVariable Long feedbackId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -119,7 +119,7 @@ public class ProjectsController {
                                       @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -141,7 +141,7 @@ public class ProjectsController {
                                   @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -194,7 +194,7 @@ public class ProjectsController {
                                       @RequestParam String url){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Boolean res = false;
         try{
@@ -215,7 +215,7 @@ public class ProjectsController {
                                       @PathVariable Long feedbackId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {
@@ -242,7 +242,7 @@ public class ProjectsController {
                                       @RequestParam(defaultValue = "true") boolean versionUp){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         List<FeedbackInfoRes> res = null;
         try {
@@ -262,7 +262,7 @@ public class ProjectsController {
                                      @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackUpdateReq req){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Boolean res = false;
         try {
@@ -325,7 +325,7 @@ public class ProjectsController {
                                        @PathVariable Long feedbackId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -386,7 +386,7 @@ public class ProjectsController {
                                     @PathVariable Long projectId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -411,7 +411,7 @@ public class ProjectsController {
                                      @RequestBody List<Long> req){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         if (req == null) {
             req = new ArrayList<>();
@@ -436,7 +436,7 @@ public class ProjectsController {
                                     @Parameter(description = "프로젝트 정보 값", required = true) @Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -461,7 +461,7 @@ public class ProjectsController {
                                   @RequestBody String imgUrl) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -486,7 +486,7 @@ public class ProjectsController {
                                              @RequestPart("image") MultipartFile image) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         String res = null;
         try{
@@ -512,7 +512,7 @@ public class ProjectsController {
 
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -532,7 +532,7 @@ public class ProjectsController {
                                      @Parameter(description = "프로젝트 정보 값", required = true)@Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Long res = 0L;
         try{
