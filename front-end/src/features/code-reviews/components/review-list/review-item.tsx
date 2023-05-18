@@ -126,7 +126,7 @@ export const CodeReviewItem = ({
         >
           <FlexDiv width="100%" justify="space-between" pointer={true}>
             <Nickname nickname={!userName.length ? "익명" : userName} />
-            {!content.length || (
+            {content.length ? (
               <FlexDiv pointer={true}>
                 <Count
                   type="like"
@@ -141,6 +141,10 @@ export const CodeReviewItem = ({
                   forceClose={forceClose}
                 />
               </FlexDiv>
+            ) : (
+              <Text color="red" bold={true} lineHeight="1.8rem">
+                신고됨
+              </Text>
             )}
           </FlexDiv>
 
