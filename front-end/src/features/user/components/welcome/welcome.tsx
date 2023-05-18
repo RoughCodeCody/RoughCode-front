@@ -26,6 +26,7 @@ export const Welcome = () => {
         bgColor="orange"
         onClickFunc={async () => {
           await logoutQuery.mutateAsync();
+          userQuery.remove();
           router.push("/");
         }}
       />
