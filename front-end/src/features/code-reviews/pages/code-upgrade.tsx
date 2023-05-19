@@ -69,7 +69,7 @@ export const CodeUpgrade = ({ codeId }: { codeId: string }) => {
             codeUpdateInitialValues={codeUpdateInitialValues}
           />
         </WhiteBoxNoshad>
-        <CodeReviewSidebar codeId={codeId} />
+        <CodeReviewSidebar codeId={codeId} versionUp="false" />
       </FlexDiv>
     </>
   );

@@ -5,7 +5,14 @@ import { BsPerson } from "react-icons/bs";
 import { SidebarFallback } from "../project-feedbacks-sidebar/style";
 import { useProjectFeedbacks } from "../../api";
 import { useProjectFeedbackSelectionStore } from "../../stores";
-import { ItemContainer, Item, ItemUserName, ItemContent } from "./style";
+import {
+  ItemContainer,
+  Item,
+  ItemUserName,
+  ItemContent,
+  Heading,
+  SubHeading,
+} from "./style";
 
 type ProjectFeedbacksSidebarContentProps = {
   projectId: string;
@@ -70,6 +77,10 @@ export const ProjectFeedbacksSidebarContent = ({
   }
   return (
     <ItemContainer>
+      <Heading>프로젝트 피드백 목록</Heading>
+      <SubHeading>
+        아래 항목을 클릭해서 피드백을 반영했다는 표시를 남길 수 있어요.
+      </SubHeading>
       {projectFeedbacks.map((projectFeedback, index) => (
         <Item
           key={`project-feedback-${projectId}-${index}`}

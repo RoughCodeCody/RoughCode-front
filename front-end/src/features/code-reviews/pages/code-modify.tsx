@@ -15,13 +15,13 @@ import { usePutCode } from "../api/put-code";
 import { CodeReviewSidebar } from "../components/code-review-sidebar";
 import { CodeUpdateForm } from "../components/code-update-form";
 import { CodeUpdateValues, CodeLanguage } from "../types";
+import { convertGitHubUrl } from "@/util/convert-github-url";
 
 export const CodeModify = ({ codeId }: { codeId: string }) => {
   const codeIdNum = Number(codeId);
   const router = useRouter();
   const putCodeMutation = usePutCode();
   const codeInfoQuery = useCodeInfo(codeIdNum);
-  const { searchCriteria } = useSearchCriteriaStore();
 
   if (!codeInfoQuery.data) {
     return <>Loading...</>;
@@ -44,9 +44,13 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
   const onSubmit = async (values: CodeUpdateValues) => {
     // console.log(values);
     const { codeId, ...newValues } = values;
+    const finValues = {
+      ...newValues,
+      githubUrl: convertGitHubUrl(values.githubUrl),
+    };
 
     const codeIdNum = await putCodeMutation.mutateAsync({
-      data: newValues,
+      data: finValues,
       codeId: Number(codeId),
     });
     const codeIdStr = String(codeIdNum);
@@ -66,7 +70,7 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
             codeUpdateInitialValues={codeUpdateInitialValues}
           />
         </WhiteBoxNoshad>
-        <CodeReviewSidebar codeId={codeId} />
+        <CodeReviewSidebar codeId={codeId} versionUp="false" />
       </FlexDiv>
     </>
   );
