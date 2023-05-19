@@ -169,15 +169,15 @@ public class CodesServiceImpl implements CodesService {
                 log.info("등록한 태그가 없습니다.");
             }
 
-            log.info("코드 등록 : "+req.getLanguage());
+            log.info("코드 등록 : " + req.getLanguage());
             // 새로운 코드 언어 등록 (한개만 받음!)
             CodeLanguages newLanguage = codeLanguagesRepository.findByLanguagesId(req.getLanguage().get(0));
-            log.info("코드 등록 : "+newLanguage.getName());
+            log.info("코드 등록 : " + newLanguage.getName());
             newLanguage.cntUp();
 
             // 파싱한 github api url
 //            String parsedGithubUrl = parseGithubLink(req.getGithubUrl());
-            log.info("코드 등록 : "+req.getGithubUrl());
+            log.info("코드 등록 : " + req.getGithubUrl());
             // 역파싱한 github url
             String reverseParseGithubUrl = reverseParseGithubLink(req.getGithubUrl());
             log.info("github URL 파싱 전!!!! " + reverseParseGithubUrl);
@@ -289,9 +289,9 @@ public class CodesServiceImpl implements CodesService {
         // 연결된 프로젝트 정보(id, 제목) 저장
         Long connectedProjectId = null;
         String connectedProjectTitle = null;
-        log.info("연결된 프로젝트정보 : "+code.getProjects());
+        log.info("연결된 프로젝트정보 : " + code.getProjects());
         if (code.getProjects() != null) {
-            log.info("연결된 프로젝트정보 : "+code.getProjects().getProjectsId());
+            log.info("연결된 프로젝트정보 : " + code.getProjects().getProjectsId());
             connectedProjectId = code.getProjects().getProjectsId();
             connectedProjectTitle = code.getProjects().getTitle();
         }
@@ -542,7 +542,7 @@ public class CodesServiceImpl implements CodesService {
 
     @Override
     @Transactional
-    public int putExpireDateCode(Long codeId, Long userId){
+    public int putExpireDateCode(Long codeId, Long userId) {
         Users user = usersRepository.findByUsersId(userId);
 
         // 코드 작성자 확인
@@ -583,7 +583,7 @@ public class CodesServiceImpl implements CodesService {
             return;
         }
 
-        for(Codes target: expiredCodes){
+        for (Codes target : expiredCodes) {
             // 연결된 프로젝트에서 코드 제거
             if (target.getProjects() != null && target.getProjects().getProjectsCodes() != null) {
                 Iterator<Codes> iterator = target.getProjects().getProjectsCodes().iterator();
@@ -724,7 +724,7 @@ public class CodesServiceImpl implements CodesService {
 
     @Override
     @Transactional
-    public List<ReviewInfoRes> getReviewList(Long codeId, Long userId) {
+    public List<ReviewInfoRes> getReviewList(Long codeId, Long userId, boolean versionUp) {
         Users user = usersRepository.findByUsersId(userId);
         if (user == null) {
             throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -738,8 +738,10 @@ public class CodesServiceImpl implements CodesService {
         // num이 일치하는 버전들의 모든 코드 리뷰 목록 조회
         List<Codes> allVersion = codesRepository.findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(code.getNum(), user);
 
+        int idx = (versionUp) ? 0 : 1;
         List<ReviewInfoRes> reviewInfoResList = new ArrayList<>();
-        for (Codes c : allVersion) {
+        for (; idx < allVersion.size(); idx++) {
+            Codes c = allVersion.get(idx);
             for (Reviews r : c.getReviews()) {
                 // 삭제 처리된 코드 리뷰 제외
                 if (r.getCodeContent() == null || r.getCodeContent().equals("")) {
@@ -805,7 +807,7 @@ public class CodesServiceImpl implements CodesService {
         if (code == null) {
             throw new NullPointerException("일치하는 코드가 존재하지 않습니다");
         }
-        
+
         Projects project = null;
         if (projectId != -1L) {
             project = projectsRepository.findByProjectsIdAndExpireDateIsNull(projectId);
@@ -895,11 +897,11 @@ public class CodesServiceImpl implements CodesService {
         String subUrl = splitUrl[1];
 
         String[] subUrlParts = subUrl.split("ref=");
-        String filePath = subUrlParts[0].substring(0, subUrlParts[0].length()-1);
+        String filePath = subUrlParts[0].substring(0, subUrlParts[0].length() - 1);
 
         String branchName = subUrlParts[1];
 
-        String reversedLink = "https://github.com/" + ownerRepo + "/blob/" + branchName + "/" +filePath;
+        String reversedLink = "https://github.com/" + ownerRepo + "/blob/" + branchName + "/" + filePath;
         return reversedLink;
     }
 }

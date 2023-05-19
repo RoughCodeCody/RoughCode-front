@@ -544,7 +544,7 @@ class CodesControllerTest {
 
         doReturn(1L).when(jwtTokenProvider).getId(accessToken);
         doReturn(List.of(reviewInfoRes)).when(codesService)
-                .getReviewList(any(Long.class), any(Long.class));
+                .getReviewList(any(Long.class), any(Long.class), any(Boolean.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -569,7 +569,7 @@ class CodesControllerTest {
 
         doReturn(1L).when(jwtTokenProvider).getId(accessToken);
         doReturn(null).when(codesService)
-                .getReviewList(any(Long.class), any(Long.class));
+                .getReviewList(any(Long.class), any(Long.class), any(Boolean.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(

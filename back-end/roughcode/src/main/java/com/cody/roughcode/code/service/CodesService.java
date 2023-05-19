@@ -27,7 +27,7 @@ public interface CodesService {
 
     List<CodeTagsRes> searchTags(String keyword);
 
-    List<ReviewInfoRes> getReviewList(Long codeId, Long userId);
+    List<ReviewInfoRes> getReviewList(Long codeId, Long userId, boolean versionUp);
 
     List<ReviewSearchRes> getReviewSearchList(Long codeId, Long userId, String keyword);
 
