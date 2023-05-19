@@ -18,10 +18,10 @@ import { CodeUpdateValues, CodeLanguage } from "../types";
 import { convertGitHubUrl } from "@/util/convert-github-url";
 
 export const CodeModify = ({ codeId }: { codeId: string }) => {
-  const codeIdNum = Number(codeId);
+  const codeIdNumber = Number(codeId);
   const router = useRouter();
   const putCodeMutation = usePutCode();
-  const codeInfoQuery = useCodeInfo(codeIdNum);
+  const codeInfoQuery = useCodeInfo(codeIdNumber);
 
   if (!codeInfoQuery.data) {
     return <>Loading...</>;
@@ -30,7 +30,7 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
     title: codeInfoQuery.data?.title || "",
     githubUrl: codeInfoQuery.data?.githubUrl || "",
     content: codeInfoQuery.data?.content || "",
-    codeId: codeIdNum,
+    codeId: codeIdNumber,
     projectId: codeInfoQuery.data?.projectId || null,
     selectedTagsId: codeInfoQuery.data?.tags.map((tag) => Number(tag.tagId)),
     selectedReviewsId: codeInfoQuery.data?.versions
@@ -42,18 +42,17 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
   };
 
   const onSubmit = async (values: CodeUpdateValues) => {
-    // console.log(values);
     const { codeId, ...newValues } = values;
     const finValues = {
       ...newValues,
       githubUrl: convertGitHubUrl(values.githubUrl),
     };
 
-    const codeIdNum = await putCodeMutation.mutateAsync({
+    await putCodeMutation.mutateAsync({
       data: finValues,
       codeId: Number(codeId),
     });
-    const codeIdStr = String(codeIdNum);
+    const codeIdStr = String(codeIdNumber);
     router.push(`/code-review/${codeIdStr}`);
   };
 
@@ -65,7 +64,7 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
         <WhiteBoxNoshad width="65%" padding="2.25rem">
           <Title title="코드 수정" description="코드를 수정합니다." />
           <CodeUpdateForm
-            codeId={codeIdNum}
+            codeId={codeIdNumber}
             onSubmit={onSubmit}
             codeUpdateInitialValues={codeUpdateInitialValues}
           />
