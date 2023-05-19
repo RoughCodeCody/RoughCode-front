@@ -311,7 +311,8 @@ public class CodesController {
     ResponseEntity<?> getReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                     @Parameter(description = "코드 id 값", required = true)
                                     @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
-                                    @PathVariable Long codeId) {
+                                    @PathVariable Long codeId,
+                                    @RequestParam(defaultValue = "true") boolean versionUp) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
             return Response.badRequestNoUser();
@@ -319,7 +320,7 @@ public class CodesController {
 
         List<ReviewInfoRes> res = null;
         try {
-            res = codesService.getReviewList(codeId, userId);
+            res = codesService.getReviewList(codeId, userId, versionUp);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

@@ -652,7 +652,7 @@ class CodesServiceTest {
         doReturn(List.of(code)).when(codesRepository).findByNumAndCodeWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
-        List<ReviewInfoRes> result = codesService.getReviewList(1L, 1L);
+        List<ReviewInfoRes> result = codesService.getReviewList(1L, 1L, true);
 
         // then
         assertThat(result.size()).isEqualTo(1);
