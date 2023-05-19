@@ -57,8 +57,8 @@ const LinkCardContainer = styled.div`
   position: relative;
   width: 94vw;
   max-width: 1440px;
-  min-width: 1146px;
-  height: 60vh;
+  /* min-width: 1146px;
+  height: 60vh; */
   /* max-height: 495px; */
   /* min-height: 380px; */
   display: flex;
