@@ -10,6 +10,7 @@ import friends from "@/assets/dog-duck.png";
 import { REDIRECT_URL } from "@/config";
 import { FlexDiv, Text } from "@/components/elements";
 import { useUser } from "@/features/auth";
+import { useSearchCriteriaStore } from "@/stores";
 
 import {
   LogoDiv,
@@ -39,6 +40,7 @@ const Menu = () => {
   const isCode = router.asPath.includes("code") ? true : false;
   const [isHoveredProject, setIsHoveredProject] = useState(false);
   const [isHoveredCode, setIsHoveredCode] = useState(false);
+  const { reset } = useSearchCriteriaStore();
 
   const handleMouseEnterProject = () => {
     setIsHoveredProject(true);
@@ -55,7 +57,12 @@ const Menu = () => {
 
   return (
     <FlexDiv justify="center" align="center" gap="5rem">
-      <Link href="/project">
+      <Link
+        href="/project"
+        onClick={() => {
+          reset();
+        }}
+      >
         <Text
           size="1.3rem"
           bold={true}
@@ -67,7 +74,12 @@ const Menu = () => {
           프로젝트
         </Text>
       </Link>
-      <Link href="/code-review">
+      <Link
+        href="/code-review"
+        onClick={() => {
+          reset();
+        }}
+      >
         <Text
           size="1.3rem"
           bold={true}
