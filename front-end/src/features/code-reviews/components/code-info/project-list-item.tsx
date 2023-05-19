@@ -14,7 +14,7 @@ type ProjectListItemProps = {
     introduction: string;
     likeCnt: number;
     projectId: number;
-    tags: string[];
+    tags: { tagId: number; name: string; cnt: number }[];
     title: string;
     version: number;
   };
@@ -64,7 +64,7 @@ export const ProjectListItem = ({
           {dayjs(date).format("YY.MM.DD")}
         </Text>
         {tags.map((tag, idx) => (
-          <TagChipSub tag={tag} key={idx} />
+          <TagChipSub tag={tag.name} key={tag.tagId} />
         ))}
       </FlexDiv>
     </CodeListItemWrapper>
