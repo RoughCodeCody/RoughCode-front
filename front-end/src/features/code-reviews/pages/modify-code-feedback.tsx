@@ -80,6 +80,7 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
     );
   return (
     <FlexDiv width="100vw" direction="column" gap="8rem">
+      <BottomHeader locations={["코드 피드백 수정"]} />
       <FlexDiv
         width="100%"
         maxWidth="1080px"
@@ -87,7 +88,6 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
         gap="6rem"
         align="center"
       >
-        <BottomHeader locations={["코드 피드백 수정"]} />
         <FlexDiv width="95%">
           <CodeInfo data={codeFeedbackInfoQuery.data?.code} />
         </FlexDiv>

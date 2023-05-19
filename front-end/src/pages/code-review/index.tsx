@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
+import { Head } from "@/components/head";
 import { useAsPathInfoStore } from "@/stores";
 import { useSearchCriteriaStore } from "@/stores";
 
@@ -26,7 +27,12 @@ const CodeListPage: NextPage = () => {
     }
   }, [asPath, asPathInfo.currentAsPath]);
 
-  return <CodeList />;
+  return (
+    <>
+      <Head title="코드 리뷰" description="개발새발 코드 리뷰" />
+      <CodeList />
+    </>
+  );
 };
 
 export default CodeListPage;

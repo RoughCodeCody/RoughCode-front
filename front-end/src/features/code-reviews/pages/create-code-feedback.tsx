@@ -76,6 +76,7 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
     );
   return (
     <FlexDiv width="100vw" direction="column" gap="8rem">
+      <BottomHeader locations={["코드 피드백 등록"]} />
       <FlexDiv
         width="100%"
         maxWidth="1080px"
@@ -83,7 +84,6 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
         gap="6rem"
         align="center"
       >
-        <BottomHeader locations={["코드 피드백 등록"]} />
         <FlexDiv width="95%">
           <CodeInfo data={codeInfoQuery.data} />
         </FlexDiv>

@@ -1,8 +1,15 @@
 import { NextPage, GetServerSideProps } from "next";
 import { ProjectDetail } from "@/features/projects";
+import { Head } from "@/components/head";
 
 const ProjectDetailPage: NextPage<{ projectId: string }> = ({ projectId }) => {
-  return <ProjectDetail projectId={projectId} />;
+  return (
+    <>
+      <Head title="프로젝트 상세 | 프로젝트" description="개발새발 코드 리뷰" />
+
+      <ProjectDetail projectId={projectId} />
+    </>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
