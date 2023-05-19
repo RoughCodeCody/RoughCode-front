@@ -18,7 +18,7 @@ type CodeListItemProps = {
     date: Date; // 수정날짜
     likeCnt: number; // 좋아요 수
     reviewCnt: number; // 리뷰 수
-    tags: string[]; // 태그 이름 목록
+    tags: { tagId: number; name: string; cnt: number }[]; // 태그 이름 목록
     userName: string; // 코드 작성자 닉네임
     liked: boolean; // 좋아요 여부
   };
@@ -53,7 +53,7 @@ export const CodeListItem = ({
             {title}
           </Text>
           {tags.map((tag, idx) => (
-            <TagChipSub tag={tag} key={idx} />
+            <TagChipSub tag={tag.name} key={idx} />
           ))}
         </FlexDiv>
         <FlexDiv>

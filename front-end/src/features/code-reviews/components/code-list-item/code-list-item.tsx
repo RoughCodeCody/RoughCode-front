@@ -48,8 +48,8 @@ export const CodeListItem = ({
           <Text bold={true} padding="0 1rem 0 0.3rem" pointer={true}>
             {title}
           </Text>
-          {tags.map((tag, idx) => (
-            <TagChipSub tag={tag.name} key={idx} />
+          {tags.map((tag) => (
+            <TagChipSub tag={tag.name} key={tag.tagId} />
           ))}
         </FlexDiv>
         <FlexDiv>
