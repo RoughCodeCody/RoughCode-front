@@ -230,7 +230,7 @@ export const CodeUpdateFormFields = ({
         )}
       </FlexDiv>
 
-      <TagSearch whichTag="code" />
+      <TagSearch whichTag="project" />
       <LanguageSearch whichTag="language" />
       {codeQuery.data ? (
         <CodeEditor
