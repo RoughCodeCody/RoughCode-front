@@ -48,7 +48,6 @@ export const Footer = styled.footer`
   background-color: var(--placeholder-color);
   position: relative;
   margin-top: 8rem;
-  width: 100vw;
   height: 7rem;
 `;
 

@@ -19,7 +19,7 @@ export const BottomHeader = ({ locations, menus }: BottomHeaderProps) => {
     ? "나의 리뷰"
     : "즐겨찾기";
   return (
-    <FlexDiv width="100vw" height="78px" color="font">
+    <FlexDiv width="100%" height="78px" color="font">
       <FlexDiv
         width="80%"
         // maxWidth="1280px"
