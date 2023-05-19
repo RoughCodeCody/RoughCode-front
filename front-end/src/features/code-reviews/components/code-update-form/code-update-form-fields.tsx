@@ -149,7 +149,6 @@ export const CodeUpdateFormFields = ({
 
   useEffect(() => {
     if (codeUpdateInitialValues) {
-      console.log("holy", codeUpdateInitialValues.languages);
       setSelectedLanguage(
         [
           {

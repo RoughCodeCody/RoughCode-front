@@ -32,10 +32,8 @@ export const LanguageSelectItem = ({ languageId, name, cnt }: LanguageType) => {
   const { addTagId } = useSearchCriteriaStore();
   const router = useRouter();
   const endPoint = router.asPath;
-  console.log(endPoint);
 
   const handleClick = () => {
-    console.log(languageId, name);
     if (endPoint === "/code-review") {
       if (languageId) {
         addTagId({ tagId: languageId, name });

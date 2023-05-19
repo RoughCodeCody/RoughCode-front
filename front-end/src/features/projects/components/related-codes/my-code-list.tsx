@@ -23,7 +23,6 @@ export const MyCodeList = ({
 
   // 프로젝트에 연결할 코드 id 리스트
   const [selectedCodeIds, setSelectedCodeIds] = useState(relatedCodeIds);
-  console.log("selectedCodeIds", selectedCodeIds);
 
   // 내 코드 목록 가져오기
   const { status, data, fetchNextPage } = useMyCodeList({

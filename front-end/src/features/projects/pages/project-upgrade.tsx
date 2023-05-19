@@ -53,7 +53,6 @@ export const ProjectUpgrade = ({ projectId }: { projectId: string }) => {
     const thumbnail = inputThumbnail?.files?.item(0) as File;
     if (thumbnail !== null) {
       formData.append("thumbnail", thumbnail);
-      console.log("thumnail", thumbnail);
 
       await postProjectThumbnail({
         data: formData,

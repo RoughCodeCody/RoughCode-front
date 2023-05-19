@@ -42,7 +42,6 @@ export const CodeModify = ({ codeId }: { codeId: string }) => {
   };
 
   const onSubmit = async (values: CodeUpdateValues) => {
-    // console.log(values);
     const { codeId, ...newValues } = values;
     const finValues = {
       ...newValues,

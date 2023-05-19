@@ -12,7 +12,6 @@ export const getTags = ({
   whichTag: string;
   tagKeyword: string;
 }): Promise<Tag> => {
-  console.log(whichTag);
   return axios.get(`/${whichTag}/tag`, {
     params: {
       keyword: tagKeyword,

@@ -18,7 +18,6 @@ export const getLanguageTags = ({
   whichTag: string;
   tagKeyword: string;
 }): Promise<Language> => {
-  console.log(whichTag);
   return axios.get(`/code/${whichTag}`, {
     params: {
       keyword: tagKeyword,

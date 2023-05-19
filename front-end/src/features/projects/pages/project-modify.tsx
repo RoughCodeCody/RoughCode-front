@@ -39,7 +39,6 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
   };
 
   const onSubmit = async (values: ProjectUpdateValues) => {
-    console.log(values);
     await putProjectMutation.mutateAsync({
       data: values,
     });
@@ -52,7 +51,6 @@ export const ProjectModify = ({ projectId }: { projectId: string }) => {
     const thumbnail = inputThumbnail?.files?.item(0) as File;
     if (thumbnail !== null) {
       formData.append("thumbnail", thumbnail);
-      console.log("thumnail", thumbnail);
 
       await postProjectThumbnail({
         data: formData,

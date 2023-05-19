@@ -134,7 +134,6 @@ export const ProjectUpdateFormFields = ({
       eventTarget.disabled = false;
       setIsValidUrl(false);
     }
-    // console.log(formState.errors);
   };
 
   return (

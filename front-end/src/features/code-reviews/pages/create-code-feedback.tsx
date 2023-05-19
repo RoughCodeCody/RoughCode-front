@@ -49,7 +49,6 @@ export const CreateCodeFeedback = ({ codeId }: CreateCodeFeedbackProps) => {
         content: feedbackContent,
       };
 
-      console.log(data);
       codeReviewQuery.mutate(
         { data },
         {

@@ -13,7 +13,6 @@ const ProjectDetailPage: NextPage<{ projectId: string }> = ({ projectId }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  // console.log("serverside", params);
   return {
     props: {
       projectId: params?.["project-id"],
