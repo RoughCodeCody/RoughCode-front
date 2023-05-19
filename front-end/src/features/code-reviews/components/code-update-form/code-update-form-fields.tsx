@@ -79,6 +79,12 @@ export const CodeUpdateFormFields = ({
   const dynamicRoute = router.asPath;
 
   useEffect(() => {
+    reset();
+    resetCodeReviewForCodeUpdateSelection();
+    resetLang();
+  }, []);
+
+  useEffect(() => {
     setValue("projectId", null);
     setValue("codeId", codeId);
     setValue("selectedReviewsId", selectedCodeReviewId);
