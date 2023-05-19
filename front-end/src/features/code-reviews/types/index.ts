@@ -111,7 +111,7 @@ export type CodeReviewInfoResult = {
   date: Date; // 코드 리뷰 수정 날짜
   reReviews: CodeReviewFeedback[];
   code: codeForFeedbackModify;
-  language: string;
+  language: CodeLanguage;
 };
 
 export type CodeUpdateValues = {

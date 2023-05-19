@@ -27,7 +27,7 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
     : "";
   const language = codeFeedbackInfoQuery.data?.language
     ? codeFeedbackInfoQuery.data?.language
-    : "";
+    : { languageId: 1, name: "plaintext", cnt: 1 };
   const codeQuery = useCode({ githubApiUrl });
   const originalCode = codeQuery.data?.content;
 
@@ -104,7 +104,7 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
                   headerText="피드백할 라인들을 드래그 한 후 선택 버튼을 눌러주세요"
                   lineSelection={true}
                   height="30rem"
-                  language={{ languageId: 1, name: "plaintext", cnt: 1 }}
+                  language={language}
                   originalCode={originalCode}
                   selectedLines={codeFeedbackInfoQuery.data.lineNumbers}
                 />
@@ -114,7 +114,7 @@ export const ModifyCodeReview = ({ codeReviewId }: ModifyCodeReviewProps) => {
                   headerText="코드를 수정해 주세요"
                   height="30rem"
                   readOnly={false}
-                  language={{ languageId: 1, name: "plaintext", cnt: 1 }}
+                  language={language}
                   originalCode={originalCode}
                   modifiedCode={codeFeedbackInfoQuery.data.codeContent}
                 />

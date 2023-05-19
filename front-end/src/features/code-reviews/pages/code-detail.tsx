@@ -24,6 +24,9 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
   const githubApiUrl = data?.githubApiUrl ? data?.githubApiUrl : "";
   const codeQuery = useCode({ githubApiUrl });
   const originalCode = codeQuery.data?.content;
+  const language = data?.language
+    ? data?.language
+    : { languageId: 1, name: "plaintext", cnt: 1 };
 
   // 코드 리뷰 클릭시 해당 리뷰의 정보를 가져오기 위한 state
   // let defaultCilckedReviewId =
@@ -83,7 +86,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                       headerText="코드 리뷰를 요청한 원본 코드입니다"
                       lineSelection={false}
                       height="30rem"
-                      language={{ languageId: 1, name: "plaintext", cnt: 1 }}
+                      language={language}
                       originalCode={originalCode || ""}
                       selectedLines={codeReviewInfoQuery.data?.lineNumbers}
                       noShad={true}
@@ -97,7 +100,7 @@ export const CodeDetail = ({ codeId }: CodeDetailProps) => {
                       headerText="코드 리뷰어가 수정한 코드입니다"
                       height="30rem"
                       readOnly={true}
-                      language={{ languageId: 1, name: "plaintext", cnt: 1 }}
+                      language={language}
                       originalCode={originalCode}
                       modifiedCode={codeReviewInfoQuery.data?.codeContent || ""}
                       noShad={true}
