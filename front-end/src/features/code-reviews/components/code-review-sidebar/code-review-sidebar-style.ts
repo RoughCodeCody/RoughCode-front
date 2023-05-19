@@ -16,3 +16,14 @@ export const SidebarFallback = styled.div`
   height: 20rem;
   text-align: center;
 `;
+
+export const Heading = styled.div`
+  margin-top: 1rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+`;
+
+export const SubHeading = styled.div`
+  font-size: 1.2rem;
+  line-height: 1.8rem;
+`;

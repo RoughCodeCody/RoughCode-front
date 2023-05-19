@@ -118,10 +118,7 @@ export const CodeUpdateFormFields = ({
         shouldValidate: true,
         shouldDirty: true,
       });
-      setValue("selectedTagsId", codeUpdateInitialValues.selectedTagsId, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
+      setValue("selectedTagsId", codeUpdateInitialValues.selectedTagsId);
       setValue("selectedReviewsId", codeUpdateInitialValues.selectedReviewsId, {
         shouldValidate: true,
         shouldDirty: true,

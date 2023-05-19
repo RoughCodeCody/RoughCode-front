@@ -7,26 +7,30 @@ import { Review } from "../types";
 
 export const getCodeReviewsForCodeUpdate = ({
   codeId,
+  versionUp,
 }: {
   codeId: string;
+  versionUp: string;
 }): Promise<Review[]> => {
-  return axios.get(`/code/${codeId}/review`);
+  return axios.get(`/code/${codeId}/review`, { params: { versionUp } });
 };
 
 type QueryFnType = typeof getCodeReviewsForCodeUpdate;
 
 type UseCodeReviewsForCodeUpdateOptions = {
   codeId: string;
+  versionUp: string;
   config?: QueryConfig<QueryFnType>;
 };
 
 export const useCodeReviewsForCodeUpdate = ({
   codeId,
+  versionUp,
   config,
 }: UseCodeReviewsForCodeUpdateOptions) => {
   return useQuery<ExtractFnReturnType<QueryFnType>>({
-    queryKey: ["codeReviewsForCodeUpdate", codeId],
-    queryFn: () => getCodeReviewsForCodeUpdate({ codeId }),
+    queryKey: ["codeReviewsForCodeUpdate", codeId, versionUp],
+    queryFn: () => getCodeReviewsForCodeUpdate({ codeId, versionUp }),
     ...config,
   });
 };

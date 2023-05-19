@@ -39,7 +39,7 @@ export const CodeRegister = () => {
           <Title title="코드 등록" description="코드를 등록합니다." />
           <CodeUpdateForm codeId={-1} onSubmit={onSubmit} />
         </WhiteBoxNoshad>
-        <CodeReviewSidebar />
+        <CodeReviewSidebar versionUp="false" />
       </FlexDiv>
     </>
   );
