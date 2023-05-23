@@ -78,12 +78,13 @@
 
 
 ## 프로젝트 산출물
-- 기획서
-- 와이어프레임
-- ERD 
-- API 명세서
-- 플로우차트
-- 아키텍쳐
+- [와이어프레임](roughcode-image/docs-wireframe.PNG)
+- [ERD](roughcode-image/docs-erd.png) 
+- [API 명세서](roughcode-image/docs-api.png)
+- [플로우차트](roughcode-image/docs-flowchart.jpg)
+- [아키텍쳐](roughcode-image/docs-architecture.png)
+- [스토리보드](roughcode-image/docs-storyboard.JPG)
+
 
 ## 서비스 화면
 ### 메인 페이지
@@ -157,3 +158,7 @@
 
 - 내가 작성한, 리뷰한, 즐겨찾기한 프로젝트와 코드 목록을 조회합니다.
 ![마이페이지 게시물들](roughcode-image/mypage-posts.gif)
+
+
+## 🎬 UCC
+<a href="https://www.youtube.com/watch?v=Zqv37SNw6HQ"><img src="roughcode-image/docs-ucc-thumbnail.JPG"/></a>
