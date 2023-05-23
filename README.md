@@ -77,16 +77,50 @@
 ```
 
 
-## 프로젝트 산출물
+## 📑 프로젝트 산출물
+
+<!-- 
 - [와이어프레임](roughcode-image/docs-wireframe.PNG)
 - [ERD](roughcode-image/docs-erd.png) 
 - [API 명세서](roughcode-image/docs-api.png)
 - [플로우차트](roughcode-image/docs-flowchart.jpg)
 - [아키텍쳐](roughcode-image/docs-architecture.png)
 - [스토리보드](roughcode-image/docs-storyboard.JPG)
+-->
+
+<details>
+<summary>와이어프레임</summary>
+<a href="https://www.figma.com/file/SozgBHvf76lJnwterFq6vd/%EA%B0%9C%EB%B0%9C%EC%83%88%EB%B0%9C-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84?type=design&node-id=124-1745&t=wxRDTyiYzkruFxz2-0"><img src="roughcode-image/docs-wireframe.PNG"/></a>
+</details>
+
+<details>
+<summary>ERD</summary>
+<a href="https://www.erdcloud.com/d/6iEY2W5gtL2WQsQt4"><img src="roughcode-image/docs-erd.png"/></a>
+</details>
+
+<details>
+<summary>API 명세서</summary>
+<a href="https://spectrum-whistle-250.notion.site/API-6ffc4ebcecb648f68c669662ba6999bd"><img src="roughcode-image/docs-api.png"/></a>
+</details>
+
+<details>
+<summary>플로우차트</summary>
+<a href="https://www.figma.com/file/eYg6bCFtj65F21U5ZfMKDD/%EA%B0%9C%EB%B0%9C%EC%83%88%EB%B0%9C-%ED%94%8C%EB%A1%9C%EC%9A%B0%EC%B0%A8%ED%8A%B8?type=whiteboard&node-id=0-1"><img src="roughcode-image/docs-flowchart.jpg"/></a>
+</details>
+
+<details>
+<summary>아키텍쳐</summary>
+
+![아키텍쳐](roughcode-image/docs-architecture.png)
+</details>
+
+<details>
+<summary>스토리보드</summary>
+<a href="https://www.figma.com/file/SozgBHvf76lJnwterFq6vd/%EA%B0%9C%EB%B0%9C%EC%83%88%EB%B0%9C-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84?type=design&node-id=0-1&t=hl7qhMJuREdkFbCJ-0"><img src="roughcode-image/docs-storyboard.JPG"/></a>
+</details>  
 
 
-## 서비스 화면
+## 🔎 서비스 화면
 ### 메인 페이지
 - 사이트 소개와 함께 프로젝트, 코드 리뷰, 로그인 바로가기 버튼이 존재합니다.
 
