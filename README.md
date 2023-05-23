@@ -89,32 +89,71 @@
 ### 메인 페이지
 - 사이트 소개와 함께 프로젝트, 코드 리뷰, 로그인 바로가기 버튼이 존재합니다.
 
+    - 로그인 전
+    ![메인 페이지](roughcode-image/main.png)
+    - 로그인 후
+    ![메인 페이지-알람](roughcode-image/main-alarm.gif)
+
+
 ### 프로젝트 공유
 
 - 프로젝트는 태그별 필터링이 가능하고 작성일시, 좋아요, 피드백 순으로 정렬이 가능합니다. 무한스크롤로 구현하였습니다.
 
-- 프로젝트 상세 페이지에서는 버전별 업데이트 정보를 확인할 수 있고, 피드백을 남길 수 있습니다.
+![프로젝트](roughcode-image/project.gif)
+    - 검색
+    ![프로젝트](roughcode-image/project-search.gif)
+
+
+- 프로젝트 상세 페이지에서는 버전별 업데이트 정보를 확인할 수 있고, 피드백을 남기거나 신고할 수 있습니다.
+    - 프로젝트 상세
+    ![프로젝트-상세](roughcode-image/project-detail.png)
+    - 프로젝트 버전별 정보
+    ![프로젝트-버전](roughcode-image/project-version.gif)
+    - 프로젝트 피드백
+    ![프로젝트-피드백](roughcode-image/project-feedback.gif)
+    - 프로젝트 피드백 신고
+    ![프로젝트-피드백-신고](roughcode-image/project-feedback-complain.gif)
 
 - 프로젝트의 URL을 클릭하면 서버가 다운되었는지 확인 후에 열려있는 경우 링크로 연결하고 닫혀있는 경우는 자동으로 닫힘 신고 처리를 합니다.
 
+![프로젝트-url-체크](roughcode-image/project-url-check.gif)
+
 - 유해 사이트 링크가 등록되는 것을 방지하기 위해 프로젝트 등록 시 URL 검사를 필수로 진행합니다.
+    - 프로젝트 등록
+    ![프로젝트-등록](roughcode-image/project-insert.gif)
 
 - 내 프로젝트에 달린 피드백 목록에서 반영하여 개선한 피드백을 선택해 등록할 수 있습니다. 
+![프로젝트-버전업](roughcode-image/project-versionup.gif)
 
 
 ### 코드 리뷰 
+- 코드는 태그별 필터링이 가능하고 작성일시, 좋아요, 피드백 순으로 정렬이 가능합니다. 무한스크롤로 구현하였습니다.
+![코드 리스트](roughcode-image/code.png)
+
 - Github URL을 입력하여 코드 리뷰를 요청할 코드를 간편하게 불러옵니다.
+![코드리뷰 등록](roughcode-image/code-insert.gif)
 
 - 코드 상세 페이지에서는 버전별 업데이트 정보를 확인할 수 있고, 리뷰를 남길 수 있습니다.
-
 - diff 에디터를 통해 기존 코드와 리뷰 작성자가 수정한 코드를 한눈에 비교할 수 있습니다.
+    - 리뷰 남기기
+    ![코드 리뷰](roughcode-image/code-review.gif)
+    - 리리뷰 남기기
+    ![코드 리리뷰](roughcode-image/code-rereview.gif)
 
 - 코드와 연관된 프로젝트가 있다면 기존에 등록한 프로젝트를 코드와 연결할 수 있습니다.
+![코드 연결](roughcode-image/code-project-connect.gif)
 
 
 ### 마이페이지
 - 활동 업적을 기록한 스탯 카드를 제공합니다. 이를 Github 프로필에 표시할 수 있습니다.
+![마이페이지](roughcode-image/mypage.png)
 
 - 이메일을 인증하면 실시간 알림을 제공합니다.
+![마이페이지 이메일 인증](roughcode-image/mypage-emailcheck.gif)
+    - 전송된 이메일
+    ![코드](roughcode-image/email-validation.jpg)
+    - 알림
+    ![코드](roughcode-image/email-alarm.jpg)
 
 - 내가 작성한, 리뷰한, 즐겨찾기한 프로젝트와 코드 목록을 조회합니다.
+![마이페이지 게시물들](roughcode-image/mypage-posts.gif)
