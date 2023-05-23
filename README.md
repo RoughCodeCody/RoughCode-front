@@ -161,4 +161,5 @@
 
 
 ## 🎬 UCC
+아래 사진을 클릭하면 동영상 링크로 이동합니다!
 <a href="https://www.youtube.com/watch?v=Zqv37SNw6HQ"><img src="roughcode-image/docs-ucc-thumbnail.JPG"/></a>
