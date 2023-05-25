@@ -563,10 +563,10 @@ public class CodesServiceImpl implements CodesService {
         target.setExpireDate();
 
         log.info("버전 : " + target.getNum());
-        // 삭제하는 코드 버전이 1이라면 User의 codeCnt값 1 감소
-        if (target.getVersion() == 1) {
-            user.codesCntDown();
-        }
+//        // 삭제하는 코드 버전이 1이라면 User의 codeCnt값 1 감소
+//        if (target.getVersion() == 1) {
+//            user.codesCntDown();
+//        }
 
         return 1;
 
