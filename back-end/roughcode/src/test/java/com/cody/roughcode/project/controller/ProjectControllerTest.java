@@ -46,6 +46,7 @@ import java.util.List;
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -127,6 +128,7 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/{projectId}/close";
         final Long projectId = 1L;
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService).closeProject(any(Long.class), any(Long.class));
 
         // when
@@ -151,6 +153,7 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/{projectId}/close";
         final Long projectId = 1L;
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(0).when(projectsService).closeProject(any(Long.class), any(Long.class));
 
         // when
@@ -175,6 +178,7 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/{projectId}/open";
         final Long projectId = 1L;
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService).openProject(any(Long.class), any(Long.class));
 
         // when
@@ -199,6 +203,7 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/{projectId}/open";
         final Long projectId = 1L;
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(0).when(projectsService).openProject(any(Long.class), any(Long.class));
 
         // when
@@ -224,6 +229,7 @@ public class ProjectControllerTest {
         final Long projectId = 1L;
         String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_2_2023-05-01%2014%3A29%3A07";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService).deleteImage(any(String.class), any(Long.class), any(Long.class));
 
         // when
@@ -251,6 +257,7 @@ public class ProjectControllerTest {
         final Long projectId = 1L;
         String imgUrl = "https://roughcode.s3.ap-northeast-2.amazonaws.com/project/content/kosy318_1_2_2023-05-01%2014%3A29%3A07";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(0).when(projectsService).deleteImage(any(String.class), any(Long.class), any(Long.class));
 
         // when
@@ -278,6 +285,7 @@ public class ProjectControllerTest {
         final Long projectId = 1L;
         MockMultipartFile image = getImage();
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn("imageUrl").when(projectsService).insertImage(any(MultipartFile.class), any(Long.class), any(Long.class));
 
         // when
@@ -304,6 +312,7 @@ public class ProjectControllerTest {
         final Long projectId = 1L;
         MockMultipartFile image = getImage();
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(null).when(projectsService).insertImage(any(MultipartFile.class), any(Long.class), any(Long.class));
 
         // when
@@ -328,6 +337,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback/{feedbackId}/like";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService)
                 .likeProjectFeedback(any(Long.class), any(Long.class));
 
@@ -351,6 +361,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback/{feedbackId}/like";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(-1).when(projectsService)
                 .likeProjectFeedback(any(Long.class), any(Long.class));
 
@@ -374,6 +385,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/{projectId}/favorite";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService)
                 .favoriteProject(any(Long.class), any(Long.class));
 
@@ -399,6 +411,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/{projectId}/favorite";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(-1).when(projectsService)
                 .favoriteProject(any(Long.class), any(Long.class));
 
@@ -424,6 +437,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/{projectId}/like";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService)
                 .likeProject(any(Long.class), any(Long.class));
 
@@ -447,6 +461,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/{projectId}/like";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(-1).when(projectsService)
                 .likeProject(any(Long.class), any(Long.class));
 
@@ -514,6 +529,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback/{feedbackId}/complaint";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService)
                 .feedbackComplain(any(Long.class), any(Long.class));
 
@@ -537,7 +553,8 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback/{feedbackId}/complaint";
 
-        doReturn(0).when(projectsService)
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(-1).when(projectsService)
                 .feedbackComplain(any(Long.class), any(Long.class));
 
         // when
@@ -605,8 +622,9 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/check";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(true).when(projectsService)
-                .checkProject(any(String.class), false);
+                .checkProject(any(String.class), eq(false));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -632,7 +650,8 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/check";
 
-        doReturn(false).when(projectsService).checkProject(any(String.class), false);
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(false).when(projectsService).checkProject(any(String.class), eq(false));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -658,6 +677,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback/{feedbackId}";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService)
                 .deleteFeedback(any(Long.class), any(Long.class));
 
@@ -682,6 +702,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback/{feedbackId}";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(0).when(projectsService)
                 .deleteFeedback(any(Long.class), any(Long.class));
 
@@ -706,6 +727,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback/{feedbackId}";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "채택된 피드백은 삭제할 수 없습니다"))
                 .when(projectsService)
                 .deleteFeedback(any(Long.class), any(Long.class));
@@ -739,8 +761,9 @@ public class ProjectControllerTest {
                 .selected(true)
                 .build();
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(List.of(feedbackInfoRes)).when(projectsService)
-                .getFeedbackList(any(Long.class), any(Long.class));
+                .getFeedbackList(any(Long.class), any(Long.class), any(Boolean.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -763,8 +786,9 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/{projectId}/feedback";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(null).when(projectsService)
-                .getFeedbackList(any(Long.class), any(Long.class));
+                .getFeedbackList(any(Long.class), any(Long.class), any(Boolean.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -792,6 +816,7 @@ public class ProjectControllerTest {
                 .feedbackId(1L)
                 .build();
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(true).when(projectsService)
                 .updateFeedback(any(FeedbackUpdateReq.class), any(Long.class));
 
@@ -818,6 +843,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "채택된 피드백은 수정할 수 없습니다"))
                 .when(projectsService)
                 .updateFeedback(any(FeedbackUpdateReq.class), any(Long.class));
@@ -845,6 +871,7 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/feedback";
 
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(false).when(projectsService)
                 .updateFeedback(any(FeedbackUpdateReq.class), any(Long.class));
 
@@ -991,19 +1018,19 @@ public class ProjectControllerTest {
                 .build();
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(project.getModifiedDate())
+                        .date(project.getCreatedDate())
                         .img(project.getImg())
                         .projectId(project.getProjectsId())
                         .feedbackCnt(project.getFeedbackCnt())
                         .introduction(project.getIntroduction())
                         .likeCnt(project.getLikeCnt())
-                        .tags(List.of("springboot"))
+                        .tags(tagsResInit())
                         .title(project.getTitle())
                         .version(project.getVersion())
                         .build()
         );
         doReturn(Pair.of(projectInfoRes, false)).when(projectsService)
-                .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
+                .getProjectList(any(Long.class), any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
         String keyword = "title";
         String tagIds = "2";
@@ -1012,7 +1039,7 @@ public class ProjectControllerTest {
         // when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
-                        .param("sort", "modifiedDate")
+                        .param("sort", "createdDate")
                         .param("page", String.valueOf(page))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(req))
@@ -1045,19 +1072,19 @@ public class ProjectControllerTest {
                 .build();
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(project.getModifiedDate())
+                        .date(project.getCreatedDate())
                         .img(project.getImg())
                         .projectId(project.getProjectsId())
                         .feedbackCnt(project.getFeedbackCnt())
                         .introduction(project.getIntroduction())
                         .likeCnt(project.getLikeCnt())
-                        .tags(List.of("springboot"))
+                        .tags(tagsResInit())
                         .title(project.getTitle())
                         .version(project.getVersion())
                         .build()
         );
         doReturn(Pair.of(projectInfoRes, false)).when(projectsService)
-                .getProjectList(any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
+                .getProjectList(any(Long.class), any(String.class), any(PageRequest.class), any(String.class), any(String.class), any(int.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -1081,9 +1108,9 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/{projectId}";
 
-        doReturn(1).when(projectsService)
-                .deleteProject(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(1).when(projectsService)
+                .putExpireDateProject(any(Long.class), any(Long.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -1106,9 +1133,9 @@ public class ProjectControllerTest {
         // given
         final String url = "/api/v1/project/{projectId}";
 
-        doReturn(0).when(projectsService)
-                .deleteProject(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(0).when(projectsService)
+                .putExpireDateProject(any(Long.class), any(Long.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -1162,9 +1189,9 @@ public class ProjectControllerTest {
         final String url = "/api/v1/project/{projectId}/connect";
         List<Long> req = List.of(0L, 1L, 2L);
 
-        doReturn(0).when(projectsService)
-                .connect(any(Long.class), any(Long.class), any(List.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
+        doReturn(-1).when(projectsService)
+                .connect(any(Long.class), any(Long.class), any(List.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -1248,6 +1275,7 @@ public class ProjectControllerTest {
         MockMultipartFile thumbnail = getImage();
 
         // ProjectsService updateProjectThumbnail 대한 stub 필요
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(1).when(projectsService).updateProjectThumbnail(any(MultipartFile.class), any(Long.class), any(Long.class));
 
         // when
@@ -1275,6 +1303,7 @@ public class ProjectControllerTest {
         MockMultipartFile thumbnail = getImage();
 
         // ProjectsService updateProjectThumbnail 대한 stub 필요
+        doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
         doReturn(-1).when(projectsService).updateProjectThumbnail(any(MultipartFile.class), any(Long.class), any(Long.class));
 
         // when

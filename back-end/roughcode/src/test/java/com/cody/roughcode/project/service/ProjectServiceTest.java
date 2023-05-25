@@ -38,8 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.cody.roughcode.user.enums.Role.ROLE_USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -78,9 +77,13 @@ public class ProjectServiceTest {
     @Mock
     private FeedbacksRepository feedbacksRepository;
     @Mock
+    private FeedbacksComplainsRepository feedbacksComplainsRepository;
+    @Mock
     private SelectedFeedbacksRepository selectedFeedbacksRepository;
     @Mock
     private ProjectFavoritesRepository projectFavoritesRepository;
+    @Mock
+    private ProjectFavoritesQRepository projectFavoritesQRepository;
     @Mock
     private ProjectLikesRepository projectLikesRepository;
     @Mock
@@ -105,6 +108,17 @@ public class ProjectServiceTest {
             .projectsId(1L)
             .num(1L)
             .version(1)
+            .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
+            .introduction("intro")
+            .title("title")
+            .projectWriter(users)
+            .feedbackCnt(1)
+            .build();
+
+    final Projects project2 = Projects.builder()
+            .projectsId(1L)
+            .num(1L)
+            .version(2)
             .img("https://roughcode.s3.ap-northeast-2.amazonaws.com/project/7_1")
             .introduction("intro")
             .title("title")
@@ -141,6 +155,20 @@ public class ProjectServiceTest {
             tagsList.add(ProjectTags.builder()
                     .tagsId(i)
                     .name("tag1")
+                    .build());
+        }
+
+        return tagsList;
+    }
+
+    private List<ProjectTagsRes> tagsResInit() {
+        List<String> list = List.of("SpringBoot", "React", "AWS");
+        List<ProjectTagsRes> tagsList = new ArrayList<>();
+        for (long i = 1L; i <= 3L; i++) {
+            tagsList.add(ProjectTagsRes.builder()
+                    .tagId(i)
+                    .name(list.get((int)i-1))
+                    .cnt(0)
                     .build());
         }
 
@@ -638,26 +666,28 @@ public class ProjectServiceTest {
         assertThat(open).isEqualTo(-1);
     }
 
-    @DisplayName("feedback 신고 성공")
+    @DisplayName("feedback 신고 성공 - 5번 안됨")
     @Test
     void feedbackComplainSucceed(){
         // given
         Feedbacks feedback = Feedbacks.builder()
                 .content("feedback")
                 .selected(0)
-                .users(users)
+                .users(users2)
                 .feedbacksId(1L)
                 .projectsInfo(info)
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+        doReturn(null).when(feedbacksComplainsRepository).findByFeedbacksAndUsers(any(Feedbacks.class), any(Users.class));
+        doReturn(new ArrayList<>()).when(feedbacksComplainsRepository).findByFeedbacks(any(Feedbacks.class));
 
         // when
         int success = projectsService.feedbackComplain(1L, 1L);
 
         // then
-        assertThat(success).isEqualTo(1);
+        assertThat(success).isEqualTo(0);
     }
 
     @DisplayName("feedback 신고 실패 - 이미 삭제된 피드백")
@@ -667,9 +697,10 @@ public class ProjectServiceTest {
         Feedbacks feedback = Feedbacks.builder()
                 .content("")
                 .selected(0)
-                .users(users)
+                .users(users2)
                 .feedbacksId(1L)
                 .projectsInfo(info)
+                .complained(LocalDateTime.now())
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
@@ -689,14 +720,20 @@ public class ProjectServiceTest {
         Feedbacks feedback = Feedbacks.builder()
                 .content("feedback")
                 .selected(0)
-                .users(users)
+                .users(users2)
                 .feedbacksId(1L)
                 .projectsInfo(info)
-                .complaint("1")
+                .build();
+
+        FeedbacksComplains complains = FeedbacksComplains.builder()
+                .feedbacksComplainsId(1L)
+                .feedbacks(feedbacks)
+                .users(users)
                 .build();
 
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(feedback).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
+        doReturn(complains).when(feedbacksComplainsRepository).findByFeedbacksAndUsers(any(Feedbacks.class), any(Users.class));
 
         // when & then
         ResponseStatusException exception = assertThrows(
@@ -751,7 +788,6 @@ public class ProjectServiceTest {
     void checkProjectUrlSafe() throws IOException {
         // given
         String url = "http://www.google.com";
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
         Boolean success = projectsService.checkProject(url, false);
@@ -765,7 +801,6 @@ public class ProjectServiceTest {
     void checkProjectUrlNotSafe() throws IOException {
         // given
         String url = "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/";
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when
         Boolean success = projectsService.checkProject(url, false);
@@ -779,7 +814,6 @@ public class ProjectServiceTest {
     void checkProjectUrlNotOpened() throws IOException {
         // given
         String url = "http://15.164.198.227:8080";
-        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
 
         // when & then
         IOException exception = assertThrows(
@@ -834,7 +868,8 @@ public class ProjectServiceTest {
 
     @DisplayName("피드백 삭제 실패 - 존재하지 않는 피드백입니다")
     @Test
-    void deleteFeedbackFailNoFeedback(){
+    void deleteFeedbackFailNoFeedback()
+    {
         // given
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(null).when(feedbacksRepository).findByFeedbacksId(any(Long.class));
@@ -845,7 +880,6 @@ public class ProjectServiceTest {
         );
         assertEquals("일치하는 피드백이 존재하지 않습니다", exception.getMessage());
     }
-
     @DisplayName("피드백 삭제 실패 - 피드백 작성자 != 로그인 유저")
     @Test
     void deleteFeedbackFailNotMatch(){
@@ -892,13 +926,43 @@ public class ProjectServiceTest {
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
 
         // when
-        List<FeedbackInfoRes> success = projectsService.getFeedbackList(1L, 1L);
+        List<FeedbackInfoRes> success = projectsService.getFeedbackList(1L, 1L, true);
 
         // then
         assertThat(success.size()).isEqualTo(1);
     }
 
-    @DisplayName("피드백 수정 성공")
+
+    @DisplayName("피드백 목록 조회 성공 - 수정")
+    @Test
+    void getFeedbackListSucceedModify(){
+        // given
+        Feedbacks feedbacks = Feedbacks.builder()
+                .feedbacksId(1L)
+                .content("feedback")
+                .selected(0)
+                .users(users)
+                .build();
+
+        final ProjectsInfo info = ProjectsInfo.builder()
+                .url("www.google.com")
+                .notice("notice")
+                .feedbacks(List.of(feedbacks))
+                .build();
+
+        doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
+        doReturn(project2).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
+        doReturn(Arrays.asList(project2, project)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
+
+        // when
+        List<FeedbackInfoRes> success = projectsService.getFeedbackList(1L, 1L, false); // 수정인 경우
+
+        // then
+        assertThat(success.size()).isEqualTo(1);
+    }
+
+    @DisplayName("피드백 수정 성공 - 버전업")
     @Test
     void updateFeedbackSucceed(){
         // given
@@ -1151,7 +1215,7 @@ public class ProjectServiceTest {
         doReturn(null).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(project).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(info).when(projectsInfoRepository).findByProjects(any(Projects.class));
-        doReturn(List.of(project, project2)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
+        doReturn(Arrays.asList(project, project2)).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
 
         // when
         ProjectDetailRes success = projectsService.getProject(projectId, 0L);
@@ -1186,18 +1250,18 @@ public class ProjectServiceTest {
                         .build()
         );
 
-        String sort = "modifiedDate";
+        String sort = "createdDate";
         int page = 0;
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1213,7 +1277,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().get(0).getProjectId()).isEqualTo(1L);
@@ -1251,13 +1315,13 @@ public class ProjectServiceTest {
         int closed = 1;
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1270,7 +1334,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1309,13 +1373,13 @@ public class ProjectServiceTest {
         int closed = 1;
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1328,7 +1392,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1361,13 +1425,13 @@ public class ProjectServiceTest {
         );
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1386,7 +1450,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1419,13 +1483,13 @@ public class ProjectServiceTest {
         );
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1444,7 +1508,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1477,13 +1541,13 @@ public class ProjectServiceTest {
         );
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1502,7 +1566,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectsRepository).findAllOpenedByKeyword(keyword, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1542,13 +1606,13 @@ public class ProjectServiceTest {
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1561,7 +1625,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectSelectedTagsRepository).findAllByKeywordAndTag(keyword, List.of(2L), 1L, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -1601,13 +1665,13 @@ public class ProjectServiceTest {
 
         List<ProjectInfoRes> projectInfoRes = List.of(
                 ProjectInfoRes.builder()
-                        .date(projectsList.get(0).getModifiedDate())
+                        .date(projectsList.get(0).getCreatedDate())
                         .img(projectsList.get(0).getImg())
                         .projectId(projectsList.get(0).getProjectsId())
                         .feedbackCnt(projectsList.get(0).getFeedbackCnt())
                         .introduction(projectsList.get(0).getIntroduction())
                         .likeCnt(projectsList.get(0).getLikeCnt())
-                        .tags(List.of(tagsList.get(1).getName()))
+                        .tags(tagsResInit())
                         .title(projectsList.get(0).getTitle())
                         .version(projectsList.get(0).getVersion())
                         .build()
@@ -1620,7 +1684,7 @@ public class ProjectServiceTest {
         doReturn(projectsPage).when(projectSelectedTagsRepository).findAllOpenedByKeywordAndTag(keyword, List.of(2L), 1L, pageRequest);
 
         // when
-        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(sort, pageRequest, keyword, tagIds, closed);
+        Pair<List<ProjectInfoRes>, Boolean> result = projectsService.getProjectList(1L, sort, pageRequest, keyword, tagIds, closed);
 
         // then
         assertThat(result.getLeft().size()).isEqualTo(1);
@@ -2100,6 +2164,7 @@ public class ProjectServiceTest {
         doReturn(users).when(usersRepository).findByUsersId(any(Long.class));
         doReturn(original).when(projectsRepository).findByProjectsIdAndExpireDateIsNull(any(Long.class));
         doReturn(original).when(projectsRepository).findLatestProject(any(Long.class), any(Long.class));
+        doReturn(new ArrayList<>()).when(projectsRepository).findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(any(Long.class), any(Users.class));
         doReturn(project).when(projectsRepository).save(any(Projects.class));
         doReturn(tagsList.get(0)).when(projectTagsRepository).findByTagsId(any(Long.class));
 

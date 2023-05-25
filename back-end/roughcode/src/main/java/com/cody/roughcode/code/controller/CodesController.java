@@ -2,10 +2,7 @@ package com.cody.roughcode.code.controller;
 
 import com.cody.roughcode.code.dto.req.CodeFavoriteReq;
 import com.cody.roughcode.code.dto.req.CodeReq;
-import com.cody.roughcode.code.dto.res.CodeDetailRes;
-import com.cody.roughcode.code.dto.res.CodeInfoRes;
-import com.cody.roughcode.code.dto.res.CodeTagsRes;
-import com.cody.roughcode.code.dto.res.ReviewInfoRes;
+import com.cody.roughcode.code.dto.res.*;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
@@ -31,6 +28,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Validated
 @RestController
@@ -54,14 +52,14 @@ public class CodesController {
     })
     @GetMapping()
     ResponseEntity<?> getCodeList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
-                                  @Parameter(description = "정렬 기준 ('modifiedDate':최신순, 'likeCnt':좋아요수 많은순, 'reviewCnt':리뷰수 많은순)", example = "modifiedDate") @RequestParam(defaultValue = "modifiedDate") String sort,
+                                  @Parameter(description = "정렬 기준 ('createdDate':최신순, 'likeCnt':좋아요수 많은순, 'reviewCnt':리뷰수 많은순)", example = "createdDate") @RequestParam(defaultValue = "createdDate") String sort,
                                   @Parameter(description = "페이지 수", example = "0") @RequestParam(defaultValue = "0") int page,
                                   @Parameter(description = "한 페이지에 담기는 개수", example = "10") @RequestParam(defaultValue = "10") int size,
-                                  @Parameter(description = "검색어", example = "개발새발") @RequestParam(defaultValue = "") String keyword,
-                                  @Parameter(description = "태그 아이디 리스트", example = "1,2,3,4") @RequestParam(defaultValue = "") String tagIdList) {
+                                  @Parameter(description = "검색어", example = "") @RequestParam(defaultValue = "") String keyword,
+                                  @Parameter(description = "언어 아이디 리스트", example = "") @RequestParam(defaultValue = "") String tagIdList) {
         Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
 
-        List<String> sortList = List.of("modifiedDate", "likeCnt", "reviewCnt");
+        List<String> sortList = List.of("createdDate", "likeCnt", "reviewCnt");
 
         if (!sortList.contains(sort) || page < 0 || size < 0) {
             return Response.badRequest("잘못된 요청입니다");
@@ -93,7 +91,7 @@ public class CodesController {
                                  @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         if (codeReq.getCodeId() == 0 || codeReq.getCodeId() < -1) {
@@ -157,7 +155,7 @@ public class CodesController {
                                  @Parameter(description = "코드 정보 값", required = true) @Valid @RequestBody CodeReq codeReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -188,12 +186,12 @@ public class CodesController {
                                  @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
         try {
-            res = codesService.deleteCode(codeId, userId);
+            res = codesService.putExpireDateCode(codeId, userId);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
@@ -219,7 +217,7 @@ public class CodesController {
                                @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -254,7 +252,7 @@ public class CodesController {
                                    @PathVariable Long codeId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         String content = codeFavoriteReq != null ? codeFavoriteReq.getContent() : null;
@@ -279,12 +277,12 @@ public class CodesController {
 
     @Operation(summary = "코드 태그 목록 조회 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
+            @ApiResponse(responseCode = "200", description = "코드 태그 목록 조회 성공", content = {
                     @Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = CodeTagsRes.class)))
             }),
-            @ApiResponse(responseCode = "400", description = "코드 리뷰 목록 조회 실패")
+            @ApiResponse(responseCode = "400", description = "코드 태그 목록 조회 실패")
     })
     @GetMapping("/tag")
     ResponseEntity<?> searchTags(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
@@ -299,7 +297,7 @@ public class CodesController {
         return Response.makeResponse(HttpStatus.OK, "코드 태그 목록 조회 성공", res.size(), res);
     }
 
-    @Operation(summary = "코드 리뷰 목록 조회 API")
+    @Operation(summary = "코드 리뷰 목록 조회 API - 코드 등록/수정 시 사용")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
                     @Content(
@@ -313,15 +311,16 @@ public class CodesController {
     ResponseEntity<?> getReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                     @Parameter(description = "코드 id 값", required = true)
                                     @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
-                                    @PathVariable Long codeId) {
+                                    @PathVariable Long codeId,
+                                    @RequestParam(defaultValue = "true") boolean versionUp) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         List<ReviewInfoRes> res = null;
         try {
-            res = codesService.getReviewList(codeId, userId);
+            res = codesService.getReviewList(codeId, userId, versionUp);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
@@ -331,5 +330,92 @@ public class CodesController {
             return Response.notFound("코드 리뷰 목록 조회 실패");
         }
         return Response.makeResponse(HttpStatus.OK, "코드 리뷰 목록 조회 성공", res.size(), res);
+    }
+
+    @Operation(summary = "코드 리뷰 목록 조회 API - 코드 상세조회 시 사용")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 리뷰 목록 조회 성공", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ReviewSearchRes.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 리뷰 목록 조회 실패")
+    })
+    @GetMapping("/{codeId}/code-review")
+    ResponseEntity<?> getCodeReviewList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                        @Parameter(description = "코드 id 값", required = true)
+                                        @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                                        @PathVariable Long codeId,
+                                        @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword) {
+        Long userId = accessToken != null ? jwtTokenProvider.getId(accessToken) : -1L;
+
+        List<ReviewSearchRes> res = null;
+        try {
+            res = codesService.getReviewSearchList(codeId, userId, keyword);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res == null) {
+            return Response.notFound("코드 리뷰 목록 조회 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드 리뷰 목록 조회 성공", res.size(), res);
+    }
+
+    @Operation(summary = "코드와 프로젝트 연결 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 프로젝트 연결 성공"),
+            @ApiResponse(responseCode = "400", description = "일치하는 유저 or 코드가 존재하지 않습니다"),
+            @ApiResponse(responseCode = "404", description = "코드 프로젝트 연결 실패")
+    })
+    @PutMapping("/{codeId}/connect/{projectId}")
+    ResponseEntity<?> connectCodeProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
+                                         @Parameter(description = "코드 id 값", required = true)
+                                         @Range(min = 1, max = Long.MAX_VALUE, message = "codeId 값이 범위를 벗어납니다")
+                                         @PathVariable Long codeId,
+                                         @Parameter(description = "연결하려는 프로젝트 id 값")
+                                         @Range(min = -1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
+                                         @PathVariable Long projectId) {
+        Long userId = jwtTokenProvider.getId(accessToken);
+        if (userId <= 0) {
+            return Response.badRequestNoUser();
+        }
+
+        int res = -1;
+        try {
+            res = codesService.connectProject(codeId, userId, projectId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if (res < 0) {
+            return Response.notFound("코드와 프로젝트 연결 실패");
+        }
+        return Response.makeResponse(HttpStatus.OK, "코드와 프로젝트 연결 성공", 0, res);
+    }
+
+    @Operation(summary = "코드 언어 목록 조회 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "코드 언어 목록 조회 성공", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CodeTagsRes.class)))
+            }),
+            @ApiResponse(responseCode = "400", description = "코드 언어 목록 조회 실패")
+    })
+    @GetMapping("/language")
+    ResponseEntity<?> searchLanguages(@Parameter(description = "검색 키워드") @RequestParam String keyword) {
+        List<CodeLanguagesRes> res;
+        try {
+            res = codesService.searchLanguages(keyword);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest("코드 언어 목록 조회 실패");
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "코드 언어 목록 조회 성공", res.size(), res);
     }
 }

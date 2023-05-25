@@ -39,8 +39,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 
 import javax.mail.MessagingException;
-import javax.servlet.ServletContext;
-import java.io.FileInputStream;
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -51,8 +50,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Service
 @Slf4j
@@ -66,14 +63,19 @@ public class ProjectsServiceImpl implements ProjectsService{
     private final ProjectsRepository projectsRepository;
     private final ProjectsInfoRepository projectsInfoRepository;
     private final ProjectSelectedTagsRepository projectSelectedTagsRepository;
+    private final ProjectSelectedTagsQRepository projectSelectedTagsQRepository;
     private final ProjectTagsRepository projectTagsRepository;
     private final CodesRepository codesRepository;
     private final FeedbacksRepository feedbacksRepository;
+    private final FeedbacksComplainsRepository feedbacksComplainsRepository;
     private final SelectedFeedbacksRepository selectedFeedbacksRepository;
     private final ProjectFavoritesRepository projectFavoritesRepository;
+    private final ProjectFavoritesQRepository projectFavoritesQRepository;
     private final ProjectLikesRepository projectLikesRepository;
     private final FeedbacksLikesRepository feedbacksLikesRepository;
     private final EmailServiceImpl emailService;
+
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -129,7 +131,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             }
 
             // 알람 받을 사람 등록
-            List<Users> favoritedUsers = projectFavoritesRepository.findByProjects(original);
+            List<Users> favoritedUsers = projectFavoritesQRepository.findByProjects(original);
             if(favoritedUsers != null)
                 for (Users u : favoritedUsers) {
                     bookmarkAlarm.add(u.getUsersId());
@@ -206,7 +208,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("북마크한", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
+                    .content(List.of("북마크한 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "가 업데이트 되었습니다"))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -217,7 +219,7 @@ public class ProjectsServiceImpl implements ProjectsService{
             AlarmReq alarmContent = AlarmReq.builder()
                     .section("project")
                     .userId(id)
-                    .content(List.of("작성한 피드백이 반영된", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "업데이트"))
+                    .content(List.of("작성한 피드백이 반영된 프로젝트, ", savedProject.getTitle() + " ver" + (savedProject.getVersion() - 1) + "의 새 버전 ver" + savedProject.getVersion(), "가 업데이트 되었습니다."))
                     .postId(projectId).build();
             alarmService.insertAlarm(alarmContent);
 
@@ -561,7 +563,55 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public Pair<List<ProjectInfoRes>, Boolean> getProjectList(String sort, PageRequest pageRequest,
+    public void deleteExpiredProject() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Projects> expiredProjects = projectsRepository.findByExpireDateBefore(now);
+
+        // 삭제될 프로젝트가 없으면 함수 종료
+        if (expiredProjects == null) {
+            return;
+        }
+
+        for(Projects target: expiredProjects){
+            // 연결된 코드에서 프로젝트 제거
+            if (target.getProjectsCodes() != null) {
+                for (Codes targetCode: target.getProjectsCodes()) {
+                    targetCode.setProject(null);
+                }
+            }
+        }
+
+        // 기존에 선택한 태그 삭제
+        projectSelectedTagsRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 기존에 선택한 피드백 삭제
+        selectedFeedbacksRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트에 등록된 피드백 좋아요 목록 삭제
+        feedbacksLikesRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트에 등록딘 피드백 목록 삭제
+        feedbacksRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 좋아요 목록 삭제
+        projectLikesRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 즐겨찾기 목록 삭제
+        projectFavoritesRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 정보 삭제
+        projectsInfoRepository.deleteAllByProjectsList(expiredProjects);
+
+        // 프로젝트 삭제
+        projectsRepository.deleteAll(expiredProjects);
+
+        // 영속성 컨텍스트 초기화
+        entityManager.clear();
+    }
+
+    @Override
+    @Transactional
+    public Pair<List<ProjectInfoRes>, Boolean> getProjectList(Long usersId, String sort, PageRequest pageRequest,
                                                              String keyword, String tagIds, int closed) {
         List<Long> tagIdList = null;
         if(tagIds.length() > 0)
@@ -569,6 +619,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .map(Long::valueOf)
                     .collect(Collectors.toList());
 
+        log.info("find project list of" + ((closed == 1)?" closed and opened" : " only opened"));
         if(keyword == null) keyword = "";
         Page<Projects> projectsPage = null;
         if(tagIdList == null || tagIdList.size() == 0){ // tag 검색 x
@@ -585,7 +636,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         }
 
-        Pair<List<ProjectInfoRes>, Boolean> res = Pair.of(getProjectInfoRes(projectsPage), projectsPage.hasNext());
+        Pair<List<ProjectInfoRes>, Boolean> res = Pair.of(getProjectInfoRes(projectsPage, usersRepository.findByUsersId(usersId)), projectsPage.hasNext());
         return res;
     }
 
@@ -598,7 +649,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         ProjectsInfo projectsInfo = projectsInfoRepository.findByProjects(project);
         if(projectsInfo == null) throw new NullPointerException("일치하는 프로젝트가 존재하지 않습니다");
 
-        List<String> tagList = getTagNames(project);
+        List<ProjectTagsRes> tagList = getTags(project);
         ProjectFavorites myFavorite = (user != null)? projectFavoritesRepository.findByProjectsAndUsers(project, user) : null;
         ProjectLikes myLike = (user != null) ? projectLikesRepository.findByProjectsAndUsers(project, user) : null;
         Boolean liked = myLike != null;
@@ -627,7 +678,7 @@ public class ProjectsServiceImpl implements ProjectsService{
                     .notice(p.getRight().getNotice())
                     .projectId(p.getLeft().getProjectsId())
                     .version(p.getLeft().getVersion())
-                    .date(p.getLeft().getModifiedDate())
+                    .date(p.getLeft().getCreatedDate())
                     .build());
         }
         projectDetailRes.setVersions(versionResList);
@@ -766,7 +817,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         LocalDateTime now = LocalDateTime.now();
         if (projectsInfo.getClosedChecked() == null) { // 처음 닫힌 것이 확인됨
             AlarmReq alarmContent = AlarmReq.builder()
-                    .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "닫힘 확인 요청"))
+                    .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "이 닫혔는지 확인 요청 드립니다"))
                     .userId(project.getProjectWriter().getUsersId())
                     .postId(project.getProjectsId())
                     .section("project")
@@ -780,7 +831,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         } else { // 전에도 닫혀있음이 확인됐었음
             if (now.isAfter(projectsInfo.getClosedChecked().plusMinutes(60))) { // 1시간 이상 지났으면
                 AlarmReq alarmContent = AlarmReq.builder()
-                        .content(List.of("", project.getTitle() + " ver" + project.getVersion(), "확인 요청 후 1시간이 초과되어 닫힘 상태로 변경"))
+                        .content(List.of("프로젝트 ", project.getTitle() + " ver" + project.getVersion(), "확인 요청 후 1시간이 초과되어 닫힘 상태로 변경"))
                         .userId(project.getProjectWriter().getUsersId())
                         .postId(project.getProjectsId())
                         .section("project")
@@ -877,7 +928,7 @@ public class ProjectsServiceImpl implements ProjectsService{
         projectsRepository.save(project);
 
         AlarmReq alarmContent = AlarmReq.builder()
-                .content(List.of("작성한", project.getTitle() + " ver" + project.getVersion(), "새 피드백 등록"))
+                .content(List.of("작성한 프로젝트, ", project.getTitle() + " ver" + project.getVersion(), "에 새 피드백이 등록되었습니다"))
                 .userId(project.getProjectWriter().getUsersId())
                 .postId(project.getProjectsId())
                 .section("project")
@@ -911,7 +962,7 @@ public class ProjectsServiceImpl implements ProjectsService{
 
     @Override
     @Transactional
-    public List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId) {
+    public List<FeedbackInfoRes> getFeedbackList(Long projectId, Long usersId, boolean versionUp) {
         Users users = usersRepository.findByUsersId(usersId);
         if(users == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
 
@@ -920,13 +971,14 @@ public class ProjectsServiceImpl implements ProjectsService{
 
         List<Projects> allVersion = projectsRepository.findByNumAndProjectWriterAndExpireDateIsNullOrderByVersionDesc(project.getNum(), users);
 
+        int idx = (versionUp)? 0 : 1;
         List<FeedbackInfoRes> feedbackInfoResList = new ArrayList<>();
-        for (Projects p : allVersion) {
-            ProjectsInfo info = projectsInfoRepository.findByProjects(p);
+        for (; idx < allVersion.size(); idx++) {
+            ProjectsInfo info = projectsInfoRepository.findByProjects(allVersion.get(idx));
             List<Feedbacks> feedbacksList = info.getFeedbacks();
             for (Feedbacks f : feedbacksList) {
-                if(f.getContent() == null || f.getContent().equals("")) continue;
-                feedbackInfoResList.add(new FeedbackInfoRes(f, p.getVersion(), f.getUsers()));
+                if(f.getComplained() != null) continue; // 신고된 피드백
+                feedbackInfoResList.add(new FeedbackInfoRes(f, allVersion.get(idx).getVersion(), f.getUsers()));
             }
         }
 
@@ -967,22 +1019,33 @@ public class ProjectsServiceImpl implements ProjectsService{
         if(feedbacks == null)
             throw new NullPointerException("일치하는 피드백이 존재하지 않습니다");
 
-        List<String> complainList = (feedbacks.getComplaint().equals(""))? new ArrayList<>() : new ArrayList<>(List.of(feedbacks.getComplaint().split(",")));
+        if(feedbacks.getUsers() != null && feedbacks.getUsers().getUsersId().equals(users.getUsersId()))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "피드백 작성자와 신고 유저가 동일합니다");
 
-        if(feedbacks.getContent() == null || feedbacks.getContent().equals(""))
+        if(feedbacks.getComplained() != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 삭제된 피드백입니다");
-        if(feedbacks.getComplaint().contains(String.valueOf(usersId)))
+
+        FeedbacksComplains complains = feedbacksComplainsRepository.findByFeedbacksAndUsers(feedbacks, users);
+        if(complains != null)
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신고한 피드백입니다");
 
-        log.info(complainList.size() + "번 신고된 피드백입니다");
-        if(complainList.size() >= 10){
-            feedbacks.deleteContent();
-        }
-        complainList.add(String.valueOf(usersId));
-        feedbacks.setComplaint(complainList);
-        feedbacksRepository.save(feedbacks);
+        List<FeedbacksComplains> complainList = feedbacksComplainsRepository.findByFeedbacks(feedbacks);
 
-        return 1;
+        log.info(complainList.size() + "번 신고된 피드백입니다");
+
+        FeedbacksComplains newComplain = FeedbacksComplains.builder()
+                .feedbacks(feedbacks)
+                .users(users)
+                .build();
+
+        feedbacksComplainsRepository.save(newComplain);
+
+        if(complainList.size() + 1 >= 5){
+            feedbacks.setComplained();
+            feedbacksRepository.save(feedbacks);
+        }
+
+        return (feedbacks.getComplained() == null)? 0 : 1;
     }
 
     @Override
@@ -1026,19 +1089,22 @@ public class ProjectsServiceImpl implements ProjectsService{
         return result;
     }
 
-    private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage) {
+    private List<ProjectInfoRes> getProjectInfoRes(Page<Projects> projectsPage, Users user) {
         List<Projects> projectList = projectsPage.getContent();
         List<ProjectInfoRes> projectInfoRes = new ArrayList<>();
         for (Projects p : projectList) {
-            List<String> tagList = getTagNames(p);
+            List<ProjectTagsRes> tagList = getTags(p);
+            ProjectLikes projectLikes = null;
+            if(user != null) projectLikes = projectLikesRepository.findByProjectsAndUsers(p, user);
 
             projectInfoRes.add(ProjectInfoRes.builder()
-                    .date(p.getModifiedDate())
+                    .date(p.getCreatedDate())
                     .img(p.getImg())
                     .projectId(p.getProjectsId())
                     .feedbackCnt(p.getFeedbackCnt())
                     .introduction(p.getIntroduction())
                     .likeCnt(p.getLikeCnt())
+                    .liked(projectLikes != null)
                     .tags(tagList)
                     .title(p.getTitle())
                     .version(p.getVersion())
@@ -1049,11 +1115,16 @@ public class ProjectsServiceImpl implements ProjectsService{
         return projectInfoRes;
     }
 
-    private static List<String> getTagNames(Projects p) {
-        List<String> tagList = new ArrayList<>();
+    private static List<ProjectTagsRes> getTags(Projects p) {
+        List<ProjectTagsRes> tagList = new ArrayList<>();
         if(p.getSelectedTags() != null)
             for (ProjectSelectedTags selected : p.getSelectedTags()) {
-                tagList.add(selected.getTags().getName());
+                tagList.add(
+                        ProjectTagsRes.builder()
+                                .tagId(selected.getTags().getTagsId())
+                                .name(selected.getTags().getName())
+                                .cnt(selected.getTags().getCnt())
+                                .build());
             }
         return tagList;
     }

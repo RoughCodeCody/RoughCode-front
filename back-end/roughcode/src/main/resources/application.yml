@@ -24,7 +24,7 @@ spring:
           github:
             client-id: ${OAUTH2_CLIENT_ID}
             client-secret: ${OAUTH2_CLIENT_SECRET}
-            redirect-uri: http://${HOST}:8080/api/v1/oauth2/callback/github
+            redirect-uri: "{baseScheme}://{baseHost}/api/v1/login/oauth2/code/{registrationId}"
   redis:
     host: ${HOST}
     port: 6379

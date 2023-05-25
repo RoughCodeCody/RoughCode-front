@@ -2,7 +2,10 @@ package com.cody.roughcode.code.entity;
 
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.List;
 public class ReReviews extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "rereviews_id", nullable = false, columnDefinition = "BIGINT")
     private Long reReviewsId;
 
     @Builder.Default
@@ -33,9 +36,10 @@ public class ReReviews extends BaseTimeEntity {
     private int likeCnt = 0;
 
     @Builder.Default
-    @Column(name = "complaint", nullable = true)
-    private String complaint = "";
+    @Column(name = "complained", nullable = true)
+    private Boolean complained = false;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviews_id", nullable = false)
     private Reviews reviews;
@@ -55,7 +59,7 @@ public class ReReviews extends BaseTimeEntity {
         this.content = "";
     }
 
-    public void setComplaint(List<String> complainList) {
-        this.complaint = String.join(",", complainList);
+    public void setComplained(Boolean status) {
+        this.complained = status;
     }
 }

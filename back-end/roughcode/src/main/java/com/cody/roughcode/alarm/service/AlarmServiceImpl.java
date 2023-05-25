@@ -2,8 +2,8 @@ package com.cody.roughcode.alarm.service;
 
 
 import com.cody.roughcode.alarm.dto.req.AlarmReq;
+import com.cody.roughcode.alarm.dto.res.AlarmRes;
 import com.cody.roughcode.alarm.entity.Alarm;
-import com.cody.roughcode.alarm.entity.AlarmRes;
 import com.cody.roughcode.alarm.repository.AlarmRepository;
 import com.cody.roughcode.exception.NotMatchException;
 import com.cody.roughcode.user.entity.Users;
@@ -14,6 +14,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +30,17 @@ public class AlarmServiceImpl implements AlarmService {
 
     private final List<String> categoryList = List.of("project", "code");
 
+    private Users findUser(Long req) {
+        Users user = usersRepository.findByUsersId(req);
+        if (user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        return user;
+    }
+
     @Override
     @Transactional
     public void insertAlarm(AlarmReq req) {
-        Users user = usersRepository.findByUsersId(req.getUserId());
-        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        findUser(req.getUserId());
 
         if(!categoryList.contains(req.getSection())) throw new NotMatchException("잘못된 접근입니다");
 
@@ -44,8 +51,7 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     @Transactional
     public List<AlarmRes> getAlarmList(Long usersId) {
-        Users user = usersRepository.findByUsersId(usersId);
-        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        findUser(usersId);
 
         return getAlarmRes(alarmRepository.findByUserIdOrderByCreatedDateDesc(usersId));
     }
@@ -61,8 +67,7 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     @Transactional
     public void deleteAlarm(String alarmId, Long usersId) {
-        Users user = usersRepository.findByUsersId(usersId);
-        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+        Users user = findUser(usersId);
 
         Alarm alarm = alarmRepository.findById(new ObjectId(alarmId));
         if(alarm == null) throw new NullPointerException("일치하는 알림이 없습니다");
@@ -72,9 +77,24 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    public void deleteAllAlarm(Long usersId) {
+        Users user = findUser(usersId);
+
+        List<Alarm> alarm = alarmRepository.findByUserId(user.getUsersId());
+        if(alarm == null) throw new NullPointerException("알림을 가져오지 못했습니다");
+
+        alarmRepository.deleteAll(alarm);
+    }
+
+    private final EntityManager entityManager;
+
+    @Override
     @Transactional
     public void deleteLimited() {
         LocalDateTime tenDaysAgo = LocalDateTime.now().minusDays(10);
         alarmRepository.deleteOlderThan(tenDaysAgo);
+
+        // 영속성 컨텍스트 초기화
+        entityManager.clear();
     }
 }

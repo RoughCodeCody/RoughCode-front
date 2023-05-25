@@ -1,14 +1,12 @@
 package com.cody.roughcode.project.dto.res;
 
 import com.cody.roughcode.project.entity.Feedbacks;
-import com.cody.roughcode.user.entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
@@ -33,10 +31,10 @@ public class FeedbackRes { // 1.반영된 피드백, 2.내가 쓴 피드백, 3.�
             this.userId = 0L;
             this.userName = "";
         }
-        this.content = f.getContent();
+        this.content = (f.getComplained() == null)? f.getContent() : "";
         this.like = f.getLikeCnt();
         this.selected = f.getSelected();
-        this.date = f.getModifiedDate();
+        this.date = f.getCreatedDate();
         this.liked = feedbackLiked;
     }
 }

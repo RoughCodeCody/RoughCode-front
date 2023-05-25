@@ -1,7 +1,5 @@
 package com.cody.roughcode.project.dto.res;
 
-import com.cody.roughcode.project.entity.Projects;
-import com.cody.roughcode.project.entity.ProjectsInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,6 +29,10 @@ public class ProjectInfoRes {
     @Schema(description = "좋아요수", example = "1")
     private int likeCnt;
 
+    @Builder.Default
+    @Schema(description = "좋아요 여부", example = "1")
+    private boolean liked = false;
+
     @Schema(description = "피드백수", example = "2")
     private int feedbackCnt;
 
@@ -39,7 +40,7 @@ public class ProjectInfoRes {
     private String img;
 
     @Schema(description = "태그 이름 리스트", example = "[springboot, react]")
-    private List<String> tags;
+    private List<ProjectTagsRes> tags;
 
     @Schema(description = "한줄 설명", example = "개발새발 프로젝트입니다")
     private String introduction;

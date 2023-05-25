@@ -3,6 +3,8 @@ package com.cody.roughcode.config;
 import com.cody.roughcode.alarm.entity.Alarm;
 import com.cody.roughcode.alarm.repository.AlarmRepository;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
+import com.cody.roughcode.code.service.CodesServiceImpl;
+import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -26,22 +28,47 @@ import java.util.List;
 public class BatchConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final AlarmRepository alarmRepository;
     private final AlarmServiceImpl alarmService;
+    private final CodesServiceImpl codesService;
+    private final ProjectsServiceImpl projectsService;
 
     @Bean
     public Job job(){
         return jobBuilderFactory.get("job")
-                .start(step())
+                .start(stepAlarm())
+                .next(stepProject())
+                .next(stepCode())
                 .build();
     }
 
     @Bean
-    public Step step() {
-        return stepBuilderFactory.get("step")
+    public Step stepAlarm() {
+        return stepBuilderFactory.get("stepAlarm")
                 .tasklet((contribution, chunkContext) -> {
-                    log.info("Step!");
+                    log.info("Step! >>>>> Alarm delete");
                     alarmService.deleteLimited();
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+
+    @Bean
+    public Step stepProject() {
+        return stepBuilderFactory.get("stepProject")
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("Step! >>>>> Project delete");
+                    projectsService.deleteExpiredProject();
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+
+    @Bean
+    public Step stepCode() {
+        return stepBuilderFactory.get("stepCode")
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("Step! >>>>> Code delete");
+                    codesService.deleteExpiredCode();
                     return RepeatStatus.FINISHED;
                 })
                 .build();

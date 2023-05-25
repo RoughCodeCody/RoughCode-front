@@ -25,7 +25,7 @@ public class ReReviewRes {
     private String userName;
 
     @Schema(description = "코드 리리뷰 좋아요 수", example = "3")
-    private int likeCnt;
+    private int like;
 
     @Schema(description = "내가 좋아요 눌렀는지 여부", example = "true")
     private Boolean liked;
@@ -34,17 +34,14 @@ public class ReReviewRes {
     private String content;
 
     @Schema(description = "리리뷰 작성 시간", example = "2023-04-13T12:00:00")
-    private LocalDateTime createdDate;
-
-    @Schema(description = "리리뷰 수정 시간 ", example = "2023-04-17T13:40:00")
-    private LocalDateTime modifiedDate;
+    private LocalDateTime date;
 
     public static ReReviewRes toDto(ReReviews reReviews, Boolean liked) {
 
         Long userId;
         String userName;
 
-        if(reReviews.getUsers() != null) {
+        if (reReviews.getUsers() != null) {
             userId = reReviews.getUsers().getUsersId();
             userName = reReviews.getUsers().getName();
         } else { // 익명인 경우
@@ -56,11 +53,10 @@ public class ReReviewRes {
                 .reReviewId(reReviews.getReReviewsId())
                 .userId(userId)
                 .userName(userName)
-                .likeCnt(reReviews.getLikeCnt())
+                .like(reReviews.getLikeCnt())
                 .liked(liked)
-                .content(reReviews.getContent())
-                .createdDate(reReviews.getCreatedDate())
-                .modifiedDate(reReviews.getModifiedDate())
+                .content(Boolean.TRUE.equals(reReviews.getComplained()) ? "" : reReviews.getContent())
+                .date(reReviews.getCreatedDate())
                 .build();
     }
 

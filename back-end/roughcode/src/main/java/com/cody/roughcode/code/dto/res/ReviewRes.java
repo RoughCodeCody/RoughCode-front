@@ -85,13 +85,13 @@ public class ReviewRes {
                 .userId(userId)
                 .userName(userName)
                 .liked(liked)
-                .codeContent(review.getCodeContent())
-                .content(review.getContent())
+                .codeContent(Boolean.TRUE.equals(review.getComplained()) ? "" : review.getCodeContent())
+                .content(Boolean.TRUE.equals(review.getComplained()) ? "" : review.getContent())
                 .lineNumbers(lineNumbers)
                 .likeCnt(review.getLikeCnt())
                 .selected(review.getSelected())
                 .liked(liked)
-                .date(review.getModifiedDate())
+                .date(review.getCreatedDate())
                 .reReviews(reReviews)
                 .build();
     }

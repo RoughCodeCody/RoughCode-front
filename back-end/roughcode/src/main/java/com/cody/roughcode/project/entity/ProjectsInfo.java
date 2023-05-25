@@ -1,7 +1,7 @@
 package com.cody.roughcode.project.entity;
 
-import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ProjectsInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(nullable = false, columnDefinition = "BIGINT")
     private Long id;
 
     @Column(columnDefinition = "text")
@@ -47,6 +47,7 @@ public class ProjectsInfo {
     @JoinColumn(name = "projects_id", nullable = false)
     private Projects projects;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "projectsInfo")
     private List<Feedbacks> feedbacks;
 

@@ -10,6 +10,9 @@ services:
       - MYSQL_DATABASE=roughcode
     ports:
       - "3306:3306"
+    command: [
+      '--wait_timeout=60',
+    ]
   redis:
     image: redis:6.2.6-alpine
     ports:

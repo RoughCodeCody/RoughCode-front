@@ -1,20 +1,15 @@
 package com.cody.roughcode.mypage.controller;
 
-import com.cody.roughcode.alarm.entity.Alarm;
-import com.cody.roughcode.alarm.entity.AlarmRes;
-import com.cody.roughcode.alarm.service.AlarmService;
+import com.cody.roughcode.alarm.dto.res.AlarmRes;
 import com.cody.roughcode.alarm.service.AlarmServiceImpl;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
-import com.cody.roughcode.code.entity.CodesInfo;
 import com.cody.roughcode.email.service.EmailServiceImpl;
 import com.cody.roughcode.mypage.service.MypageServiceImpl;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
-import com.cody.roughcode.project.service.ProjectsServiceImpl;
 import com.cody.roughcode.security.auth.JwtProperties;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.util.Response;
 import com.cody.roughcode.validation.ObjectId;
-import com.google.api.Http;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +42,33 @@ public class MypageController {
     private final MypageServiceImpl mypageService;
     private final EmailServiceImpl emailService;
 
+    @Operation(summary = "스탯 카드 가져오기 API - 기존 형태")
+    @GetMapping("/stat")
+    public ResponseEntity<?> makeStatCardFormat(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                          @Parameter(description = "유저 이름")
+                                          @RequestParam(required = false) String userName){
+        if(accessToken == null && (userName == null || userName.equals(""))) return Response.badRequest("유저의 정보를 입력해주세요");
+
+        String statCard = "";
+        try {
+            if (accessToken != null) {
+                Long userId = jwtTokenProvider.getId(accessToken);
+                if(userId <= 0) return Response.badRequestNoUser();
+
+                statCard = mypageService.makeStatCardWithUserId(userId);
+            } else {
+                statCard = mypageService.makeStatCardWithUserName(userName);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        return Response.makeResponse(HttpStatus.OK, "스탯 카드 정보 만들기 성공", 1, statCard);
+    }
+
     @Operation(summary = "스탯 카드 가져오기 API")
-    @GetMapping
+    @GetMapping(produces = "image/svg+xml")
     public ResponseEntity<?> makeStatCard(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                           @Parameter(description = "유저 이름")
                                           @RequestParam(required = false) String userName){
@@ -59,7 +78,7 @@ public class MypageController {
         try {
             if (accessToken != null) {
                 Long userId = jwtTokenProvider.getId(accessToken);
-                if(userId <= 0) return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+                if(userId <= 0) return Response.badRequestNoUser();
 
                 statCard = mypageService.makeStatCardWithUserId(userId);
             } else {
@@ -74,6 +93,25 @@ public class MypageController {
         //return Response.makeResponse(HttpStatus.OK, "스탯 카드 정보 만들기 성공", 1, statCard);
     }
 
+    @Operation(summary = "이메일 정보 삭제 API")
+    @DeleteMapping("/email")
+    public ResponseEntity<?> deleteEmailInfo(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken) {
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequestNoUser();
+
+        String res = "result";
+        try {
+            res = emailService.deleteEmailInfo(usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+
+        if(!res.equals("")) return Response.notFound("이메일 정보 삭제 실패");
+        return Response.ok("이메일 정보 삭제 성공");
+    }
+
     @Operation(summary = "이메일 인증 API")
     @PutMapping("/email")
     public ResponseEntity<?> checkEmail(@CookieValue(value = JwtProperties.ACCESS_TOKEN, required = true) String accessToken,
@@ -85,7 +123,7 @@ public class MypageController {
                                         @RequestParam String code) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         try {
             boolean checked = emailService.checkEmail(email, code, usersId);
@@ -104,7 +142,7 @@ public class MypageController {
                                                      @RequestParam String email) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         try {
             emailService.sendCertificationEmail(email, usersId);
@@ -126,7 +164,7 @@ public class MypageController {
                                           @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -156,7 +194,7 @@ public class MypageController {
                                         @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
@@ -186,12 +224,12 @@ public class MypageController {
                                   @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<CodeInfoRes>, Boolean> res;
         List<CodeInfoRes> codeRes = new ArrayList<>();
         try{
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
             res = mypageService.getCodeList(pageRequest, usersId);
             codeRes = res.getLeft();
         } catch (Exception e){
@@ -216,7 +254,7 @@ public class MypageController {
                                              @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
@@ -246,7 +284,7 @@ public class MypageController {
                                      @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
@@ -276,13 +314,13 @@ public class MypageController {
                                      @RequestParam(defaultValue = "10") int size) {
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
 
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
         try{
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedDate"));
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
             res = mypageService.getProjectList(pageRequest, usersId);
             projectRes = res.getLeft();
         } catch (Exception e){
@@ -301,7 +339,7 @@ public class MypageController {
     ResponseEntity<?> getAlarmList(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         List<AlarmRes> res = new ArrayList<>();
         try {
@@ -321,7 +359,7 @@ public class MypageController {
                                    @PathVariable String alarmId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         try {
             alarmService.deleteAlarm(alarmId, usersId);
@@ -330,5 +368,21 @@ public class MypageController {
             return Response.badRequest(e.getMessage());
         }
         return Response.ok("알림 삭제 성공");
+    }
+
+    @Operation(summary = "알림 전체 삭제 API")
+    @DeleteMapping("/alarm")
+    ResponseEntity<?> deleteAllAlarm(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken){
+        Long usersId = jwtTokenProvider.getId(accessToken);
+        if(usersId <= 0)
+            return Response.badRequestNoUser();
+
+        try {
+            alarmService.deleteAllAlarm(usersId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.badRequest(e.getMessage());
+        }
+        return Response.ok("알림 전체 삭제 성공");
     }
 }

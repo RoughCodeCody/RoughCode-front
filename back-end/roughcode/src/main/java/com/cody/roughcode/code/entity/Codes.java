@@ -4,6 +4,8 @@ import com.cody.roughcode.code.dto.req.CodeReq;
 import com.cody.roughcode.project.entity.Projects;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,7 +22,7 @@ import java.util.List;
 public class Codes extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "codes_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "codes_id", nullable = false, columnDefinition = "BIGINT")
     private Long codesId;
 
     @Column(name = "num", nullable = false)
@@ -48,19 +50,24 @@ public class Codes extends BaseTimeEntity {
     @Column(name = "expire_date", nullable = true)
     private LocalDateTime expireDate = null;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeSelectedTags> selectedTags;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "projects_id", nullable = true)
     private Projects projects;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<Reviews> reviews;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeFavorites> codeFavorites;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "codes", fetch = FetchType.LAZY)
     private List<CodeLikes> codeLikes;
 
@@ -90,5 +97,9 @@ public class Codes extends BaseTimeEntity {
 
     public void updateTitle(String title){
         this.title = title;
+    }
+
+    public void setExpireDate() {
+        this.expireDate = LocalDateTime.now().plusDays(30L);
     }
 }

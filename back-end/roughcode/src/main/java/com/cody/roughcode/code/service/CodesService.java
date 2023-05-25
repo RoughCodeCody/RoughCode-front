@@ -1,10 +1,7 @@
 package com.cody.roughcode.code.service;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
-import com.cody.roughcode.code.dto.res.CodeDetailRes;
-import com.cody.roughcode.code.dto.res.CodeInfoRes;
-import com.cody.roughcode.code.dto.res.CodeTagsRes;
-import com.cody.roughcode.code.dto.res.ReviewInfoRes;
+import com.cody.roughcode.code.dto.res.*;
 import org.springframework.data.domain.PageRequest;
 
 import javax.mail.MessagingException;
@@ -20,7 +17,9 @@ public interface CodesService {
 
     int updateCode(CodeReq req, Long codeId, Long userId);
 
-    int deleteCode(Long codeId, Long userId);
+    int putExpireDateCode(Long codeId, Long userId);
+
+    void deleteExpiredCode();
 
     int likeCode(Long codeId, Long userId);
 
@@ -28,5 +27,11 @@ public interface CodesService {
 
     List<CodeTagsRes> searchTags(String keyword);
 
-    List<ReviewInfoRes> getReviewList(Long codeId, Long userId);
+    List<ReviewInfoRes> getReviewList(Long codeId, Long userId, boolean versionUp);
+
+    List<ReviewSearchRes> getReviewSearchList(Long codeId, Long userId, String keyword);
+
+    int connectProject(Long codeId, Long userId, Long projectId);
+
+    List<CodeLanguagesRes> searchLanguages(String keyword);
 }

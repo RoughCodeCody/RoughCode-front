@@ -14,13 +14,12 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class EmailServiceImpl extends EmailService {
+public class EmailServiceImpl implements EmailService {
 
     private final UsersRepository usersRepository;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -68,6 +67,17 @@ public class EmailServiceImpl extends EmailService {
     }
 
     @Override
+    public String deleteEmailInfo(Long usersId) {
+        Users user = usersRepository.findByUsersId(usersId);
+        if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
+
+        user.setEmail("");
+        usersRepository.save(user);
+
+        return user.getEmail();
+    }
+
+    @Override
     public void sendAlarm(String subject, AlarmReq alarmReq) throws MessagingException {
         Users user = usersRepository.findByUsersId(alarmReq.getUserId());
         if(user == null) throw new NullPointerException("일치하는 유저가 존재하지 않습니다");
@@ -85,6 +95,7 @@ public class EmailServiceImpl extends EmailService {
         helper.setText(createAlarmEmail(alarmReq), true); // true를 전달하여 HTML을 사용하도록 지정합니다.
 
         mailSender.send(message);
+        log.info("이메일 발송 완료");
     }
 
     private String createAlarmEmail(AlarmReq alarm) {

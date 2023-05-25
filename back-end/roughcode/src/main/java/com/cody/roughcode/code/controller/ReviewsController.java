@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -104,7 +105,7 @@ public class ReviewsController {
                                    @Parameter(description = "코드 리뷰 정보 값", required = true) @Valid @RequestBody ReviewReq reviewReq) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -137,7 +138,7 @@ public class ReviewsController {
                                    @PathVariable Long reviewId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -169,7 +170,7 @@ public class ReviewsController {
                                @PathVariable Long reviewId) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
@@ -204,14 +205,15 @@ public class ReviewsController {
                                      @PathVariable Long reviewId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if (userId <= 0) {
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
         }
 
         int res = 0;
         try {
             res = reviewsService.complainReview(reviewId, userId);
-        } catch(SelectedException e){
-            return Response.conflict(e.getMessage());
+        } catch(ResponseStatusException e){
+            log.warn(e.getReason());
+            return Response.makeResponse(e.getStatus(), e.getReason());
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());

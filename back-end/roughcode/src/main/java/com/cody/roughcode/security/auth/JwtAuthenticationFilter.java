@@ -106,7 +106,9 @@ public class JwtAuthenticationFilter extends GenericFilter {
             }
         }
 
-        chain.doFilter(request, response);
+        if (!response.isCommitted()) {
+            chain.doFilter(request, response);
+        }
     }
 
     // refresh 토큰 정보를 검증하는 메서드

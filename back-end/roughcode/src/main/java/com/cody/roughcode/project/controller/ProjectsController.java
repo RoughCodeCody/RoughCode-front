@@ -23,9 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -55,7 +53,7 @@ public class ProjectsController {
                             @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {
@@ -77,7 +75,7 @@ public class ProjectsController {
                                   @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {
@@ -99,7 +97,7 @@ public class ProjectsController {
                                           @PathVariable Long feedbackId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -121,7 +119,7 @@ public class ProjectsController {
                                       @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -143,7 +141,7 @@ public class ProjectsController {
                                   @PathVariable Long projectId){
         Long usersId = jwtTokenProvider.getId(accessToken);
         if(usersId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = -1;
         try {
@@ -196,7 +194,7 @@ public class ProjectsController {
                                       @RequestParam String url){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Boolean res = false;
         try{
@@ -217,7 +215,7 @@ public class ProjectsController {
                                       @PathVariable Long feedbackId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try {
@@ -239,14 +237,16 @@ public class ProjectsController {
     ResponseEntity<?> getFeedbackList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
                                      @Parameter(description = "프로젝트 아이디")
                                      @Range(min = 1, max = Long.MAX_VALUE, message = "projectId 값이 범위를 벗어납니다")
-                                     @PathVariable Long projectId){
+                                     @PathVariable Long projectId,
+                                      @Parameter(description = "버전 업 여부")
+                                      @RequestParam(defaultValue = "true") boolean versionUp){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         List<FeedbackInfoRes> res = null;
         try {
-            res = projectsService.getFeedbackList(projectId, userId);
+            res = projectsService.getFeedbackList(projectId, userId, versionUp);
         } catch (Exception e) {
             log.error(e.getMessage());
             return Response.badRequest(e.getMessage());
@@ -262,7 +262,7 @@ public class ProjectsController {
                                      @Parameter(description = "피드백 정보") @Valid @RequestBody FeedbackUpdateReq req){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Boolean res = false;
         try {
@@ -325,9 +325,9 @@ public class ProjectsController {
                                        @PathVariable Long feedbackId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
-        int res = 0;
+        int res = -1;
         try {
             res = projectsService.feedbackComplain(feedbackId, userId);
         } catch(ResponseStatusException e){
@@ -338,15 +338,16 @@ public class ProjectsController {
             return Response.badRequest(e.getMessage());
         }
 
-        if(res <= 0) return Response.notFound("프로젝트 피드백 신고 실패");
+        if(res < 0) return Response.notFound("프로젝트 피드백 신고 실패");
         return Response.ok("프로젝트 피드백 신고 성공");
     }
 
     @Operation(summary = "프로젝트 목록 조회 API")
     @GetMapping
-    ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준")
-                                     @Pattern(regexp = "modifiedDate|likeCnt|feedbackCnt", message = "sort 값은 modifiedDate, likeCnt, feedbackCnt 중 하나여야 합니다")
-                                     @RequestParam(defaultValue = "modifiedDate") String sort,
+    ResponseEntity<?> getProjectList(@CookieValue(name = JwtProperties.ACCESS_TOKEN, required = false) String accessToken,
+                                     @Parameter(description = "정렬 기준")
+                                     @Pattern(regexp = "createdDate|likeCnt|feedbackCnt", message = "sort 값은 createdDate, likeCnt, feedbackCnt 중 하나여야 합니다")
+                                     @RequestParam(defaultValue = "createdDate") String sort,
                                      @Parameter(description = "페이지 수")
                                      @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                      @RequestParam(defaultValue = "0") int page,
@@ -358,11 +359,13 @@ public class ProjectsController {
                                      @Parameter(description = "닫힘 포함 여부(0: 닫힘 미포함, 1: 닫힘 포함)")
                                      @Range(min = 0, max = 1, message = "closed 값은 0 또는 1이어야합니다")
                                      @RequestParam(defaultValue = "0") int closed) {
+        Long userId = (accessToken != null)? jwtTokenProvider.getId(accessToken) : 0L;
+
         Pair<List<ProjectInfoRes>, Boolean> res;
         List<ProjectInfoRes> projectRes = new ArrayList<>();
         try{
             PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sort));
-            res = projectsService.getProjectList(sort, pageRequest, keyword, tagIdList, closed);
+            res = projectsService.getProjectList(userId, sort, pageRequest, keyword, tagIdList, closed);
             projectRes = res.getLeft();
         } catch (Exception e){
             log.error(e.getMessage());
@@ -383,7 +386,7 @@ public class ProjectsController {
                                     @PathVariable Long projectId){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -408,7 +411,7 @@ public class ProjectsController {
                                      @RequestBody List<Long> req){
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         if (req == null) {
             req = new ArrayList<>();
@@ -432,7 +435,8 @@ public class ProjectsController {
     ResponseEntity<?> updateProject(@CookieValue(name = JwtProperties.ACCESS_TOKEN) String accessToken,
                                     @Parameter(description = "프로젝트 정보 값", required = true) @Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
-//        Long userId = 1L;
+        if(userId <= 0)
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -457,7 +461,7 @@ public class ProjectsController {
                                   @RequestBody String imgUrl) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -482,7 +486,7 @@ public class ProjectsController {
                                              @RequestPart("image") MultipartFile image) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         String res = null;
         try{
@@ -508,8 +512,7 @@ public class ProjectsController {
 
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
-
+            return Response.badRequestNoUser();
 
         int res = 0;
         try{
@@ -529,7 +532,7 @@ public class ProjectsController {
                                      @Parameter(description = "프로젝트 정보 값", required = true)@Valid @RequestBody ProjectReq req) {
         Long userId = jwtTokenProvider.getId(accessToken);
         if(userId <= 0)
-            return Response.badRequest("일치하는 유저가 존재하지 않습니다");
+            return Response.badRequestNoUser();
 
         Long res = 0L;
         try{

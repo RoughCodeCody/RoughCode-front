@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.entity;
 
 import com.cody.roughcode.code.dto.req.CodeReq;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,12 +17,16 @@ import java.util.List;
 public class CodesInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(nullable = false, columnDefinition = "BIGINT")
     private Long id;
 
     @Builder.Default
     @Column(name = "github_url", nullable = false)
     private String githubUrl = "";
+
+    @Builder.Default
+    @Column(name = "github_api_url", nullable = false)
+    private String githubApiUrl = "";
 
     @Builder.Default
     @Column(name = "content", nullable = true, columnDefinition = "text")
@@ -31,14 +36,19 @@ public class CodesInfo {
     @Column(name = "favorite_cnt", nullable = true)
     private int favoriteCnt = 0;
 
-    @Builder.Default
-    @Column(name = "language", nullable = true)
-    private String language = "";
+//    @Builder.Default
+//    @Column(name = "language", nullable = true)
+//    private String language = "";
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "languages_id", nullable = false)
+    private CodeLanguages language;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_id", nullable = false)
     private Codes codes;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "codesInfo", fetch = FetchType.LAZY)
     private List<SelectedReviews> selectedReviews;
 
@@ -63,7 +73,11 @@ public class CodesInfo {
         this.githubUrl = githubUrl;
     }
 
-    public void updateLanguage(String language){
+    public void updateGithubApiUrl(String githubApiUrl){
+        this.githubApiUrl = githubApiUrl;
+    }
+
+    public void updateLanguage(CodeLanguages language){
         this.language = language;
     }
 }

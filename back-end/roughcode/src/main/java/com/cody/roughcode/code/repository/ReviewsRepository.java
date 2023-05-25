@@ -1,5 +1,7 @@
 package com.cody.roughcode.code.repository;
 
+import com.cody.roughcode.code.entity.ReReviews;
+import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.entity.Reviews;
 import com.cody.roughcode.user.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,12 +15,21 @@ import java.util.List;
 public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     Reviews findByReviewsId(Long id);
 
+    @Query("SELECT r FROM Reviews r WHERE r.reviewsId = :id AND r.codes.expireDate IS null")
+    Reviews findByReviewsIdAndCodeExpireDateIsNull(@Param("id") Long id);
+
+    Reviews findByReReviews(ReReviews reReviews);
     List<Reviews> findByReviewsIdIn(List<Long> ids);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Reviews r WHERE r.codes.codesId = :codesId")
     void deleteAllByCodesId(@Param("codesId") Long codesId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Reviews r WHERE r.codes IN :codesList")
+    void deleteAllByCodesList(@Param("codesList") List<Codes> codesList);
 
     int countByUsers(Users user);
 }

@@ -1,6 +1,7 @@
 package com.cody.roughcode.code.entity;
 
 import com.cody.roughcode.user.entity.Users;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,9 +16,10 @@ import javax.persistence.*;
 public class CodeFavorites {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "favorites_id", nullable = false, columnDefinition = "BIGINT")
     private Long favoritesId;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "codes_id", nullable = false)
     private Codes codes;

@@ -6,6 +6,7 @@ import com.cody.roughcode.code.dto.res.CodeDetailRes;
 import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.code.dto.res.CodeTagsRes;
 import com.cody.roughcode.code.dto.res.ReviewInfoRes;
+import com.cody.roughcode.code.entity.CodeLanguages;
 import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.code.service.CodesService;
 import com.cody.roughcode.security.auth.JwtProperties;
@@ -70,6 +71,7 @@ class CodesControllerTest {
             .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
             .content("시간초과 뜹니다")
             .projectId(1L)
+            .language(List.of(1L, 2L))
             .build();
 
     Users users = Users.builder()
@@ -85,6 +87,7 @@ class CodesControllerTest {
             .githubUrl("https://api.github.com/repos/cody/hello-world/contents/src/main.py")
             .content("시간초과 뜹니다!!!!")
             .projectId(3L)
+            .language(List.of(1L, 2L))
             .build();
 
     private List<CodeTagsRes> tagsResInit() {
@@ -122,10 +125,10 @@ class CodesControllerTest {
                         .codeId(code.getCodesId())
                         .version(code.getVersion())
                         .title(code.getTitle())
-                        .date(code.getModifiedDate())
+                        .date(code.getCreatedDate())
                         .likeCnt(code.getLikeCnt())
                         .reviewCnt(code.getReviewCnt())
-                        .tags(List.of("java", "javascript"))
+                        .tags(tagsResInit())
                         .userName(users.getName())
                         .liked(true)
                         .build()
@@ -140,7 +143,7 @@ class CodesControllerTest {
         // when
         final ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.get(url)
-                        .param("sort", "modifiedDate")
+                        .param("sort", "createdDate")
                         .param("page", String.valueOf(page))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(req))
@@ -319,7 +322,7 @@ class CodesControllerTest {
 
         // CodeService deleteCode 대한 stub 필요
         doReturn(1).when(codesService)
-                .deleteCode(any(Long.class), any(Long.class));
+                .putExpireDateCode(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
@@ -345,7 +348,7 @@ class CodesControllerTest {
 
         // CodeService deleteCode 대한 stub 필요
         doReturn(0).when(codesService)
-                .deleteCode(any(Long.class), any(Long.class));
+                .putExpireDateCode(any(Long.class), any(Long.class));
         doReturn(1L).when(jwtTokenProvider).getId(any(String.class));
 
         // when
@@ -539,8 +542,9 @@ class CodesControllerTest {
                 .selected(true)
                 .build();
 
+        doReturn(1L).when(jwtTokenProvider).getId(accessToken);
         doReturn(List.of(reviewInfoRes)).when(codesService)
-                .getReviewList(any(Long.class), any(Long.class));
+                .getReviewList(any(Long.class), any(Long.class), any(Boolean.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(
@@ -559,12 +563,70 @@ class CodesControllerTest {
 
     @DisplayName("코드 리뷰 목록 조회 실패")
     @Test
-    public void getFeedbackListFail() throws Exception {
+    public void getReviewListFail() throws Exception {
         // given
         final String url = "/api/v1/code/{codeId}/review";
 
+        doReturn(1L).when(jwtTokenProvider).getId(accessToken);
         doReturn(null).when(codesService)
-                .getReviewList(any(Long.class), any(Long.class));
+                .getReviewList(any(Long.class), any(Long.class), any(Boolean.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 목록 조회 실패");
+    }
+
+    @DisplayName("코드 리뷰 목록 조회 성공")
+    @Test
+    public void getCodeReviewListSucceed() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}/code-review";
+
+        ReviewInfoRes reviewInfoRes = ReviewInfoRes.builder()
+                .reviewId(1L)
+                .userName("user")
+                .userId(1L)
+                .codeContent("codeContent")
+                .content("content")
+                .selected(true)
+                .build();
+
+        doReturn(List.of(reviewInfoRes)).when(codesService)
+                .getReviewSearchList(any(Long.class), any(Long.class), any(String.class));
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url, 1)
+                        .cookie(new Cookie(JwtProperties.ACCESS_TOKEN, accessToken))
+        );
+
+        // then
+        // HTTP Status가 OK인지 확인
+        MvcResult mvcResult = resultActions.andExpect(status().isOk()).andReturn();
+        String responseBody = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
+        String message = jsonObject.get("message").getAsString();
+        assertThat(message).isEqualTo("코드 리뷰 목록 조회 성공");
+    }
+
+    @DisplayName("코드 리뷰 목록 조회 실패")
+    @Test
+    public void getCodeReviewListFail() throws Exception {
+        // given
+        final String url = "/api/v1/code/{codeId}/code-review";
+
+        doReturn(null).when(codesService)
+                .getReviewSearchList(any(Long.class), any(Long.class), any(String.class));
 
         // when
         final ResultActions resultActions = mockMvc.perform(

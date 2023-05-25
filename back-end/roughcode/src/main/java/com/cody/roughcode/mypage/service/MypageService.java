@@ -4,10 +4,8 @@ import com.cody.roughcode.code.dto.res.CodeInfoRes;
 import com.cody.roughcode.project.dto.res.ProjectInfoRes;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 public interface MypageService {

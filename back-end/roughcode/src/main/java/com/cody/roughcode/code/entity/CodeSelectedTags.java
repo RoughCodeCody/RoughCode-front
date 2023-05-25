@@ -1,5 +1,6 @@
 package com.cody.roughcode.code.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import javax.persistence.*;
 public class CodeSelectedTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "selected_tags_id", nullable = false, columnDefinition = "BIGINT")
     private Long selectedTagsId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -22,6 +23,7 @@ public class CodeSelectedTags {
     private CodeTags tags;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "codes_id", nullable = false)
     private Codes codes;
 

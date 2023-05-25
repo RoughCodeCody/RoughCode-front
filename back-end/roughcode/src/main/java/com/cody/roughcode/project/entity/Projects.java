@@ -4,6 +4,7 @@ import com.cody.roughcode.code.entity.Codes;
 import com.cody.roughcode.project.dto.req.ProjectReq;
 import com.cody.roughcode.user.entity.Users;
 import com.cody.roughcode.util.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,10 +22,10 @@ import java.util.Objects;
 public class Projects extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT UNSIGNED")
+    @Column(name = "projects_id", nullable = false, columnDefinition = "BIGINT")
     private Long projectsId;
 
-    @Column(name = "num", nullable = false)
+    @Column(name = "num", nullable = false, columnDefinition = "BIGINT")
     private Long num;
 
     @Column(name = "version", nullable = false)
@@ -59,18 +60,23 @@ public class Projects extends BaseTimeEntity {
     @JoinColumn(name = "project_writer_id", nullable = false)
     private Users projectWriter;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "projects")
     private List<ProjectSelectedTags> selectedTags;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "projects")
     private List<SelectedFeedbacks> selectedFeedbacks;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "projects")
     private List<Codes> projectsCodes;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "projects")
     private List<ProjectFavorites> projectFavorites;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "projects")
     private List<ProjectLikes> projectLikes;
 

@@ -1,7 +1,6 @@
 package com.cody.roughcode.config;
 
 import com.cody.roughcode.security.auth.JwtAuthenticationFilter;
-import com.cody.roughcode.security.auth.JwtExceptionFilter;
 import com.cody.roughcode.security.auth.JwtTokenProvider;
 import com.cody.roughcode.security.handler.AuthenticationFailureHandler;
 import com.cody.roughcode.security.handler.AuthenticationSuccessHandler;
@@ -44,13 +43,17 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.PUT, "/api/v1/project/check/{projectId}")
                 .antMatchers(HttpMethod.GET, "/api/v1/code") // 코드 목록 조회
                 .antMatchers(HttpMethod.GET, "/api/v1/code/{codeId}") // 코드 정보 상세 조회
-                .antMatchers(HttpMethod.GET, "/api/v1/code/{codeId}/review") // 코드에 대한 리뷰 목록 검색
+                .antMatchers(HttpMethod.GET, "/api/v1/code/{codeId}/code-review") // 코드에 대한 리뷰 목록 검색 - 상세 조회에 사용
                 .antMatchers(HttpMethod.POST, "/api/v1/code/review") // 코드에 대한 리뷰 등록
                 .antMatchers(HttpMethod.GET, "/api/v1/code/review/{reviewId}") // 코드 리뷰 상세 조회
                 .antMatchers(HttpMethod.GET, "/api/v1/code/rereview/{reviewId}") // 코드 리뷰에 대한 리뷰 목록 조회
                 .antMatchers(HttpMethod.POST, "/api/v1/code/rereview") // 코드 리뷰에 대한 리뷰 등록
                 .antMatchers(HttpMethod.GET, "/api/v1/code/tag") // 코드 태그 검색
+                .antMatchers(HttpMethod.GET, "/api/v1/code/language") // 코드 언어 검색
                 .antMatchers(HttpMethod.GET, "/api/v1/mypage") // stat card 조회
+                .antMatchers(HttpMethod.POST, "/api/v1/project/feedback") // 프로젝트 피드백 작성
+                .antMatchers(HttpMethod.POST, "/api/v1/project/{projectId}/image") // 프로젝트 이미지 to url
+                .antMatchers(HttpMethod.GET, "/api/v1/project/tag") // 프로젝트 tag 검색
                 .antMatchers(URL_PREFIX+"/user/token", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs/**", "/v3/api-docs/**", "/favicon.ico");
     }
 
@@ -81,9 +84,10 @@ public class SecurityConfig {
                     // Authorization 과정에서 기본으로 Session을 사용하지만 Cookie로 변경하기 위해 설정함
                     authorize.authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository);
                 })
-                .redirectionEndpoint()
-                .baseUri(URL_PREFIX+"/oauth2/callback/**")
-                .and()
+                .redirectionEndpoint(redirectionEndpoint ->
+                    redirectionEndpoint
+                            .baseUri(URL_PREFIX+"/login/oauth2/code/*")
+                )
                 .userInfoEndpoint(userInfo -> { // Provider로부터 획득한 유저정보를 다룰 service class 지정함
                     userInfo.userService(customOAuth2UserService);
                 })
