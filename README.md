@@ -76,6 +76,8 @@
 - checkstyle 10.9.3
 ```
 
+## 😎 팀 구성원
+![팀프로필](https://github.com/DewPeaceTigers/AlgorithmStudy/assets/37644126/5e246abf-3c2c-4db8-be7e-a4475a093714)
 
 ## 📑 프로젝트 산출물
 
